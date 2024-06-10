@@ -1,0 +1,34 @@
+/* NetSMSFacil.css */
+.netsmsfacil-container {
+  padding: 20px;
+  min-height: calc(100vh-100px);
+  display: flex;
+  flex-direction: column;
+}
+.form-group-spacing {
+  margin-bottom: 20px;
+}
+
+.botao-reiniciar {
+  width: 100px;
+  margin-left: 5px;
+}
+
+.botao-gerar {
+  width: 100px;
+}
+
+.botao-download {
+  width: 50px;
+  margin-left: auto;
+}
+
+.codigo-container {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.codigo-input {
+  max-width: 60px;
+  margin-right: 10px;
+}

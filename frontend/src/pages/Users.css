@@ -1,0 +1,14 @@
+/* Users.css */
+
+.botaoEditar,
+.botaoDeletar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px;
+}
+
+.acoes {
+  display: flex;
+  justify-content: center;
+}

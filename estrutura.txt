@@ -1,0 +1,61 @@
+frontend
+    └── src
+        ├── App.css
+        ├── App.js
+        ├── App.test.js
+        ├── assets
+        │   ├── background-login.jpg
+        │   ├── background-login_.jpg
+        │   └── logo.png
+        ├── components
+        │   ├── Footer.css
+        │   ├── Footer.jsx
+        │   ├── Header.css
+        │   ├── Header.jsx
+        │   └── UploadFile.jsx
+        ├── index.css
+        ├── index.js
+        ├── pages
+        │   ├── Cadastros.css
+        │   ├── Cadastros.jsx
+        │   ├── Home.css
+        │   ├── Home.jsx
+        │   ├── Login.css
+        │   ├── Login.jsx
+        │   ├── NetSMSFacil.css
+        │   ├── NetSMSFacil.jsx
+        │   ├── OCQualinet.css
+        │   ├── OCQualinet.jsx
+        │   ├── Users.css
+        │   └── Users.jsx
+        ├── reportWebVitals.js
+        ├── RotasPrivadas.jsx
+        ├── Routes.jsx
+        └── setupTests.js
+
+
+
+backend
+├── .env
+├── data.db
+├── login.db
+├── netsmsfacil.db
+├── package-lock.json
+├── package.json
+├── server.js
+├── users.db
+├── src
+      ├── middleware
+      │   └── authMiddleware.js
+      ├── models
+      │   ├── cidadeParaUF.js
+      │   └── formatarData.js
+      └── routes
+          ├── authRoutes.js
+          ├── netsmsfacilRoutes.js
+          ├── qualinetRoutes.js
+          └── usersRoutes.js
+
+
+
+
