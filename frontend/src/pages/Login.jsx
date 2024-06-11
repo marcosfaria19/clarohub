@@ -1,4 +1,4 @@
-//Login.jsx
+// Login.jsx
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
@@ -7,7 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
-function Login() {
+function Login({ onLogin }) {
   const [credencial, setCredencial] = useState("");
   const navigate = useNavigate();
 
@@ -25,14 +25,18 @@ function Login() {
         { LOGIN: credencial }
       );
 
-      const { token } = response.data;
+      const { token, nome, permissoes, gestor } = response.data; // Receba o nome do usuário do backend
+      const decoded = jwtDecode(token);
 
       localStorage.setItem("token", token);
+      localStorage.setItem("userName", nome);
+      localStorage.setItem("permissoes", permissoes);
+      localStorage.setItem("gestor", gestor);
+      console.log(response.data);
 
-      const decoded = jwtDecode(token);
-      localStorage.setItem("permissions", JSON.stringify(decoded.permissions));
+      onLogin(nome); // Passe o nome do usuário para a função onLogin
 
-      navigate("/dashboard");
+      navigate("/home");
     } catch (error) {
       console.error(
         "Erro ao fazer login:",

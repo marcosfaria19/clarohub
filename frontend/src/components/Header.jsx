@@ -1,4 +1,4 @@
-//header.jsx
+// Header.jsx
 import React from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
@@ -30,7 +30,7 @@ function Header({ userName, onLogout }) {
             <Nav.Link href="/users">Usuários cadastrados</Nav.Link>
           </Nav>
           <Nav>
-            <Navbar.Text className="me-2">Bem-vindo, {userName}</Navbar.Text>
+            <Navbar.Text className="me-2">Bem-vindo(a), {userName}</Navbar.Text>
             <Button variant="outline-light" onClick={onLogout}>
               Logout
             </Button>

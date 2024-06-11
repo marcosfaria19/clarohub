@@ -3,6 +3,7 @@ const express = require("express");
 const Datastore = require("nedb");
 const path = require("path");
 const router = express.Router();
+const jwt = require("jsonwebtoken");
 
 const usuarios = new Datastore({
   filename: path.join(__dirname, "../../users.db"),
@@ -46,6 +47,37 @@ router.put("/users/:id", (req, res) => {
     if (numReplaced === 0)
       return res.status(404).send("Nenhum documento foi atualizado.");
     res.send("Dados atualizados com sucesso.");
+  });
+});
+
+// Rotas para autenticação e login
+
+router.post("/login", (req, res) => {
+  const { LOGIN } = req.body;
+
+  usuarios.findOne({ LOGIN }, (err, user) => {
+    if (err || !user) {
+      return res.status(401).json({ message: "Credencial inválida" });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        login: user.LOGIN,
+        nome: user.NOME,
+        permissoes: user.PERMISSOES,
+        gestor: user.GESTOR,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({
+      token,
+      nome: user.NOME,
+      permissoes: user.PERMISSOES,
+      gestor: user.GESTOR,
+    });
   });
 });
 

@@ -25,6 +25,8 @@ const NetSMSFacil = () => {
   const [textoPadrao, setTextoPadrao] = useState("");
   const [validated, setValidated] = useState(false);
   const [codigo, setCodigo] = useState("");
+  const [userName, setUserName] = useState("");
+  const [gestor, setManager] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,8 +43,8 @@ const NetSMSFacil = () => {
   }, []);
 
   const handleCodigoSubmit = () => {
-    const codigoNumber = parseInt(codigo); // Convertendo o código para número
-    const selectedItem = data.find((item) => item.ID === codigoNumber); // Comparando IDs como números
+    const codigoNumber = parseInt(codigo);
+    const selectedItem = data.find((item) => item.ID === codigoNumber);
     if (selectedItem) {
       setTratativa(selectedItem.TRATATIVA);
       setTipo(selectedItem.TIPO);
@@ -151,9 +153,12 @@ const NetSMSFacil = () => {
 
       // Concatene todas as seleções e o ID
       let textoPadraoConcatenado = `${id} - ${textoPadrao.split(" - ")[1]}`;
+      const usuarioAtual = localStorage.getItem("userName");
+      const nomeGestor = localStorage.getItem("gestor");
+
       textoPadraoConcatenado += incidente ? ` ${incidente}` : "";
       textoPadraoConcatenado += observacao ? `\nOBS: ${observacao}` : "";
-      textoPadraoConcatenado += `\n\nNOME // GESTOR`;
+      textoPadraoConcatenado += `\n\n ${usuarioAtual} // ${nomeGestor}`;
 
       setConcatenatedText(textoPadraoConcatenado);
       navigator.clipboard.writeText(textoPadraoConcatenado);
