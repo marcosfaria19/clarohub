@@ -25,8 +25,6 @@ const NetSMSFacil = () => {
   const [textoPadrao, setTextoPadrao] = useState("");
   const [validated, setValidated] = useState(false);
   const [codigo, setCodigo] = useState("");
-  const [userName, setUserName] = useState("");
-  const [gestor, setManager] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -202,8 +200,7 @@ const NetSMSFacil = () => {
           placement="top"
           overlay={
             <Tooltip id="button-tooltip">Encontrar automaticamente</Tooltip>
-          }
-        >
+          }>
           <Button variant="dark" onClick={handleCodigoSubmit}>
             <i className="bi bi-check-lg"></i>
           </Button>
@@ -213,13 +210,11 @@ const NetSMSFacil = () => {
           placement="top"
           overlay={
             <Tooltip id="button-tooltip">Baixar lista de códigos</Tooltip>
-          }
-        >
+          }>
           <Button
             variant="outline-dark"
             className="botao-download"
-            onClick={handleDownload}
-          >
+            onClick={handleDownload}>
             <i className="bi bi-download"></i>
           </Button>
         </OverlayTrigger>
@@ -231,8 +226,7 @@ const NetSMSFacil = () => {
             as="select"
             value={tratativa}
             onChange={handleTratativaChange}
-            required
-          >
+            required>
             <option value="">Selecione</option>
             {getUniqueValues("TRATATIVA").map((value) => (
               <option key={value} value={value}>
@@ -252,8 +246,7 @@ const NetSMSFacil = () => {
             value={tipo}
             onChange={handleTipoChange}
             disabled={!tratativa}
-            required
-          >
+            required>
             <option value="">Selecione</option>
             {getUniqueValues("TIPO", [["TRATATIVA", tratativa]]).map(
               (value) => (
@@ -270,16 +263,14 @@ const NetSMSFacil = () => {
 
         <Form.Group
           className="form-group-spacing"
-          controlId="aberturaFechamento"
-        >
+          controlId="aberturaFechamento">
           <Form.Label>Abertura/Fechamento</Form.Label>
           <Form.Control
             as="select"
             value={aberturaFechamento}
             onChange={handleAberturaFechamentoChange}
             disabled={!tipo}
-            required
-          >
+            required>
             <option value="">Selecione</option>
             {getUniqueValues("ABERTURA/FECHAMENTO", [
               ["TIPO", tipo],
@@ -302,8 +293,7 @@ const NetSMSFacil = () => {
             value={netsms}
             onChange={handleNetsmsChange}
             disabled={!aberturaFechamento}
-            required
-          >
+            required>
             <option value="">Selecione</option>
             {getUniqueValues("NETSMS", [
               ["ABERTURA/FECHAMENTO", aberturaFechamento],
@@ -327,8 +317,7 @@ const NetSMSFacil = () => {
             value={textoPadrao}
             onChange={handleTextoPadraoChange}
             disabled={!netsms}
-            required
-          >
+            required>
             <option value="">Selecione</option>
             {filterData([
               ["NETSMS", netsms],
@@ -338,8 +327,7 @@ const NetSMSFacil = () => {
             ]).map((item) => (
               <option
                 key={item.ID}
-                value={`${item.ID} - ${item["TEXTO PADRAO"]}`}
-              >
+                value={`${item.ID} - ${item["TEXTO PADRAO"]}`}>
                 {`${item.ID} - ${item["TEXTO PADRAO"]}`}
               </option>
             ))}
@@ -385,21 +373,18 @@ const NetSMSFacil = () => {
         <div className="botoes d-flex mb-3">
           <OverlayTrigger
             placement="left"
-            overlay={<Tooltip id="button-tooltip">Gerar texto padrão</Tooltip>}
-          >
+            overlay={<Tooltip id="button-tooltip">Gerar texto padrão</Tooltip>}>
             <Button variant="success" className="botao-gerar" type="submit">
               <i className="bi bi-copy"></i>
             </Button>
           </OverlayTrigger>
           <OverlayTrigger
             placement="right"
-            overlay={<Tooltip id="button-tooltip">Reiniciar</Tooltip>}
-          >
+            overlay={<Tooltip id="button-tooltip">Reiniciar</Tooltip>}>
             <Button
               variant="danger"
               className="botao-reiniciar"
-              onClick={handleReset}
-            >
+              onClick={handleReset}>
               <i className="bi bi-arrow-clockwise"></i>
             </Button>
           </OverlayTrigger>
@@ -409,8 +394,7 @@ const NetSMSFacil = () => {
           variant="success"
           show={showAlert}
           onClose={() => setShowAlert(false)}
-          dismissible
-        >
+          dismissible>
           O texto foi copiado para a área de transferência com sucesso.
         </Alert>
 

@@ -1,61 +1,40 @@
-// App.js
-import React, { useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import Header from "./components/Header";
-import Rotas from "./routes/Routes";
 import Footer from "./components/Footer";
-import Login from "./pages/Login";
-
-import "./App.css";
+import Rotas from "./routes/Routes";
 
 function App() {
-  const [userName, setUserName] = useState(localStorage.getItem("userName"));
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [userName, setUserName] = useState("");
 
-  const handleLogout = () => {
-    // Limpar o localStorage
-    localStorage.removeItem("token");
-    localStorage.removeItem("userName");
-    // Atualizar o estado do nome do usuário
-    setUserName(null);
-    // Redirecionar para a página de login, se necessário
-    window.location.href = "/login";
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+      const decodedToken = jwtDecode(token);
+      const nomeCompleto = decodedToken.NOME;
+      const primeiroNome = nomeCompleto.split(" ")[0];
+      const primeiroNomeFormatado =
+        primeiroNome.charAt(0).toUpperCase() +
+        primeiroNome.slice(1).toLowerCase();
+      setUserName(primeiroNomeFormatado);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
+  const logout = () => {
+    setToken(null);
+    setUserName("");
   };
 
   return (
     <Router>
-      <Main
-        userName={userName}
-        setUserName={setUserName}
-        onLogout={handleLogout}
-      />
+      {token && <Header userName={userName} onLogout={logout} />}
+      <Rotas token={token} setToken={setToken} />
+      {token && <Footer />}
     </Router>
-  );
-}
-
-function Main({ userName, setUserName, onLogout }) {
-  return (
-    <div className="App">
-      <Routes>
-        <Route
-          path="/login"
-          element={<Login onLogin={(name) => setUserName(name)} />}
-        />
-        <Route
-          path="*"
-          element={<ProtectedRoutes userName={userName} onLogout={onLogout} />}
-        />
-      </Routes>
-    </div>
-  );
-}
-
-function ProtectedRoutes({ userName, onLogout }) {
-  return (
-    <>
-      <Header userName={userName} onLogout={onLogout} />
-      <Rotas />
-      <Footer />
-    </>
   );
 }
 

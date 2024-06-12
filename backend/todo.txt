@@ -1,4 +1,0 @@
-• Alerta sucesso ou não para o CRUD
-• Não preciso mais da rota OC
-• Autenticação(?) para tela Dados Cadastrados, Filtro para NAP e TAP 
-• Melhoria da home page, login(?)

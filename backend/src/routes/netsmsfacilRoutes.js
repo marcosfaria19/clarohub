@@ -9,7 +9,7 @@ const fs = require("fs");
 const router = express.Router();
 
 const netsmsfacil = new Datastore({
-  filename: path.join(__dirname, "../../netsmsfacil.db"),
+  filename: path.join(__dirname, "../data/netsmsfacil.db"),
   autoload: true,
 });
 

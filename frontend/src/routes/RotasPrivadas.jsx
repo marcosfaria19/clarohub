@@ -1,4 +1,4 @@
-// RotasPrivadas.jsx
+/* // RotasPrivadas.jsx
 import { jwtDecode } from "jwt-decode";
 import { Navigate } from "react-router-dom";
 
@@ -22,3 +22,4 @@ const RotasPrivadas = ({ children, ...rest }) => {
 };
 
 export default RotasPrivadas;
+ */

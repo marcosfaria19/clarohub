@@ -11,7 +11,7 @@ const router = express.Router();
 
 const upload = multer({ dest: "uploads/" });
 const db = new Datastore({
-  filename: path.join(__dirname, "../../data.db"),
+  filename: path.join(__dirname, "../data/ocqualinet.db"),
   autoload: true,
 });
 

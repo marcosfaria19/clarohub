@@ -1,13 +1,11 @@
 // Login.jsx
 import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
-import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
 import "./Login.css";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-function Login({ onLogin }) {
+function Login({ setToken }) {
   const [credencial, setCredencial] = useState("");
   const navigate = useNavigate();
 
@@ -25,23 +23,10 @@ function Login({ onLogin }) {
         { LOGIN: credencial }
       );
 
-      const { token, nome, permissoes, gestor } = response.data; // Receba o nome do usuário do backend
-      const decoded = jwtDecode(token);
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("userName", nome);
-      localStorage.setItem("permissoes", permissoes);
-      localStorage.setItem("gestor", gestor);
-      console.log(response.data);
-
-      onLogin(nome); // Passe o nome do usuário para a função onLogin
-
+      setToken(response.data.token);
       navigate("/home");
-    } catch (error) {
-      console.error(
-        "Erro ao fazer login:",
-        error.response?.data?.message || error.message
-      );
+    } catch (err) {
+      console.error("Login falhou", err);
     }
   };
 
@@ -59,8 +44,7 @@ function Login({ onLogin }) {
             <h2 className="mb-4">Login</h2>
             <Form.Group
               controlId="form-credencial"
-              className="mb-3 form-floating"
-            >
+              className="mb-3 form-floating">
               <Form.Control
                 className="credencial"
                 placeholder=" "
