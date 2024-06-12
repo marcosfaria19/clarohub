@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Rotas from "./routes/Routes";
+import "./App.css";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -12,15 +13,26 @@ function App() {
   useEffect(() => {
     if (token) {
       localStorage.setItem("token", token);
-      const decodedToken = jwtDecode(token);
-      const nomeCompleto = decodedToken.NOME;
-      const primeiroNome = nomeCompleto.split(" ")[0];
-      const primeiroNomeFormatado =
-        primeiroNome.charAt(0).toUpperCase() +
-        primeiroNome.slice(1).toLowerCase();
-      setUserName(primeiroNomeFormatado);
+      try {
+        const decodedToken = jwtDecode(token);
+        if (decodedToken && decodedToken.NOME) {
+          const nomeCompleto = decodedToken.NOME;
+          const primeiroNome = nomeCompleto.split(" ")[0];
+          const primeiroNomeFormatado =
+            primeiroNome.charAt(0).toUpperCase() +
+            primeiroNome.slice(1).toLowerCase();
+          setUserName(primeiroNomeFormatado);
+
+          localStorage.setItem("userName", nomeCompleto);
+          localStorage.setItem("gestor", decodedToken.GESTOR);
+        }
+      } catch (error) {
+        console.error("Erro ao decodificar o token:", error);
+      }
     } else {
       localStorage.removeItem("token");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("gestor");
     }
   }, [token]);
 

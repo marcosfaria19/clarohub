@@ -1,6 +1,7 @@
- /* Cadastros.css */
+/* Cadastros.css */
 
- .botaoEditar, .botaoDeletar {
+.botaoEditar,
+.botaoDeletar {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,4 +11,8 @@
 .acoes {
   display: flex;
   justify-content: center;
+}
+
+.dados-container {
+  min-height: 100vh;
 }
