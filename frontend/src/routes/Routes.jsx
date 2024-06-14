@@ -6,6 +6,7 @@ import NetSMSFacil from "../pages/NetSMSFacil";
 import Login from "../pages/Login";
 import Users from "../pages/Users";
 import Home from "../pages/Home";
+import NetSMSFacilAdmin from "../pages/NetSMSFacilAdmin";
 
 const Rotas = ({ token, setToken }) => {
   return (
@@ -32,6 +33,10 @@ const Rotas = ({ token, setToken }) => {
       <Route
         path="/netsms"
         element={token ? <NetSMSFacil /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/netsmsadmin"
+        element={token ? <NetSMSFacilAdmin /> : <Navigate to="/login" />}
       />
       <Route
         path="/users"

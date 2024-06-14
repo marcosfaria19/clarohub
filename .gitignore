@@ -1,0 +1,13 @@
+# Ignorar node_modules no frontend
+/frontend/node_modules/
+
+# Ignorar node_modules no backend
+/backend/node_modules/
+
+# Ignorar dotenv
+/frontend/.env.local
+/backend/.env
+
+# Ignorar arquivos gerados pelo sistema
+.DS_Store
+Thumbs.db

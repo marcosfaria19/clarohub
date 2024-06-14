@@ -23,7 +23,7 @@ router.get("/netsmsfacil", (req, res) => {
   });
 });
 
-const upload = multer({ dest: "uploads/" });
+/* const upload = multer({ dest: "uploads/" });
 
 router.post("/uploadnet", upload.single("file"), (req, res) => {
   if (!req.file) {
@@ -51,6 +51,55 @@ router.post("/uploadnet", upload.single("file"), (req, res) => {
       return res.status(500).send("Erro ao inserir dados no banco de dados.");
     }
     res.send("Dados inseridos com sucesso.");
+  });
+});
+ */
+
+router.get("/netsmsfacil", (req, res) => {
+  netsmsfacil.find({}, (err, docs) => {
+    if (err) return res.status(500).send("Erro ao consultar o banco de dados.");
+    res.json(docs);
+  });
+});
+
+router.delete("/netsmsfacil/:id", (req, res) => {
+  const { id } = req.params;
+  netsmsfacil.remove({ _id: id }, {}, (err, numRemoved) => {
+    if (err)
+      return res.status(500).send("Erro ao deletar o dado do banco de dados.");
+    if (numRemoved === 0)
+      return res
+        .status(404)
+        .send("Nenhum dado foi deletado. ID não encontrado.");
+    res.send("Dado deletado com sucesso.");
+  });
+});
+
+router.put("/netsmsfacil/:id", (req, res) => {
+  const { id } = req.params;
+  const newData = req.body;
+  netsmsfacil.update({ _id: id }, { $set: newData }, {}, (err, numReplaced) => {
+    if (err)
+      return res.status(500).send("Erro ao atualizar dados no banco de dados.");
+    if (numReplaced === 0)
+      return res.status(404).send("Nenhum documento foi atualizado.");
+    res.send("Dados atualizados com sucesso.");
+  });
+});
+
+router.post("/netsmsfacil", (req, res) => {
+  const newItem = {
+    ...req.body,
+    ID: parseInt(req.body.ID),
+  };
+  netsmsfacil.insert(newItem, (err, item) => {
+    if (err) {
+      console.error("Erro ao inserir novo item:", err);
+      res.status(500).json({ error: "Erro ao inserir novo item" });
+      return;
+    }
+    res.json(item);
+    console.log(item);
   });
 });
 

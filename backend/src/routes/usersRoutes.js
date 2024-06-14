@@ -104,4 +104,19 @@ router.put("/users/:id", (req, res) => {
   });
 });
 
+// Rota para cadastrar um novo usuário
+router.post("/users", (req, res) => {
+  const newUser = req.body;
+
+  usersDb.insert(newUser, (err, user) => {
+    if (err) {
+      console.error("Erro ao cadastrar novo usuário:", err);
+      return res
+        .status(500)
+        .json({ message: "Erro ao cadastrar novo usuário" });
+    }
+    res.json(user);
+  });
+});
+
 module.exports = router;

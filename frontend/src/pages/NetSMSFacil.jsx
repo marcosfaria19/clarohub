@@ -156,7 +156,7 @@ const NetSMSFacil = () => {
 
       textoPadraoConcatenado += incidente ? ` ${incidente}` : "";
       textoPadraoConcatenado += observacao ? `\nOBS: ${observacao}` : "";
-      textoPadraoConcatenado += `\n\n ${usuarioAtual} // ${nomeGestor}`;
+      textoPadraoConcatenado += `\n\n${usuarioAtual} // ${nomeGestor}`;
 
       setConcatenatedText(textoPadraoConcatenado);
       navigator.clipboard.writeText(textoPadraoConcatenado);

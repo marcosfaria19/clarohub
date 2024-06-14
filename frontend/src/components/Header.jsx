@@ -28,6 +28,7 @@ function Header({ userName, onLogout }) {
             <Nav.Link href="/netsms">NetSMS</Nav.Link>
             <Nav.Link href="/dados">Dados cadastrados</Nav.Link>
             <Nav.Link href="/users">Usuários cadastrados</Nav.Link>
+            <Nav.Link href="/netsmsadmin">NetSMSFacil códigos</Nav.Link>
           </Nav>
           <Nav>
             <Navbar.Text className="me-2">Bem-vindo(a), {userName}</Navbar.Text>

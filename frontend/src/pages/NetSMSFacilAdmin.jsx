@@ -6,22 +6,25 @@ import {
   Button,
   Modal,
   Form,
-  OverlayTrigger,
   Tooltip,
+  OverlayTrigger,
 } from "react-bootstrap";
-import "./Users.css";
-import AddUsuario from "../components/AddUsuario";
+import "./NetSMSFacilAdmin.css";
+import AddNetSMSFacil from "../components/AddNetSMSFacil";
 
-function Users() {
+function NetSMSFacilAdmin() {
   const [dados, setDados] = useState([]);
-  const [gestores, setGestores] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentItem, setCurrentItem] = useState({
-    LOGIN: "",
-    NOME: "",
-    GESTOR: "",
-    PERMISSOES: "",
+    ID: "",
+    TRATATIVA: "",
+    TIPO: "",
+    "ABERTURA/FECHAMENTO": "",
+    NETSMS: "",
+    "TEXTO PADRAO": "",
+    OBS: "0",
+    INCIDENTE: "0",
   });
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -29,31 +32,14 @@ function Users() {
     fetchDados();
   }, []);
 
-  useEffect(() => {
-    fetchDados();
-    fetchGestores();
-  }, []);
-
   const fetchDados = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/users`
+        `${process.env.REACT_APP_BACKEND_URL}/netsmsfacil`
       );
       setDados(response.data);
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
-      console.log(`URL: ${process.env.REACT_APP_BACKEND_URL}`);
-    }
-  };
-
-  const fetchGestores = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/users/managers`
-      );
-      setGestores(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar gestores do backend:", error);
     }
   };
 
@@ -65,22 +51,26 @@ function Users() {
 
   const handleAddClick = () => {
     setCurrentItem({
-      LOGIN: "",
-      NOME: "",
-      GESTOR: "",
-      PERMISSOES: "",
+      ID: "",
+      TRATATIVA: "",
+      TIPO: "",
+      "ABERTURA/FECHAMENTO": "",
+      NETSMS: "",
+      "TEXTO PADRAO": "",
+      OBS: "0",
+      INCIDENTE: "0",
     });
     setIsEditMode(false);
     setShowEditModal(true);
   };
 
-  const handleCloseModal = () => {
-    setShowEditModal(false);
-  };
-
   const handleDeleteClick = (item) => {
     setCurrentItem(item);
     setShowDeleteModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowEditModal(false);
   };
 
   const handleChange = (e) => {
@@ -92,12 +82,12 @@ function Users() {
     try {
       if (isEditMode) {
         await axios.put(
-          `${process.env.REACT_APP_BACKEND_URL}/users/${currentItem._id}`,
+          `${process.env.REACT_APP_BACKEND_URL}/netsmsfacil/${currentItem._id}`,
           currentItem
         );
       } else {
         await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/users`,
+          `${process.env.REACT_APP_BACKEND_URL}/netsmsfacil`,
           currentItem
         );
       }
@@ -111,7 +101,7 @@ function Users() {
   const handleDeleteConfirm = async () => {
     try {
       await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/users/${currentItem._id}`
+        `${process.env.REACT_APP_BACKEND_URL}/netsmsfacil/${currentItem._id}`
       );
       setShowDeleteModal(false);
       fetchDados();
@@ -120,44 +110,62 @@ function Users() {
     }
   };
 
+  const truncarTexto = (text, maxLength) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + "...";
+    }
+    return text;
+  };
+
   return (
-    <Container className="users-container">
+    <Container className="netsmsadmin-container">
       <div className="mt-4">
-        <div className="users-titulo">
-          <h3>Usuários Cadastrados</h3>
+        <div className="netsmsadmin-titulo">
+          <h3>Códigos Cadastrados</h3>
           <OverlayTrigger
             placement="top"
             overlay={
-              <Tooltip id="button-tooltip">Adicionar novo usuário</Tooltip>
+              <Tooltip id="button-tooltip">Adicionar novo código</Tooltip>
             }
           >
             <Button
               variant="outline-dark"
-              className="botao-adicionarUsuario"
+              className="botao-adicionar"
               onClick={handleAddClick}
             >
               <i className="bi bi-plus-lg"></i>
             </Button>
           </OverlayTrigger>
         </div>
-        <Table bordered hover className="mt-4">
+
+        <Table bordered hover className="mt-4 netsmsadmin-table">
           <thead>
             <tr>
-              <th>LOGIN</th>
-              <th>NOME</th>
-              <th>GESTOR</th>
-              <th>PERMISSÕES</th>
-              <th>AÇÕES</th>
+              <th className="text-center">ID</th>
+              <th className="text-center">TRATATIVA</th>
+              <th className="text-center">TIPO</th>
+              <th className="text-center">ABERTURA/FECHAMENTO</th>
+              <th className="text-center">NETSMS</th>
+              <th className="text-center">TEXTO PADRÃO</th>
+              <th className="text-center">OBS?</th>
+              <th className="text-center">INC?</th>
+              <th className="text-center">AÇÕES</th>
             </tr>
           </thead>
           <tbody>
             {dados.map((item, index) => (
               <tr key={index}>
-                <td>{item.LOGIN}</td>
-                <td>{item.NOME}</td>
-                <td>{item.GESTOR}</td>
-                <td>{item.PERMISSOES}</td>
-                <td className="acoes">
+                <td className="text-center">{item.ID}</td>
+                <td className="text-center">{item.TRATATIVA}</td>
+                <td className="text-center">{item.TIPO}</td>
+                <td className="text-center">{item["ABERTURA/FECHAMENTO"]}</td>
+                <td className="text-center">{truncarTexto(item.NETSMS, 40)}</td>
+                <td className="text-center">
+                  {truncarTexto(item["TEXTO PADRAO"], 40)}
+                </td>
+                <td className="text-center">{item.OBS}</td>
+                <td className="text-center">{item.INCIDENTE}</td>
+                <td className="text-center netsmsfacil-acoes">
                   <Button
                     variant="outline-dark"
                     onClick={() => handleEditClick(item)}
@@ -180,7 +188,7 @@ function Users() {
       </div>
 
       {/* Modal de edição */}
-      <AddUsuario
+      <AddNetSMSFacil
         show={showEditModal}
         handleClose={handleCloseModal}
         handleSave={handleSave}
@@ -208,4 +216,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default NetSMSFacilAdmin;

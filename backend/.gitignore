@@ -1,7 +1,0 @@
-# dependencias
-/node_modules
-
-# producao
-/build
-
-.env.local

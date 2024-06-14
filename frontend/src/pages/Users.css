@@ -12,3 +12,16 @@
   display: flex;
   justify-content: center;
 }
+
+.users-container {
+  margin-top: 3rem;
+}
+
+.users-titulo {
+  display: flex;
+  justify-content: space-between;
+}
+
+.botao-adicionarUsuario {
+  width: 10rem;
+}
