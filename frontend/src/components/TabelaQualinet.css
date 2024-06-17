@@ -1,0 +1,22 @@
+/* TabelaQualinet.css */
+.pagination-custom .page-link {
+  color: #343a40; /* Cor do texto */
+  background-color: white; /* Cor do fundo */
+  border-color: #343a40; /* Cor da borda */
+}
+
+.pagination-custom .page-link:hover {
+  color: #fff; /* Cor do texto ao passar o mouse */
+  background-color: #23272b; /* Cor do fundo ao passar o mouse */
+  border-color: #1d2124; /* Cor da borda ao passar o mouse */
+}
+
+.pagination-custom .page-item.active .page-link {
+  background-color: #23272b; /* Cor de fundo do item ativo */
+  border-color: #1d2124; /* Cor da borda do item ativo */
+  color: #fff; /* Cor do texto ao passar o mouse */
+}
+
+.pagination-custom .page-link:focus {
+  box-shadow: none;
+}

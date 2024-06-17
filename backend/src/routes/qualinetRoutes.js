@@ -22,6 +22,38 @@ router.post("/upload", upload.single("file"), async (req, res) => {
   const workbook = xlsx.readFile(filePath);
   const sheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[sheetName];
+
+  const colunasEsperadas = [
+    "CI_NOME",
+    "NUM_CONTRATO",
+    "DT_CADASTRO",
+    "END_COMPLETO",
+    "COD_NODE",
+  ];
+
+  const extracaoValida = colunasEsperadas.every((text) => {
+    let found = false;
+    for (const cellAddress in sheet) {
+      if (!sheet.hasOwnProperty(cellAddress)) continue;
+      const cell = sheet[cellAddress];
+      if (
+        cell &&
+        cell.v &&
+        typeof cell.v === "string" &&
+        cell.v.trim() === text
+      ) {
+        found = true;
+        break;
+      }
+    }
+    return found;
+  });
+
+  if (!extracaoValida) {
+    fs.unlinkSync(filePath); // Remover o arquivo, já que não atende aos requisitos
+    return res.status(400).send("O arquivo XLSX não é uma extração válida.");
+  }
+
   let data = xlsx.utils.sheet_to_json(sheet);
 
   data = data.map((item) => ({
@@ -43,9 +75,16 @@ router.post("/upload", upload.single("file"), async (req, res) => {
         )
     );
 
-    const filteredDataWithoutRS = filteredData.filter(
-      (item) => cidadeParaUF[item.CI_NOME] !== "RS"
-    );
+    const filteredDataWithoutRS = filteredData
+      .filter((item) => cidadeParaUF[item.CI_NOME] !== "RS")
+      .map((item) => ({
+        CI_NOME: item.CI_NOME,
+        NUM_CONTRATO: item.NUM_CONTRATO,
+        DT_CADASTRO: item.DT_CADASTRO,
+        END_COMPLETO: item.END_COMPLETO,
+        COD_NODE: item.COD_NODE,
+        UF: item.UF,
+      }));
 
     db.insert(filteredDataWithoutRS, (err, newDocs) => {
       if (err)

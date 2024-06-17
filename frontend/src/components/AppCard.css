@@ -1,0 +1,59 @@
+/* AppCard.css */
+
+.app-card {
+  margin: 0;
+  display: flex;
+  max-width: 250px;
+  padding: 0;
+  border: none;
+}
+
+.card-body img {
+  filter: brightness(50%);
+  transition: 0.3s;
+  width: 250px;
+  height: 417px;
+  background-size: cover;
+  background-position: center;
+}
+
+.card-body:hover img {
+  filter: brightness(100%);
+}
+
+.app-card.card-body {
+  padding: 0;
+}
+
+.app-card.card-title,
+.app-card.card-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.card-color {
+  color: white;
+  position: absolute;
+  z-index: 1;
+  left: 23%;
+  top: 2rem;
+}
+.card-body {
+  position: relative;
+  text-align: center;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.card-logo {
+  z-index: 10;
+  position: absolute;
+  max-width: 96px;
+  max-height: 96px;
+  left: 32%;
+  top: 40%;
+}

@@ -1,19 +1,14 @@
-import React, { useEffect, useState } from "react";
+// Cadastros.jsx
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { Container, Table, Button, Modal, Form } from "react-bootstrap";
-import "./Cadastros.css";
+import { Container, Button, Modal, Form } from "react-bootstrap";
+import TabelaQualinet from "../components/TabelaQualinet";
 
-// Função para formatar a data
 const formatarData = (dataNumerica) => {
-  // Converter a data numérica para objeto de data
   const data = new Date((dataNumerica - 25569) * 86400 * 1000);
-
-  // Extrair dia, mês e ano
   const dia = data.getDate().toString().padStart(2, "0");
   const mes = (data.getMonth() + 1).toString().padStart(2, "0");
   const ano = data.getFullYear();
-
-  // Retornar a data formatada
   return `${dia}/${mes}/${ano}`;
 };
 
@@ -79,51 +74,71 @@ function Cadastros() {
     }
   };
 
+  const columns = useMemo(
+    () => [
+      {
+        Header: "CI_NOME",
+        accessor: "CI_NOME",
+        disableSortBy: true,
+      },
+      {
+        Header: "UF",
+        accessor: "UF",
+        disableSortBy: true,
+      },
+      {
+        Header: "NUM_CONTRATO",
+        accessor: "NUM_CONTRATO",
+        disableSortBy: true,
+      },
+      {
+        Header: "DT_CADASTRO",
+        accessor: "DT_CADASTRO",
+        Cell: ({ value }) => formatarData(value),
+        sortable: true,
+      },
+      {
+        Header: "END_COMPLETO",
+        accessor: "END_COMPLETO",
+        disableSortBy: true,
+      },
+      {
+        Header: "COD_NODE",
+        accessor: "COD_NODE",
+        disableSortBy: true,
+      },
+      {
+        Header: "AÇÕES",
+        accessor: "actions",
+        Cell: ({ row }) => (
+          <div className="acoes">
+            <Button
+              variant="outline-dark"
+              onClick={() => handleEditClick(row.original)}
+              className="botaoEditar"
+            >
+              <i className="bi bi-pencil-square"></i>
+            </Button>
+            <Button
+              variant="outline-danger"
+              onClick={() => handleDeleteClick(row.original)}
+              className="botaoDeletar"
+            >
+              <i className="bi bi-trash"></i>
+            </Button>
+          </div>
+        ),
+        disableSortBy: true,
+      },
+    ],
+    []
+  );
+
   return (
     <Container className="dados-container">
       <div className="mt-4">
         <h3>Cadastros</h3>
-        <Table bordered hover className="mt-4">
-          <thead>
-            <tr>
-              <th>CI_NOME</th>
-              <th>UF</th>
-              <th>NUM_CONTRATO</th>
-              <th>DT_CADASTRO</th>
-              <th>END_COMPLETO</th>
-              <th>COD_NODE</th>
-              <th>AÇÕES</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dados.map((item, index) => (
-              <tr key={index}>
-                <td>{item.CI_NOME}</td>
-                <td>{item.UF}</td>
-                <td>{item.NUM_CONTRATO}</td>
-                <td>{formatarData(item.DT_CADASTRO)}</td>
-                <td>{item.END_COMPLETO}</td>
-                <td>{item.COD_NODE}</td>
-                <td className="acoes">
-                  <Button
-                    variant="outline-dark"
-                    onClick={() => handleEditClick(item)}
-                    className="botaoEditar"
-                  >
-                    <i className="bi bi-pencil-square"></i>
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    onClick={() => handleDeleteClick(item)}
-                    className="botaoDeletar"
-                  >
-                    <i className="bi bi-trash"></i>
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <TabelaQualinet columns={columns} data={dados} />
       </div>
 
       {/* Modal de Edição */}
