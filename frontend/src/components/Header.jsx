@@ -9,7 +9,7 @@ import "./Header.css";
 
 function Header({ userName, onLogout }) {
   return (
-    <Navbar expand="lg" variant="dark" bg="dark" className="custom-navbar">
+    <Navbar expand="lg" variant="dark" className="custom-header">
       <Container>
         <Navbar.Brand href="/home">
           <Image
@@ -24,8 +24,8 @@ function Header({ userName, onLogout }) {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/ocqualinet">Upload Ocorrências</Nav.Link>
-            <Nav.Link href="/netsms">NetSMS</Nav.Link>
+            <Nav.Link href="/ocfacil">Upload Ocorrências</Nav.Link>
+            <Nav.Link href="/netfacil">NetSMS</Nav.Link>
             <Nav.Link href="/dados">Dados cadastrados</Nav.Link>
             <Nav.Link href="/users">Usuários cadastrados</Nav.Link>
             <Nav.Link href="/netsmsadmin">NetSMSFacil códigos</Nav.Link>

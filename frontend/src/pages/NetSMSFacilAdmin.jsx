@@ -2,15 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Container,
-  Table,
   Button,
   Modal,
-  Form,
   Tooltip,
   OverlayTrigger,
 } from "react-bootstrap";
 import "./NetSMSFacilAdmin.css";
 import AddNetSMSFacil from "../components/AddNetSMSFacil";
+import TabelaPadrao from "../components/TabelaPadrao";
 
 function NetSMSFacilAdmin() {
   const [dados, setDados] = useState([]);
@@ -117,6 +116,76 @@ function NetSMSFacilAdmin() {
     return text;
   };
 
+  // Definir as colunas para a tabela usando react-table
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "ID",
+        accessor: "ID",
+        disableSortBy: false, // Permitir ordenação nesta coluna
+      },
+      {
+        Header: "TRATATIVA",
+        accessor: "TRATATIVA",
+        disableSortBy: false,
+      },
+      {
+        Header: "TIPO",
+        accessor: "TIPO",
+        disableSortBy: false,
+      },
+      {
+        Header: "ABERTURA/FECHAMENTO",
+        accessor: "ABERTURA/FECHAMENTO",
+        disableSortBy: false,
+      },
+      {
+        Header: "NETSMS",
+        accessor: "NETSMS",
+        Cell: ({ value }) => truncarTexto(value, 40), // Função para truncar o texto exibido
+        disableSortBy: false,
+      },
+      {
+        Header: "TEXTO PADRÃO",
+        accessor: "TEXTO PADRAO",
+        Cell: ({ value }) => truncarTexto(value, 40),
+        disableSortBy: false,
+      },
+      {
+        Header: "OBS?",
+        accessor: "OBS",
+        disableSortBy: false,
+      },
+      {
+        Header: "INC?",
+        accessor: "INCIDENTE",
+        disableSortBy: false,
+      },
+      {
+        Header: "AÇÕES",
+        accessor: "acoes",
+        Cell: ({ row }) => (
+          <div className="netsmsfacil-acoes">
+            <Button
+              variant="outline-dark"
+              onClick={() => handleEditClick(row.original)}
+              className="botaoEditar">
+              <i className="bi bi-pencil-square"></i>
+            </Button>
+            <Button
+              variant="outline-danger"
+              onClick={() => handleDeleteClick(row.original)}
+              className="botaoDeletar">
+              <i className="bi bi-trash"></i>
+            </Button>
+          </div>
+        ),
+        disableSortBy: true,
+      },
+    ],
+    [] // Depende apenas da inicialização
+  );
+
   return (
     <Container className="netsmsadmin-container">
       <div className="mt-4">
@@ -126,65 +195,17 @@ function NetSMSFacilAdmin() {
             placement="top"
             overlay={
               <Tooltip id="button-tooltip">Adicionar novo código</Tooltip>
-            }
-          >
+            }>
             <Button
               variant="outline-dark"
               className="botao-adicionar"
-              onClick={handleAddClick}
-            >
+              onClick={handleAddClick}>
               <i className="bi bi-plus-lg"></i>
             </Button>
           </OverlayTrigger>
         </div>
 
-        <Table bordered hover className="mt-4 netsmsadmin-table">
-          <thead>
-            <tr>
-              <th className="text-center">ID</th>
-              <th className="text-center">TRATATIVA</th>
-              <th className="text-center">TIPO</th>
-              <th className="text-center">ABERTURA/FECHAMENTO</th>
-              <th className="text-center">NETSMS</th>
-              <th className="text-center">TEXTO PADRÃO</th>
-              <th className="text-center">OBS?</th>
-              <th className="text-center">INC?</th>
-              <th className="text-center">AÇÕES</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dados.map((item, index) => (
-              <tr key={index}>
-                <td className="text-center">{item.ID}</td>
-                <td className="text-center">{item.TRATATIVA}</td>
-                <td className="text-center">{item.TIPO}</td>
-                <td className="text-center">{item["ABERTURA/FECHAMENTO"]}</td>
-                <td className="text-center">{truncarTexto(item.NETSMS, 40)}</td>
-                <td className="text-center">
-                  {truncarTexto(item["TEXTO PADRAO"], 40)}
-                </td>
-                <td className="text-center">{item.OBS}</td>
-                <td className="text-center">{item.INCIDENTE}</td>
-                <td className="text-center netsmsfacil-acoes">
-                  <Button
-                    variant="outline-dark"
-                    onClick={() => handleEditClick(item)}
-                    className="botaoEditar"
-                  >
-                    <i className="bi bi-pencil-square"></i>
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    onClick={() => handleDeleteClick(item)}
-                    className="botaoDeletar"
-                  >
-                    <i className="bi bi-trash"></i>
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <TabelaPadrao columns={columns} data={dados} />
       </div>
 
       {/* Modal de edição */}

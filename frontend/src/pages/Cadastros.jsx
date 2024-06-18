@@ -2,7 +2,8 @@
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { Container, Button, Modal, Form } from "react-bootstrap";
-import TabelaQualinet from "../components/TabelaQualinet";
+import TabelaPadrao from "../components/TabelaPadrao";
+import "./Cadastros.css";
 
 const formatarData = (dataNumerica) => {
   const data = new Date((dataNumerica - 25569) * 86400 * 1000);
@@ -115,15 +116,13 @@ function Cadastros() {
             <Button
               variant="outline-dark"
               onClick={() => handleEditClick(row.original)}
-              className="botaoEditar"
-            >
+              className="botaoEditar">
               <i className="bi bi-pencil-square"></i>
             </Button>
             <Button
               variant="outline-danger"
               onClick={() => handleDeleteClick(row.original)}
-              className="botaoDeletar"
-            >
+              className="botaoDeletar">
               <i className="bi bi-trash"></i>
             </Button>
           </div>
@@ -138,7 +137,7 @@ function Cadastros() {
     <Container className="dados-container">
       <div className="mt-4">
         <h3>Cadastros</h3>
-        <TabelaQualinet columns={columns} data={dados} />
+        <TabelaPadrao columns={columns} data={dados} />
       </div>
 
       {/* Modal de Edição */}

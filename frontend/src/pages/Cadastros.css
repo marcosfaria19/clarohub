@@ -14,5 +14,7 @@
 }
 
 .dados-container {
+  width: 100%;
+  padding: 30px;
   min-height: 100vh;
 }

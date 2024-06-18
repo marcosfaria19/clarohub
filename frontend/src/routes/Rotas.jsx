@@ -27,15 +27,15 @@ const Rotas = ({ token, setToken }) => {
         element={token ? <Cadastros /> : <Navigate to="/login" />}
       />
       <Route
-        path="/ocqualinet"
+        path="/ocfacil"
         element={token ? <OCQualinet /> : <Navigate to="/login" />}
       />
       <Route
-        path="/netsms"
+        path="/netfacil"
         element={token ? <NetSMSFacil /> : <Navigate to="/login" />}
       />
       <Route
-        path="/netsmsadmin"
+        path="/netadmin"
         element={token ? <NetSMSFacilAdmin /> : <Navigate to="/login" />}
       />
       <Route

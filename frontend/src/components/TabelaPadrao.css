@@ -20,3 +20,7 @@
 .pagination-custom .page-link:focus {
   box-shadow: none;
 }
+
+.pagination-custom {
+  justify-content: flex-end;
+}

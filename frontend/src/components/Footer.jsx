@@ -7,7 +7,7 @@ import "./Footer.css";
 
 const Footer = () => {
   return (
-    <Navbar variant="dark" bg="dark" className="footer">
+    <Navbar variant="dark" className="footer">
       <Container className="justify-content-center">
         <Navbar.Text>
           &copy; {new Date().getFullYear()} Equipe Espeto.

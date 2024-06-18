@@ -6,9 +6,9 @@ import {
   useSortBy,
   usePagination,
 } from "react-table";
-import "./TabelaQualinet.css";
+import "./TabelaPadrao.css";
 
-const TabelaQualinet = ({ columns, data }) => {
+const TabelaPadrao = ({ columns, data }) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -34,18 +34,22 @@ const TabelaQualinet = ({ columns, data }) => {
   );
 
   const renderPagination = () => {
+    if (pageCount <= 1) {
+      // Se houver apenas uma página ou menos, não exibe a paginação
+      return null;
+    }
+
     const paginationItems = [];
     const maxPagesToShow = 5;
     const startPage = Math.max(0, pageIndex - Math.floor(maxPagesToShow / 2));
-    const endPage = Math.min(pageCount, startPage + maxPagesToShow);
+    const endPage = Math.min(pageCount - 1, startPage + maxPagesToShow - 1);
 
     if (startPage > 0) {
       paginationItems.push(
         <Pagination.Item
           className="botao-paginacao"
           key="first"
-          onClick={() => gotoPage(0)}
-        >
+          onClick={() => gotoPage(0)}>
           {"Primeiro"}
         </Pagination.Item>
       );
@@ -56,19 +60,18 @@ const TabelaQualinet = ({ columns, data }) => {
       );
     }
 
-    for (let i = startPage; i < endPage; i++) {
+    for (let i = startPage; i <= endPage; i++) {
       paginationItems.push(
         <Pagination.Item
           key={i}
           active={i === pageIndex}
-          onClick={() => gotoPage(i)}
-        >
+          onClick={() => gotoPage(i)}>
           {i + 1}
         </Pagination.Item>
       );
     }
 
-    if (endPage < pageCount) {
+    if (endPage < pageCount - 1) {
       paginationItems.push(
         <Pagination.Item key="next" onClick={() => nextPage()}>
           {">"}
@@ -82,7 +85,9 @@ const TabelaQualinet = ({ columns, data }) => {
     }
 
     return (
-      <Pagination className="pagination-custom">{paginationItems}</Pagination>
+      <Pagination className="pagination-custom justify-content-end">
+        {paginationItems}
+      </Pagination>
     );
   };
 
@@ -141,4 +146,4 @@ const TabelaQualinet = ({ columns, data }) => {
   );
 };
 
-export default TabelaQualinet;
+export default TabelaPadrao;

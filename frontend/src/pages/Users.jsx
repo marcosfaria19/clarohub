@@ -2,19 +2,17 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Container,
-  Table,
   Button,
   Modal,
-  Form,
-  OverlayTrigger,
   Tooltip,
+  OverlayTrigger,
 } from "react-bootstrap";
 import "./Users.css";
 import AddUsuario from "../components/AddUsuario";
+import TabelaPadrao from "../components/TabelaPadrao";
 
 function Users() {
   const [dados, setDados] = useState([]);
-  const [gestores, setGestores] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentItem, setCurrentItem] = useState({
@@ -29,11 +27,6 @@ function Users() {
     fetchDados();
   }, []);
 
-  useEffect(() => {
-    fetchDados();
-    fetchGestores();
-  }, []);
-
   const fetchDados = async () => {
     try {
       const response = await axios.get(
@@ -43,17 +36,6 @@ function Users() {
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
       console.log(`URL: ${process.env.REACT_APP_BACKEND_URL}`);
-    }
-  };
-
-  const fetchGestores = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/users/managers`
-      );
-      setGestores(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar gestores do backend:", error);
     }
   };
 
@@ -120,6 +102,54 @@ function Users() {
     }
   };
 
+  // Definir as colunas para a tabela usando react-table
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "LOGIN",
+        accessor: "LOGIN",
+        disableSortBy: false, // Permitir ordenação nesta coluna
+      },
+      {
+        Header: "NOME",
+        accessor: "NOME",
+        disableSortBy: false,
+      },
+      {
+        Header: "GESTOR",
+        accessor: "GESTOR",
+        disableSortBy: false,
+      },
+      {
+        Header: "PERMISSÕES",
+        accessor: "PERMISSOES",
+        disableSortBy: false,
+      },
+      {
+        Header: "AÇÕES",
+        accessor: "acoes",
+        Cell: ({ row }) => (
+          <div className="acoes">
+            <Button
+              variant="outline-dark"
+              onClick={() => handleEditClick(row.original)}
+              className="botaoEditar">
+              <i className="bi bi-pencil-square"></i>
+            </Button>
+            <Button
+              variant="outline-danger"
+              onClick={() => handleDeleteClick(row.original)}
+              className="botaoDeletar">
+              <i className="bi bi-trash"></i>
+            </Button>
+          </div>
+        ),
+        disableSortBy: true,
+      },
+    ],
+    [] // Depende apenas da inicialização
+  );
+
   return (
     <Container className="users-container">
       <div className="mt-4">
@@ -129,54 +159,17 @@ function Users() {
             placement="top"
             overlay={
               <Tooltip id="button-tooltip">Adicionar novo usuário</Tooltip>
-            }
-          >
+            }>
             <Button
               variant="outline-dark"
               className="botao-adicionarUsuario"
-              onClick={handleAddClick}
-            >
+              onClick={handleAddClick}>
               <i className="bi bi-plus-lg"></i>
             </Button>
           </OverlayTrigger>
         </div>
-        <Table bordered hover className="mt-4">
-          <thead>
-            <tr>
-              <th>LOGIN</th>
-              <th>NOME</th>
-              <th>GESTOR</th>
-              <th>PERMISSÕES</th>
-              <th>AÇÕES</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dados.map((item, index) => (
-              <tr key={index}>
-                <td>{item.LOGIN}</td>
-                <td>{item.NOME}</td>
-                <td>{item.GESTOR}</td>
-                <td>{item.PERMISSOES}</td>
-                <td className="acoes">
-                  <Button
-                    variant="outline-dark"
-                    onClick={() => handleEditClick(item)}
-                    className="botaoEditar"
-                  >
-                    <i className="bi bi-pencil-square"></i>
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    onClick={() => handleDeleteClick(item)}
-                    className="botaoDeletar"
-                  >
-                    <i className="bi bi-trash"></i>
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+
+        <TabelaPadrao columns={columns} data={dados} />
       </div>
 
       {/* Modal de edição */}

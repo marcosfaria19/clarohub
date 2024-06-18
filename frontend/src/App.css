@@ -1,11 +1,9 @@
-.App {
-  display: flex;
-  flex-direction: column;
-  background-color: #f5f5f5;
-  min-height: 100vh;
-}
-
 .form-control:focus {
   border-color: #6c757d;
   box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }
