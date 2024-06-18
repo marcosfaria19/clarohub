@@ -41,7 +41,7 @@ const NetSMSFacil = () => {
   }, []);
 
   const handleCodigoSubmit = () => {
-    const codigoNumber = parseInt(codigo);
+    const codigoNumber = codigo;
     const selectedItem = data.find((item) => item.ID === codigoNumber);
     if (selectedItem) {
       setTratativa(selectedItem.TRATATIVA);
@@ -49,8 +49,8 @@ const NetSMSFacil = () => {
       setAberturaFechamento(selectedItem["ABERTURA/FECHAMENTO"]);
       setNetsms(selectedItem.NETSMS);
       setTextoPadrao(`${selectedItem.ID} - ${selectedItem["TEXTO PADRAO"]}`);
-      setShowIncidenteField(selectedItem.INCIDENTE === 1);
-      setShowObservacaoField(selectedItem.OBS === 1);
+      setShowIncidenteField(selectedItem.INCIDENTE === "Sim");
+      setShowObservacaoField(selectedItem.OBS === "Sim");
       setValidated(true);
     } else {
       handleReset();
@@ -106,8 +106,10 @@ const NetSMSFacil = () => {
         item.NETSMS === netsms &&
         item["TEXTO PADRAO"] === event.target.value.split(" - ")[1]
     );
-    setShowIncidenteField(selectedItem ? selectedItem.INCIDENTE === 1 : false);
-    setShowObservacaoField(selectedItem ? selectedItem.OBS === 1 : false);
+    setShowIncidenteField(
+      selectedItem ? selectedItem.INCIDENTE === "Sim" : false
+    );
+    setShowObservacaoField(selectedItem ? selectedItem.OBS === "Sim" : false);
   };
 
   const handleIncidenteChange = (event) => {
@@ -194,8 +196,11 @@ const NetSMSFacil = () => {
           type="text"
           placeholder="Cód."
           value={codigo}
+          maxLength={3}
           onChange={(e) => setCodigo(e.target.value)}
+          isInvalid={!codigo}
         />
+
         <OverlayTrigger
           placement="top"
           overlay={

@@ -1,4 +1,3 @@
-// Header.jsx
 import React from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
@@ -23,14 +22,14 @@ function Header({ userName, onLogout }) {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
+          {/* <Nav className="me-auto">
             <Nav.Link href="/ocfacil">Upload Ocorrências</Nav.Link>
             <Nav.Link href="/netfacil">NetSMS</Nav.Link>
             <Nav.Link href="/dados">Dados cadastrados</Nav.Link>
             <Nav.Link href="/users">Usuários cadastrados</Nav.Link>
-            <Nav.Link href="/netsmsadmin">NetSMSFacil códigos</Nav.Link>
-          </Nav>
-          <Nav>
+            <Nav.Link href="/netadmin">NetSMSFacil códigos</Nav.Link>
+          </Nav> */}
+          <Nav className="ms-auto">
             <Navbar.Text className="me-2">Bem-vindo(a), {userName}</Navbar.Text>
             <Button variant="outline-light" onClick={onLogout}>
               Logout

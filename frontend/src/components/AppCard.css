@@ -18,10 +18,10 @@
   perspective-origin: 50% 50%;
   transform-style: preserve-3d;
   transform-origin: top center;
-  will-change: transform, filter; /* Combine will-change properties */
+  will-change: transform, filter;
   transform: skewX(0.001deg);
-  filter: brightness(0.5);
-  transition: transform 0.25s ease-in-out, filter 0.5s ease; /* Combine transitions */
+  filter: brightness(0.8);
+  transition: transform 0.2s ease-in-out, filter 0.5s ease;
 }
 
 .app-card:hover .app-card-cover {
@@ -46,7 +46,7 @@
     rgba(255, 255, 255, 0) 60%
   );
   transform: translateY(-20%);
-  transition: transform 0.65s cubic-bezier(0.18, 0.9, 0.58, 1);
+  transition: transform 0.3s cubic-bezier(0.18, 0.9, 0.58, 1);
 }
 
 .app-card:hover .app-card-cover::after {
@@ -73,7 +73,7 @@
 
 .card-title-overlay {
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
   width: 100%;
   padding: 8px;
@@ -87,12 +87,6 @@
   font-size: 1.3rem;
 }
 
-.app-name,
-.app-name:hover,
-.app-name:focus {
-  filter: brightness(1); /* Garante que o título tenha sempre brightness 1 */
-}
-
 .card-logo {
   position: absolute;
   top: 50%;
@@ -104,5 +98,5 @@
 }
 
 .app-card:hover .card-logo {
-  filter: brightness(120%);
+  filter: brightness(1);
 }

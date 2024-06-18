@@ -31,14 +31,22 @@ const Home = () => {
     }, {});
   };
 
+  const desiredOrder = [
+    "Projetos",
+    "Plataformas",
+    "PowerApps",
+    "SharePoint",
+    "Gestão",
+  ];
+
   return (
     <Container className="home-container" fluid>
       <h2 className="mb-5">Meus Aplicativos</h2>
-      {Object.keys(groupedApps).map((family) => (
+      {desiredOrder.map((family) => (
         <div key={family} className="family-section mb-5">
           <h2 className="family-title">{family}</h2>
           <Row xs={1} sm={2} md={3} lg={5} className="g-4">
-            {groupedApps[family].map((app) => (
+            {groupedApps[family]?.map((app) => (
               <Col key={app._id}>
                 <AppCard
                   nome={app.nome}
@@ -52,6 +60,27 @@ const Home = () => {
           <hr className="family-divider" />
         </div>
       ))}
+      {/* Renderizar outras famílias não listadas na ordem desejada */}
+      {Object.keys(groupedApps)
+        .filter((family) => !desiredOrder.includes(family))
+        .map((family) => (
+          <div key={family} className="family-section mb-5">
+            <h2 className="family-title">{family}</h2>
+            <Row xs={1} sm={2} md={3} lg={5} className="g-4">
+              {groupedApps[family]?.map((app) => (
+                <Col key={app._id}>
+                  <AppCard
+                    nome={app.nome}
+                    imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
+                    logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
+                    rota={app.rota}
+                  />
+                </Col>
+              ))}
+            </Row>
+            <hr className="family-divider" />
+          </div>
+        ))}
     </Container>
   );
 };

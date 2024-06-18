@@ -13,7 +13,8 @@ const AppCard = ({ nome, imagemUrl, logoCard, rota }) => {
         <a href={rota} target="_blank" rel="noopener noreferrer">
           <div
             className="app-card-cover"
-            style={{ backgroundImage: `url(${imagemUrl})` }}>
+            style={{ backgroundImage: `url(${imagemUrl})` }}
+          >
             <div className="card-title-overlay">
               <h2 className="app-name">{nome}</h2>
             </div>
@@ -22,10 +23,11 @@ const AppCard = ({ nome, imagemUrl, logoCard, rota }) => {
         </a>
       ) : (
         // Se for uma rota interna, renderiza um link <Link>
-        <a href={routeWithoutHome} target="_blank" rel="noopener noreferrer">
+        <a href={routeWithoutHome} rel="noopener noreferrer">
           <div
             className="app-card-cover"
-            style={{ backgroundImage: `url(${imagemUrl})` }}>
+            style={{ backgroundImage: `url(${imagemUrl})` }}
+          >
             <div className="card-title-overlay">
               <h2 className="app-name">{nome}</h2>
             </div>
