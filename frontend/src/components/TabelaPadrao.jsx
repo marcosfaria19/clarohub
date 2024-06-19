@@ -49,7 +49,8 @@ const TabelaPadrao = ({ columns, data }) => {
         <Pagination.Item
           className="botao-paginacao"
           key="first"
-          onClick={() => gotoPage(0)}>
+          onClick={() => gotoPage(0)}
+        >
           {"Primeiro"}
         </Pagination.Item>
       );
@@ -65,7 +66,8 @@ const TabelaPadrao = ({ columns, data }) => {
         <Pagination.Item
           key={i}
           active={i === pageIndex}
-          onClick={() => gotoPage(i)}>
+          onClick={() => gotoPage(i)}
+        >
           {i + 1}
         </Pagination.Item>
       );
@@ -107,7 +109,7 @@ const TabelaPadrao = ({ columns, data }) => {
           className="mb-3"
         />
       </Form>
-      <Table bordered hover className="mt-4" {...getTableProps()}>
+      <Table bordered hover className="mt-4 tabelaPadrao" {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
@@ -134,7 +136,14 @@ const TabelaPadrao = ({ columns, data }) => {
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                  <td
+                    {...cell.getCellProps()}
+                    className={
+                      cell.column.id === "PERMISSOES" ? "badge-column" : ""
+                    }
+                  >
+                    {cell.render("Cell")}
+                  </td>
                 ))}
               </tr>
             );

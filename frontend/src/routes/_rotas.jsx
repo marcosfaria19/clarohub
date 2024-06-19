@@ -1,6 +1,5 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import OCQualinet from "../pages/OCQualinet";
 import Cadastros from "../pages/Cadastros";
 import NetSMSFacil from "../pages/NetSMSFacil";
@@ -8,14 +7,10 @@ import Login from "../pages/Login";
 import Users from "../pages/Users";
 import Home from "../pages/Home";
 import NetSMSFacilAdmin from "../pages/NetSMSFacilAdmin";
+import { useAuth } from "../services/AuthContext";
 
-const checkPermissions = (token, requiredPermissions) => {
-  if (!token) return false;
-  const decodedToken = jwtDecode(token);
-  return requiredPermissions.includes(decodedToken.PERMISSOES);
-};
-
-const Rotas = ({ token, setToken }) => {
+const Rotas = () => {
+  const { token } = useAuth();
   return (
     <Routes>
       <Route

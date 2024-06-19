@@ -10,6 +10,7 @@ import {
 import "./Users.css";
 import AddUsuario from "../components/AddUsuario";
 import TabelaPadrao from "../components/TabelaPadrao";
+import UserBadge from "../components/UserBadge";
 
 function Users() {
   const [dados, setDados] = useState([]);
@@ -35,7 +36,6 @@ function Users() {
       setDados(response.data);
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
-      console.log(`URL: ${process.env.REACT_APP_BACKEND_URL}`);
     }
   };
 
@@ -102,13 +102,12 @@ function Users() {
     }
   };
 
-  // Definir as colunas para a tabela usando react-table
   const columns = React.useMemo(
     () => [
       {
         Header: "LOGIN",
         accessor: "LOGIN",
-        disableSortBy: false, // Permitir ordenação nesta coluna
+        disableSortBy: false,
       },
       {
         Header: "NOME",
@@ -121,9 +120,10 @@ function Users() {
         disableSortBy: false,
       },
       {
-        Header: "PERMISSÕES",
+        Header: "ACESSO",
         accessor: "PERMISSOES",
         disableSortBy: false,
+        Cell: ({ value }) => <UserBadge permission={value} />,
       },
       {
         Header: "AÇÕES",
@@ -133,13 +133,15 @@ function Users() {
             <Button
               variant="outline-dark"
               onClick={() => handleEditClick(row.original)}
-              className="botaoEditar">
+              className="botaoEditar"
+            >
               <i className="bi bi-pencil-square"></i>
             </Button>
             <Button
               variant="outline-danger"
               onClick={() => handleDeleteClick(row.original)}
-              className="botaoDeletar">
+              className="botaoDeletar"
+            >
               <i className="bi bi-trash"></i>
             </Button>
           </div>
@@ -147,7 +149,7 @@ function Users() {
         disableSortBy: true,
       },
     ],
-    [] // Depende apenas da inicialização
+    []
   );
 
   return (
@@ -159,11 +161,13 @@ function Users() {
             placement="top"
             overlay={
               <Tooltip id="button-tooltip">Adicionar novo usuário</Tooltip>
-            }>
+            }
+          >
             <Button
               variant="outline-dark"
               className="botao-adicionarUsuario"
-              onClick={handleAddClick}>
+              onClick={handleAddClick}
+            >
               <i className="bi bi-plus-lg"></i>
             </Button>
           </OverlayTrigger>
@@ -172,7 +176,6 @@ function Users() {
         <TabelaPadrao columns={columns} data={dados} />
       </div>
 
-      {/* Modal de edição */}
       <AddUsuario
         show={showEditModal}
         handleClose={handleCloseModal}
@@ -182,7 +185,6 @@ function Users() {
         isEditMode={isEditMode}
       />
 
-      {/* Modal de Confirmação de Exclusão */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Confirmar Exclusão</Modal.Title>

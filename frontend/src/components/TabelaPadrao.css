@@ -24,3 +24,15 @@
 .pagination-custom {
   justify-content: flex-end;
 }
+
+.tabelaPadrao td,
+.tabelaPadrao th {
+  text-align: center; /* Alinha o texto ao centro */
+  vertical-align: middle; /* Alinha verticalmente ao centro */
+}
+
+.badge-column {
+  justify-content: center;
+  align-items: center;
+  width: 1%;
+}

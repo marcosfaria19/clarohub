@@ -27,3 +27,8 @@
 .botao-adicionarUsuario {
   width: 10rem;
 }
+
+.coluna-acessos {
+  display: flex;
+  justify-content: center;
+}

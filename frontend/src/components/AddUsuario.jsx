@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
+import "./AddUsuario.css";
 
 const AddUsuario = ({
   show,
@@ -11,6 +12,7 @@ const AddUsuario = ({
   isEditMode,
 }) => {
   const [gestores, setGestores] = useState([]);
+  const permissions = ["basic", "manager", "admin"];
 
   useEffect(() => {
     const fetchGestores = async () => {
@@ -33,7 +35,7 @@ const AddUsuario = ({
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal centered show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>
           {isEditMode ? "Editar Usuário" : "Adicionar Usuário"}
@@ -45,6 +47,7 @@ const AddUsuario = ({
             <Form.Label>Credencial</Form.Label>
             <Form.Control
               type="text"
+              placeholder="Digite o login"
               name="LOGIN"
               value={currentItem.LOGIN}
               onChange={handleChange}
@@ -54,6 +57,7 @@ const AddUsuario = ({
             <Form.Label>Nome</Form.Label>
             <Form.Control
               type="text"
+              placeholder="Digite o nome"
               name="NOME"
               value={currentItem.NOME}
               onChange={handleChange}
@@ -63,6 +67,7 @@ const AddUsuario = ({
             <Form.Label>Gestor</Form.Label>
             <Form.Control
               as="select"
+              placeholder="Selecione o gestor"
               name="GESTOR"
               value={currentItem.GESTOR}
               onChange={handleChange}
@@ -75,14 +80,45 @@ const AddUsuario = ({
               ))}
             </Form.Control>
           </Form.Group>
-          <Form.Group controlId="formPermissoes">
-            <Form.Label>Permissões</Form.Label>
-            <Form.Control
-              type="text"
-              name="PERMISSOES"
-              value={currentItem.PERMISSOES}
-              onChange={handleChange}
-            />
+          <Form.Group controlId="formPermissao">
+            <Form.Label>Permissão</Form.Label>
+            <div className="d-flex gap-2">
+              {permissions.map((permission) => {
+                // Escolha o ícone de acordo com a permissão
+                let icon;
+                switch (permission) {
+                  case "basic":
+                    icon = <i className="bi bi-person-fill"></i>; // ícone para "basic"
+                    break;
+                  case "manager":
+                    icon = <i className="bi bi-bar-chart-fill"></i>; // ícone para "manager"
+                    break;
+                  case "admin":
+                    icon = <i className="bi bi-shield-shaded"></i>; // ícone para "admin"
+                    break;
+                  default:
+                    icon = <i /* className="bi bi-question-circle" */></i>; // ícone padrão
+                }
+
+                return (
+                  <Button
+                    key={permission}
+                    variant="outline-secondary"
+                    className={`permission-button ${permission} ${
+                      currentItem.PERMISSOES === permission ? "active" : ""
+                    }`}
+                    onClick={() =>
+                      handleChange({
+                        target: { name: "PERMISSOES", value: permission },
+                      })
+                    }
+                  >
+                    {icon}{" "}
+                    {permission.charAt(0).toUpperCase() + permission.slice(1)}
+                  </Button>
+                );
+              })}
+            </div>
           </Form.Group>
         </Form>
       </Modal.Body>
