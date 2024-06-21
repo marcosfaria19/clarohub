@@ -3,3 +3,15 @@
   margin-top: auto;
   background-color: #171d25;
 }
+.unstyled-link {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.55) !important;
+  cursor: text;
+}
+
+.unstyled-link:hover,
+.unstyled-link:focus,
+.unstyled-link:active {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.55) !important;
+}

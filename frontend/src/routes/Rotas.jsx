@@ -1,6 +1,5 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import OCQualinet from "../pages/OCQualinet";
 import Cadastros from "../pages/Cadastros";
 import NetSMSFacil from "../pages/NetSMSFacil";
@@ -8,12 +7,6 @@ import Login from "../pages/Login";
 import Users from "../pages/Users";
 import Home from "../pages/Home";
 import NetSMSFacilAdmin from "../pages/NetSMSFacilAdmin";
-
-const checkPermissions = (token, requiredPermissions) => {
-  if (!token) return false;
-  const decodedToken = jwtDecode(token);
-  return requiredPermissions.includes(decodedToken.PERMISSOES);
-};
 
 const Rotas = ({ token, setToken }) => {
   return (
@@ -31,53 +24,23 @@ const Rotas = ({ token, setToken }) => {
       />
       <Route
         path="/dados"
-        element={
-          token && checkPermissions(token, ["admin"]) ? (
-            <Cadastros />
-          ) : (
-            <Navigate to="/login" />
-          )
-        }
+        element={token ? <Cadastros /> : <Navigate to="/login" />}
       />
       <Route
         path="/ocfacil"
-        element={
-          token && checkPermissions(token, ["basic", "manager", "admin"]) ? (
-            <OCQualinet />
-          ) : (
-            <Navigate to="/login" />
-          )
-        }
+        element={token ? <OCQualinet /> : <Navigate to="/login" />}
       />
       <Route
         path="/netfacil"
-        element={
-          token && checkPermissions(token, ["basic", "manager", "admin"]) ? (
-            <NetSMSFacil />
-          ) : (
-            <Navigate to="/login" />
-          )
-        }
+        element={token ? <NetSMSFacil /> : <Navigate to="/login" />}
       />
       <Route
         path="/netadmin"
-        element={
-          token && checkPermissions(token, ["admin"]) ? (
-            <NetSMSFacilAdmin />
-          ) : (
-            <Navigate to="/login" />
-          )
-        }
+        element={token ? <NetSMSFacilAdmin /> : <Navigate to="/login" />}
       />
       <Route
         path="/users"
-        element={
-          token && checkPermissions(token, ["admin"]) ? (
-            <Users />
-          ) : (
-            <Navigate to="/login" />
-          )
-        }
+        element={token ? <Users /> : <Navigate to="/login" />}
       />
     </Routes>
   );

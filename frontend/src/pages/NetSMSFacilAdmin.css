@@ -28,7 +28,9 @@
 }
 
 .netsmsadmin-container {
-  margin-top: 3rem;
+  width: 100%;
+  padding: 30px;
+  min-height: 100vh;
 }
 .netsmsadmin-titulo {
   display: flex;

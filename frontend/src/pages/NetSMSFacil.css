@@ -4,6 +4,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #fafafa;
+  padding: 40px 300px;
 }
 .form-group-spacing {
   margin-bottom: 20px;
@@ -29,6 +31,6 @@
 }
 
 .codigo-input {
-  max-width: 80px;
+  max-width: 82px;
   margin-right: 10px;
 }

@@ -6,7 +6,8 @@ import "./OCQualinet.css";
 
 function OCQualinet() {
   return (
-    <Container className="ocqualinet-container">
+    <Container className="ocqualinet-container" fluid>
+      <h2 className="mb-5">OC Fácil</h2>
       <UploadFile />
     </Container>
   );

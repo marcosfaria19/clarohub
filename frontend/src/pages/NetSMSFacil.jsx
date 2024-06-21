@@ -25,6 +25,7 @@ const NetSMSFacil = () => {
   const [textoPadrao, setTextoPadrao] = useState("");
   const [validated, setValidated] = useState(false);
   const [codigo, setCodigo] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,6 +55,7 @@ const NetSMSFacil = () => {
       setValidated(true);
     } else {
       handleReset();
+      setSubmitted(true);
     }
   };
 
@@ -97,7 +99,6 @@ const NetSMSFacil = () => {
 
   const handleTextoPadraoChange = (event) => {
     setTextoPadrao(event.target.value);
-    // Verificar o valor do atributo "INCIDENTE" e "OBS" ao selecionar o "Texto Padrão"
     const selectedItem = data.find(
       (item) =>
         item.TRATATIVA === tratativa &&
@@ -130,15 +131,16 @@ const NetSMSFacil = () => {
     setShowIncidenteField(false);
     setShowObservacaoField(false);
     setCodigo("");
+    setSubmitted(false);
   };
 
   const handleSubmit = (event) => {
     const form = event.currentTarget;
     event.preventDefault();
+    setSubmitted(true);
     if (form.checkValidity() === false) {
       event.stopPropagation();
     } else {
-      // Encontre o item correspondente com base nas seleções feitas nos dropdowns
       const selectedItem = data.find(
         (item) =>
           item.TRATATIVA === tratativa &&
@@ -148,10 +150,7 @@ const NetSMSFacil = () => {
           item["TEXTO PADRAO"] === textoPadrao.split(" - ")[1]
       );
 
-      // Se um item correspondente for encontrado, extraia seu ID
       const id = selectedItem ? selectedItem.ID : "";
-
-      // Concatene todas as seleções e o ID
       let textoPadraoConcatenado = `${id} - ${textoPadrao.split(" - ")[1]}`;
       const usuarioAtual = localStorage.getItem("userName");
       const nomeGestor = localStorage.getItem("gestor");
@@ -161,8 +160,20 @@ const NetSMSFacil = () => {
       textoPadraoConcatenado += `\n\n${usuarioAtual} // ${nomeGestor}`;
 
       setConcatenatedText(textoPadraoConcatenado);
-      navigator.clipboard.writeText(textoPadraoConcatenado);
-      setShowAlert(true);
+      const textArea = document.createElement("textarea");
+      textArea.value = textoPadraoConcatenado;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand("copy");
+        setShowAlert(true);
+      } catch (err) {
+        console.error(
+          "Erro ao copiar texto para a área de transferência:",
+          err
+        );
+      }
+      document.body.removeChild(textArea);
     }
 
     setValidated(true);
@@ -189,7 +200,11 @@ const NetSMSFacil = () => {
   };
 
   return (
-    <Container className="py-5 netsmsfacil-container">
+    <Container
+      className="py-5 netsmsfacil-container"
+      data-bs-theme="light"
+      fluid
+    >
       <div className="codigo-container">
         <Form.Control
           className="codigo-input"
@@ -198,7 +213,7 @@ const NetSMSFacil = () => {
           value={codigo}
           maxLength={3}
           onChange={(e) => setCodigo(e.target.value)}
-          isInvalid={!codigo}
+          isInvalid={submitted && !codigo}
         />
 
         <OverlayTrigger
