@@ -5,7 +5,6 @@ import axios from "axios";
 import "./Home.css";
 
 const Home = () => {
-  const [apps, setApps] = useState([]);
   const [groupedApps, setGroupedApps] = useState({});
 
   useEffect(() => {
@@ -14,7 +13,6 @@ const Home = () => {
       .then((response) => {
         const appsData = response.data;
         console.log("Dados recebidos:", appsData);
-        setApps(appsData);
         setGroupedApps(groupAppsByFamily(appsData));
       })
       .catch((error) => console.error("Erro ao buscar aplicativos:", error));

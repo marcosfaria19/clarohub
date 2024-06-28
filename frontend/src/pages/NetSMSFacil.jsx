@@ -151,7 +151,7 @@ const NetSMSFacil = () => {
       );
 
       const id = selectedItem ? selectedItem.ID : "";
-      let textoPadraoConcatenado = `${id} - ${textoPadrao.split(" - ")[1]}`;
+      let textoPadraoConcatenado = textoPadrao;
       const usuarioAtual = localStorage.getItem("userName");
       const nomeGestor = localStorage.getItem("gestor");
 

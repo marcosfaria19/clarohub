@@ -5,9 +5,10 @@
 /backend/node_modules/
 
 # Ignorar dotenv
-/frontend/.env.local
+/frontend/.env
 /backend/.env
 
+*/*.env
 # Ignorar arquivos gerados pelo sistema
 .DS_Store
 Thumbs.db

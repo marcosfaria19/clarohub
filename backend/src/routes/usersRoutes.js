@@ -149,7 +149,7 @@ router.get("/users/managers", (req, res) => {
 });
 
 // Rota para deletar um usuário
-router.delete("/users/", (req, res) => {
+router.delete("/users/:id", (req, res) => {
   const { id } = req.params;
   usersDb.remove({ _id: id }, {}, (err, numRemoved) => {
     if (err) {
