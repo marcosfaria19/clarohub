@@ -1,12 +1,30 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import OCQualinet from "../pages/OCQualinet";
-import Cadastros from "../pages/Cadastros";
 import NetSMSFacil from "../pages/NetSMSFacil";
 import Login from "../pages/Login";
 import Users from "../pages/Users";
 import Home from "../pages/Home";
 import NetSMSFacilAdmin from "../pages/NetSMSFacilAdmin";
+import OCFacilAdmin from "../pages/OCFacilAdmin";
+import AppAdmin from "../pages/AppAdmin";
+
+const ProtectedRoute = ({ token, allowedRoles, element }) => {
+  if (!token) {
+    return <Navigate to="/login" />;
+  }
+
+  const decodedToken = jwtDecode(token);
+  const userPermissions = decodedToken.PERMISSOES || [];
+
+  const hasAccess = allowedRoles.some((role) => userPermissions.includes(role));
+  if (!hasAccess) {
+    return <Navigate to="/home" />;
+  }
+
+  return element;
+};
 
 const Rotas = ({ token, setToken }) => {
   return (
@@ -17,30 +35,85 @@ const Rotas = ({ token, setToken }) => {
           token ? <Navigate to="/home" /> : <Login setToken={setToken} />
         }
       />
-      <Route path="/" element={token ? <Home /> : <Navigate to="/login" />} />
       <Route
-        path="/home"
-        element={token ? <Home /> : <Navigate to="/login" />}
+        path="/"
+        element={
+          <ProtectedRoute
+            token={token}
+            allowedRoles={["basic", "manager", "admin"]}
+            element={<Home />}
+          />
+        }
       />
       <Route
-        path="/dados"
-        element={token ? <Cadastros /> : <Navigate to="/login" />}
+        path="/home"
+        element={
+          <ProtectedRoute
+            token={token}
+            allowedRoles={["basic", "manager", "admin"]}
+            element={<Home />}
+          />
+        }
+      />
+      <Route
+        path="/ocadmin"
+        element={
+          <ProtectedRoute
+            token={token}
+            allowedRoles={["manager", "admin"]}
+            element={<OCFacilAdmin />}
+          />
+        }
       />
       <Route
         path="/ocfacil"
-        element={token ? <OCQualinet /> : <Navigate to="/login" />}
+        element={
+          <ProtectedRoute
+            token={token}
+            allowedRoles={["basic", "manager", "admin"]}
+            element={<OCQualinet />}
+          />
+        }
       />
       <Route
         path="/netfacil"
-        element={token ? <NetSMSFacil /> : <Navigate to="/login" />}
+        element={
+          <ProtectedRoute
+            token={token}
+            allowedRoles={["basic", "manager", "admin"]}
+            element={<NetSMSFacil />}
+          />
+        }
       />
       <Route
         path="/netadmin"
-        element={token ? <NetSMSFacilAdmin /> : <Navigate to="/login" />}
+        element={
+          <ProtectedRoute
+            token={token}
+            allowedRoles={["admin"]}
+            element={<NetSMSFacilAdmin />}
+          />
+        }
+      />
+      <Route
+        path="/appadmin"
+        element={
+          <ProtectedRoute
+            token={token}
+            allowedRoles={["admin"]}
+            element={<AppAdmin />}
+          />
+        }
       />
       <Route
         path="/users"
-        element={token ? <Users /> : <Navigate to="/login" />}
+        element={
+          <ProtectedRoute
+            token={token}
+            allowedRoles={["admin"]}
+            element={<Users />}
+          />
+        }
       />
     </Routes>
   );

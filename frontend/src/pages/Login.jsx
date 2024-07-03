@@ -65,7 +65,6 @@ function Login({ setToken }) {
         { LOGIN: credencial, senha: senha }
       );
 
-      console.log(response.data);
       setShowPasswordModal(false);
 
       // Após registrar a senha, pode tentar fazer login novamente

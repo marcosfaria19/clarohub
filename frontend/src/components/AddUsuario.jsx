@@ -34,6 +34,18 @@ const AddUsuario = ({
     handleSave();
   };
 
+  const handleResetPassword = async () => {
+    try {
+      await axios.patch(
+        `${process.env.REACT_APP_BACKEND_URL}/users/${currentItem._id}/reset-password`
+      );
+      alert("Senha resetada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao resetar a senha:", error);
+      alert("Erro ao resetar a senha.");
+    }
+  };
+
   return (
     <Modal centered show={show} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -84,20 +96,19 @@ const AddUsuario = ({
             <Form.Label>Permissão</Form.Label>
             <div className="d-flex gap-2">
               {permissions.map((permission) => {
-                // Escolha o ícone de acordo com a permissão
                 let icon;
                 switch (permission) {
                   case "basic":
-                    icon = <i className="bi bi-person-fill"></i>; // ícone para "basic"
+                    icon = <i className="bi bi-person-fill"></i>;
                     break;
                   case "manager":
-                    icon = <i className="bi bi-bar-chart-fill"></i>; // ícone para "manager"
+                    icon = <i className="bi bi-bar-chart-fill"></i>;
                     break;
                   case "admin":
-                    icon = <i className="bi bi-shield-shaded"></i>; // ícone para "admin"
+                    icon = <i className="bi bi-shield-shaded"></i>;
                     break;
                   default:
-                    icon = <i /* className="bi bi-question-circle" */></i>; // ícone padrão
+                    icon = <i></i>;
                 }
 
                 return (
@@ -129,6 +140,11 @@ const AddUsuario = ({
         <Button variant="primary" onClick={handleSave}>
           {isEditMode ? "Salvar" : "Adicionar"}
         </Button>
+        {isEditMode && (
+          <Button variant="danger" onClick={handleResetPassword}>
+            Resetar Senha
+          </Button>
+        )}
       </Modal.Footer>
     </Modal>
   );

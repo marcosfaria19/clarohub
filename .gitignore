@@ -8,7 +8,6 @@
 /frontend/.env
 /backend/.env
 
-*/*.env
 # Ignorar arquivos gerados pelo sistema
 .DS_Store
 Thumbs.db

@@ -13,7 +13,10 @@ const UploadFile = () => {
   };
 
   const handleFileUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile) {
+      setErrorMessage("Nenhum arquivo selecionado.");
+      return;
+    }
 
     try {
       const formData = new FormData();
@@ -35,7 +38,7 @@ const UploadFile = () => {
     } catch (error) {
       console.error("Erro ao enviar o arquivo:", error);
       setErrorMessage(
-        error.response?.data?.message ||
+        error.response?.data ||
           "Erro ao enviar o arquivo. Por favor, tente novamente."
       );
     }
@@ -44,7 +47,7 @@ const UploadFile = () => {
   return (
     <Card className="upload-section" data-bs-theme="dark">
       <Card.Body className="p-4 mx-2">
-        <h4 className="mb-5"> Envio de Arquivo</h4>
+        <h4 className="mb-5">Envio de Arquivo</h4>
         <Form.Group controlId="fileUpload">
           <Form.Label>Selecione uma extração do QualiNET:</Form.Label>
           <Form.Control

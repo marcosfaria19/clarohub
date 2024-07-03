@@ -1,11 +1,8 @@
-// netsmsRoutes.js
+/* // netsmsRoutes.js
 
 const express = require("express");
-const multer = require("multer");
-const xlsx = require("xlsx");
 const Datastore = require("nedb");
 const path = require("path");
-const fs = require("fs");
 const router = express.Router();
 
 const netsmsfacil = new Datastore({
@@ -19,45 +16,6 @@ router.get("/netsmsfacil", (req, res) => {
       console.error("Erro ao consultar o banco de dados:", err);
       return res.status(500).send("Erro ao consultar o banco de dados.");
     }
-    res.json(docs);
-  });
-});
-
-/* const upload = multer({ dest: "uploads/" });
-
-router.post("/uploadnet", upload.single("file"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).send("Nenhum arquivo foi enviado.");
-  }
-
-  const filePath = path.join(__dirname, req.file.path);
-  let data;
-  try {
-    const workbook = xlsx.readFile(filePath);
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    data = xlsx.utils.sheet_to_json(sheet);
-  } catch (error) {
-    console.error("Erro ao ler o arquivo Excel:", error);
-    fs.unlinkSync(filePath);
-    return res.status(500).send("Erro ao ler o arquivo Excel.");
-  }
-
-  // Insira os dados no NeDB
-  netsmsfacil.insert(data, (err, newDocs) => {
-    fs.unlinkSync(filePath); // Remova o arquivo após o processamento, independentemente do resultado
-    if (err) {
-      console.error("Erro ao inserir dados no banco de dados:", err);
-      return res.status(500).send("Erro ao inserir dados no banco de dados.");
-    }
-    res.send("Dados inseridos com sucesso.");
-  });
-});
- */
-
-router.get("/netsmsfacil", (req, res) => {
-  netsmsfacil.find({}, (err, docs) => {
-    if (err) return res.status(500).send("Erro ao consultar o banco de dados.");
     res.json(docs);
   });
 });
@@ -104,3 +62,73 @@ router.post("/netsmsfacil", (req, res) => {
 });
 
 module.exports = router;
+ */
+
+const express = require("express");
+const router = express.Router();
+const { ObjectId } = require("mongodb");
+
+module.exports = (netsmsfacilCollection) => {
+  router.get("/netsmsfacil", async (req, res) => {
+    try {
+      const docs = await netsmsfacilCollection.find({}).toArray();
+      res.json(docs);
+    } catch (err) {
+      console.error("Erro ao consultar o banco de dados:", err);
+      res.status(500).send("Erro ao consultar o banco de dados.");
+    }
+  });
+
+  router.delete("/netsmsfacil/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+      const result = await netsmsfacilCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      if (result.deletedCount === 0) {
+        return res
+          .status(404)
+          .send("Nenhum dado foi deletado. ID não encontrado.");
+      }
+      res.send("Dado deletado com sucesso.");
+    } catch (err) {
+      console.error("Erro ao deletar o dado do banco de dados:", err);
+      res.status(500).send("Erro ao deletar o dado do banco de dados.");
+    }
+  });
+
+  router.put("/netsmsfacil/:id", async (req, res) => {
+    const { id } = req.params;
+    const newData = req.body;
+    delete newData._id;
+    try {
+      const result = await netsmsfacilCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: newData }
+      );
+      if (result.matchedCount === 0) {
+        return res.status(404).send("Nenhum documento foi atualizado.");
+      }
+      res.send("Dados atualizados com sucesso.");
+    } catch (err) {
+      console.error("Erro ao atualizar dados no banco de dados:", err);
+      res.status(500).send("Erro ao atualizar dados no banco de dados.");
+    }
+  });
+
+  router.post("/netsmsfacil", async (req, res) => {
+    const newItem = req.body;
+    try {
+      const result = await netsmsfacilCollection.insertOne(newItem);
+      if (result.insertedCount === 0) {
+        return res.status(500).json({ message: "Erro ao cadastrar novo id" });
+      }
+      res.json({ _id: result.insertedId, ...newItem });
+    } catch (err) {
+      console.error("Erro ao cadastrar novo id:", err);
+      res.status(500).json({ message: "Erro ao cadastrar novo id" });
+    }
+  });
+
+  return router;
+};

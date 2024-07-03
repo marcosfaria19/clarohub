@@ -1,3 +1,4 @@
+// NetSMSFacil.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -9,6 +10,7 @@ import {
   OverlayTrigger,
 } from "react-bootstrap";
 import "./NetSMSFacil.css";
+import TabelaNetFacil from "../components/TabelaNetFacil";
 
 const NetSMSFacil = () => {
   const [data, setData] = useState([]);
@@ -26,6 +28,7 @@ const NetSMSFacil = () => {
   const [validated, setValidated] = useState(false);
   const [codigo, setCodigo] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [tabelaConsulta, setTabelaConsulta] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,7 +97,21 @@ const NetSMSFacil = () => {
   };
 
   const handleObservacaoChange = (event) => {
-    setObservacao(event.target.value);
+    const value = event.target.value
+      .toUpperCase() // Converter para maiúsculas
+      .normalize("NFD") // Decompor caracteres acentuados
+      .replace(/[\u0300-\u036f]/g, "") // Remover diacríticos (acentos)
+      .replace(/[^A-Z0-9\s]/g, ""); // Remover caracteres especiais (exceto letras, números e espaços)
+    setObservacao(value);
+  };
+
+  const handleIncidenteChange = (event) => {
+    const value = event.target.value
+      .toUpperCase() // Converter para maiúsculas
+      .normalize("NFD") // Decompor caracteres acentuados
+      .replace(/[\u0300-\u036f]/g, "") // Remover diacríticos (acentos)
+      .replace(/[^A-Z0-9\s]/g, ""); // Remover caracteres especiais (exceto letras, números e espaços)
+    setIncidente(value);
   };
 
   const handleTextoPadraoChange = (event) => {
@@ -111,10 +128,6 @@ const NetSMSFacil = () => {
       selectedItem ? selectedItem.INCIDENTE === "Sim" : false
     );
     setShowObservacaoField(selectedItem ? selectedItem.OBS === "Sim" : false);
-  };
-
-  const handleIncidenteChange = (event) => {
-    setIncidente(event.target.value);
   };
 
   const handleReset = () => {
@@ -190,13 +203,12 @@ const NetSMSFacil = () => {
     return [...new Set(filteredData.map((item) => item[field]))];
   };
 
-  const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = "Esquematizacao_Sistema_de_Codigos.xlsx";
-    link.download = "Esquematizacao_Sistema_de_Codigos.xlsx";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const abrirTabelaConsulta = () => {
+    setTabelaConsulta(true);
+  };
+
+  const fecharTabelaConsulta = () => {
+    setTabelaConsulta(false);
   };
 
   return (
@@ -230,17 +242,22 @@ const NetSMSFacil = () => {
         <OverlayTrigger
           placement="top"
           overlay={
-            <Tooltip id="button-tooltip">Baixar lista de códigos</Tooltip>
+            <Tooltip id="button-tooltip">Exibir a lista de códigos</Tooltip>
           }
         >
           <Button
             variant="outline-dark"
-            className="botao-download"
-            onClick={handleDownload}
+            className="botao-info"
+            onClick={abrirTabelaConsulta}
           >
-            <i className="bi bi-download"></i>
+            <i className="bi bi-question-lg"></i>
           </Button>
         </OverlayTrigger>
+
+        <TabelaNetFacil
+          isOpen={tabelaConsulta}
+          onRequestClose={fecharTabelaConsulta}
+        />
       </div>
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Form.Group className="form-group-spacing" controlId="tratativa">
@@ -449,4 +466,5 @@ const NetSMSFacil = () => {
     </Container>
   );
 };
+
 export default NetSMSFacil;

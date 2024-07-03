@@ -1,9 +1,9 @@
-// Cadastros.jsx
+// OCFacilAdmin.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { Container, Button, Modal, Form } from "react-bootstrap";
 import TabelaPadrao from "../components/TabelaPadrao";
-import "./Cadastros.css";
+import "./OCFacilAdmin.css";
 
 const formatarData = (dataNumerica) => {
   const data = new Date((dataNumerica - 25569) * 86400 * 1000);
@@ -13,7 +13,7 @@ const formatarData = (dataNumerica) => {
   return `${dia}/${mes}/${ano}`;
 };
 
-function Cadastros() {
+function OCFacilAdmin() {
   const [dados, setDados] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -26,7 +26,7 @@ function Cadastros() {
   const fetchDados = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/data`
+        `${process.env.REACT_APP_BACKEND_URL}/ocqualinet`
       );
       setDados(response.data);
     } catch (error) {
@@ -53,7 +53,7 @@ function Cadastros() {
   const handleEditSave = async () => {
     try {
       await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/data/${currentItem._id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/ocqualinet/${currentItem._id}`,
         currentItem
       );
       setShowEditModal(false);
@@ -66,7 +66,7 @@ function Cadastros() {
   const handleDeleteConfirm = async () => {
     try {
       await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/data/${currentItem._id}`
+        `${process.env.REACT_APP_BACKEND_URL}/ocqualinet/${currentItem._id}`
       );
       setShowDeleteModal(false);
       fetchDados();
@@ -116,13 +116,15 @@ function Cadastros() {
             <Button
               variant="outline-dark"
               onClick={() => handleEditClick(row.original)}
-              className="botaoEditar">
+              className="botaoEditar"
+            >
               <i className="bi bi-pencil-square"></i>
             </Button>
             <Button
               variant="outline-danger"
               onClick={() => handleDeleteClick(row.original)}
-              className="botaoDeletar">
+              className="botaoDeletar"
+            >
               <i className="bi bi-trash"></i>
             </Button>
           </div>
@@ -136,7 +138,7 @@ function Cadastros() {
   return (
     <Container className="dados-container">
       <div className="mt-4">
-        <h3>Cadastros</h3>
+        <h3>OC Fácil Admin</h3>
         <TabelaPadrao columns={columns} data={dados} />
       </div>
 
@@ -234,4 +236,4 @@ function Cadastros() {
   );
 }
 
-export default Cadastros;
+export default OCFacilAdmin;

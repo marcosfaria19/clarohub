@@ -478,6 +478,7 @@ const cidadeParaUF = {
   SAPIRANGA: "RS",
   "SAPUCAIA DO SUL": "RS",
   "SENADOR CANEDO": "GO",
+  SARANDI: "PR",
   SERRA: "ES",
   "SERRA NEGRA": "SP",
   SERRANA: "SP",

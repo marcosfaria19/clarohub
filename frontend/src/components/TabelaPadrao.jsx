@@ -105,46 +105,60 @@ const TabelaPadrao = ({ columns, data }) => {
           type="text"
           value={globalFilter || ""}
           onChange={handleFilterChange}
-          placeholder="Filtrar registros..."
+          placeholder="Procurar..."
           className="mb-3"
         />
       </Form>
       <Table bordered hover className="mt-4 tabelaPadrao" {...getTableProps()}>
         <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                  {column.render("Header")}
-                  {column.isSorted ? (
-                    column.isSortedDesc ? (
-                      <i className="bi bi-caret-down-fill"></i>
-                    ) : (
-                      <i className="bi bi-caret-up-fill"></i>
-                    )
-                  ) : (
-                    ""
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
+          {headerGroups.map((headerGroup) => {
+            const { key: headerGroupKey, ...restHeaderGroupProps } =
+              headerGroup.getHeaderGroupProps();
+            return (
+              <tr key={headerGroupKey} {...restHeaderGroupProps}>
+                {headerGroup.headers.map((column) => {
+                  const { key: columnKey, ...restColumnProps } =
+                    column.getHeaderProps(column.getSortByToggleProps());
+                  return (
+                    <th key={columnKey} {...restColumnProps}>
+                      {column.render("Header")}
+                      {column.isSorted ? (
+                        column.isSortedDesc ? (
+                          <i className="bi bi-caret-down-fill"></i>
+                        ) : (
+                          <i className="bi bi-caret-up-fill"></i>
+                        )
+                      ) : (
+                        ""
+                      )}
+                    </th>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </thead>
         <tbody {...getTableBodyProps()}>
           {page.map((row) => {
             prepareRow(row);
+            const { key: rowKey, ...restRowProps } = row.getRowProps();
             return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td
-                    {...cell.getCellProps()}
-                    className={
-                      cell.column.id === "PERMISSOES" ? "badge-column" : ""
-                    }
-                  >
-                    {cell.render("Cell")}
-                  </td>
-                ))}
+              <tr key={rowKey} {...restRowProps}>
+                {row.cells.map((cell) => {
+                  const { key: cellKey, ...restCellProps } =
+                    cell.getCellProps();
+                  return (
+                    <td
+                      key={cellKey}
+                      {...restCellProps}
+                      className={
+                        cell.column.id === "PERMISSOES" ? "badge-column" : ""
+                      }
+                    >
+                      {cell.render("Cell")}
+                    </td>
+                  );
+                })}
               </tr>
             );
           })}

@@ -7,3 +7,7 @@ body {
   margin: 0;
   padding: 0;
 }
+
+.modal-body .form-control {
+  margin-bottom: 15px;
+}
