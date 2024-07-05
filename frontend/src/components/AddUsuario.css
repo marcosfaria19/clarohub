@@ -8,6 +8,10 @@
   cursor: pointer;
 }
 
+.permission-button.guest {
+  background-color: grey;
+}
+
 .permission-button.basic {
   background-color: blue;
 }

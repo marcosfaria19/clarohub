@@ -40,7 +40,7 @@ const Rotas = ({ token, setToken }) => {
         element={
           <ProtectedRoute
             token={token}
-            allowedRoles={["basic", "manager", "admin"]}
+            allowedRoles={["guest", "basic", "manager", "admin"]}
             element={<Home />}
           />
         }
@@ -50,7 +50,7 @@ const Rotas = ({ token, setToken }) => {
         element={
           <ProtectedRoute
             token={token}
-            allowedRoles={["basic", "manager", "admin"]}
+            allowedRoles={["guest", "basic", "manager", "admin"]}
             element={<Home />}
           />
         }
@@ -80,7 +80,7 @@ const Rotas = ({ token, setToken }) => {
         element={
           <ProtectedRoute
             token={token}
-            allowedRoles={["basic", "manager", "admin"]}
+            allowedRoles={["guest", "basic", "manager", "admin"]}
             element={<NetSMSFacil />}
           />
         }

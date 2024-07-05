@@ -7,7 +7,7 @@
 # Ignorar dotenv
 /frontend/.env
 /backend/.env
-
+/_databackup/
 # Ignorar arquivos gerados pelo sistema
 .DS_Store
 Thumbs.db

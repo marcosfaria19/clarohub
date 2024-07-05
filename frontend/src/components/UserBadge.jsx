@@ -19,6 +19,10 @@ const UserBadge = ({ permission }) => {
       badgeVariant = "primary";
       icon = "bi bi-person-fill";
       break;
+    case "guest":
+      badgeVariant = "secondary";
+      icon = "bi bi-person-fill";
+      break;
     default:
       return null;
   }

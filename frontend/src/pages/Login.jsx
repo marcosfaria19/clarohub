@@ -3,6 +3,7 @@ import { Container, Row, Col, Form, Button, Modal } from "react-bootstrap";
 import "./Login.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 function Login({ setToken }) {
   const [credencial, setCredencial] = useState("");
@@ -33,6 +34,8 @@ function Login({ setToken }) {
       if (typeof token === "string" && token.trim() !== "") {
         setToken(token);
         navigate("/home");
+        const decodedToken = jwtDecode(token);
+        console.log(decodedToken);
       } else {
         setLoginError("Erro ao obter o token de autenticação.");
       }

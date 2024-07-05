@@ -12,7 +12,7 @@ const AddUsuario = ({
   isEditMode,
 }) => {
   const [gestores, setGestores] = useState([]);
-  const permissions = ["basic", "manager", "admin"];
+  const permissions = ["guest", "basic", "manager", "admin"];
 
   useEffect(() => {
     const fetchGestores = async () => {
@@ -98,6 +98,9 @@ const AddUsuario = ({
               {permissions.map((permission) => {
                 let icon;
                 switch (permission) {
+                  case "guest":
+                    icon = <i className="bi bi-person-fill"></i>;
+                    break;
                   case "basic":
                     icon = <i className="bi bi-person-fill"></i>;
                     break;

@@ -13,27 +13,42 @@ const Home = () => {
       .get(`${process.env.REACT_APP_BACKEND_URL}/apps`)
       .then((response) => {
         const appsData = response.data;
-        console.log("Dados recebidos:", appsData);
         const filteredApps = filterAppsByPermissions(appsData);
         const groupedApps = groupAppsByFamily(filteredApps);
         setGroupedApps(groupedApps);
+        console.log("All Apps Data:", appsData);
+        console.log("Filtered Apps:", filteredApps);
       })
       .catch((error) => console.error("Erro ao buscar aplicativos:", error));
   }, []);
 
   const filterAppsByPermissions = (apps) => {
     const token = localStorage.getItem("token");
-    if (!token) return [];
-    const decodedToken = jwtDecode(token);
+    if (!token) {
+      console.warn("No token found");
+      return [];
+    }
+    let decodedToken;
+    try {
+      decodedToken = jwtDecode(token);
+      console.log("Decoded Token:", decodedToken);
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return [];
+    }
     const userAccessLevel = decodedToken.PERMISSOES || "";
 
     const accessHierarchy = {
-      basic: ["basic"],
-      manager: ["basic", "manager"],
-      admin: ["basic", "manager", "admin"],
+      guest: ["guest"],
+      basic: ["guest", "basic"],
+      manager: ["guest", "basic", "manager"],
+      admin: ["guest", "basic", "manager", "admin"],
     };
 
     const accessibleFamilies = accessHierarchy[userAccessLevel] || [];
+
+    console.log("User Access Level:", userAccessLevel);
+    console.log("Accessible Families:", accessibleFamilies);
 
     return apps.filter((app) => accessibleFamilies.includes(app.acesso));
   };
@@ -56,6 +71,7 @@ const Home = () => {
     "SharePoint",
     "Visium",
     "Nuvem",
+    "Atlas",
     "Gestão",
   ];
 

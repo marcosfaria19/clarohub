@@ -285,7 +285,7 @@ module.exports = (usersCollection) => {
       // Atualiza o usuário com a senha cadastrada
       const result = await usersCollection.updateOne(
         { LOGIN },
-        { $set: { senha: hashedPassword, PERMISSOES: "basic" } }
+        { $set: { senha: hashedPassword, PERMISSOES: "guest" } }
       );
 
       if (result.matchedCount === 0) {
