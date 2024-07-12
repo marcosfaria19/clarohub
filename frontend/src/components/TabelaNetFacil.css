@@ -7,14 +7,3 @@
 .modal-custom tr {
   font-size: 13px;
 }
-
-.modal-custom .modal-header {
-  align-items: center;
-  background-color: rgb(33, 37, 41);
-  color: rgb(255, 255, 255);
-}
-
-.modal-custom .modal-footer {
-  background-color: rgb(33, 37, 41);
-  color: rgb(255, 255, 255);
-}

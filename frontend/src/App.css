@@ -11,3 +11,18 @@ body {
 .modal-body .form-control {
   margin-bottom: 15px;
 }
+
+.modal-header {
+  align-items: center;
+  background-color: rgb(33, 37, 41);
+  color: rgb(255, 255, 255);
+}
+
+.modal-footer {
+  background-color: rgb(33, 37, 41);
+  color: rgb(255, 255, 255);
+}
+
+.modal-body {
+  background-color: #fafafa;
+}

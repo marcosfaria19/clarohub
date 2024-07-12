@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Modal, Button, Form } from "react-bootstrap";
 import AppCard from "../components/AppCard";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import cidadesAtlas from "../utils/cidadesAtlas";
 import "./Home.css";
 
 const Home = () => {
   const [groupedApps, setGroupedApps] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [selectedApp, setSelectedApp] = useState(null);
+  const [selectedCity, setSelectedCity] = useState("");
 
   useEffect(() => {
     axios
@@ -16,8 +20,6 @@ const Home = () => {
         const filteredApps = filterAppsByPermissions(appsData);
         const groupedApps = groupAppsByFamily(filteredApps);
         setGroupedApps(groupedApps);
-        console.log("All Apps Data:", appsData);
-        console.log("Filtered Apps:", filteredApps);
       })
       .catch((error) => console.error("Erro ao buscar aplicativos:", error));
   }, []);
@@ -31,7 +33,6 @@ const Home = () => {
     let decodedToken;
     try {
       decodedToken = jwtDecode(token);
-      console.log("Decoded Token:", decodedToken);
     } catch (error) {
       console.error("Error decoding token:", error);
       return [];
@@ -47,9 +48,6 @@ const Home = () => {
 
     const accessibleFamilies = accessHierarchy[userAccessLevel] || [];
 
-    console.log("User Access Level:", userAccessLevel);
-    console.log("Accessible Families:", accessibleFamilies);
-
     return apps.filter((app) => accessibleFamilies.includes(app.acesso));
   };
 
@@ -64,6 +62,41 @@ const Home = () => {
     }, {});
   };
 
+  const handleCardClick = (app) => {
+    setSelectedApp(app);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setSelectedApp(null);
+    setSelectedCity("");
+  };
+
+  const handleCitySelect = () => {
+    const city = selectedCity.trim().toLowerCase();
+    if (!selectedApp || !selectedApp.subLinks) return;
+
+    let selectedSubLink = null;
+
+    for (const [subLinkName, cities] of Object.entries(cidadesAtlas)) {
+      if (cities.map((city) => city.toLowerCase()).includes(city)) {
+        selectedSubLink = selectedApp.subLinks.find(
+          (subLink) => subLink.nome.toLowerCase() === subLinkName.toLowerCase()
+        );
+        break;
+      }
+    }
+
+    if (selectedSubLink) {
+      window.open(selectedSubLink.rota, "_blank");
+    } else {
+      alert("Cidade não encontrada.");
+    }
+
+    handleModalClose();
+  };
+
   const desiredOrder = [
     "Projetos",
     "Plataformas",
@@ -74,6 +107,8 @@ const Home = () => {
     "Atlas",
     "Gestão",
   ];
+
+  const allCities = Object.values(cidadesAtlas).flat();
 
   return (
     <Container className="home-container" fluid>
@@ -91,6 +126,7 @@ const Home = () => {
                       imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
                       logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
                       rota={app.rota}
+                      onCardClick={() => handleCardClick(app)}
                     />
                   </Col>
                 ))}
@@ -99,7 +135,6 @@ const Home = () => {
             </div>
           )
       )}
-      {/* Renderizar outras famílias não listadas na ordem desejada */}
       {Object.keys(groupedApps)
         .filter((family) => !desiredOrder.includes(family))
         .map(
@@ -115,6 +150,7 @@ const Home = () => {
                         imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
                         logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
                         rota={app.rota}
+                        onCardClick={() => handleCardClick(app)}
                       />
                     </Col>
                   ))}
@@ -123,6 +159,38 @@ const Home = () => {
               </div>
             )
         )}
+      <Modal show={showModal} onHide={handleModalClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Selecione a Cidade</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Label>Cidade</Form.Label>
+              <Form.Control
+                as="select"
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+              >
+                <option value="">Selecione uma cidade</option>
+                {allCities.map((city, index) => (
+                  <option key={index} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleModalClose}>
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={handleCitySelect}>
+            Selecionar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
