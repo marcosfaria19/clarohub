@@ -1,13 +1,13 @@
 # Ignorar node_modules no frontend
 /frontend/node_modules/
+/frontend/.env.local
+/frontend/.vercel/
 
 # Ignorar node_modules no backend
 /backend/node_modules/
-
-# Ignorar dotenv
-/frontend/.env
 /backend/.env
-/_databackup/
+/backend/.vercel/
+
 # Ignorar arquivos gerados pelo sistema
 .DS_Store
 Thumbs.db
