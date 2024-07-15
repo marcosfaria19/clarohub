@@ -1,6 +1,6 @@
 const ufVisium = {
-  "VISIUM RJ": ["RJ", "BH"],
+  "VISIUM RJ": ["BH", "RJ"],
   "VISIUM SP": ["SP"],
-  "VISIUM SUL": ["resto"],
+  "VISIUM SUL": ["Outros"],
 };
 export default ufVisium;

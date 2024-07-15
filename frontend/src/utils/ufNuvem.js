@@ -18,7 +18,7 @@ const ufNuvem = {
     "SE",
     "TO",
   ],
-  SPI: ["SP"],
+  "SP I": ["SP"],
   SUL: ["PR", "RS", "SC"],
 };
 export default ufNuvem;

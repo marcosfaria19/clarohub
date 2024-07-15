@@ -3,7 +3,7 @@ import "./AppCard.css";
 
 const AppCard = ({ nome, imagemUrl, logoCard, rota, onCardClick }) => {
   const handleClick = (e) => {
-    if (rota === "selecionar-cidade") {
+    if (rota === "multi-rotas") {
       e.preventDefault();
       onCardClick();
     }
@@ -12,8 +12,8 @@ const AppCard = ({ nome, imagemUrl, logoCard, rota, onCardClick }) => {
   return (
     <div className="app-card">
       <a
-        href={rota !== "selecionar-cidade" ? rota : "#"}
-        target={rota !== "selecionar-cidade" ? "_blank" : "_self"}
+        href={rota !== "multi-rotas" ? rota : "/"}
+        target={rota !== "multi-rotas" ? "_blank" : "_self"}
         rel="noopener noreferrer"
         onClick={handleClick}
       >

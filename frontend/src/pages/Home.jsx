@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Modal, Button, Form } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import AppCard from "../components/AppCard";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import cidadesAtlas from "../utils/cidadesAtlas";
+import SublinkModal from "../components/SublinkModal";
 import "./Home.css";
 
 const Home = () => {
   const [groupedApps, setGroupedApps] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
-  const [selectedCity, setSelectedCity] = useState("");
 
   useEffect(() => {
     axios
@@ -63,38 +62,17 @@ const Home = () => {
   };
 
   const handleCardClick = (app) => {
-    setSelectedApp(app);
-    setShowModal(true);
+    if (["Atlas", "Visium", "Nuvem"].includes(app.nome)) {
+      setSelectedApp(app);
+      setShowModal(true);
+    } else {
+      window.open(app.rota, "_blank");
+    }
   };
 
   const handleModalClose = () => {
     setShowModal(false);
     setSelectedApp(null);
-    setSelectedCity("");
-  };
-
-  const handleCitySelect = () => {
-    const city = selectedCity.trim().toLowerCase();
-    if (!selectedApp || !selectedApp.subLinks) return;
-
-    let selectedSubLink = null;
-
-    for (const [subLinkName, cities] of Object.entries(cidadesAtlas)) {
-      if (cities.map((city) => city.toLowerCase()).includes(city)) {
-        selectedSubLink = selectedApp.subLinks.find(
-          (subLink) => subLink.nome.toLowerCase() === subLinkName.toLowerCase()
-        );
-        break;
-      }
-    }
-
-    if (selectedSubLink) {
-      window.open(selectedSubLink.rota, "_blank");
-    } else {
-      alert("Cidade não encontrada.");
-    }
-
-    handleModalClose();
   };
 
   const desiredOrder = [
@@ -102,13 +80,8 @@ const Home = () => {
     "Plataformas",
     "PowerApps",
     "SharePoint",
-    "Visium",
-    "Nuvem",
-    "Atlas",
     "Gestão",
   ];
-
-  const allCities = Object.values(cidadesAtlas).flat();
 
   return (
     <Container className="home-container" fluid>
@@ -159,38 +132,11 @@ const Home = () => {
               </div>
             )
         )}
-      <Modal show={showModal} onHide={handleModalClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Selecione a Cidade</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group>
-              <Form.Label>Cidade</Form.Label>
-              <Form.Control
-                as="select"
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
-              >
-                <option value="">Selecione uma cidade</option>
-                {allCities.map((city, index) => (
-                  <option key={index} value={city}>
-                    {city}
-                  </option>
-                ))}
-              </Form.Control>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleModalClose}>
-            Cancelar
-          </Button>
-          <Button variant="primary" onClick={handleCitySelect}>
-            Selecionar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <SublinkModal
+        show={showModal}
+        handleClose={handleModalClose}
+        selectedApp={selectedApp}
+      />
     </Container>
   );
 };
