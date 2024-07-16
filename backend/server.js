@@ -19,7 +19,8 @@ async function startServer() {
 
     const db = client.db("clarohub");
 
-    console.log("Conectado ao MongoDB Atlas");
+    app.use(cors());
+    app.use(express.json());
 
     // Importar rotas aqui para garantir que a coleção correta foi definida
     const qualinetRoutes = require("./src/routes/qualinetRoutes")(
@@ -33,16 +34,13 @@ async function startServer() {
     );
     const appRoutes = require("./src/routes/appRoutes")(db.collection("apps"));
 
-    app.use(cors());
-    app.use(express.json());
-
+    // Rotas protegidas
     app.use("/", qualinetRoutes);
-    app.use("/", netsmsfacilRoutes);
     app.use("/", usersRoutes);
+    app.use("/", netsmsfacilRoutes);
     app.use("/", appRoutes);
 
     // Middleware para servir imagens estáticas
-    // Serve arquivos estáticos do diretório correto
     app.use(
       "/assets/cards",
       express.static(path.join(__dirname, "src/assets/cards"), {

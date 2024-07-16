@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
   Container,
   Button,
@@ -10,11 +9,13 @@ import {
 import "./NetSMSFacilAdmin.css";
 import AddNetSMSFacil from "../components/AddNetSMSFacil";
 import TabelaPadrao from "../components/TabelaPadrao";
+import axiosInstance from "../services/axios";
 
 function NetSMSFacilAdmin() {
   const [dados, setDados] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [filter, setFilter] = useState("");
   const [currentItem, setCurrentItem] = useState({
     ID: "",
     TRATATIVA: "",
@@ -33,9 +34,7 @@ function NetSMSFacilAdmin() {
 
   const fetchDados = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/netsmsfacil`
-      );
+      const response = await axiosInstance.get(`/netsmsfacil`);
       setDados(response.data);
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
@@ -80,15 +79,9 @@ function NetSMSFacilAdmin() {
   const handleSave = async () => {
     try {
       if (isEditMode) {
-        await axios.put(
-          `${process.env.REACT_APP_BACKEND_URL}/netsmsfacil/${currentItem._id}`,
-          currentItem
-        );
+        await axiosInstance.put(`/netsmsfacil/${currentItem._id}`, currentItem);
       } else {
-        await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/netsmsfacil`,
-          currentItem
-        );
+        await axiosInstance.post(`/netsmsfacil`, currentItem);
       }
       setShowEditModal(false);
       fetchDados();
@@ -99,9 +92,7 @@ function NetSMSFacilAdmin() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/netsmsfacil/${currentItem._id}`
-      );
+      await axiosInstance.delete(`/netsmsfacil/${currentItem._id}`);
       setShowDeleteModal(false);
       fetchDados();
     } catch (error) {
@@ -169,13 +160,15 @@ function NetSMSFacilAdmin() {
             <Button
               variant="outline-dark"
               onClick={() => handleEditClick(row.original)}
-              className="botaoEditar">
+              className="botaoEditar"
+            >
               <i className="bi bi-pencil-square"></i>
             </Button>
             <Button
               variant="outline-danger"
               onClick={() => handleDeleteClick(row.original)}
-              className="botaoDeletar">
+              className="botaoDeletar"
+            >
               <i className="bi bi-trash"></i>
             </Button>
           </div>
@@ -195,17 +188,24 @@ function NetSMSFacilAdmin() {
             placement="top"
             overlay={
               <Tooltip id="button-tooltip">Adicionar novo código</Tooltip>
-            }>
+            }
+          >
             <Button
               variant="outline-dark"
               className="botao-adicionar"
-              onClick={handleAddClick}>
+              onClick={handleAddClick}
+            >
               <i className="bi bi-plus-lg"></i>
             </Button>
           </OverlayTrigger>
         </div>
 
-        <TabelaPadrao columns={columns} data={dados} />
+        <TabelaPadrao
+          columns={columns}
+          data={dados}
+          filter={filter}
+          setFilter={setFilter}
+        />
       </div>
 
       {/* Modal de edição */}

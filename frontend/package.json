@@ -22,8 +22,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build && del /f /q build\\static\\js\\*.map build\\static\\css\\*.map",
+    "start": "dotenv -e .env.development react-scripts start",
+    "build": "dotenv -e .env.production react-scripts build && del /f /q build\\static\\js\\*.map build\\static\\css\\*.map",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -44,5 +44,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "dotenv-cli": "^7.4.2"
   }
 }

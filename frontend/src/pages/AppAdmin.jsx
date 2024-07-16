@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
   Container,
   Button,
@@ -10,11 +9,13 @@ import {
 import "./AppAdmin.css";
 import AddApp from "../components/AddApp";
 import TabelaPadrao from "../components/TabelaPadrao";
+import axiosInstance from "../services/axios";
 
 function AppAdmin() {
   const [dados, setDados] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [filter, setFilter] = useState("");
   const [currentItem, setCurrentItem] = useState({
     nome: "",
     imagemUrl: "",
@@ -32,9 +33,10 @@ function AppAdmin() {
 
   const fetchDados = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/apps`
-      );
+      const token = localStorage.getItem("token");
+      const response = await axiosInstance.get(`/apps`, {
+        headers: { Authorization: token },
+      });
       setDados(response.data);
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
@@ -78,15 +80,9 @@ function AppAdmin() {
   const handleSave = async () => {
     try {
       if (isEditMode) {
-        await axios.put(
-          `${process.env.REACT_APP_BACKEND_URL}/apps/${currentItem._id}`,
-          currentItem
-        );
+        await axiosInstance.put(`/apps/${currentItem._id}`, currentItem);
       } else {
-        await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/apps`,
-          currentItem
-        );
+        await axiosInstance.post(`/apps`, currentItem);
       }
       setShowEditModal(false);
       fetchDados();
@@ -97,9 +93,7 @@ function AppAdmin() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/apps/${currentItem._id}`
-      );
+      await axiosInstance.delete(`/apps/${currentItem._id}`);
       setShowDeleteModal(false);
       fetchDados();
     } catch (error) {
@@ -192,7 +186,12 @@ function AppAdmin() {
           </OverlayTrigger>
         </div>
 
-        <TabelaPadrao columns={columns} data={dados} />
+        <TabelaPadrao
+          columns={columns}
+          data={dados}
+          filter={filter}
+          setFilter={setFilter}
+        />
       </div>
 
       {/* Modal de edição */}

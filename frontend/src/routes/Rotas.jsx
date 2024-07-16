@@ -15,7 +15,14 @@ const ProtectedRoute = ({ token, allowedRoles, element }) => {
     return <Navigate to="/login" />;
   }
 
-  const decodedToken = jwtDecode(token);
+  let decodedToken;
+  try {
+    decodedToken = jwtDecode(token);
+  } catch (error) {
+    console.error("Erro ao decodificar o token:", error);
+    return <Navigate to="/login" />;
+  }
+
   const userPermissions = decodedToken.PERMISSOES || [];
 
   const hasAccess = allowedRoles.some((role) => userPermissions.includes(role));

@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { Form, Button, Card, Alert } from "react-bootstrap"; // Import Alert para mensagens de erro
+
+import { Form, Button, Card, Alert, Spinner } from "react-bootstrap";
 import "./UploadFile.css";
+import axiosInstance from "../services/axios";
 
 const UploadFile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [newData, setNewData] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // Estado para mensagens de erro
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -18,29 +20,43 @@ const UploadFile = () => {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/upload`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axiosInstance.post(`/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      // Receber os novos dados concatenados após o upload do arquivo
       setNewData(response.data.join("\n"));
-      setErrorMessage(""); // Limpa a mensagem de erro se o upload for bem-sucedido
+      setErrorMessage("");
+
+      const textoResposta = response.data.join("\n");
+      const textoCopiado = document.createElement("textarea");
+      textoCopiado.value = textoResposta;
+      document.body.appendChild(textoCopiado);
+      textoCopiado.select();
+      try {
+        document.execCommand("copy");
+      } catch (err) {
+        console.error(
+          "Erro ao copiar texto para a área de transferência:",
+          err
+        );
+      }
+      document.body.removeChild(textoCopiado);
     } catch (error) {
       console.error("Erro ao enviar o arquivo:", error);
       setErrorMessage(
         error.response?.data ||
           "Erro ao enviar o arquivo. Por favor, tente novamente."
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -59,9 +75,23 @@ const UploadFile = () => {
         <Button
           variant="outline-light"
           onClick={handleFileUpload}
-          className="mt-4"
+          className="mt-4 uploadOC"
+          disabled={isLoading}
         >
-          Enviar
+          {isLoading ? (
+            <>
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />{" "}
+              Enviando...
+            </>
+          ) : (
+            "Enviar"
+          )}
         </Button>
 
         {errorMessage && (
@@ -72,6 +102,9 @@ const UploadFile = () => {
 
         {newData && (
           <div className="new-data-section mt-5">
+            <Alert dismissible variant="success" className="mt-4">
+              O texto foi copiado para a área de transferência com sucesso.
+            </Alert>
             <p>
               <strong>Novos Dados:</strong>
             </p>

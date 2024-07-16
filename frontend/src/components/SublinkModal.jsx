@@ -7,15 +7,19 @@ import ufNuvem from "../utils/ufNuvem";
 const SublinkModal = ({ show, handleClose, selectedApp }) => {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [options, setOptions] = useState([]);
+  const [locationType, setLocationType] = useState("");
 
   useEffect(() => {
     if (selectedApp) {
       if (selectedApp.nome === "Atlas") {
         setOptions(Object.values(cidadesAtlas).flat().sort());
+        setLocationType("Cidade");
       } else if (selectedApp.nome === "Visium") {
         setOptions(Object.values(ufVisium).flat());
+        setLocationType("UF");
       } else if (selectedApp.nome === "Nuvem") {
         setOptions(Object.values(ufNuvem).flat().sort());
+        setLocationType("UF");
       }
     }
   }, [selectedApp]);
@@ -27,43 +31,35 @@ const SublinkModal = ({ show, handleClose, selectedApp }) => {
       return;
     }
 
-    console.log(`Selected Location: ${selectedLocation}`);
-
     let selectedSubLink = null;
 
     if (selectedApp.nome === "Atlas") {
-      console.log("Handling Atlas logic");
       for (const [subLinkName, cities] of Object.entries(cidadesAtlas)) {
         if (cities.map((city) => city.toLowerCase()).includes(location)) {
           selectedSubLink = selectedApp.subLinks.find(
             (subLink) =>
               subLink.nome.toLowerCase() === subLinkName.toLowerCase()
           );
-          console.log(`Found sublink for Atlas: ${selectedSubLink?.rota}`);
           break;
         }
       }
     } else if (selectedApp.nome === "Visium") {
-      console.log("Handling Visium logic");
       for (const [subLinkName, ufs] of Object.entries(ufVisium)) {
         if (ufs.map((uf) => uf.toLowerCase()).includes(location)) {
           selectedSubLink = selectedApp.subLinks.find(
             (subLink) =>
               subLink.nome.toLowerCase() === subLinkName.toLowerCase()
           );
-          console.log(`Found sublink for Visium: ${selectedSubLink?.rota}`);
           break;
         }
       }
     } else if (selectedApp.nome === "Nuvem") {
-      console.log("Handling Nuvem logic");
       for (const [subLinkName, ufs] of Object.entries(ufNuvem)) {
         if (ufs.map((uf) => uf.toLowerCase()).includes(location)) {
           selectedSubLink = selectedApp.subLinks.find(
             (subLink) =>
               subLink.nome.toLowerCase() === subLinkName.toLowerCase()
           );
-          console.log(`Found sublink for Nuvem: ${selectedSubLink?.rota}`);
           break;
         }
       }
@@ -87,24 +83,18 @@ const SublinkModal = ({ show, handleClose, selectedApp }) => {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>
-          Selecione a {selectedApp?.nome === "Atlas" ? "Cidade" : "UF"}
-        </Modal.Title>
+        <Modal.Title>Selecione a {locationType}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group>
-            <Form.Label>
-              {selectedApp?.nome === "Atlas" ? "Cidade" : "UF"}
-            </Form.Label>
+            <Form.Label>{locationType}</Form.Label>
             <Form.Control
               as="select"
               value={selectedLocation}
               onChange={(e) => setSelectedLocation(e.target.value)}
             >
-              <option value="">
-                Selecione uma {selectedApp?.nome === "Atlas" ? "cidade" : "UF"}
-              </option>
+              <option value="">Selecione</option>
               {options.map((option, index) => (
                 <option key={index} value={option}>
                   {option}

@@ -3,9 +3,10 @@ const router = express.Router();
 const { ObjectId } = require("mongodb");
 const fs = require("fs");
 const path = require("path");
+const authenticateToken = require("../middleware/authMiddleware");
 
 module.exports = (appCollection) => {
-  router.get("/apps", async (req, res) => {
+  router.get("/apps", authenticateToken, async (req, res) => {
     try {
       const docs = await appCollection.find({}).toArray();
       res.json(docs);
@@ -16,7 +17,7 @@ module.exports = (appCollection) => {
   });
 
   // Rota para deletar um app
-  router.delete("/apps/:id", async (req, res) => {
+  router.delete("/apps/:id", authenticateToken, async (req, res) => {
     const { id } = req.params;
     try {
       const result = await appCollection.deleteOne({ _id: new ObjectId(id) });
@@ -35,7 +36,7 @@ module.exports = (appCollection) => {
   });
 
   // Rota para editar app existente
-  router.put("/apps/:id", async (req, res) => {
+  router.put("/apps/:id", authenticateToken, async (req, res) => {
     const { id } = req.params;
     const newData = req.body;
     delete newData._id;
@@ -60,7 +61,7 @@ module.exports = (appCollection) => {
   });
 
   // Rota para cadastrar um novo app
-  router.post("/apps", async (req, res) => {
+  router.post("/apps", authenticateToken, async (req, res) => {
     const newApp = req.body;
     try {
       const result = await appCollection.insertOne(newApp);

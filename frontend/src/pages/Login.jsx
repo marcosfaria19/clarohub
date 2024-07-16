@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Modal } from "react-bootstrap";
 import "./Login.css";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import axiosInstance from "../services/axios";
 
 function Login({ setToken }) {
   const [credencial, setCredencial] = useState("");
@@ -25,17 +24,15 @@ function Login({ setToken }) {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/login`,
-        { LOGIN: credencial, senha: senha }
-      );
+      const response = await axiosInstance.post(`/login`, {
+        LOGIN: credencial,
+        senha: senha,
+      });
 
       const token = response.data.token;
       if (typeof token === "string" && token.trim() !== "") {
         setToken(token);
         navigate("/home");
-        const decodedToken = jwtDecode(token);
-        console.log(decodedToken);
       } else {
         setLoginError("Erro ao obter o token de autenticação.");
       }
@@ -63,10 +60,10 @@ function Login({ setToken }) {
 
   const handleRegisterSubmit = async () => {
     try {
-      const response = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/register`,
-        { LOGIN: credencial, senha: senha }
-      );
+      const response = await axiosInstance.put(`/register`, {
+        LOGIN: credencial,
+        senha: senha,
+      });
 
       setShowPasswordModal(false);
 

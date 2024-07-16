@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Table, Pagination, Form, FormControl } from "react-bootstrap";
 import {
   useTable,
@@ -8,7 +8,7 @@ import {
 } from "react-table";
 import "./TabelaPadrao.css";
 
-const TabelaPadrao = ({ columns, data }) => {
+const TabelaPadrao = ({ columns, data, filter, setFilter }) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -26,16 +26,19 @@ const TabelaPadrao = ({ columns, data }) => {
     {
       columns,
       data,
-      initialState: { pageSize: 10 },
+      initialState: { pageSize: 10, globalFilter: filter },
     },
     useGlobalFilter,
     useSortBy,
     usePagination
   );
 
+  useEffect(() => {
+    setGlobalFilter(filter);
+  }, [filter, setGlobalFilter]);
+
   const renderPagination = () => {
     if (pageCount <= 1) {
-      // Se houver apenas uma página ou menos, não exibe a paginação
       return null;
     }
 
@@ -96,6 +99,7 @@ const TabelaPadrao = ({ columns, data }) => {
   const handleFilterChange = (e) => {
     const value = e.target.value || undefined;
     setGlobalFilter(value);
+    setFilter(value);
   };
 
   return (

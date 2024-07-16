@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
   Container,
   Button,
@@ -11,11 +10,13 @@ import "./Users.css";
 import AddUsuario from "../components/AddUsuario";
 import TabelaPadrao from "../components/TabelaPadrao";
 import UserBadge from "../components/UserBadge";
+import axiosInstance from "../services/axios";
 
 function Users() {
   const [dados, setDados] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [filter, setFilter] = useState("");
   const [currentItem, setCurrentItem] = useState({
     LOGIN: "",
     NOME: "",
@@ -30,9 +31,7 @@ function Users() {
 
   const fetchDados = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/users`
-      );
+      const response = await axiosInstance.get(`/users`);
       setDados(response.data);
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
@@ -73,15 +72,9 @@ function Users() {
   const handleSave = async () => {
     try {
       if (isEditMode) {
-        await axios.put(
-          `${process.env.REACT_APP_BACKEND_URL}/users/${currentItem._id}`,
-          currentItem
-        );
+        await axiosInstance.put(`/users/${currentItem._id}`, currentItem);
       } else {
-        await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/users`,
-          currentItem
-        );
+        await axiosInstance.post(`/users`, currentItem);
       }
       setShowEditModal(false);
       fetchDados();
@@ -92,9 +85,7 @@ function Users() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/users/${currentItem._id}`
-      );
+      await axiosInstance.delete(`/users/${currentItem._id}`);
       setShowDeleteModal(false);
       fetchDados();
     } catch (error) {
@@ -173,7 +164,12 @@ function Users() {
           </OverlayTrigger>
         </div>
 
-        <TabelaPadrao columns={columns} data={dados} />
+        <TabelaPadrao
+          columns={columns}
+          data={dados}
+          filter={filter}
+          setFilter={setFilter}
+        />
       </div>
 
       <AddUsuario

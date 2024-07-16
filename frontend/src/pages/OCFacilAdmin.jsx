@@ -1,9 +1,9 @@
 // OCFacilAdmin.jsx
 import React, { useEffect, useState, useMemo } from "react";
-import axios from "axios";
 import { Container, Button, Modal, Form } from "react-bootstrap";
 import TabelaPadrao from "../components/TabelaPadrao";
 import "./OCFacilAdmin.css";
+import axiosInstance from "../services/axios";
 
 const formatarData = (dataNumerica) => {
   const data = new Date((dataNumerica - 25569) * 86400 * 1000);
@@ -18,6 +18,7 @@ function OCFacilAdmin() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     fetchDados();
@@ -25,13 +26,10 @@ function OCFacilAdmin() {
 
   const fetchDados = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/ocqualinet`
-      );
+      const response = await axiosInstance.get(`/ocqualinet`);
       setDados(response.data);
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
-      console.log(`URL: ${process.env.REACT_APP_BACKEND_URL}`);
     }
   };
 
@@ -52,10 +50,7 @@ function OCFacilAdmin() {
 
   const handleEditSave = async () => {
     try {
-      await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/ocqualinet/${currentItem._id}`,
-        currentItem
-      );
+      await axiosInstance.put(`/ocqualinet/${currentItem._id}`, currentItem);
       setShowEditModal(false);
       fetchDados();
     } catch (error) {
@@ -65,9 +60,7 @@ function OCFacilAdmin() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/ocqualinet/${currentItem._id}`
-      );
+      await axiosInstance.delete(`/ocqualinet/${currentItem._id}`);
       setShowDeleteModal(false);
       fetchDados();
     } catch (error) {
@@ -139,7 +132,12 @@ function OCFacilAdmin() {
     <Container className="dados-container">
       <div className="mt-4">
         <h3>OC Fácil Admin</h3>
-        <TabelaPadrao columns={columns} data={dados} />
+        <TabelaPadrao
+          columns={columns}
+          data={dados}
+          filter={filter}
+          setFilter={setFilter}
+        />
       </div>
 
       {/* Modal de Edição */}

@@ -1,6 +1,5 @@
 // NetSMSFacil.js
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
   Form,
   Button,
@@ -11,6 +10,7 @@ import {
 } from "react-bootstrap";
 import "./NetSMSFacil.css";
 import TabelaNetFacil from "../components/TabelaNetFacil";
+import axiosInstance from "../services/axios";
 
 const NetSMSFacil = () => {
   const [data, setData] = useState([]);
@@ -33,9 +33,7 @@ const NetSMSFacil = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/netsmsfacil`
-        );
+        const response = await axiosInstance.get(`/netsmsfacil`);
         setData(response.data);
       } catch (error) {
         console.error("Erro ao buscar dados:", error);

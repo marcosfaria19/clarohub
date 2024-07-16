@@ -1,75 +1,10 @@
-/* // netsmsRoutes.js
-
-const express = require("express");
-const Datastore = require("nedb");
-const path = require("path");
-const router = express.Router();
-
-const netsmsfacil = new Datastore({
-  filename: path.join(__dirname, "../data/netsmsfacil.db"),
-  autoload: true,
-});
-
-router.get("/netsmsfacil", (req, res) => {
-  netsmsfacil.find({}, (err, docs) => {
-    if (err) {
-      console.error("Erro ao consultar o banco de dados:", err);
-      return res.status(500).send("Erro ao consultar o banco de dados.");
-    }
-    res.json(docs);
-  });
-});
-
-router.delete("/netsmsfacil/:id", (req, res) => {
-  const { id } = req.params;
-  netsmsfacil.remove({ _id: id }, {}, (err, numRemoved) => {
-    if (err)
-      return res.status(500).send("Erro ao deletar o dado do banco de dados.");
-    if (numRemoved === 0)
-      return res
-        .status(404)
-        .send("Nenhum dado foi deletado. ID não encontrado.");
-    res.send("Dado deletado com sucesso.");
-  });
-});
-
-router.put("/netsmsfacil/:id", (req, res) => {
-  const { id } = req.params;
-  const newData = req.body;
-  netsmsfacil.update({ _id: id }, { $set: newData }, {}, (err, numReplaced) => {
-    if (err)
-      return res.status(500).send("Erro ao atualizar dados no banco de dados.");
-    if (numReplaced === 0)
-      return res.status(404).send("Nenhum documento foi atualizado.");
-    res.send("Dados atualizados com sucesso.");
-  });
-});
-
-router.post("/netsmsfacil", (req, res) => {
-  const newItem = {
-    ...req.body,
-    ID: parseInt(req.body.ID),
-  };
-  netsmsfacil.insert(newItem, (err, item) => {
-    if (err) {
-      console.error("Erro ao inserir novo item:", err);
-      res.status(500).json({ error: "Erro ao inserir novo item" });
-      return;
-    }
-    res.json(item);
-    console.log(item);
-  });
-});
-
-module.exports = router;
- */
-
 const express = require("express");
 const router = express.Router();
 const { ObjectId } = require("mongodb");
+const authenticateToken = require("../middleware/authMiddleware");
 
 module.exports = (netsmsfacilCollection) => {
-  router.get("/netsmsfacil", async (req, res) => {
+  router.get("/netsmsfacil", authenticateToken, async (req, res) => {
     try {
       const docs = await netsmsfacilCollection.find({}).toArray();
       res.json(docs);
@@ -79,7 +14,7 @@ module.exports = (netsmsfacilCollection) => {
     }
   });
 
-  router.delete("/netsmsfacil/:id", async (req, res) => {
+  router.delete("/netsmsfacil/:id", authenticateToken, async (req, res) => {
     const { id } = req.params;
     try {
       const result = await netsmsfacilCollection.deleteOne({
@@ -97,7 +32,7 @@ module.exports = (netsmsfacilCollection) => {
     }
   });
 
-  router.put("/netsmsfacil/:id", async (req, res) => {
+  router.put("/netsmsfacil/:id", authenticateToken, async (req, res) => {
     const { id } = req.params;
     const newData = req.body;
     delete newData._id;
@@ -116,7 +51,7 @@ module.exports = (netsmsfacilCollection) => {
     }
   });
 
-  router.post("/netsmsfacil", async (req, res) => {
+  router.post("/netsmsfacil", authenticateToken, async (req, res) => {
     const newItem = req.body;
     try {
       const result = await netsmsfacilCollection.insertOne(newItem);

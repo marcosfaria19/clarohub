@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import axios from "axios";
 import "./AddUsuario.css";
+import axiosInstance from "../services/axios";
 
 const AddUsuario = ({
   show,
@@ -17,9 +17,7 @@ const AddUsuario = ({
   useEffect(() => {
     const fetchGestores = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/users/managers`
-        );
+        const response = await axiosInstance.get(`/users/managers`);
         setGestores(response.data);
       } catch (error) {
         console.error("Erro ao buscar gestores do backend:", error);
@@ -36,9 +34,7 @@ const AddUsuario = ({
 
   const handleResetPassword = async () => {
     try {
-      await axios.patch(
-        `${process.env.REACT_APP_BACKEND_URL}/users/${currentItem._id}/reset-password`
-      );
+      await axiosInstance.patch(`/users/${currentItem._id}/reset-password`);
       alert("Senha resetada com sucesso!");
     } catch (error) {
       console.error("Erro ao resetar a senha:", error);

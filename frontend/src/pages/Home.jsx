@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import AppCard from "../components/AppCard";
-import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import SublinkModal from "../components/SublinkModal";
 import "./Home.css";
+import axiosInstance from "../services/axios";
 
 const Home = () => {
   const [groupedApps, setGroupedApps] = useState({});
@@ -12,8 +12,8 @@ const Home = () => {
   const [selectedApp, setSelectedApp] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/apps`)
+    axiosInstance
+      .get(`/apps`)
       .then((response) => {
         const appsData = response.data;
         const filteredApps = filterAppsByPermissions(appsData);
