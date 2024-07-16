@@ -8,6 +8,7 @@ import axiosInstance from "../services/axios";
 
 const Home = () => {
   const [groupedApps, setGroupedApps] = useState({});
+  const [favorites, setFavorites] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
 
@@ -19,9 +20,27 @@ const Home = () => {
         const filteredApps = filterAppsByPermissions(appsData);
         const groupedApps = groupAppsByFamily(filteredApps);
         setGroupedApps(groupedApps);
+
+        const savedFavorites =
+          JSON.parse(localStorage.getItem("favorites")) || [];
+        setFavorites(savedFavorites);
       })
       .catch((error) => console.error("Erro ao buscar aplicativos:", error));
   }, []);
+
+  const handleFavoriteClick = (app) => {
+    const updatedFavorites = [...favorites];
+    const appIndex = updatedFavorites.findIndex((fav) => fav._id === app._id);
+
+    if (appIndex > -1) {
+      updatedFavorites.splice(appIndex, 1);
+    } else {
+      updatedFavorites.push(app);
+    }
+
+    setFavorites(updatedFavorites);
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+  };
 
   const filterAppsByPermissions = (apps) => {
     const token = localStorage.getItem("token");
@@ -86,6 +105,29 @@ const Home = () => {
   return (
     <Container className="home-container" fluid>
       <h2 className="mb-5">Meus Aplicativos</h2>
+
+      {favorites.length > 0 && (
+        <div className="family-section mb-5">
+          <h2 className="family-title">Favoritos</h2>
+          <Row xs={1} sm={2} md={3} lg={5} className="g-4">
+            {favorites.map((app) => (
+              <Col key={app._id}>
+                <AppCard
+                  nome={app.nome}
+                  imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
+                  logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
+                  rota={app.rota}
+                  isFavorite={favorites.some((fav) => fav._id === app._id)}
+                  onFavoriteClick={() => handleFavoriteClick(app)}
+                  onCardClick={() => handleCardClick(app)}
+                />
+              </Col>
+            ))}
+          </Row>
+          <hr className="family-divider" />
+        </div>
+      )}
+
       {desiredOrder.map(
         (family) =>
           groupedApps[family] && (
@@ -99,6 +141,8 @@ const Home = () => {
                       imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
                       logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
                       rota={app.rota}
+                      isFavorite={favorites.some((fav) => fav._id === app._id)}
+                      onFavoriteClick={() => handleFavoriteClick(app)}
                       onCardClick={() => handleCardClick(app)}
                     />
                   </Col>
@@ -108,30 +152,7 @@ const Home = () => {
             </div>
           )
       )}
-      {Object.keys(groupedApps)
-        .filter((family) => !desiredOrder.includes(family))
-        .map(
-          (family) =>
-            groupedApps[family] && (
-              <div key={family} className="family-section mb-5">
-                <h2 className="family-title">{family}</h2>
-                <Row xs={1} sm={2} md={3} lg={5} className="g-4">
-                  {groupedApps[family]?.map((app) => (
-                    <Col key={app._id}>
-                      <AppCard
-                        nome={app.nome}
-                        imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
-                        logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
-                        rota={app.rota}
-                        onCardClick={() => handleCardClick(app)}
-                      />
-                    </Col>
-                  ))}
-                </Row>
-                <hr className="family-divider" />
-              </div>
-            )
-        )}
+
       <SublinkModal
         show={showModal}
         handleClose={handleModalClose}

@@ -25,7 +25,8 @@
   transition: transform 0.2s ease-in-out, filter 0.5s ease;
 }
 
-.app-card:hover .app-card-cover {
+.app-card:hover .app-card-cover,
+.app-card:hover .app-favoritos {
   transform: rotateX(7deg) translateY(-6px);
   filter: brightness(1);
 }
@@ -50,7 +51,7 @@
   transition: transform 0.3s cubic-bezier(0.18, 0.9, 0.58, 1);
 }
 
-.app-card:hover .app-card-cover::after {
+.app-card:hover {
   transform: translateY(0%);
 }
 
@@ -94,10 +95,28 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 35%;
-  filter: brightness(70%);
+  filter: opacity(50%);
   transition: filter 0.7s;
 }
 
+.app-card:hover .app-favoritos,
 .app-card:hover .card-logo {
-  filter: brightness(1);
+  filter: opacity(1);
+}
+
+.app-favoritos {
+  position: absolute;
+  top: 1%;
+  right: 5%;
+  font-size: 25px;
+  color: white;
+  filter: opacity(0);
+  transition: filter 0.7s;
+  z-index: 10;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  transform-origin: top center;
+  will-change: transform, filter;
+  transform: skewX(0.001deg);
+  transition: transform 0.2s ease-in-out, filter 0.5s ease;
 }
