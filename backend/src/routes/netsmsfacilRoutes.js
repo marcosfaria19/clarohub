@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { ObjectId } = require("mongodb");
 const authenticateToken = require("../middleware/authMiddleware");
+const { Parser } = require("json2csv");
 
 module.exports = (netsmsfacilCollection) => {
   router.get("/netsmsfacil", authenticateToken, async (req, res) => {
@@ -62,6 +63,45 @@ module.exports = (netsmsfacilCollection) => {
     } catch (err) {
       console.error("Erro ao cadastrar novo id:", err);
       res.status(500).json({ message: "Erro ao cadastrar novo id" });
+    }
+  });
+
+  // Rota para download da tabela de códigos em CSV
+  router.get("/netsmsfacil/download", authenticateToken, async (req, res) => {
+    try {
+      let data = await netsmsfacilCollection.find({}).sort({ ID: 1 }).toArray();
+
+      // Substituir "Não" por "Nao" nas colunas "OBS e INCIDENTE"
+      data = data.map((item) => {
+        if (item.OBS === "Não") {
+          item.OBS = "Nao";
+        }
+        if (item.INCIDENTE === "Não") {
+          item.INCIDENTE = "Nao";
+        }
+        return item;
+      });
+
+      const fields = [
+        { label: "ID", value: "ID" },
+        { label: "TRATATIVA", value: "TRATATIVA" },
+        { label: "TIPO", value: "TIPO" },
+        { label: "ABERTURA/FECHAMENTO", value: "ABERTURA/FECHAMENTO" },
+        { label: "NETSMS", value: "NETSMS" },
+        { label: "TEXTO PADRAO", value: "TEXTO PADRAO" },
+        { label: "OBS OBRIGATORIO", value: "OBS" },
+        { label: "INCIDENTE OBRIGATORIO", value: "INCIDENTE" },
+      ];
+
+      const json2csvParser = new Parser({ fields, delimiter: ";" });
+      const csv = json2csvParser.parse(data);
+
+      res.header("Content-Type", "text/csv");
+      res.attachment("netsmsfacil.csv");
+      res.send(csv);
+    } catch (err) {
+      console.error("Erro ao gerar CSV:", err);
+      res.status(500).json({ message: "Erro ao gerar CSV" });
     }
   });
 

@@ -7,6 +7,7 @@ import axiosInstance from "../services/axios";
 
 const TabelaNetFacil = ({ isOpen, onRequestClose }) => {
   const [data, setData] = useState([]);
+  const [filter, setFilter] = useState("");
   const columns = React.useMemo(
     () => [
       {
@@ -37,6 +38,23 @@ const TabelaNetFacil = ({ isOpen, onRequestClose }) => {
     []
   );
 
+  const handleDownload = () => {
+    axiosInstance({
+      url: "/netsmsfacil/download",
+      method: "GET",
+      responseType: "blob",
+    })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "netsmsfacil.csv");
+        document.body.appendChild(link);
+        link.click();
+      })
+      .catch((error) => console.error("Error downloading the file:", error));
+  };
+
   useEffect(() => {
     if (isOpen) {
       axiosInstance
@@ -53,9 +71,17 @@ const TabelaNetFacil = ({ isOpen, onRequestClose }) => {
           <Modal.Title>Códigos Cadastrados</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <TabelaPadrao columns={columns} data={data} />
+          <TabelaPadrao
+            columns={columns}
+            data={data}
+            filter={filter}
+            setFilter={setFilter}
+          />
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="success" onClick={handleDownload}>
+            <i className="bi bi-download"></i> Download
+          </Button>
           <Button variant="secondary" onClick={onRequestClose}>
             Fechar
           </Button>
