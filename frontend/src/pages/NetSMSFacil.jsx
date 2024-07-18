@@ -46,6 +46,8 @@ const NetSMSFacil = () => {
     const codigoNumber = codigo;
     const selectedItem = data.find((item) => item.ID === codigoNumber);
     if (selectedItem) {
+      handleReset();
+      setCodigo(codigo);
       setTratativa(selectedItem.TRATATIVA);
       setTipo(selectedItem.TIPO);
       setAberturaFechamento(selectedItem["ABERTURA/FECHAMENTO"]);
@@ -68,6 +70,10 @@ const NetSMSFacil = () => {
     setTextoPadrao("");
     setShowIncidenteField(false);
     setShowObservacaoField(false);
+  };
+
+  const handleCodigoChange = (event) => {
+    setCodigo(event.target.value);
   };
 
   const handleTipoChange = (event) => {
@@ -222,7 +228,7 @@ const NetSMSFacil = () => {
           placeholder="Cód."
           value={codigo}
           maxLength={3}
-          onChange={(e) => setCodigo(e.target.value)}
+          onChange={handleCodigoChange}
           isInvalid={submitted && !codigo}
         />
 
