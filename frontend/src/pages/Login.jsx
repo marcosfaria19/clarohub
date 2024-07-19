@@ -24,7 +24,7 @@ function Login({ setToken }) {
     e.preventDefault();
 
     try {
-      const response = await axiosInstance.post(`/login`, {
+      const response = await axiosInstance.post("/login", {
         LOGIN: credencial,
         senha: senha,
       });
@@ -60,7 +60,7 @@ function Login({ setToken }) {
 
   const handleRegisterSubmit = async () => {
     try {
-      const response = await axiosInstance.put(`/register`, {
+      const response = await axiosInstance.put("/register", {
         LOGIN: credencial,
         senha: senha,
       });
@@ -89,51 +89,61 @@ function Login({ setToken }) {
   };
 
   return (
-    <Container fluid className="login-page-container">
-      <Row className="vh-100">
-        <Col md={6} className="login-left">
-          <img src="claro.png" alt="Logo" />
-          <h1>Bem vindo(a)!</h1>
-          <p>Por favor, insira suas credenciais para acessar.</p>
-        </Col>
-        <Col md={6} className="login-right">
-          <h1 className="mb-5">Claro Hub</h1>
-          <Form className="login-form" onSubmit={handleLoginSubmit}>
-            <h2 className="mb-4">Login</h2>
-            <Form.Group
-              controlId="form-credencial"
-              className="mb-3 form-floating"
-            >
-              <Form.Control
-                className="credencial"
+    <div className="w-full h-screen overflow-hidden bg-base-200">
+      <div className="flex w-full h-screen">
+        <div className="w-1/2 login-bg flex flex-col justify-center items-center text-white text-center relative bg-cover bg-center">
+          <h1 className="text-4xl font-bold">Bem vindo(a)!</h1>
+          <p className="mt-2 text-lg">
+            Por favor, insira suas credenciais para acessar.
+          </p>
+          <img
+            src="claro.png"
+            alt="Logo"
+            className="absolute w-1/6 left-4 bottom-4"
+          />
+        </div>
+        <div className="w-1/2 h-full flex flex-col justify-center items-center bg-[#fafafa]">
+          <h1 className="font-poppins text-5xl font-bold mb-5 text-gray-900">
+            Claro Hub
+          </h1>
+          <form className="login-form w-5/12" onSubmit={handleLoginSubmit}>
+            <h2 className="mb-4 text-3xl font-bold text-gray-900">Login</h2>
+            <div className="mb-3 relative">
+              <input
+                type="text"
+                className="input input-bordered w-full h-14"
                 placeholder=" "
                 value={credencial}
                 onChange={handleCredencialChange}
                 required
               />
-              <Form.Label>Credencial</Form.Label>
-            </Form.Group>
-            <Form.Group controlId="form-senha" className="mb-3 form-floating">
-              <Form.Control
+              <label>Credencial</label>
+            </div>
+            <div className="mb-3 relative">
+              <input
                 type="password"
-                className="senha"
+                className="input input-bordered w-full h-14"
                 placeholder=" "
                 value={senha}
                 onChange={handleSenhaChange}
                 required
               />
-              <Form.Label>Senha</Form.Label>
-            </Form.Group>
-            <div className="loginError">
-              {loginError && <p className="text-danger">{loginError}</p>}
+              <label>Senha</label>
             </div>
-
-            <Button variant="dark" type="submit" className="w-100">
+            <div className="loginError min-h-[20px] text-left mb-2 pl-2">
+              {loginError && (
+                <p className="text-red-500 text-sm">{loginError}</p>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="btn bg-neutral-900 w-full text-slate-100  hover:text-white hover:bg-neutral-700"
+            >
               Entrar
-            </Button>
-          </Form>
-        </Col>
-      </Row>
+            </button>
+          </form>
+        </div>
+      </div>
       {/* Modal para registrar senha */}
       <Modal centered show={showPasswordModal} onHide={handleModalClose}>
         <Modal.Header closeButton>
@@ -153,7 +163,7 @@ function Login({ setToken }) {
           </Button>
         </Modal.Footer>
       </Modal>
-    </Container>
+    </div>
   );
 }
 

@@ -1,89 +1,10 @@
 /* Login.css */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
 
-.login-right h1 {
+.font-poppins {
   font-family: "Poppins", sans-serif;
 }
 
-.login-page-container {
-  height: 100vh;
-}
-
-.login-left {
+.login-bg {
   background-image: url("../assets/background-login.jpg");
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  text-align: center;
-  position: relative;
-}
-
-.login-left img {
-  width: 150px;
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-}
-
-.login-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #fafafa;
-}
-
-.login-form {
-  width: 80%;
-  max-width: 400px;
-}
-
-.login-form h2 {
-  color: #212529;
-}
-
-.form-floating {
-  position: relative;
-}
-
-.form-floating label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  padding: 1rem;
-  pointer-events: none;
-  transition: all 0.2s ease;
-}
-
-.form-floating input:focus ~ label,
-.form-floating input:not(:placeholder-shown) ~ label {
-  top: -0.5rem;
-  left: 0.5rem;
-  font-size: 0.875rem;
-  opacity: 1;
-  padding: 0 0.5rem;
-  background-color: white;
-  height: 20px;
-}
-
-.credencial {
-  font-size: 1.1rem;
-}
-
-.loginError {
-  min-height: 20px;
-
-  text-align: left;
-  margin: 0 0 5px 10px;
-  padding: 0;
-}
-
-.loginError p {
-  font-size: 14px;
-  margin: 0;
 }
