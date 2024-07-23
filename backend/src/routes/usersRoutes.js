@@ -57,7 +57,7 @@ module.exports = (usersCollection) => {
   });
 
   // Rota para registrar senha para um usuário existente
-  router.put("/register", authenticateToken, async (req, res) => {
+  router.put("/register", async (req, res) => {
     const { LOGIN, senha } = req.body;
 
     try {
