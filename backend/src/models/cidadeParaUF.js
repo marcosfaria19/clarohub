@@ -344,7 +344,6 @@ const cidadeParaUF = {
   PAICANDU: "PR",
   PALHOCA: "SC",
   PALMAS: "TO",
-  PALMAS: "PR",
   "PALMEIRA DAS MISSOES": "RS",
   PANAMBI: "RS",
   "PARA DE MINAS": "MG",
