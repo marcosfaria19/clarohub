@@ -1,7 +1,7 @@
 // TabelaNetFacil.js
 import React, { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import TabelaPadrao from "./TabelaPadrao";
+import TabelaPadrao from "../../shared/components/TabelaPadrao";
 import "./TabelaNetFacil.css";
 import axiosInstance from "../../../services/axios";
 

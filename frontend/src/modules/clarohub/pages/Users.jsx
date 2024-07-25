@@ -8,7 +8,7 @@ import {
 } from "react-bootstrap";
 import "./Users.css";
 import AddUsuario from "../components/AddUsuario";
-import TabelaPadrao from "../components/TabelaPadrao";
+import TabelaPadrao from "../../shared/components/TabelaPadrao";
 import UserBadge from "../components/UserBadge";
 import axiosInstance from "../../../services/axios";
 

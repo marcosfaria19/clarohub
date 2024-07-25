@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import cidadesAtlas from "../../../utils/cidadesAtlas";
-import ufVisium from "../../../utils/ufVisium";
-import ufNuvem from "../../../utils/ufNuvem";
+import cidadesAtlas from "../utils/cidadesAtlas";
+import ufVisium from "../utils/ufVisium";
+import ufNuvem from "../utils/ufNuvem";
 
 const SublinkModal = ({ show, handleClose, selectedApp }) => {
   const [selectedLocation, setSelectedLocation] = useState("");

@@ -9,7 +9,7 @@ import {
   OverlayTrigger,
 } from "react-bootstrap";
 import "./NetSMSFacil.css";
-import TabelaNetFacil from "../components/TabelaNetFacil";
+import TabelaNetFacil from "../../shared/components/TabelaPadrao";
 import axiosInstance from "../../../services/axios";
 
 const NetSMSFacil = () => {

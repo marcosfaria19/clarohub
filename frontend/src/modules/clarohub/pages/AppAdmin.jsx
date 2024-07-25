@@ -8,7 +8,7 @@ import {
 } from "react-bootstrap";
 import "./AppAdmin.css";
 import AddApp from "../components/AddApp";
-import TabelaPadrao from "../components/TabelaPadrao";
+import TabelaPadrao from "../../shared/components/TabelaPadrao";
 import axiosInstance from "../../../services/axios";
 
 function AppAdmin() {

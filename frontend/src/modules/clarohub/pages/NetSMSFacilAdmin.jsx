@@ -8,7 +8,7 @@ import {
 } from "react-bootstrap";
 import "./NetSMSFacilAdmin.css";
 import AddNetSMSFacil from "../components/AddNetSMSFacil";
-import TabelaPadrao from "../components/TabelaPadrao";
+import TabelaPadrao from "../../shared/components/TabelaPadrao";
 import axiosInstance from "../../../services/axios";
 
 function NetSMSFacilAdmin() {

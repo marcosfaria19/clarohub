@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import Header from "./modules/clarohub/components/Header";
-import Footer from "./modules/clarohub/components/Footer";
+import Header from "./modules/shared/components/Header";
+import Footer from "./modules/shared/components/Footer";
 import Rotas from "./routes/Rotas";
 import "./App.css";
 
