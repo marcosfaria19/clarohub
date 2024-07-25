@@ -6,22 +6,25 @@ import {
   Tooltip,
   OverlayTrigger,
 } from "react-bootstrap";
-import "./Users.css";
-import AddUsuario from "../components/AddUsuario";
+import "./NetSMSFacilAdmin.css";
+import AddNetSMSFacil from "../components/AddNetSMSFacil";
 import TabelaPadrao from "../components/TabelaPadrao";
-import UserBadge from "../components/UserBadge";
-import axiosInstance from "../services/axios";
+import axiosInstance from "../../../services/axios";
 
-function Users() {
+function NetSMSFacilAdmin() {
   const [dados, setDados] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [filter, setFilter] = useState("");
   const [currentItem, setCurrentItem] = useState({
-    LOGIN: "",
-    NOME: "",
-    GESTOR: "",
-    PERMISSOES: "",
+    ID: "",
+    TRATATIVA: "",
+    TIPO: "",
+    "ABERTURA/FECHAMENTO": "",
+    NETSMS: "",
+    "TEXTO PADRAO": "",
+    OBS: "0",
+    INCIDENTE: "0",
   });
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -31,7 +34,7 @@ function Users() {
 
   const fetchDados = async () => {
     try {
-      const response = await axiosInstance.get(`/users`);
+      const response = await axiosInstance.get(`/netsmsfacil`);
       setDados(response.data);
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
@@ -46,22 +49,26 @@ function Users() {
 
   const handleAddClick = () => {
     setCurrentItem({
-      LOGIN: "",
-      NOME: "",
-      GESTOR: "",
-      PERMISSOES: "",
+      ID: "",
+      TRATATIVA: "",
+      TIPO: "",
+      "ABERTURA/FECHAMENTO": "",
+      NETSMS: "",
+      "TEXTO PADRAO": "",
+      OBS: "0",
+      INCIDENTE: "0",
     });
     setIsEditMode(false);
     setShowEditModal(true);
   };
 
-  const handleCloseModal = () => {
-    setShowEditModal(false);
-  };
-
   const handleDeleteClick = (item) => {
     setCurrentItem(item);
     setShowDeleteModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowEditModal(false);
   };
 
   const handleChange = (e) => {
@@ -72,9 +79,9 @@ function Users() {
   const handleSave = async () => {
     try {
       if (isEditMode) {
-        await axiosInstance.put(`/users/${currentItem._id}`, currentItem);
+        await axiosInstance.put(`/netsmsfacil/${currentItem._id}`, currentItem);
       } else {
-        await axiosInstance.post(`/users`, currentItem);
+        await axiosInstance.post(`/netsmsfacil`, currentItem);
       }
       setShowEditModal(false);
       fetchDados();
@@ -85,7 +92,7 @@ function Users() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axiosInstance.delete(`/users/${currentItem._id}`);
+      await axiosInstance.delete(`/netsmsfacil/${currentItem._id}`);
       setShowDeleteModal(false);
       fetchDados();
     } catch (error) {
@@ -93,34 +100,63 @@ function Users() {
     }
   };
 
+  const truncarTexto = (text, maxLength) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + "...";
+    }
+    return text;
+  };
+
+  // Definir as colunas para a tabela usando react-table
   const columns = React.useMemo(
     () => [
       {
-        Header: "LOGIN",
-        accessor: "LOGIN",
+        Header: "ID",
+        accessor: "ID",
+        disableSortBy: false, // Permitir ordenação nesta coluna
+      },
+      {
+        Header: "TRATATIVA",
+        accessor: "TRATATIVA",
         disableSortBy: false,
       },
       {
-        Header: "NOME",
-        accessor: "NOME",
+        Header: "TIPO",
+        accessor: "TIPO",
         disableSortBy: false,
       },
       {
-        Header: "GESTOR",
-        accessor: "GESTOR",
+        Header: "ABERTURA/FECHAMENTO",
+        accessor: "ABERTURA/FECHAMENTO",
         disableSortBy: false,
       },
       {
-        Header: "ACESSO",
-        accessor: "PERMISSOES",
+        Header: "NETSMS",
+        accessor: "NETSMS",
+        Cell: ({ value }) => truncarTexto(value, 40), // Função para truncar o texto exibido
         disableSortBy: false,
-        Cell: ({ value }) => <UserBadge permission={value} />,
+      },
+      {
+        Header: "TEXTO PADRÃO",
+        accessor: "TEXTO PADRAO",
+        Cell: ({ value }) => truncarTexto(value, 40),
+        disableSortBy: false,
+      },
+      {
+        Header: "OBS?",
+        accessor: "OBS",
+        disableSortBy: false,
+      },
+      {
+        Header: "INC?",
+        accessor: "INCIDENTE",
+        disableSortBy: false,
       },
       {
         Header: "AÇÕES",
         accessor: "acoes",
         Cell: ({ row }) => (
-          <div className="acoes">
+          <div className="netsmsfacil-acoes">
             <Button
               variant="outline-dark"
               onClick={() => handleEditClick(row.original)}
@@ -140,23 +176,23 @@ function Users() {
         disableSortBy: true,
       },
     ],
-    []
+    [] // Depende apenas da inicialização
   );
 
   return (
-    <Container className="users-container">
+    <Container className="netsmsadmin-container">
       <div className="mt-4">
-        <div className="users-titulo">
-          <h3>Usuários Cadastrados</h3>
+        <div className="netsmsadmin-titulo">
+          <h3>Códigos Cadastrados</h3>
           <OverlayTrigger
             placement="top"
             overlay={
-              <Tooltip id="button-tooltip">Adicionar novo usuário</Tooltip>
+              <Tooltip id="button-tooltip">Adicionar novo código</Tooltip>
             }
           >
             <Button
               variant="outline-dark"
-              className="botao-adicionarUsuario"
+              className="botao-adicionar"
               onClick={handleAddClick}
             >
               <i className="bi bi-plus-lg"></i>
@@ -172,7 +208,8 @@ function Users() {
         />
       </div>
 
-      <AddUsuario
+      {/* Modal de edição */}
+      <AddNetSMSFacil
         show={showEditModal}
         handleClose={handleCloseModal}
         handleSave={handleSave}
@@ -181,6 +218,7 @@ function Users() {
         isEditMode={isEditMode}
       />
 
+      {/* Modal de Confirmação de Exclusão */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Confirmar Exclusão</Modal.Title>
@@ -199,4 +237,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default NetSMSFacilAdmin;

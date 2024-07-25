@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Container, Button, Modal, Form } from "react-bootstrap";
 import TabelaPadrao from "../components/TabelaPadrao";
 import "./OCFacilAdmin.css";
-import axiosInstance from "../services/axios";
+import axiosInstance from "../../../services/axios";
 
 const formatarData = (dataNumerica) => {
   const data = new Date((dataNumerica - 25569) * 86400 * 1000);

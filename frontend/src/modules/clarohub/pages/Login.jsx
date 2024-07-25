@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Modal } from "react-bootstrap";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../services/axios";
+import axiosInstance from "../../../services/axios";
 
 function Login({ setToken }) {
   const [credencial, setCredencial] = useState("");

@@ -4,7 +4,7 @@ import AppCard from "../components/AppCard";
 import { jwtDecode } from "jwt-decode";
 import SublinkModal from "../components/SublinkModal";
 import "./Home.css";
-import axiosInstance from "../services/axios";
+import axiosInstance from "../../../services/axios";
 
 const Home = () => {
   const [groupedApps, setGroupedApps] = useState({});

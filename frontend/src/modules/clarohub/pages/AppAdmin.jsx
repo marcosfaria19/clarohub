@@ -9,7 +9,7 @@ import {
 import "./AppAdmin.css";
 import AddApp from "../components/AddApp";
 import TabelaPadrao from "../components/TabelaPadrao";
-import axiosInstance from "../services/axios";
+import axiosInstance from "../../../services/axios";
 
 function AppAdmin() {
   const [dados, setDados] = useState([]);

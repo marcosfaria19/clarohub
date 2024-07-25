@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import TabelaPadrao from "./TabelaPadrao";
 import "./TabelaNetFacil.css";
-import axiosInstance from "../services/axios";
+import axiosInstance from "../../../services/axios";
 
 const TabelaNetFacil = ({ isOpen, onRequestClose }) => {
   const [data, setData] = useState([]);

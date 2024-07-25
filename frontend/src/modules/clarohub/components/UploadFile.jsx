@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Form, Button, Card, Alert, Spinner } from "react-bootstrap";
 import "./UploadFile.css";
-import axiosInstance from "../services/axios";
+import axiosInstance from "../../../services/axios";
 
 const UploadFile = () => {
   const [selectedFile, setSelectedFile] = useState(null);

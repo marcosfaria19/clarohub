@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import "./AddUsuario.css";
-import axiosInstance from "../services/axios";
+import axiosInstance from "../../../services/axios";
 
 const AddUsuario = ({
   show,
