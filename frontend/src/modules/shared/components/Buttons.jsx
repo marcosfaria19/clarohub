@@ -1,14 +1,13 @@
 // src/components/Button.jsx
 import React from "react";
 
-const Button = ({ children, variant, onClick, disabled }) => {
-  let baseStyle =
-    "align-middle select-none font-semibold text-md text-center transition-all disabled:opacity-50 disabled:grayscale disabled:shadow-none disabled:pointer-events-none py-2 px-3 rounded-lg text-textContent shadow-md shadow-gray-900/10 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none hover:brightness-90";
+const Button = ({ children, variant, onClick, className, disabled }) => {
+  let baseStyle = `align-middle select-none font-semibold text-md text-center transition-all disabled:opacity-50 disabled:grayscale disabled:shadow-none disabled:pointer-events-none py-2 px-3 rounded-lg text-textContent shadow-md shadow-gray-900/10 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none hover:brightness-90 ${className}`;
   let variantStyle = "";
 
   switch (variant) {
     case "primary":
-      variantStyle = "bg-primary";
+      variantStyle = "duration-200 bg-primary hover:bg-opacity-90";
       break;
     case "outline-primary":
       variantStyle =
@@ -28,7 +27,7 @@ const Button = ({ children, variant, onClick, disabled }) => {
       variantStyle = "bg-error ";
       break;
     default:
-      variantStyle = "bg-primary ";
+      variantStyle = "duration-200 bg-primary hover:bg-opacity-90";
       break;
   }
 

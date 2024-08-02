@@ -135,7 +135,9 @@ function Login({ setToken }) {
                 <p className="text-red-500 text-sm">{loginError}</p>
               )}
             </div>
-            <Button>Teste</Button>
+            <Button variant="primary" className="w-full">
+              Entrar
+            </Button>
           </form>
         </div>
       </div>
