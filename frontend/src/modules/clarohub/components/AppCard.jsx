@@ -1,5 +1,6 @@
 import React from "react";
 import "./AppCard.css";
+import { BsStar, BsStarFill } from "react-icons/bs";
 
 const AppCard = ({
   nome,
@@ -31,12 +32,11 @@ const AppCard = ({
         rel="noopener noreferrer"
         onClick={handleClick}
       >
-        <div className="app-favoritos" onClick={handleFavoriteClick}>
-          {isFavorite ? (
-            <i className="bi bi-star-fill"></i>
-          ) : (
-            <i className="bi bi-star"></i>
-          )}
+        <div
+          className="app-favoritos"
+          onClick={handleFavoriteClick}
+        >
+          {isFavorite ? <BsStarFill /> : <BsStar />}
         </div>
         <div
           className="app-card-cover"
@@ -45,7 +45,11 @@ const AppCard = ({
           <div className="card-title-overlay">
             <h2 className="app-name">{nome}</h2>
           </div>
-          <img src={logoCard} alt={nome} className="card-logo" />
+          <img
+            src={logoCard}
+            alt={nome}
+            className="card-logo"
+          />
         </div>
       </a>
     </div>

@@ -5,6 +5,7 @@
   padding-bottom: 150%;
   perspective: 1000px;
   cursor: pointer;
+  user-select: none;
 }
 
 .app-card-cover {
@@ -48,7 +49,8 @@
     rgba(255, 255, 255, 0) 60%
   );
   transform: translateY(-20%);
-  transition: transform 0.3s cubic-bezier(0.18, 0.9, 0.58, 1);
+  transition: transform 0.3s
+    cubic-bezier(0.18, 0.9, 0.58, 1);
 }
 
 .app-card:hover {
@@ -65,7 +67,8 @@
   height: 90%;
   background: rgba(0, 0, 0, 0.5);
   box-shadow: 0 6px 12px 12px rgba(0, 0, 0, 0.4);
-  transition: transform 0.35s ease-in-out, opacity 0.5s ease-in-out;
+  transition: transform 0.35s ease-in-out,
+    opacity 0.5s ease-in-out;
 }
 
 .app-card:hover::before {
@@ -87,6 +90,7 @@
 
 .app-name {
   font-size: 1.3rem;
+  font-weight: 500;
 }
 
 .card-logo {
@@ -106,9 +110,9 @@
 
 .app-favoritos {
   position: absolute;
-  top: 1%;
-  right: 5%;
-  font-size: 25px;
+  top: 2%;
+  right: 4%;
+  font-size: 20px;
   color: white;
   filter: opacity(0);
   transition: filter 0.7s;

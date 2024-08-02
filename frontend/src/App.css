@@ -2,18 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-.btn {
-  transition-property: background-color;
-  transition-duration: 400ms;
-}
-
 body {
   margin: 0;
   padding: 0;
 }
 
-.modal-body .form-control {
+/* Configuração global dos modais */
+.modal-body {
   margin-bottom: 15px;
+}
+
+.modal-box {
+  padding: 0;
 }
 
 .modal-header {
@@ -29,57 +29,4 @@ body {
 
 .modal-body {
   background-color: #fafafa;
-}
-
-/* Customizações para inputs */
-.input {
-  border-width: 1px;
-  border-color: #ced4da; /* Cor da borda do Bootstrap */
-  border-radius: 0.25rem; /* Bordas arredondadas */
-  transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Transição suave */
-}
-
-.input:focus {
-  border-color: #6c757d;
-  box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
-  outline: none; /* Remove a borda de contorno padrão */
-}
-
-.input-bordered {
-  border-width: 1px;
-  border-color: #ced4da;
-  border-radius: 0.25rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Transição suave */
-}
-
-.input-bordered:focus {
-  border-color: #6c757d;
-  box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
-  outline: none; /* Remove a borda de contorno padrão */
-}
-
-/* Customização para rótulos flutuantes */
-.relative {
-  position: relative;
-}
-
-.relative label {
-  position: absolute;
-  top: 1rem;
-  left: 0rem;
-  padding: 0 0.5rem;
-  margin-left: 10px;
-  color: rgb(17, 24, 39); /* Cor do texto do rótulo */
-  background-color: #ffffff;
-  pointer-events: none;
-  transform: translateY(0);
-  transition: transform 0.2s ease, font-size 0.2s ease;
-  border-radius: 5px 5px 0 0;
-}
-
-.input:focus ~ label,
-.input:not(:placeholder-shown) ~ label {
-  transform: translateY(-2rem);
-  font-size: 0.8rem;
-  color: #6c757d; /* Cor do texto do rótulo ao focar */
 }

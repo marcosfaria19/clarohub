@@ -1,16 +1,12 @@
 // NetSMSFacil.js
 import React, { useState, useEffect } from "react";
-import {
-  Form,
-  Button,
-  Container,
-  Alert,
-  Tooltip,
-  OverlayTrigger,
-} from "react-bootstrap";
 import "./NetSMSFacil.css";
-import TabelaNetFacil from "../../shared/components/TabelaPadrao";
+import TabelaNetFacil from "../components/TabelaNetFacil";
 import axiosInstance from "../../../services/axios";
+import Button from "../../shared/components/Buttons";
+import Input from "../../shared/components/Input";
+import { BsArrowClockwise, BsCheck, BsCopy, BsQuestion } from "react-icons/bs";
+import Select from "../../shared/components/Select";
 
 const NetSMSFacil = () => {
   const [data, setData] = useState([]);
@@ -216,58 +212,60 @@ const NetSMSFacil = () => {
   };
 
   return (
-    <Container
-      className="py-5 netsmsfacil-container"
-      data-bs-theme="light"
-      fluid
-    >
+    <container className="px-72 py-12 bg-bgWhite flex flex-col w-full">
       <div className="codigo-container">
-        <Form.Control
-          className="codigo-input"
+        <Input
           type="text"
           placeholder="Cód."
           value={codigo}
           maxLength={3}
           onChange={handleCodigoChange}
-          isInvalid={submitted && !codigo}
+          className={`${submitted && !codigo ? "border-red-500" : ""}`}
         />
 
-        <OverlayTrigger
-          placement="top"
-          overlay={
-            <Tooltip id="button-tooltip">Encontrar automaticamente</Tooltip>
-          }
-        >
-          <Button variant="dark" onClick={handleCodigoSubmit}>
-            <i className="bi bi-check-lg"></i>
+        <div className="relative group">
+          <Button variant="primary" onClick={handleCodigoSubmit}>
+            <BsCheck />
           </Button>
-        </OverlayTrigger>
+          <div className="absolute left-0 top-full mt-2 hidden w-max group-hover:block bg-gray-700 text-white text-xs rounded p-2">
+            Encontrar automaticamente
+          </div>
+        </div>
 
-        <OverlayTrigger
-          placement="top"
-          overlay={
-            <Tooltip id="button-tooltip">Exibir a lista de códigos</Tooltip>
-          }
-        >
+        <div className="relative group">
           <Button
             variant="outline-dark"
             className="botao-info"
             onClick={abrirTabelaConsulta}
           >
-            <i className="bi bi-question-lg"></i>
+            <BsQuestion />
           </Button>
-        </OverlayTrigger>
+          <div className="absolute left-0 top-full mt-2 hidden w-max group-hover:block bg-gray-700 text-white text-xs rounded p-2">
+            Exibir a lista de códigos
+          </div>
+        </div>
 
         <TabelaNetFacil
           isOpen={tabelaConsulta}
           onRequestClose={fecharTabelaConsulta}
         />
       </div>
-      <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <Form.Group className="form-group-spacing" controlId="tratativa">
-          <Form.Label>Tratativa</Form.Label>
-          <Form.Control
-            as="select"
+
+      <form
+        noValidate
+        validated={validated}
+        onSubmit={handleSubmit}
+        className="space-y-4"
+      >
+        <div className="form-group-spacing">
+          <label
+            htmlFor="tratativa"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Tratativa
+          </label>
+          <Select
+            id="tratativa"
             value={tratativa}
             onChange={handleTratativaChange}
             required
@@ -278,20 +276,26 @@ const NetSMSFacil = () => {
                 {value}
               </option>
             ))}
-          </Form.Control>
-          <Form.Control.Feedback type="invalid">
+          </Select>
+          <div className="text-red-500 text-sm mt-1">
             Por favor, selecione uma tratativa.
-          </Form.Control.Feedback>
-        </Form.Group>
+          </div>
+        </div>
 
-        <Form.Group className="form-group-spacing" controlId="tipo">
-          <Form.Label>Tipo</Form.Label>
-          <Form.Control
-            as="select"
+        <div className="form-group-spacing">
+          <label
+            htmlFor="tipo"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Tipo
+          </label>
+          <Select
+            id="tipo"
             value={tipo}
             onChange={handleTipoChange}
             disabled={!tratativa}
             required
+            className="form-select"
           >
             <option value="">Selecione</option>
             {getUniqueValues("TIPO", [["TRATATIVA", tratativa]]).map(
@@ -301,23 +305,26 @@ const NetSMSFacil = () => {
                 </option>
               )
             )}
-          </Form.Control>
-          <Form.Control.Feedback type="invalid">
+          </Select>
+          <div className="text-red-500 text-sm mt-1">
             Por favor, selecione um tipo.
-          </Form.Control.Feedback>
-        </Form.Group>
+          </div>
+        </div>
 
-        <Form.Group
-          className="form-group-spacing"
-          controlId="aberturaFechamento"
-        >
-          <Form.Label>Abertura/Fechamento</Form.Label>
-          <Form.Control
-            as="select"
+        <div className="form-group-spacing">
+          <label
+            htmlFor="aberturaFechamento"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Abertura/Fechamento
+          </label>
+          <Select
+            id="aberturaFechamento"
             value={aberturaFechamento}
             onChange={handleAberturaFechamentoChange}
             disabled={!tipo}
             required
+            className="form-select"
           >
             <option value="">Selecione</option>
             {getUniqueValues("ABERTURA/FECHAMENTO", [
@@ -328,20 +335,26 @@ const NetSMSFacil = () => {
                 {value}
               </option>
             ))}
-          </Form.Control>
-          <Form.Control.Feedback type="invalid">
+          </Select>
+          <div className="text-red-500 text-sm mt-1">
             Por favor, selecione abertura ou fechamento.
-          </Form.Control.Feedback>
-        </Form.Group>
+          </div>
+        </div>
 
-        <Form.Group className="form-group-spacing" controlId="netsms">
-          <Form.Label>NetSMS</Form.Label>
-          <Form.Control
-            as="select"
+        <div className="form-group-spacing">
+          <label
+            htmlFor="netsms"
+            className="block text-sm font-medium text-gray-700"
+          >
+            NetSMS
+          </label>
+          <Select
+            id="netsms"
             value={netsms}
             onChange={handleNetsmsChange}
             disabled={!aberturaFechamento}
             required
+            className="form-select"
           >
             <option value="">Selecione</option>
             {getUniqueValues("NETSMS", [
@@ -353,20 +366,26 @@ const NetSMSFacil = () => {
                 {value}
               </option>
             ))}
-          </Form.Control>
-          <Form.Control.Feedback type="invalid">
+          </Select>
+          <div className="text-red-500 text-sm mt-1">
             Por favor, selecione um NetSMS.
-          </Form.Control.Feedback>
-        </Form.Group>
+          </div>
+        </div>
 
-        <Form.Group className="form-group-spacing" controlId="textoPadrao">
-          <Form.Label>Texto Padrão</Form.Label>
-          <Form.Control
-            as="select"
+        <div className="form-group-spacing">
+          <label
+            htmlFor="textoPadrao"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Texto Padrão
+          </label>
+          <Select
+            id="textoPadrao"
             value={textoPadrao}
             onChange={handleTextoPadraoChange}
             disabled={!netsms}
             required
+            className="form-select"
           >
             <option value="">Selecione</option>
             {filterData([
@@ -382,92 +401,115 @@ const NetSMSFacil = () => {
                 {`${item.ID} - ${item["TEXTO PADRAO"]}`}
               </option>
             ))}
-          </Form.Control>
-          <Form.Control.Feedback type="invalid">
+          </Select>
+          <div className="text-red-500 text-sm mt-1">
             Por favor, selecione um texto padrão.
-          </Form.Control.Feedback>
-        </Form.Group>
+          </div>
+        </div>
 
         {showIncidenteField && (
-          <Form.Group className="form-group-spacing" controlId="incidente">
-            <Form.Label>Incidente</Form.Label>
-            <Form.Control
+          <div className="form-group-spacing">
+            <label
+              htmlFor="incidente"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Incidente
+            </label>
+            <input
               type="text"
+              id="incidente"
               value={incidente}
               onChange={handleIncidenteChange}
               required
               placeholder="Por favor insira um incidente"
+              className="form-input"
             />
-            <Form.Control.Feedback type="invalid">
+            <div className="text-red-500 text-sm mt-1">
               Por favor, preencha o campo de incidente.
-            </Form.Control.Feedback>
-          </Form.Group>
+            </div>
+          </div>
         )}
 
-        <Form.Group className="form-group-spacing" controlId="observacao">
-          <Form.Label>Observação</Form.Label>
-          <Form.Control
+        <div className="form-group-spacing">
+          <label
+            htmlFor="observacao"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Observação
+          </label>
+          <input
             type="text"
+            id="observacao"
             value={observacao}
             onChange={handleObservacaoChange}
             required={showObservacaoField}
             placeholder={
               showObservacaoField ? "Por favor insira uma observação" : ""
             }
+            className="form-input"
           />
-          <Form.Control.Feedback type="invalid">
+          <div className="text-red-500 text-sm mt-1">
             {showObservacaoField
               ? "Por favor, preencha o campo de observação."
               : "Por favor, preencha o campo de observação."}
-          </Form.Control.Feedback>
-        </Form.Group>
-        <div className="botoes d-flex mb-3">
-          <OverlayTrigger
-            placement="left"
-            overlay={<Tooltip id="button-tooltip">Gerar texto padrão</Tooltip>}
-          >
-            <Button variant="success" className="botao-gerar" type="submit">
-              <i className="bi bi-copy"></i>
-            </Button>
-          </OverlayTrigger>
-          <OverlayTrigger
-            placement="right"
-            overlay={<Tooltip id="button-tooltip">Reiniciar</Tooltip>}
-          >
-            <Button
-              variant="danger"
-              className="botao-reiniciar"
-              onClick={handleReset}
-            >
-              <i className="bi bi-arrow-clockwise"></i>
-            </Button>
-          </OverlayTrigger>
+          </div>
         </div>
 
-        <Alert
-          variant="success"
-          show={showAlert}
-          onClose={() => setShowAlert(false)}
-          dismissible
-        >
-          O texto foi copiado para a área de transferência com sucesso.
-        </Alert>
+        <div className="flex space-x-4 mb-3">
+          <div className="relative group">
+            <Button variant="success" className="botao-gerar" type="submit">
+              <BsCopy />
+            </Button>
+            <div className="absolute left-0 top-full mt-2 hidden w-max group-hover:block bg-gray-700 text-white text-xs rounded p-2">
+              Gerar texto padrão
+            </div>
+          </div>
+
+          <div className="relative group">
+            <Button variant="error" onClick={handleReset}>
+              <BsArrowClockwise />
+            </Button>
+            <div className="absolute left-0 top-full mt-2 hidden w-max group-hover:block bg-gray-700 text-white text-xs rounded p-2">
+              Reiniciar
+            </div>
+          </div>
+        </div>
+
+        {showAlert && (
+          <div
+            className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
+            O texto foi copiado para a área de transferência com sucesso.
+            <span
+              className="absolute top-0 bottom-0 right-0 px-4 py-3"
+              onClick={() => setShowAlert(false)}
+            >
+              <svg
+                className="fill-current h-6 w-6 text-green-500"
+                role="button"
+                viewBox="0 0 20 20"
+              >
+                <title>Close</title>
+                <path d="M14.348 5.652a.5.5 0 1 1 .707.707L10.707 10l4.348 4.348a.5.5 0 0 1-.707.707L10 10.707l-4.348 4.348a.5.5 0 1 1-.707-.707L9.293 10 4.946 5.652a.5.5 0 1 1 .707-.707L10 9.293l4.348-4.348z" />
+              </svg>
+            </span>
+          </div>
+        )}
 
         {concatenatedText && (
           <div className="mt-5">
-            <p>
-              <strong>Texto Padrão:</strong>
-            </p>
-            <Form.Control
-              as="textarea"
+            <p className="font-bold">Texto Padrão:</p>
+            <textarea
               rows={5}
               value={concatenatedText}
               readOnly
+              className="form-textarea mt-1 block w-full"
             />
           </div>
         )}
-      </Form>
-    </Container>
+      </form>
+    </container>
   );
 };
 

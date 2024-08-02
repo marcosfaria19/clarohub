@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col } from "react-bootstrap";
 import AppCard from "../components/AppCard";
 import { jwtDecode } from "jwt-decode";
 import SublinkModal from "../components/SublinkModal";
-import "./Home.css";
 import axiosInstance from "../../../services/axios";
 
 const Home = () => {
@@ -103,15 +101,19 @@ const Home = () => {
   ];
 
   return (
-    <Container className="home-container" fluid>
-      <h2 className="mb-5">Meus Aplicativos</h2>
+    <div className="px-72 py-12 bg-dark">
+      <h2 className="mb-12 text-3xl font-semibold text-white select-none">
+        Meus Aplicativos
+      </h2>
 
       {favorites.length > 0 && (
-        <div className="family-section mb-5">
-          <h2 className="family-title">Favoritos</h2>
-          <Row xs={1} sm={2} md={3} lg={5} className="g-4">
+        <div className="family-section mb-12">
+          <h2 className="family-title text-2xl mb-5 text-white font-semibold select-none">
+            Favoritos
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {favorites.map((app) => (
-              <Col key={app._id}>
+              <div key={app._id} className="col">
                 <AppCard
                   nome={app.nome}
                   imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
@@ -121,21 +123,23 @@ const Home = () => {
                   onFavoriteClick={() => handleFavoriteClick(app)}
                   onCardClick={() => handleCardClick(app)}
                 />
-              </Col>
+              </div>
             ))}
-          </Row>
-          <hr className="family-divider" />
+          </div>
+          <hr className="border-solid border-neutral-500 mt-8" />
         </div>
       )}
 
       {desiredOrder.map(
         (family) =>
           groupedApps[family] && (
-            <div key={family} className="family-section mb-5">
-              <h2 className="family-title">{family}</h2>
-              <Row xs={1} sm={2} md={3} lg={5} className="g-4">
+            <div key={family} className="family-section mb-12">
+              <h2 className="family-title text-2xl mb-8 text-white font-semibold select-none">
+                {family}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {groupedApps[family]?.map((app) => (
-                  <Col key={app._id}>
+                  <div key={app._id} className="col">
                     <AppCard
                       nome={app.nome}
                       imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
@@ -145,10 +149,10 @@ const Home = () => {
                       onFavoriteClick={() => handleFavoriteClick(app)}
                       onCardClick={() => handleCardClick(app)}
                     />
-                  </Col>
+                  </div>
                 ))}
-              </Row>
-              <hr className="family-divider" />
+              </div>
+              <hr className="border-solid border-neutral-500 mt-8" />
             </div>
           )
       )}
@@ -158,7 +162,7 @@ const Home = () => {
         handleClose={handleModalClose}
         selectedApp={selectedApp}
       />
-    </Container>
+    </div>
   );
 };
 

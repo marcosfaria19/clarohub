@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Form, Button, Modal } from "react-bootstrap";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../services/axios";
+import Button from "../../shared/components/Buttons";
+import Input from "../../shared/components/Input";
+import Select from "../../shared/components/Select";
 
 function Login({ setToken }) {
   const [credencial, setCredencial] = useState("");
@@ -103,66 +105,61 @@ function Login({ setToken }) {
           />
         </div>
         <div className="w-1/2 h-full flex flex-col justify-center items-center bg-[#fafafa]">
-          <h1 className="font-poppins text-5xl font-bold mb-5 text-gray-900">
+          <h1 className="font-poppins text-5xl font-bold mb-20 text-gray-900">
             Claro Hub
           </h1>
-          <form className="login-form w-5/12" onSubmit={handleLoginSubmit}>
-            <h2 className="mb-4 text-3xl font-bold text-gray-900">Login</h2>
+          <form className="w-full px-36" onSubmit={handleLoginSubmit}>
+            <h2 className="mb-8 text-3xl font-bold text-gray-900">Login</h2>
             <div className="mb-3 relative">
-              <input
+              <Input
                 type="text"
-                className="input input-bordered w-full h-14"
-                placeholder=" "
+                className="w-full h-14"
+                label="Credencial"
                 value={credencial}
                 onChange={handleCredencialChange}
                 required
               />
-              <label>Credencial</label>
             </div>
             <div className="mb-3 relative">
-              <input
+              <Input
                 type="password"
-                className="input input-bordered w-full h-14"
-                placeholder=" "
+                className="w-full h-14"
+                label="Senha"
                 value={senha}
                 onChange={handleSenhaChange}
                 required
               />
-              <label>Senha</label>
             </div>
             <div className="loginError min-h-[20px] text-left mb-2 pl-2">
               {loginError && (
                 <p className="text-red-500 text-sm">{loginError}</p>
               )}
             </div>
-            <button
-              type="submit"
-              className="btn bg-neutral-900 w-full text-slate-100  hover:text-white hover:bg-neutral-700"
-            >
-              Entrar
-            </button>
+            <Button>Teste</Button>
           </form>
         </div>
       </div>
       {/* Modal para registrar senha */}
-      <Modal centered show={showPasswordModal} onHide={handleModalClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Cadastrar senha</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            Parece ser seu primeiro acesso. Gostaria de registrar essa senha?
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleModalClose}>
-            Voltar
-          </Button>
-          <Button variant="primary" onClick={handleRegisterSubmit}>
-            Registrar senha
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <div className={`modal ${showPasswordModal ? "modal-open" : ""}`}>
+        <div className="modal-box">
+          <div className="modal-header">
+            <h2 className="text-2xl">Cadastrar senha</h2>
+          </div>
+          <div className="modal-body">
+            <p>
+              Parece ser seu primeiro acesso. Gostaria de registrar essa senha?
+            </p>
+          </div>
+          <div className="modal-footer flex">
+            <button className="btn" onClick={handleModalClose}>
+              Voltar
+            </button>
+            <button className="btn" onClick={handleRegisterSubmit}>
+              Registrar senha
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

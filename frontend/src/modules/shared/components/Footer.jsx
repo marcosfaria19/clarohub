@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import { Container, Navbar } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./Footer.css";
-import Espeto from "./Espeto"; // Importando o modal
+import Espeto from "./Espeto";
 
 const Footer = () => {
   const [showModal, setShowModal] = useState(false);
@@ -11,21 +8,19 @@ const Footer = () => {
   const handleClose = () => setShowModal(false);
 
   return (
-    <Navbar variant="dark" className="footer">
-      <Container className="justify-content-between">
-        <Navbar.Text>
-          &copy; Projetos Americana {new Date().getFullYear()}
-        </Navbar.Text>
-        <Navbar.Text>
+    <footer className="bg-nav text-textContent py-4 select-none">
+      <div className="container mx-auto flex justify-between items-center">
+        <p>&copy; Projetos Americana {new Date().getFullYear()}</p>
+        <p>
           Desenvolvido p
-          <span onClick={handleShow} className="hidden-easter-egg">
+          <span onClick={handleShow} className="cursor-default">
             o
           </span>
           r: Marcos Faria / Fares Nunes
-        </Navbar.Text>
-      </Container>
+        </p>
+      </div>
       <Espeto show={showModal} handleClose={handleClose} />
-    </Navbar>
+    </footer>
   );
 };
 
