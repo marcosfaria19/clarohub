@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../services/axios";
-import Button from "../../shared/components/Buttons";
+/* import Button from "../../shared/components/Buttons"; */
 import Input from "../../shared/components/Input";
 import Select from "../../shared/components/Select";
+import { Button } from "../../shared/components/ui/button";
 
 function Login({ setToken }) {
   const [credencial, setCredencial] = useState("");
@@ -52,7 +53,7 @@ function Login({ setToken }) {
         }
       } else if (err.response && err.response.status === 404) {
         setLoginError(
-          "Credencial não autorizada, solicitar acesso aos administradores"
+          "Credencial não autorizada, solicitar acesso aos administradores",
         );
       } else {
         setLoginError("Erro ao realizar o login");
@@ -75,7 +76,7 @@ function Login({ setToken }) {
       console.error("Erro ao registrar senha", err);
       if (err.response && err.response.status === 401) {
         setLoginError(
-          "Usuário sem permissão de acesso, solicitar ao administrador"
+          "Usuário sem permissão de acesso, solicitar ao administrador",
         );
       } else if (err.response && err.response.status === 400) {
         setLoginError("Este usuário já possui uma senha cadastrada");
@@ -91,9 +92,9 @@ function Login({ setToken }) {
   };
 
   return (
-    <div className="w-full h-screen overflow-hidden bg-base-200">
-      <div className="flex w-full h-screen">
-        <div className="w-1/2 login-bg flex flex-col justify-center items-center text-white text-center relative bg-cover bg-center">
+    <div className="bg-base-200 h-screen w-full overflow-hidden">
+      <div className="flex h-screen w-full">
+        <div className="login-bg relative flex w-1/2 flex-col items-center justify-center bg-cover bg-center text-center text-white">
           <h1 className="text-4xl font-bold">Bem vindo(a)!</h1>
           <p className="mt-2 text-lg">
             Por favor, insira suas credenciais para acessar.
@@ -101,43 +102,41 @@ function Login({ setToken }) {
           <img
             src="claro.png"
             alt="Logo"
-            className="absolute w-1/6 left-4 bottom-4"
+            className="absolute bottom-4 left-4 w-1/6"
           />
         </div>
-        <div className="w-1/2 h-full flex flex-col justify-center items-center bg-[#fafafa]">
-          <h1 className="font-poppins text-5xl font-bold mb-20 text-gray-900">
+        <div className="flex h-full w-1/2 flex-col items-center justify-center bg-[#fafafa]">
+          <h1 className="font-poppins mb-20 text-5xl font-bold text-gray-900">
             Claro Hub
           </h1>
           <form className="w-full px-36" onSubmit={handleLoginSubmit}>
             <h2 className="mb-8 text-3xl font-bold text-gray-900">Login</h2>
-            <div className="mb-3 relative">
+            <div className="relative mb-3">
               <Input
                 type="text"
-                className="w-full h-14"
+                className="h-14 w-full"
                 label="Credencial"
                 value={credencial}
                 onChange={handleCredencialChange}
                 required
               />
             </div>
-            <div className="mb-3 relative">
+            <div className="relative mb-3">
               <Input
                 type="password"
-                className="w-full h-14"
+                className="h-14 w-full"
                 label="Senha"
                 value={senha}
                 onChange={handleSenhaChange}
                 required
               />
             </div>
-            <div className="loginError min-h-[20px] text-left mb-2 pl-2">
+            <div className="loginError mb-2 min-h-[20px] pl-2 text-left">
               {loginError && (
-                <p className="text-red-500 text-sm">{loginError}</p>
+                <p className="text-sm text-red-500">{loginError}</p>
               )}
             </div>
-            <Button variant="primary" className="w-full">
-              Entrar
-            </Button>
+            <Button className="w-full">Entrar</Button>
           </form>
         </div>
       </div>

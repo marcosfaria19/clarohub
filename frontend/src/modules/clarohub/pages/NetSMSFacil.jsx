@@ -3,10 +3,11 @@ import React, { useState, useEffect } from "react";
 import "./NetSMSFacil.css";
 import TabelaNetFacil from "../components/TabelaNetFacil";
 import axiosInstance from "../../../services/axios";
-import Button from "../../shared/components/Buttons";
+
 import Input from "../../shared/components/Input";
 import { BsArrowClockwise, BsCheck, BsCopy, BsQuestion } from "react-icons/bs";
 import Select from "../../shared/components/Select";
+import { Button } from "../../shared/components/ui/button";
 
 const NetSMSFacil = () => {
   const [data, setData] = useState([]);
@@ -122,10 +123,10 @@ const NetSMSFacil = () => {
         item.TIPO === tipo &&
         item["ABERTURA/FECHAMENTO"] === aberturaFechamento &&
         item.NETSMS === netsms &&
-        item["TEXTO PADRAO"] === event.target.value.split(" - ")[1]
+        item["TEXTO PADRAO"] === event.target.value.split(" - ")[1],
     );
     setShowIncidenteField(
-      selectedItem ? selectedItem.INCIDENTE === "Sim" : false
+      selectedItem ? selectedItem.INCIDENTE === "Sim" : false,
     );
     setShowObservacaoField(selectedItem ? selectedItem.OBS === "Sim" : false);
   };
@@ -160,7 +161,7 @@ const NetSMSFacil = () => {
           item.TIPO === tipo &&
           item["ABERTURA/FECHAMENTO"] === aberturaFechamento &&
           item.NETSMS === netsms &&
-          item["TEXTO PADRAO"] === textoPadrao.split(" - ")[1]
+          item["TEXTO PADRAO"] === textoPadrao.split(" - ")[1],
       );
 
       const id = selectedItem ? selectedItem.ID : "";
@@ -183,7 +184,7 @@ const NetSMSFacil = () => {
       } catch (err) {
         console.error(
           "Erro ao copiar texto para a área de transferência:",
-          err
+          err,
         );
       }
       document.body.removeChild(textArea);
@@ -194,7 +195,7 @@ const NetSMSFacil = () => {
 
   const filterData = (conditions) => {
     return data.filter((item) =>
-      conditions.every(([field, value]) => item[field] === value)
+      conditions.every(([field, value]) => item[field] === value),
     );
   };
 
@@ -212,7 +213,7 @@ const NetSMSFacil = () => {
   };
 
   return (
-    <container className="px-72 py-12 bg-bgWhite flex flex-col w-full">
+    <container className="bg-bgWhite flex w-full flex-col px-72 py-12">
       <div className="codigo-container">
         <Input
           type="text"
@@ -223,16 +224,16 @@ const NetSMSFacil = () => {
           className={`${submitted && !codigo ? "border-red-500" : ""}`}
         />
 
-        <div className="relative group">
+        <div className="group relative">
           <Button variant="primary" onClick={handleCodigoSubmit}>
             <BsCheck />
           </Button>
-          <div className="absolute left-0 top-full mt-2 hidden w-max group-hover:block bg-gray-700 text-white text-xs rounded p-2">
+          <div className="absolute left-0 top-full mt-2 hidden w-max rounded bg-gray-700 p-2 text-xs text-white group-hover:block">
             Encontrar automaticamente
           </div>
         </div>
 
-        <div className="relative group">
+        <div className="group relative">
           <Button
             variant="outline-dark"
             className="botao-info"
@@ -240,7 +241,7 @@ const NetSMSFacil = () => {
           >
             <BsQuestion />
           </Button>
-          <div className="absolute left-0 top-full mt-2 hidden w-max group-hover:block bg-gray-700 text-white text-xs rounded p-2">
+          <div className="absolute left-0 top-full mt-2 hidden w-max rounded bg-gray-700 p-2 text-xs text-white group-hover:block">
             Exibir a lista de códigos
           </div>
         </div>
@@ -277,7 +278,7 @@ const NetSMSFacil = () => {
               </option>
             ))}
           </Select>
-          <div className="text-red-500 text-sm mt-1">
+          <div className="mt-1 text-sm text-red-500">
             Por favor, selecione uma tratativa.
           </div>
         </div>
@@ -303,10 +304,10 @@ const NetSMSFacil = () => {
                 <option key={value} value={value}>
                   {value}
                 </option>
-              )
+              ),
             )}
           </Select>
-          <div className="text-red-500 text-sm mt-1">
+          <div className="mt-1 text-sm text-red-500">
             Por favor, selecione um tipo.
           </div>
         </div>
@@ -336,7 +337,7 @@ const NetSMSFacil = () => {
               </option>
             ))}
           </Select>
-          <div className="text-red-500 text-sm mt-1">
+          <div className="mt-1 text-sm text-red-500">
             Por favor, selecione abertura ou fechamento.
           </div>
         </div>
@@ -367,7 +368,7 @@ const NetSMSFacil = () => {
               </option>
             ))}
           </Select>
-          <div className="text-red-500 text-sm mt-1">
+          <div className="mt-1 text-sm text-red-500">
             Por favor, selecione um NetSMS.
           </div>
         </div>
@@ -402,7 +403,7 @@ const NetSMSFacil = () => {
               </option>
             ))}
           </Select>
-          <div className="text-red-500 text-sm mt-1">
+          <div className="mt-1 text-sm text-red-500">
             Por favor, selecione um texto padrão.
           </div>
         </div>
@@ -424,7 +425,7 @@ const NetSMSFacil = () => {
               placeholder="Por favor insira um incidente"
               className="form-input"
             />
-            <div className="text-red-500 text-sm mt-1">
+            <div className="mt-1 text-sm text-red-500">
               Por favor, preencha o campo de incidente.
             </div>
           </div>
@@ -448,28 +449,28 @@ const NetSMSFacil = () => {
             }
             className="form-input"
           />
-          <div className="text-red-500 text-sm mt-1">
+          <div className="mt-1 text-sm text-red-500">
             {showObservacaoField
               ? "Por favor, preencha o campo de observação."
               : "Por favor, preencha o campo de observação."}
           </div>
         </div>
 
-        <div className="flex space-x-4 mb-3">
-          <div className="relative group">
+        <div className="mb-3 flex space-x-4">
+          <div className="group relative">
             <Button variant="success" className="botao-gerar" type="submit">
               <BsCopy />
             </Button>
-            <div className="absolute left-0 top-full mt-2 hidden w-max group-hover:block bg-gray-700 text-white text-xs rounded p-2">
+            <div className="absolute left-0 top-full mt-2 hidden w-max rounded bg-gray-700 p-2 text-xs text-white group-hover:block">
               Gerar texto padrão
             </div>
           </div>
 
-          <div className="relative group">
+          <div className="group relative">
             <Button variant="error" onClick={handleReset}>
               <BsArrowClockwise />
             </Button>
-            <div className="absolute left-0 top-full mt-2 hidden w-max group-hover:block bg-gray-700 text-white text-xs rounded p-2">
+            <div className="absolute left-0 top-full mt-2 hidden w-max rounded bg-gray-700 p-2 text-xs text-white group-hover:block">
               Reiniciar
             </div>
           </div>
@@ -477,16 +478,16 @@ const NetSMSFacil = () => {
 
         {showAlert && (
           <div
-            className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+            className="relative rounded border border-green-400 bg-green-100 px-4 py-3 text-green-700"
             role="alert"
           >
             O texto foi copiado para a área de transferência com sucesso.
             <span
-              className="absolute top-0 bottom-0 right-0 px-4 py-3"
+              className="absolute bottom-0 right-0 top-0 px-4 py-3"
               onClick={() => setShowAlert(false)}
             >
               <svg
-                className="fill-current h-6 w-6 text-green-500"
+                className="h-6 w-6 fill-current text-green-500"
                 role="button"
                 viewBox="0 0 20 20"
               >
