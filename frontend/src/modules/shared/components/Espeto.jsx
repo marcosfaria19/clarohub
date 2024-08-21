@@ -8,8 +8,12 @@ const Espeto = ({ show, handleClose }) => {
       <Modal.Header closeButton>
         <Modal.Title></Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <p></p>
+      <Modal.Body className="text-center">
+        <img
+          src="https://www.icegif.com/wp-content/uploads/icegif-1617.gif"
+          alt="Easter Egg GIF"
+          style={{ maxWidth: "100%", height: "auto" }}
+        />
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

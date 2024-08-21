@@ -1,13 +1,17 @@
 // NetSMSFacil.js
 import React, { useState, useEffect } from "react";
+import {
+  Form,
+  Button,
+  Container,
+  Alert,
+  Tooltip,
+  OverlayTrigger,
+  Table,
+} from "react-bootstrap";
 import "./NetSMSFacil.css";
 import TabelaNetFacil from "../components/TabelaNetFacil";
-import axiosInstance from "../../../services/axios";
-
-import Input from "../../shared/components/Input";
-import { BsArrowClockwise, BsCheck, BsCopy, BsQuestion } from "react-icons/bs";
-import Select from "../../shared/components/Select";
-import { Button } from "../../shared/components/ui/button";
+import axiosInstance from "../services/axios";
 
 const NetSMSFacil = () => {
   const [data, setData] = useState([]);
@@ -26,6 +30,7 @@ const NetSMSFacil = () => {
   const [codigo, setCodigo] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [tabelaConsulta, setTabelaConsulta] = useState(false);
+  const [sgdData, setSgdData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,19 +44,24 @@ const NetSMSFacil = () => {
     fetchData();
   }, []);
 
+  const findSelectedItem = (codigo) => {
+    const codigoNumber = String(codigo);
+    const selectedItem = data.find((item) => String(item.ID) === codigoNumber);
+    return selectedItem;
+  };
+
   const handleCodigoSubmit = () => {
-    const codigoNumber = codigo;
-    const selectedItem = data.find((item) => item.ID === codigoNumber);
-    if (selectedItem) {
+    const item = findSelectedItem(codigo);
+    if (item) {
       handleReset();
       setCodigo(codigo);
-      setTratativa(selectedItem.TRATATIVA);
-      setTipo(selectedItem.TIPO);
-      setAberturaFechamento(selectedItem["ABERTURA/FECHAMENTO"]);
-      setNetsms(selectedItem.NETSMS);
-      setTextoPadrao(`${selectedItem.ID} - ${selectedItem["TEXTO PADRAO"]}`);
-      setShowIncidenteField(selectedItem.INCIDENTE === "Sim");
-      setShowObservacaoField(selectedItem.OBS === "Sim");
+      setTratativa(item.TRATATIVA);
+      setTipo(item.TIPO);
+      setAberturaFechamento(item["ABERTURA/FECHAMENTO"]);
+      setNetsms(item.NETSMS);
+      setTextoPadrao(`${item.ID} - ${item["TEXTO PADRAO"]}`);
+      setShowIncidenteField(item.INCIDENTE === "Sim");
+      setShowObservacaoField(item.OBS === "Sim");
       setValidated(true);
     } else {
       handleReset();
@@ -117,18 +127,11 @@ const NetSMSFacil = () => {
 
   const handleTextoPadraoChange = (event) => {
     setTextoPadrao(event.target.value);
-    const selectedItem = data.find(
-      (item) =>
-        item.TRATATIVA === tratativa &&
-        item.TIPO === tipo &&
-        item["ABERTURA/FECHAMENTO"] === aberturaFechamento &&
-        item.NETSMS === netsms &&
-        item["TEXTO PADRAO"] === event.target.value.split(" - ")[1],
-    );
-    setShowIncidenteField(
-      selectedItem ? selectedItem.INCIDENTE === "Sim" : false,
-    );
-    setShowObservacaoField(selectedItem ? selectedItem.OBS === "Sim" : false);
+    const item = findSelectedItem(codigo);
+    if (item) {
+      setShowIncidenteField(item.INCIDENTE === "Sim");
+      setShowObservacaoField(item.OBS === "Sim");
+    }
   };
 
   const handleReset = () => {
@@ -145,49 +148,57 @@ const NetSMSFacil = () => {
     setShowIncidenteField(false);
     setShowObservacaoField(false);
     setCodigo("");
+    setSgdData([]);
     setSubmitted(false);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     const form = event.currentTarget;
+    const item = findSelectedItem(codigo);
     event.preventDefault();
     setSubmitted(true);
     if (form.checkValidity() === false) {
       event.stopPropagation();
     } else {
-      const selectedItem = data.find(
-        (item) =>
-          item.TRATATIVA === tratativa &&
-          item.TIPO === tipo &&
-          item["ABERTURA/FECHAMENTO"] === aberturaFechamento &&
-          item.NETSMS === netsms &&
-          item["TEXTO PADRAO"] === textoPadrao.split(" - ")[1],
-      );
+      if (item) {
+        let textoPadraoConcatenado = textoPadrao;
+        const usuarioAtual = localStorage.getItem("userName");
+        const nomeGestor = localStorage.getItem("gestor");
 
-      const id = selectedItem ? selectedItem.ID : "";
-      let textoPadraoConcatenado = textoPadrao;
-      const usuarioAtual = localStorage.getItem("userName");
-      const nomeGestor = localStorage.getItem("gestor");
+        textoPadraoConcatenado += incidente ? ` ${incidente}` : "";
+        textoPadraoConcatenado += observacao ? `\nOBS: ${observacao}` : "";
+        textoPadraoConcatenado += `\n\n${usuarioAtual} // ${nomeGestor}`;
 
-      textoPadraoConcatenado += incidente ? ` ${incidente}` : "";
-      textoPadraoConcatenado += observacao ? `\nOBS: ${observacao}` : "";
-      textoPadraoConcatenado += `\n\n${usuarioAtual} // ${nomeGestor}`;
+        setConcatenatedText(textoPadraoConcatenado);
+        const textArea = document.createElement("textarea");
+        textArea.value = textoPadraoConcatenado;
+        document.body.appendChild(textArea);
+        textArea.select();
 
-      setConcatenatedText(textoPadraoConcatenado);
-      const textArea = document.createElement("textarea");
-      textArea.value = textoPadraoConcatenado;
-      document.body.appendChild(textArea);
-      textArea.select();
-      try {
-        document.execCommand("copy");
-        setShowAlert(true);
-      } catch (err) {
-        console.error(
-          "Erro ao copiar texto para a área de transferência:",
-          err,
-        );
+        try {
+          document.execCommand("copy");
+          setShowAlert(true);
+
+          // Requisição GET para buscar todos os dados de /netfacilsgd
+          const sgdResponse = await axiosInstance.get(`/netfacilsgd`);
+          const allSgdData = sgdResponse.data;
+
+          // Filtragem dos dados com base nos IDs do selectedItem.SGD
+          const sgdIds = item?.SGD.map(Number) || [];
+          const filteredSgdData = allSgdData.filter((item) =>
+            sgdIds.includes(item.ID_SGD)
+          );
+
+          // Atualizar o estado com os dados filtrados
+          setSgdData(filteredSgdData);
+        } catch (err) {
+          console.error(
+            "Erro ao copiar texto para a área de transferência:",
+            err
+          );
+        }
+        document.body.removeChild(textArea);
       }
-      document.body.removeChild(textArea);
     }
 
     setValidated(true);
@@ -195,7 +206,7 @@ const NetSMSFacil = () => {
 
   const filterData = (conditions) => {
     return data.filter((item) =>
-      conditions.every(([field, value]) => item[field] === value),
+      conditions.every(([field, value]) => item[field] === value)
     );
   };
 
@@ -213,60 +224,58 @@ const NetSMSFacil = () => {
   };
 
   return (
-    <container className="bg-bgWhite flex w-full flex-col px-72 py-12">
+    <Container
+      className="py-5 netsmsfacil-container"
+      data-bs-theme="light"
+      fluid
+    >
       <div className="codigo-container">
-        <Input
+        <Form.Control
+          className="codigo-input"
           type="text"
           placeholder="Cód."
           value={codigo}
           maxLength={3}
           onChange={handleCodigoChange}
-          className={`${submitted && !codigo ? "border-red-500" : ""}`}
+          isInvalid={submitted && !codigo}
         />
 
-        <div className="group relative">
-          <Button variant="primary" onClick={handleCodigoSubmit}>
-            <BsCheck />
+        <OverlayTrigger
+          placement="top"
+          overlay={
+            <Tooltip id="button-tooltip">Encontrar automaticamente</Tooltip>
+          }
+        >
+          <Button variant="dark" onClick={handleCodigoSubmit}>
+            <i className="bi bi-check-lg"></i>
           </Button>
-          <div className="absolute left-0 top-full mt-2 hidden w-max rounded bg-gray-700 p-2 text-xs text-white group-hover:block">
-            Encontrar automaticamente
-          </div>
-        </div>
+        </OverlayTrigger>
 
-        <div className="group relative">
+        <OverlayTrigger
+          placement="top"
+          overlay={
+            <Tooltip id="button-tooltip">Exibir a lista de códigos</Tooltip>
+          }
+        >
           <Button
             variant="outline-dark"
             className="botao-info"
             onClick={abrirTabelaConsulta}
           >
-            <BsQuestion />
+            <i className="bi bi-question-lg"></i>
           </Button>
-          <div className="absolute left-0 top-full mt-2 hidden w-max rounded bg-gray-700 p-2 text-xs text-white group-hover:block">
-            Exibir a lista de códigos
-          </div>
-        </div>
+        </OverlayTrigger>
 
         <TabelaNetFacil
           isOpen={tabelaConsulta}
           onRequestClose={fecharTabelaConsulta}
         />
       </div>
-
-      <form
-        noValidate
-        validated={validated}
-        onSubmit={handleSubmit}
-        className="space-y-4"
-      >
-        <div className="form-group-spacing">
-          <label
-            htmlFor="tratativa"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Tratativa
-          </label>
-          <Select
-            id="tratativa"
+      <Form noValidate validated={validated} onSubmit={handleSubmit}>
+        <Form.Group className="form-group-spacing" controlId="tratativa">
+          <Form.Label>Tratativa</Form.Label>
+          <Form.Control
+            as="select"
             value={tratativa}
             onChange={handleTratativaChange}
             required
@@ -277,26 +286,20 @@ const NetSMSFacil = () => {
                 {value}
               </option>
             ))}
-          </Select>
-          <div className="mt-1 text-sm text-red-500">
+          </Form.Control>
+          <Form.Control.Feedback type="invalid">
             Por favor, selecione uma tratativa.
-          </div>
-        </div>
+          </Form.Control.Feedback>
+        </Form.Group>
 
-        <div className="form-group-spacing">
-          <label
-            htmlFor="tipo"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Tipo
-          </label>
-          <Select
-            id="tipo"
+        <Form.Group className="form-group-spacing" controlId="tipo">
+          <Form.Label>Tipo</Form.Label>
+          <Form.Control
+            as="select"
             value={tipo}
             onChange={handleTipoChange}
             disabled={!tratativa}
             required
-            className="form-select"
           >
             <option value="">Selecione</option>
             {getUniqueValues("TIPO", [["TRATATIVA", tratativa]]).map(
@@ -304,28 +307,25 @@ const NetSMSFacil = () => {
                 <option key={value} value={value}>
                   {value}
                 </option>
-              ),
+              )
             )}
-          </Select>
-          <div className="mt-1 text-sm text-red-500">
+          </Form.Control>
+          <Form.Control.Feedback type="invalid">
             Por favor, selecione um tipo.
-          </div>
-        </div>
+          </Form.Control.Feedback>
+        </Form.Group>
 
-        <div className="form-group-spacing">
-          <label
-            htmlFor="aberturaFechamento"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Abertura/Fechamento
-          </label>
-          <Select
-            id="aberturaFechamento"
+        <Form.Group
+          className="form-group-spacing"
+          controlId="aberturaFechamento"
+        >
+          <Form.Label>Abertura/Fechamento</Form.Label>
+          <Form.Control
+            as="select"
             value={aberturaFechamento}
             onChange={handleAberturaFechamentoChange}
             disabled={!tipo}
             required
-            className="form-select"
           >
             <option value="">Selecione</option>
             {getUniqueValues("ABERTURA/FECHAMENTO", [
@@ -336,26 +336,20 @@ const NetSMSFacil = () => {
                 {value}
               </option>
             ))}
-          </Select>
-          <div className="mt-1 text-sm text-red-500">
+          </Form.Control>
+          <Form.Control.Feedback type="invalid">
             Por favor, selecione abertura ou fechamento.
-          </div>
-        </div>
+          </Form.Control.Feedback>
+        </Form.Group>
 
-        <div className="form-group-spacing">
-          <label
-            htmlFor="netsms"
-            className="block text-sm font-medium text-gray-700"
-          >
-            NetSMS
-          </label>
-          <Select
-            id="netsms"
+        <Form.Group className="form-group-spacing" controlId="netsms">
+          <Form.Label>NetSMS</Form.Label>
+          <Form.Control
+            as="select"
             value={netsms}
             onChange={handleNetsmsChange}
             disabled={!aberturaFechamento}
             required
-            className="form-select"
           >
             <option value="">Selecione</option>
             {getUniqueValues("NETSMS", [
@@ -367,26 +361,20 @@ const NetSMSFacil = () => {
                 {value}
               </option>
             ))}
-          </Select>
-          <div className="mt-1 text-sm text-red-500">
+          </Form.Control>
+          <Form.Control.Feedback type="invalid">
             Por favor, selecione um NetSMS.
-          </div>
-        </div>
+          </Form.Control.Feedback>
+        </Form.Group>
 
-        <div className="form-group-spacing">
-          <label
-            htmlFor="textoPadrao"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Texto Padrão
-          </label>
-          <Select
-            id="textoPadrao"
+        <Form.Group className="form-group-spacing" controlId="textoPadrao">
+          <Form.Label>Texto Padrão</Form.Label>
+          <Form.Control
+            as="select"
             value={textoPadrao}
             onChange={handleTextoPadraoChange}
             disabled={!netsms}
             required
-            className="form-select"
           >
             <option value="">Selecione</option>
             {filterData([
@@ -402,115 +390,115 @@ const NetSMSFacil = () => {
                 {`${item.ID} - ${item["TEXTO PADRAO"]}`}
               </option>
             ))}
-          </Select>
-          <div className="mt-1 text-sm text-red-500">
+          </Form.Control>
+          <Form.Control.Feedback type="invalid">
             Por favor, selecione um texto padrão.
-          </div>
-        </div>
+          </Form.Control.Feedback>
+        </Form.Group>
 
         {showIncidenteField && (
-          <div className="form-group-spacing">
-            <label
-              htmlFor="incidente"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Incidente
-            </label>
-            <input
+          <Form.Group className="form-group-spacing" controlId="incidente">
+            <Form.Label>Incidente</Form.Label>
+            <Form.Control
               type="text"
-              id="incidente"
               value={incidente}
               onChange={handleIncidenteChange}
               required
               placeholder="Por favor insira um incidente"
-              className="form-input"
             />
-            <div className="mt-1 text-sm text-red-500">
+            <Form.Control.Feedback type="invalid">
               Por favor, preencha o campo de incidente.
-            </div>
-          </div>
+            </Form.Control.Feedback>
+          </Form.Group>
         )}
 
-        <div className="form-group-spacing">
-          <label
-            htmlFor="observacao"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Observação
-          </label>
-          <input
+        <Form.Group className="form-group-spacing" controlId="observacao">
+          <Form.Label>Observação</Form.Label>
+          <Form.Control
             type="text"
-            id="observacao"
             value={observacao}
             onChange={handleObservacaoChange}
             required={showObservacaoField}
             placeholder={
               showObservacaoField ? "Por favor insira uma observação" : ""
             }
-            className="form-input"
           />
-          <div className="mt-1 text-sm text-red-500">
+          <Form.Control.Feedback type="invalid">
             {showObservacaoField
               ? "Por favor, preencha o campo de observação."
               : "Por favor, preencha o campo de observação."}
-          </div>
-        </div>
-
-        <div className="mb-3 flex space-x-4">
-          <div className="group relative">
-            <Button variant="success" className="botao-gerar" type="submit">
-              <BsCopy />
-            </Button>
-            <div className="absolute left-0 top-full mt-2 hidden w-max rounded bg-gray-700 p-2 text-xs text-white group-hover:block">
-              Gerar texto padrão
-            </div>
-          </div>
-
-          <div className="group relative">
-            <Button variant="error" onClick={handleReset}>
-              <BsArrowClockwise />
-            </Button>
-            <div className="absolute left-0 top-full mt-2 hidden w-max rounded bg-gray-700 p-2 text-xs text-white group-hover:block">
-              Reiniciar
-            </div>
-          </div>
-        </div>
-
-        {showAlert && (
-          <div
-            className="relative rounded border border-green-400 bg-green-100 px-4 py-3 text-green-700"
-            role="alert"
+          </Form.Control.Feedback>
+        </Form.Group>
+        <div className="botoes d-flex mb-3">
+          <OverlayTrigger
+            placement="left"
+            overlay={<Tooltip id="button-tooltip">Gerar texto padrão</Tooltip>}
           >
-            O texto foi copiado para a área de transferência com sucesso.
-            <span
-              className="absolute bottom-0 right-0 top-0 px-4 py-3"
-              onClick={() => setShowAlert(false)}
+            <Button variant="success" className="botao-gerar" type="submit">
+              <i className="bi bi-copy"></i>
+            </Button>
+          </OverlayTrigger>
+          <OverlayTrigger
+            placement="right"
+            overlay={<Tooltip id="button-tooltip">Reiniciar</Tooltip>}
+          >
+            <Button
+              variant="danger"
+              className="botao-reiniciar"
+              onClick={handleReset}
             >
-              <svg
-                className="h-6 w-6 fill-current text-green-500"
-                role="button"
-                viewBox="0 0 20 20"
-              >
-                <title>Close</title>
-                <path d="M14.348 5.652a.5.5 0 1 1 .707.707L10.707 10l4.348 4.348a.5.5 0 0 1-.707.707L10 10.707l-4.348 4.348a.5.5 0 1 1-.707-.707L9.293 10 4.946 5.652a.5.5 0 1 1 .707-.707L10 9.293l4.348-4.348z" />
-              </svg>
-            </span>
-          </div>
-        )}
+              <i className="bi bi-arrow-clockwise"></i>
+            </Button>
+          </OverlayTrigger>
+        </div>
+
+        <Alert
+          variant="success"
+          show={showAlert}
+          onClose={() => setShowAlert(false)}
+          dismissible
+        >
+          O texto foi copiado para a área de transferência com sucesso.
+          {sgdData.length > 0 && (
+            <div className="mt-2">
+              Fechamentos SGD:
+              <Table bordered variant="success" className="mt-3">
+                <thead>
+                  <tr>
+                    <th>Fila</th>
+                    <th>Seleção</th>
+                    <th>Motivo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sgdData.map((item) => (
+                    <tr key={item.ID_SGD}>
+                      <td>{item.FILA}</td>
+                      <td>{item.SELECAO}</td>
+                      <td>{item.MOTIVO}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          )}
+        </Alert>
 
         {concatenatedText && (
           <div className="mt-5">
-            <p className="font-bold">Texto Padrão:</p>
-            <textarea
+            <p>
+              <strong>Texto Padrão:</strong>
+            </p>
+            <Form.Control
+              as="textarea"
               rows={5}
               value={concatenatedText}
               readOnly
-              className="form-textarea mt-1 block w-full"
             />
           </div>
         )}
-      </form>
-    </container>
+      </Form>
+    </Container>
   );
 };
 

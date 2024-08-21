@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import axiosInstance from "../services/axios";
 
 const AddNetSMSFacil = ({
   show,
@@ -9,9 +10,39 @@ const AddNetSMSFacil = ({
   handleChange,
   isEditMode,
 }) => {
+  const [sgdOptions, setSgdOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchSgdOptions = async () => {
+      try {
+        const response = await axiosInstance.get("/netfacilsgd");
+        const uniqueSgds = [
+          ...new Set(response.data.map((item) => item.ID_SGD)),
+        ];
+        setSgdOptions(uniqueSgds);
+      } catch (error) {
+        console.error("Erro ao buscar dados do SGD:", error);
+      }
+    };
+
+    fetchSgdOptions();
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     handleSave();
+  };
+
+  const handleMultiSelectChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions).map(
+      (option) => option.value
+    );
+    handleChange({
+      target: {
+        name: e.target.name,
+        value: selectedOptions,
+      },
+    });
   };
 
   return (
@@ -121,6 +152,22 @@ const AddNetSMSFacil = ({
               <option value="">Selecione</option>
               <option value="Sim">Sim</option>
               <option value="Não">Não</option>
+            </Form.Control>
+          </Form.Group>
+          <Form.Group controlId="formSgd">
+            <Form.Label>Fechamento SGD</Form.Label>
+            <Form.Control
+              as="select"
+              name="SGD"
+              value={currentItem.SGD || []}
+              onChange={handleMultiSelectChange}
+              multiple
+            >
+              {sgdOptions.map((id) => (
+                <option key={id} value={id}>
+                  {id}
+                </option>
+              ))}
             </Form.Control>
           </Form.Group>
         </Form>

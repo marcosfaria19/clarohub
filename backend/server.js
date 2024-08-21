@@ -29,15 +29,20 @@ async function startServer() {
     const netsmsfacilRoutes = require("./src/routes/netsmsfacilRoutes")(
       db.collection("netsmsfacil")
     );
+    const netfacilsgdRoutes = require("./src/routes/netfacilsgdRoutes")(
+      db.collection("netfacilsgd")
+    );
     const usersRoutes = require("./src/routes/usersRoutes")(
       db.collection("users")
     );
+
     const appRoutes = require("./src/routes/appRoutes")(db.collection("apps"));
 
     // Rotas protegidas
     app.use("/", qualinetRoutes);
     app.use("/", usersRoutes);
     app.use("/", netsmsfacilRoutes);
+    app.use("/", netfacilsgdRoutes);
     app.use("/", appRoutes);
 
     // Middleware para servir imagens estáticas
