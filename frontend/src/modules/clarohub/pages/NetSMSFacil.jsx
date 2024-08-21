@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import "./NetSMSFacil.css";
 import TabelaNetFacil from "../components/TabelaNetFacil";
-import axiosInstance from "../services/axios";
+import axiosInstance from "../../../services/axios";
 
 const NetSMSFacil = () => {
   const [data, setData] = useState([]);
@@ -186,7 +186,7 @@ const NetSMSFacil = () => {
           // Filtragem dos dados com base nos IDs do selectedItem.SGD
           const sgdIds = item?.SGD.map(Number) || [];
           const filteredSgdData = allSgdData.filter((item) =>
-            sgdIds.includes(item.ID_SGD)
+            sgdIds.includes(item.ID_SGD),
           );
 
           // Atualizar o estado com os dados filtrados
@@ -194,7 +194,7 @@ const NetSMSFacil = () => {
         } catch (err) {
           console.error(
             "Erro ao copiar texto para a área de transferência:",
-            err
+            err,
           );
         }
         document.body.removeChild(textArea);
@@ -206,7 +206,7 @@ const NetSMSFacil = () => {
 
   const filterData = (conditions) => {
     return data.filter((item) =>
-      conditions.every(([field, value]) => item[field] === value)
+      conditions.every(([field, value]) => item[field] === value),
     );
   };
 
@@ -225,7 +225,7 @@ const NetSMSFacil = () => {
 
   return (
     <Container
-      className="py-5 netsmsfacil-container"
+      className="netsmsfacil-container py-5"
       data-bs-theme="light"
       fluid
     >
@@ -307,7 +307,7 @@ const NetSMSFacil = () => {
                 <option key={value} value={value}>
                   {value}
                 </option>
-              )
+              ),
             )}
           </Form.Control>
           <Form.Control.Feedback type="invalid">

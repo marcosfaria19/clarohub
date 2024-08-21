@@ -8,8 +8,8 @@ import {
 } from "react-bootstrap";
 import "./NetSMSFacilAdmin.css";
 import AddNetSMSFacil from "../components/AddNetSMSFacil";
-import TabelaPadrao from "../components/TabelaPadrao";
-import axiosInstance from "../services/axios";
+import axiosInstance from "../../../services/axios";
+import TabelaPadrao from "../../shared/components/TabelaPadrao";
 
 function NetSMSFacilAdmin() {
   const [dados, setDados] = useState([]);
@@ -183,7 +183,7 @@ function NetSMSFacilAdmin() {
         disableSortBy: true,
       },
     ],
-    [] // Depende apenas da inicialização
+    [], // Depende apenas da inicialização
   );
 
   return (

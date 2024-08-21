@@ -1,6 +1,6 @@
+import axiosInstance from "../../../services/axios";
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import axiosInstance from "../services/axios";
 
 const AddNetSMSFacil = ({
   show,
@@ -35,7 +35,7 @@ const AddNetSMSFacil = ({
 
   const handleMultiSelectChange = (e) => {
     const selectedOptions = Array.from(e.target.selectedOptions).map(
-      (option) => option.value
+      (option) => option.value,
     );
     handleChange({
       target: {
