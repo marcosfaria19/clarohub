@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../../services/axios";
-/* import Button from "../../shared/components/Buttons"; */
-import Input from "../../shared/components/Input";
-import Select from "../../shared/components/Select";
-import { Button } from "../../shared/components/ui/button";
+import axiosInstance from "services/axios";
+import Input from "modules/shared/components/Input";
+import { Button } from "modules/shared/components/ui/button";
 
 function Login({ setToken }) {
   const [credencial, setCredencial] = useState("");

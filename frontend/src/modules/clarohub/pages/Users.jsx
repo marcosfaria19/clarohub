@@ -7,10 +7,10 @@ import {
   OverlayTrigger,
 } from "react-bootstrap";
 import "./Users.css";
-import AddUsuario from "../components/AddUsuario";
-import TabelaPadrao from "../../shared/components/TabelaPadrao";
-import UserBadge from "../components/UserBadge";
-import axiosInstance from "../../../services/axios";
+import AddUsuario from "modules/clarohub/components/AddUsuario";
+import TabelaPadrao from "modules/shared/components/TabelaPadrao";
+import UserBadge from "modules/clarohub/components/UserBadge";
+import axiosInstance from "services/axios";
 
 function Users() {
   const [dados, setDados] = useState([]);
@@ -140,7 +140,7 @@ function Users() {
         disableSortBy: true,
       },
     ],
-    []
+    [],
   );
 
   return (

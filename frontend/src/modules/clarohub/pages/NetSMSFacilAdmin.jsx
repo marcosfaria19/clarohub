@@ -7,9 +7,9 @@ import {
   OverlayTrigger,
 } from "react-bootstrap";
 import "./NetSMSFacilAdmin.css";
-import AddNetSMSFacil from "../components/AddNetSMSFacil";
-import axiosInstance from "../../../services/axios";
-import TabelaPadrao from "../../shared/components/TabelaPadrao";
+import AddNetSMSFacil from "modules/clarohub/components/AddNetSMSFacil";
+import axiosInstance from "services/axios";
+import TabelaPadrao from "modules/shared/components/TabelaPadrao";
 
 function NetSMSFacilAdmin() {
   const [dados, setDados] = useState([]);

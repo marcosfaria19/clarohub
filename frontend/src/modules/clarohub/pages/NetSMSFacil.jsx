@@ -10,8 +10,8 @@ import {
   Table,
 } from "react-bootstrap";
 import "./NetSMSFacil.css";
-import TabelaNetFacil from "../components/TabelaNetFacil";
-import axiosInstance from "../../../services/axios";
+import TabelaNetFacil from "modules/clarohub/components/TabelaNetFacil";
+import axiosInstance from "services/axios";
 
 const NetSMSFacil = () => {
   const [data, setData] = useState([]);

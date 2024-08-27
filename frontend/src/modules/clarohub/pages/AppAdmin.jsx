@@ -7,9 +7,9 @@ import {
   OverlayTrigger,
 } from "react-bootstrap";
 import "./AppAdmin.css";
-import AddApp from "../components/AddApp";
-import TabelaPadrao from "../../shared/components/TabelaPadrao";
-import axiosInstance from "../../../services/axios";
+import AddApp from "modules/clarohub/components/AddApp";
+import TabelaPadrao from "modules/shared/components/TabelaPadrao";
+import axiosInstance from "services/axios";
 
 function AppAdmin() {
   const [dados, setDados] = useState([]);
@@ -164,7 +164,7 @@ function AppAdmin() {
         disableSortBy: true,
       },
     ],
-    [] // Depende apenas da inicialização
+    [], // Depende apenas da inicialização
   );
 
   return (

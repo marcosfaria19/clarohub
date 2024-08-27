@@ -1,0 +1,75 @@
+backend
+├── .env
+├── package-lock.json
+├── package.json
+├── server.js
+├── src
+│   ├── assets
+│   │   ├── cards
+│   │   │   ├── card_art1.jpg
+│   │   │   ├── card_art10nethp.jpg
+│   │   │   ├── card_art11maestro.jpg
+│   │   │   ├── card_art12jira.jpg
+│   │   │   ├── card_art13nuvem.jpg
+│   │   │   ├── card_art14visium.jpg
+│   │   │   ├── card_art15.jpg
+│   │   │   ├── card_art16.jpg
+│   │   │   ├── card_art17.jpg
+│   │   │   ├── card_art18.jpg
+│   │   │   ├── card_art19.jpg
+│   │   │   ├── card_art2.jpg
+│   │   │   ├── card_art3.jpg
+│   │   │   ├── card_art4.jpg
+│   │   │   ├── card_art5.jpg
+│   │   │   ├── card_art6.jpg
+│   │   │   ├── card_art7.jpg
+│   │   │   ├── card_art8.jpg
+│   │   │   ├── card_art9.jpg
+│   │   │   ├── card_powerapps_mdu.jpg
+│   │   │   ├── card_powerapps_nap.jpg
+│   │   │   ├── card_powerapps_piloto.jpg
+│   │   │   ├── card_powerapps_tap.jpg
+│   │   │   ├── card_sharepoint_lodesinc.jpg
+│   │   │   ├── card_sharepoint_mdu.jpg
+│   │   │   ├── card_sharepoint_nap.jpg
+│   │   │   ├── card_sharepoint_piloto.jpg
+│   │   │   └── card_sharepoint_tap.jpg
+│   │   └── logos
+│   │       ├── dbnetfacil_color.png
+│   │       ├── dbqualifacil_color.png
+│   │       ├── db_white.png
+│   │       ├── logoatlas.png
+│   │       ├── logocards.png
+│   │       ├── logoclaroflow.png
+│   │       ├── logoclaro_color.png
+│   │       ├── logoclaro_white.png
+│   │       ├── logoidm.png
+│   │       ├── logojira.png
+│   │       ├── logonuvem.png
+│   │       ├── logopowerapps_color.png
+│   │       ├── logopowerapps_white.png
+│   │       ├── logosgd_color.png
+│   │       ├── logosgd_white.png
+│   │       ├── logosharepoint_color.png
+│   │       ├── logosharepoint_white.png
+│   │       ├── logovisium.png
+│   │       ├── netfacil_color.png
+│   │       ├── netfacil_white.png
+│   │       ├── netsms_color.png
+│   │       ├── netsms_white.png
+│   │       ├── qualifacil_color.png
+│   │       ├── qualifacil_white.png
+│   │       ├── user_color.png
+│   │       └── user_white.png
+│   ├── middleware
+│   │   └── authMiddleware.js
+│   ├── models
+│   │   ├── cidadeParaUF.js
+│   │   └── formatarData.js
+│   └── routes
+│       ├── appRoutes.js
+│       ├── netfacilsgdRoutes.js
+│       ├── netsmsfacilRoutes.js
+│       ├── qualinetRoutes.js
+│       └── usersRoutes.js
+└── vercel.json
