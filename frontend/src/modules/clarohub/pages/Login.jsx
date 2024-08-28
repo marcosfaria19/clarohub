@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "services/axios";
-import Input from "modules/shared/components/Input";
+import { Input } from "modules/shared/components/ui/input";
 import { Button } from "modules/shared/components/ui/button";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "modules/shared/components/ui/dialog";
 
 function Login({ setToken }) {
   const [credencial, setCredencial] = useState("");
@@ -90,75 +98,73 @@ function Login({ setToken }) {
   };
 
   return (
-    <div className="bg-base-200 h-screen w-full overflow-hidden">
-      <div className="flex h-screen w-full">
-        <div className="login-bg relative flex w-1/2 flex-col items-center justify-center bg-cover bg-center text-center text-white">
-          <h1 className="text-4xl font-bold">Bem vindo(a)!</h1>
-          <p className="mt-2 text-lg">
-            Por favor, insira suas credenciais para acessar.
-          </p>
-          <img
-            src="claro.png"
-            alt="Logo"
-            className="absolute bottom-4 left-4 w-1/6"
-          />
-        </div>
-        <div className="flex h-full w-1/2 flex-col items-center justify-center bg-[#fafafa]">
-          <h1 className="font-poppins mb-20 text-5xl font-bold text-gray-900">
-            Claro Hub
-          </h1>
-          <form className="w-full px-36" onSubmit={handleLoginSubmit}>
-            <h2 className="mb-8 text-3xl font-bold text-gray-900">Login</h2>
-            <div className="relative mb-3">
-              <Input
-                type="text"
-                className="h-14 w-full"
-                label="Credencial"
-                value={credencial}
-                onChange={handleCredencialChange}
-                required
-              />
-            </div>
-            <div className="relative mb-3">
-              <Input
-                type="password"
-                className="h-14 w-full"
-                label="Senha"
-                value={senha}
-                onChange={handleSenhaChange}
-                required
-              />
-            </div>
-            <div className="loginError mb-2 min-h-[20px] pl-2 text-left">
-              {loginError && (
-                <p className="text-sm text-red-500">{loginError}</p>
-              )}
-            </div>
-            <Button className="w-full">Entrar</Button>
-          </form>
-        </div>
+    <div className="bg-base-200 flex h-screen w-full select-none flex-col overflow-hidden md:flex-row">
+      <div className="login-bg relative flex flex-1 flex-col items-center justify-center bg-cover bg-center text-center text-white">
+        <h1 className="text-4xl font-bold">Bem vindo(a)!</h1>
+        <p className="mt-2 text-lg">
+          Por favor, insira suas credenciais para acessar.
+        </p>
+        <img
+          src="claro.png"
+          alt="Logo"
+          className="absolute bottom-4 left-4 w-1/6"
+        />
+      </div>
+      <div className="flex flex-1 flex-col items-center justify-center bg-[#fafafa] p-4 md:p-8">
+        <h1 className="font-poppins mb-8 text-3xl font-bold text-gray-900 md:text-5xl">
+          Claro Hub
+        </h1>
+        <form className="w-full max-w-md px-4" onSubmit={handleLoginSubmit}>
+          <h2 className="mb-8 text-2xl font-bold text-gray-900">Login</h2>
+          <div className="relative mb-4">
+            <Input
+              type="text"
+              className="h-12 w-full"
+              label="Credencial"
+              floating
+              value={credencial}
+              onChange={handleCredencialChange}
+              required
+            />
+          </div>
+          <div className="relative mb-4">
+            <Input
+              floating
+              type="password"
+              className="h-12 w-full"
+              label="Senha"
+              value={senha}
+              onChange={handleSenhaChange}
+              required
+            />
+          </div>
+          <div className="loginError mb-4 min-h-[20px] text-left">
+            {loginError && <p className="text-sm text-red-500">{loginError}</p>}
+          </div>
+          <Button className="w-full py-3">Entrar</Button>
+        </form>
       </div>
       {/* Modal para registrar senha */}
-      <div className={`modal ${showPasswordModal ? "modal-open" : ""}`}>
-        <div className="modal-box">
-          <div className="modal-header">
-            <h2 className="text-2xl">Cadastrar senha</h2>
-          </div>
-          <div className="modal-body">
+      <Dialog open={showPasswordModal} onOpenChange={handleModalClose}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cadastrar senha</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
             <p>
               Parece ser seu primeiro acesso. Gostaria de registrar essa senha?
             </p>
-          </div>
-          <div className="modal-footer flex">
-            <button className="btn" onClick={handleModalClose}>
+          </DialogDescription>
+          <DialogFooter>
+            <Button variant="secondary" onClick={handleModalClose}>
               Voltar
-            </button>
-            <button className="btn" onClick={handleRegisterSubmit}>
+            </Button>
+            <Button variant="primary" onClick={handleRegisterSubmit}>
               Registrar senha
-            </button>
-          </div>
-        </div>
-      </div>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
