@@ -8,8 +8,8 @@ const Footer = () => {
   const handleClose = () => setShowModal(false);
 
   return (
-    <footer className="bg-nav text-textContent py-4 select-none">
-      <div className="container mx-auto flex justify-between items-center">
+    <footer className="bg-menu select-none p-5 text-muted">
+      <div className="container mx-auto flex flex-wrap items-center justify-between">
         <p>&copy; Projetos Americana {new Date().getFullYear()}</p>
         <p>
           Desenvolvido p

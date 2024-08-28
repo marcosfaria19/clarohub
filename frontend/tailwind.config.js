@@ -21,6 +21,7 @@ module.exports = {
         border: "hsl(var(--border))",
         borderHover: "hsl(var(--border-hover))",
         input: "hsl(var(--input))",
+        menu: "hsl(var(--menu))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

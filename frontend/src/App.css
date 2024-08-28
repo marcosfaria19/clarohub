@@ -1,9 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
-    --background: 210 10.81% 14.51%;
+    --background: 217 23% 18%;
     --foreground: 0 0% 98%;
     --card: 210 10% 20%;
     --card-foreground: 0 0% 98%;
@@ -22,6 +23,7 @@
     --border: 210 13.79% 88.63%;
     --border-hover: 210 11% 40%;
     --input: 210 10% 30%;
+    --menu: 214 23% 12%;
     --ring: 222.2 84% 30%;
     --radius: 0.5rem;
     --chart-1: 12 76% 51%;

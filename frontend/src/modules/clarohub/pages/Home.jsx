@@ -101,17 +101,17 @@ const Home = () => {
   ];
 
   return (
-    <div className="bg-dark px-72 py-12">
-      <h2 className="mb-12 select-none text-3xl font-semibold text-white">
+    <div className="bg-background px-4 py-8 sm:px-6 sm:py-10 md:px-12 md:py-12 lg:px-72 lg:py-12">
+      <h2 className="mb-6 select-none text-2xl font-semibold text-white sm:mb-8 sm:text-3xl md:mb-10 lg:mb-12">
         Meus Aplicativos
       </h2>
 
       {favorites.length > 0 && (
-        <div className="family-section mb-12">
-          <h2 className="family-title mb-5 select-none text-2xl font-semibold text-white">
+        <div className="family-section mb-8 sm:mb-10 md:mb-12">
+          <h2 className="family-title mb-4 select-none text-xl font-semibold text-white sm:mb-5 sm:text-2xl">
             Favoritos
           </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {favorites.map((app) => (
               <div key={app._id} className="col">
                 <AppCard
@@ -126,18 +126,18 @@ const Home = () => {
               </div>
             ))}
           </div>
-          <hr className="mt-8 border-solid border-neutral-500" />
+          <hr className="mt-6 border-solid border-neutral-500 sm:mt-8" />
         </div>
       )}
 
       {desiredOrder.map(
         (family) =>
           groupedApps[family] && (
-            <div key={family} className="family-section mb-12">
-              <h2 className="family-title mb-8 select-none text-2xl font-semibold text-white">
+            <div key={family} className="family-section mb-8 sm:mb-10 md:mb-12">
+              <h2 className="family-title mb-6 select-none text-xl font-semibold text-white sm:mb-8 sm:text-2xl">
                 {family}
               </h2>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {groupedApps[family]?.map((app) => (
                   <div key={app._id} className="col">
                     <AppCard
@@ -152,7 +152,7 @@ const Home = () => {
                   </div>
                 ))}
               </div>
-              <hr className="mt-8 border-solid border-neutral-500" />
+              <hr className="mt-6 border-solid border-neutral-500 sm:mt-8" />
             </div>
           ),
       )}
