@@ -1,4 +1,4 @@
-import axiosInstance from "../../../services/axios";
+import axiosInstance from "services/axios";
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
@@ -87,12 +87,15 @@ const AddNetSMSFacil = ({
             >
               <option value="">Selecione</option>
               <option value="TP1">TP1</option>
-              <option value="VT1">VT1</option>
+              <option value="TP2">TP2</option>
               <option value="TP3">TP3</option>
+              <option value="VT1">VT1</option>
+              <option value="VT2">VT2</option>
+              <option value="VT3">VT3</option>
               <option value="NP1">NP1</option>
+              <option value="NP2">NP2</option>
               <option value="NP3">NP3</option>
               <option value="MD1">MD1</option>
-              <option value="VT2">VT2</option>
               <option value="MD3">MD3</option>
               <option value="SAR">SAR</option>
             </Form.Control>
