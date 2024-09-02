@@ -4,6 +4,8 @@ import { cva } from "class-variance-authority";
 
 import { cn } from "modules/shared/lib/utils";
 
+<div className="pointer"></div>;
+
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-all duration-250",
   {
@@ -17,7 +19,7 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "text-muted hover:text-foreground border border-muted",
-        link: "text-primary underline-offset-4 hover:underline",
+        link: "text-foreground hover:bg-input cursor-pointer",
       },
       size: {
         default: "h-10 px-4 py-2",
