@@ -1,15 +1,10 @@
-import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Button,
-  Modal,
-  Tooltip,
-  OverlayTrigger,
-} from "react-bootstrap";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, Modal, Tooltip, OverlayTrigger } from "react-bootstrap";
 import "./NetSMSFacilAdmin.css";
 import AddNetSMSFacil from "modules/clarohub/components/AddNetSMSFacil";
 import axiosInstance from "services/axios";
-import TabelaPadrao from "modules/shared/components/TabelaPadrao";
+import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
+import Container from "modules/shared/components/ui/container";
 
 function NetSMSFacilAdmin() {
   const [dados, setDados] = useState([]);
@@ -107,61 +102,52 @@ function NetSMSFacilAdmin() {
     return text;
   };
 
-  // Definir as colunas para a tabela usando react-table
-  const columns = React.useMemo(
+  const columns = useMemo(
     () => [
       {
-        Header: "ID",
-        accessor: "ID",
-        disableSortBy: false, // Permitir ordenação nesta coluna
+        id: "id",
+        header: "ID",
+        accessorKey: "ID",
       },
       {
-        Header: "TRATATIVA",
-        accessor: "TRATATIVA",
-        disableSortBy: false,
+        header: "TRATATIVA",
+        accessorKey: "TRATATIVA",
       },
       {
-        Header: "TIPO",
-        accessor: "TIPO",
-        disableSortBy: false,
+        header: "TIPO",
+        accessorKey: "TIPO",
       },
       {
-        Header: "ABERTURA/FECHAMENTO",
-        accessor: "ABERTURA/FECHAMENTO",
-        disableSortBy: false,
+        header: "ABERTURA/FECHAMENTO",
+        accessorKey: "ABERTURA/FECHAMENTO",
       },
       {
-        Header: "NETSMS",
-        accessor: "NETSMS",
-        Cell: ({ value }) => truncarTexto(value, 40), // Função para truncar o texto exibido
-        disableSortBy: false,
-      },
-      {
-        Header: "TEXTO PADRÃO",
-        accessor: "TEXTO PADRAO",
+        header: "NETSMS",
+        accessorKey: "NETSMS",
         Cell: ({ value }) => truncarTexto(value, 40),
-        disableSortBy: false,
       },
       {
-        Header: "OBS?",
-        accessor: "OBS",
-        disableSortBy: false,
+        header: "TEXTO PADRÃO",
+        accessorKey: "TEXTO PADRAO",
+        Cell: ({ value }) => truncarTexto(value, 40),
       },
       {
-        Header: "INC?",
-        accessor: "INCIDENTE",
-        disableSortBy: false,
+        header: "OBS?",
+        accessorKey: "OBS",
       },
       {
-        Header: "SGD",
-        accessor: "SGD",
+        header: "INC?",
+        accessorKey: "INCIDENTE",
+      },
+      {
+        header: "SGD",
+        accessorKey: "SGD",
         Cell: ({ value }) =>
           truncarTexto(Array.isArray(value) ? value.join(" / ") : "", 3),
-        disableSortBy: false,
       },
       {
-        Header: "AÇÕES",
-        accessor: "acoes",
+        header: "AÇÕES",
+        accessorKey: "acoes",
         Cell: ({ row }) => (
           <div className="netsmsfacil-acoes">
             <Button
@@ -180,40 +166,30 @@ function NetSMSFacilAdmin() {
             </Button>
           </div>
         ),
-        disableSortBy: true,
       },
     ],
-    [], // Depende apenas da inicialização
+    [],
   );
 
   return (
-    <Container className="netsmsadmin-container">
-      <div className="mt-4">
-        <div className="netsmsadmin-titulo">
-          <h3>Códigos Cadastrados</h3>
-          <OverlayTrigger
-            placement="top"
-            overlay={
-              <Tooltip id="button-tooltip">Adicionar novo código</Tooltip>
-            }
-          >
-            <Button
-              variant="outline-dark"
-              className="botao-adicionar"
-              onClick={handleAddClick}
-            >
-              <i className="bi bi-plus-lg"></i>
-            </Button>
-          </OverlayTrigger>
-        </div>
+    <Container>
+      <h2 className="mb-6 select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
+        Códigos Cadastrados
+      </h2>
+      <OverlayTrigger
+        placement="top"
+        overlay={<Tooltip id="button-tooltip">Adicionar novo código</Tooltip>}
+      >
+        <Button
+          variant="outline-dark"
+          className="botao-adicionar"
+          onClick={handleAddClick}
+        >
+          <i className="bi bi-plus-lg"></i>
+        </Button>
+      </OverlayTrigger>
 
-        <TabelaPadrao
-          columns={columns}
-          data={dados}
-          filter={filter}
-          setFilter={setFilter}
-        />
-      </div>
+      <TabelaPadrao columns={columns} data={dados} />
 
       {/* Modal de edição */}
       <AddNetSMSFacil

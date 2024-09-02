@@ -8,7 +8,7 @@ import {
 } from "react-bootstrap";
 import "./AppAdmin.css";
 import AddApp from "modules/clarohub/components/AddApp";
-import TabelaPadrao from "modules/shared/components/TabelaPadrao";
+import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import axiosInstance from "services/axios";
 
 function AppAdmin() {

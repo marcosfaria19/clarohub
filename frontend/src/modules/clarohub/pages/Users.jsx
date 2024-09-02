@@ -8,7 +8,7 @@ import {
 } from "react-bootstrap";
 import "./Users.css";
 import AddUsuario from "modules/clarohub/components/AddUsuario";
-import TabelaPadrao from "modules/shared/components/TabelaPadrao";
+import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import UserBadge from "modules/clarohub/components/UserBadge";
 import axiosInstance from "services/axios";
 

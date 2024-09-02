@@ -1,7 +1,7 @@
 // TabelaNetFacil.js
 import React, { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import TabelaPadrao from "../../shared/components/TabelaPadrao";
+import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import "./TabelaNetFacil.css";
 import axiosInstance from "../../../services/axios";
 
@@ -35,7 +35,7 @@ const TabelaNetFacil = ({ isOpen, onRequestClose }) => {
         accessor: "TEXTO PADRAO",
       },
     ],
-    []
+    [],
   );
 
   const handleDownload = () => {

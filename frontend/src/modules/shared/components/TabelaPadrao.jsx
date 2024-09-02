@@ -1,176 +1,80 @@
-import React, { useEffect } from "react";
-import { Table, Pagination, Form, FormControl } from "react-bootstrap";
 import {
-  useTable,
-  useGlobalFilter,
-  useSortBy,
-  usePagination,
-} from "react-table";
-import "./TabelaPadrao.css";
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
-const TabelaPadrao = ({ columns, data, filter, setFilter }) => {
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    prepareRow,
-    page,
-    nextPage,
-    previousPage,
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "modules/shared/components/ui/table";
 
-    setGlobalFilter,
-    state: { pageIndex, globalFilter },
-    gotoPage,
-    pageCount,
-  } = useTable(
-    {
-      columns,
-      data,
-      initialState: { pageSize: 10, globalFilter: filter },
-    },
-    useGlobalFilter,
-    useSortBy,
-    usePagination
-  );
-
-  useEffect(() => {
-    setGlobalFilter(filter);
-  }, [filter, setGlobalFilter]);
-
-  const renderPagination = () => {
-    if (pageCount <= 1) {
-      return null;
-    }
-
-    const paginationItems = [];
-    const maxPagesToShow = 5;
-    const startPage = Math.max(0, pageIndex - Math.floor(maxPagesToShow / 2));
-    const endPage = Math.min(pageCount - 1, startPage + maxPagesToShow - 1);
-
-    if (startPage > 0) {
-      paginationItems.push(
-        <Pagination.Item
-          className="botao-paginacao"
-          key="first"
-          onClick={() => gotoPage(0)}
-        >
-          {"Primeiro"}
-        </Pagination.Item>
-      );
-      paginationItems.push(
-        <Pagination.Item key="prev" onClick={() => previousPage()}>
-          {"<"}
-        </Pagination.Item>
-      );
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      paginationItems.push(
-        <Pagination.Item
-          key={i}
-          active={i === pageIndex}
-          onClick={() => gotoPage(i)}
-        >
-          {i + 1}
-        </Pagination.Item>
-      );
-    }
-
-    if (endPage < pageCount - 1) {
-      paginationItems.push(
-        <Pagination.Item key="next" onClick={() => nextPage()}>
-          {">"}
-        </Pagination.Item>
-      );
-      paginationItems.push(
-        <Pagination.Item key="last" onClick={() => gotoPage(pageCount - 1)}>
-          {"Último"}
-        </Pagination.Item>
-      );
-    }
-
-    return (
-      <Pagination className="pagination-custom justify-content-end">
-        {paginationItems}
-      </Pagination>
-    );
-  };
-
-  const handleFilterChange = (e) => {
-    const value = e.target.value || undefined;
-    setGlobalFilter(value);
-    setFilter(value);
-  };
+export function TabelaPadrao({ columns, data }) {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
-    <div>
-      <Form className="mt-4">
-        <FormControl
-          type="text"
-          value={globalFilter || ""}
-          onChange={handleFilterChange}
-          placeholder="Procurar..."
-          className="mb-3"
-        />
-      </Form>
-      <Table bordered hover className="mt-4 tabelaPadrao" {...getTableProps()}>
-        <thead>
-          {headerGroups.map((headerGroup) => {
-            const { key: headerGroupKey, ...restHeaderGroupProps } =
-              headerGroup.getHeaderGroupProps();
-            return (
-              <tr key={headerGroupKey} {...restHeaderGroupProps}>
-                {headerGroup.headers.map((column) => {
-                  const { key: columnKey, ...restColumnProps } =
-                    column.getHeaderProps(column.getSortByToggleProps());
-                  return (
-                    <th key={columnKey} {...restColumnProps}>
-                      {column.render("Header")}
-                      {column.isSorted ? (
-                        column.isSortedDesc ? (
-                          <i className="bi bi-caret-down-fill"></i>
-                        ) : (
-                          <i className="bi bi-caret-up-fill"></i>
-                        )
-                      ) : (
-                        ""
-                      )}
-                    </th>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {page.map((row) => {
-            prepareRow(row);
-            const { key: rowKey, ...restRowProps } = row.getRowProps();
-            return (
-              <tr key={rowKey} {...restRowProps}>
-                {row.cells.map((cell) => {
-                  const { key: cellKey, ...restCellProps } =
-                    cell.getCellProps();
-                  return (
-                    <td
-                      key={cellKey}
-                      {...restCellProps}
-                      className={
-                        cell.column.id === "PERMISSOES" ? "badge-column" : ""
-                      }
-                    >
-                      {cell.render("Cell")}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
+    <div className="rounded-md border border-border bg-background text-foreground">
+      <Table>
+        <TableHeader className="bg-menu text-secondary-foreground">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead
+                    key={header.id}
+                    className="border-b border-border px-4 py-2 text-left font-medium"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                className="transition-colors hover:bg-popover hover:text-popover-foreground"
+                data-state={row.getIsSelected() && "selected"}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    className="border-b border-border px-4 py-2"
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={columns.length}
+                className="h-24 text-center text-muted-foreground"
+              >
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
       </Table>
-      {renderPagination()}
     </div>
   );
-};
-
-export default TabelaPadrao;
+}

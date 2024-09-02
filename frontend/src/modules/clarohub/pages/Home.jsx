@@ -3,6 +3,7 @@ import AppCard from "modules/clarohub/components/AppCard";
 import { jwtDecode } from "jwt-decode";
 import SublinkModal from "modules/clarohub/components/SublinkModal";
 import axiosInstance from "services/axios";
+import Container from "modules/shared/components/ui/container";
 
 const Home = () => {
   const [groupedApps, setGroupedApps] = useState({});
@@ -101,14 +102,14 @@ const Home = () => {
   ];
 
   return (
-    <div className="bg-background px-4 py-8 sm:px-6 sm:py-10 md:px-12 md:py-12 lg:px-72 lg:py-12">
-      <h2 className="mb-6 select-none text-2xl font-semibold text-white sm:mb-8 sm:text-3xl md:mb-10 lg:mb-12">
+    <Container>
+      <h1 className="mb-6 select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
         Meus Aplicativos
-      </h2>
+      </h1>
 
       {favorites.length > 0 && (
         <div className="family-section mb-8 sm:mb-10 md:mb-12">
-          <h2 className="family-title mb-4 select-none text-xl font-semibold text-white sm:mb-5 sm:text-2xl">
+          <h2 className="family-title mb-4 select-none text-xl font-semibold text-foreground sm:mb-5 sm:text-2xl">
             Favoritos
           </h2>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
@@ -162,7 +163,7 @@ const Home = () => {
         handleClose={handleModalClose}
         selectedApp={selectedApp}
       />
-    </div>
+    </Container>
   );
 };
 

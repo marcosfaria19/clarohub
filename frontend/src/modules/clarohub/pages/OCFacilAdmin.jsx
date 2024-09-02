@@ -1,7 +1,7 @@
 // OCFacilAdmin.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { Container, Button, Modal, Form } from "react-bootstrap";
-import TabelaPadrao from "modules/shared/components/TabelaPadrao";
+import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import "./OCFacilAdmin.css";
 import axiosInstance from "services/axios";
 
