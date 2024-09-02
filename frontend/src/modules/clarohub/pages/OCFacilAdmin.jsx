@@ -1,8 +1,8 @@
 // OCFacilAdmin.jsx
 import React, { useEffect, useState, useMemo } from "react";
-import { Container, Button, Modal, Form } from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
+import Container from "modules/shared/components/ui/container";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
-import "./OCFacilAdmin.css";
 import axiosInstance from "services/axios";
 
 const formatarData = (dataNumerica) => {
@@ -71,39 +71,33 @@ function OCFacilAdmin() {
   const columns = useMemo(
     () => [
       {
-        Header: "CI_NOME",
-        accessor: "CI_NOME",
-        disableSortBy: true,
+        header: "CI_NOME",
+        accessorKey: "CI_NOME",
       },
       {
-        Header: "UF",
-        accessor: "UF",
-        disableSortBy: true,
+        header: "UF",
+        accessorKey: "UF",
       },
       {
-        Header: "NUM_CONTRATO",
-        accessor: "NUM_CONTRATO",
-        disableSortBy: true,
+        header: "NUM_CONTRATO",
+        accessorKey: "NUM_CONTRATO",
       },
       {
-        Header: "DT_CADASTRO",
-        accessor: "DT_CADASTRO",
+        header: "DT_CADASTRO",
+        accessorKey: "DT_CADASTRO",
         Cell: ({ value }) => formatarData(value),
-        sortable: true,
       },
       {
-        Header: "END_COMPLETO",
-        accessor: "END_COMPLETO",
-        disableSortBy: true,
+        header: "END_COMPLETO",
+        accessorKey: "END_COMPLETO",
       },
       {
-        Header: "COD_NODE",
-        accessor: "COD_NODE",
-        disableSortBy: true,
+        header: "COD_NODE",
+        accessorKey: "COD_NODE",
       },
       {
-        Header: "AÇÕES",
-        accessor: "actions",
+        header: "AÇÕES",
+        accessorKey: "actions",
         Cell: ({ row }) => (
           <div className="acoes">
             <Button
@@ -122,16 +116,15 @@ function OCFacilAdmin() {
             </Button>
           </div>
         ),
-        disableSortBy: true,
       },
     ],
     [],
   );
 
   return (
-    <Container className="dados-container">
+    <Container>
       <div className="mt-4">
-        <h3>OC Fácil Admin</h3>
+        <h3 className="text-3xl">OC Fácil Admin</h3>
         <TabelaPadrao
           columns={columns}
           data={dados}

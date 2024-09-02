@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Modal, Tooltip, OverlayTrigger } from "react-bootstrap";
-import "./NetSMSFacilAdmin.css";
 import AddNetSMSFacil from "modules/clarohub/components/AddNetSMSFacil";
 import axiosInstance from "services/axios";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";

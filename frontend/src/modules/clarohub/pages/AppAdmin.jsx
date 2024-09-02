@@ -1,21 +1,14 @@
-import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Button,
-  Modal,
-  Tooltip,
-  OverlayTrigger,
-} from "react-bootstrap";
-import "./AppAdmin.css";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, Modal, Tooltip, OverlayTrigger } from "react-bootstrap";
 import AddApp from "modules/clarohub/components/AddApp";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
+import Container from "modules/shared/components/ui/container";
 import axiosInstance from "services/axios";
 
 function AppAdmin() {
   const [dados, setDados] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [filter, setFilter] = useState("");
   const [currentItem, setCurrentItem] = useState({
     nome: "",
     imagemUrl: "",
@@ -33,11 +26,9 @@ function AppAdmin() {
 
   const fetchDados = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axiosInstance.get(`/apps`, {
-        headers: { Authorization: token },
-      });
+      const response = await axiosInstance.get(`/apps`, {});
       setDados(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
     }
@@ -101,97 +92,56 @@ function AppAdmin() {
     }
   };
 
-  const truncarTexto = (text, maxLength) => {
-    if (text.length > maxLength) {
-      return text.substring(0, maxLength) + "...";
-    }
-    return text;
-  };
-
-  // Definir as colunas para a tabela usando react-table
-  const columns = React.useMemo(
+  const columns = useMemo(
     () => [
       {
-        Header: "LOGO LISTA",
-        accessor: "logoList",
-        disableSortBy: false,
+        header: "LOGO LISTA",
+        accessorKey: "logoList",
       },
       {
-        Header: "NOME",
-        accessor: "nome",
-        disableSortBy: false,
+        header: "NOME",
+        accessorKey: "nome",
       },
 
       {
-        Header: "ROTA",
-        accessor: "rota",
-        Cell: ({ value }) => truncarTexto(value, 40), // Função para truncar o texto exibido
-        disableSortBy: false,
+        header: "ROTA",
+        accessorKey: "rota",
       },
       {
-        Header: "FAMILIA",
-        accessor: "familia",
-
-        disableSortBy: false,
+        header: "FAMILIA",
+        accessorKey: "familia",
       },
       {
-        Header: "ACESSO",
-        accessor: "acesso",
-        disableSortBy: false,
+        header: "ACESSO",
+        accessorKey: "acesso",
       },
 
       {
-        Header: "AÇÕES",
-        accessor: "acoes",
-        Cell: ({ row }) => (
-          <div className="appadmin-acoes">
-            <Button
-              variant="outline-dark"
-              onClick={() => handleEditClick(row.original)}
-              className="botaoEditar"
-            >
-              <i className="bi bi-pencil-square"></i>
-            </Button>
-            <Button
-              variant="outline-danger"
-              onClick={() => handleDeleteClick(row.original)}
-              className="botaoDeletar"
-            >
-              <i className="bi bi-trash"></i>
-            </Button>
-          </div>
-        ),
-        disableSortBy: true,
+        header: "AÇÕES",
+        accessorKey: "acoes",
       },
     ],
-    [], // Depende apenas da inicialização
+    [],
   );
 
   return (
-    <Container className="netsmsadmin-container">
-      <div className="mt-4">
-        <div className="netsmsadmin-titulo">
-          <h3>Apps Cadastrados</h3>
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip id="button-tooltip">Adicionar novo app</Tooltip>}
+    <Container>
+      <div>
+        <h2 className="select-none text-3xl">Apps Cadastrados</h2>
+        <OverlayTrigger
+          placement="top"
+          overlay={<Tooltip id="button-tooltip">Adicionar novo app</Tooltip>}
+        >
+          <Button
+            variant="outline-dark"
+            className="botao-adicionar"
+            onClick={handleAddClick}
           >
-            <Button
-              variant="outline-dark"
-              className="botao-adicionar"
-              onClick={handleAddClick}
-            >
-              <i className="bi bi-plus-lg"></i>
-            </Button>
-          </OverlayTrigger>
-        </div>
+            <i className="bi bi-plus-lg"></i>
+          </Button>
+        </OverlayTrigger>
 
-        <TabelaPadrao
-          columns={columns}
-          data={dados}
-          filter={filter}
-          setFilter={setFilter}
-        />
+        <TabelaPadrao columns={columns} data={dados} />
       </div>
 
       {/* Modal de edição */}

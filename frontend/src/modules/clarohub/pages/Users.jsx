@@ -1,16 +1,11 @@
-import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Button,
-  Modal,
-  Tooltip,
-  OverlayTrigger,
-} from "react-bootstrap";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, Modal, Tooltip, OverlayTrigger } from "react-bootstrap";
 import "./Users.css";
 import AddUsuario from "modules/clarohub/components/AddUsuario";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import UserBadge from "modules/clarohub/components/UserBadge";
 import axiosInstance from "services/axios";
+import Container from "modules/shared/components/ui/container";
 
 function Users() {
   const [dados, setDados] = useState([]);
@@ -93,32 +88,29 @@ function Users() {
     }
   };
 
-  const columns = React.useMemo(
+  const columns = useMemo(
     () => [
       {
-        Header: "LOGIN",
-        accessor: "LOGIN",
-        disableSortBy: false,
+        header: "LOGIN",
+        accessorKey: "LOGIN",
       },
       {
-        Header: "NOME",
-        accessor: "NOME",
-        disableSortBy: false,
+        header: "NOME",
+        accessorKey: "NOME",
       },
       {
-        Header: "GESTOR",
-        accessor: "GESTOR",
-        disableSortBy: false,
+        header: "GESTOR",
+        accessorKey: "GESTOR",
       },
       {
-        Header: "ACESSO",
-        accessor: "PERMISSOES",
-        disableSortBy: false,
+        header: "ACESSO",
+        accessorKey: "PERMISSOES",
+
         Cell: ({ value }) => <UserBadge permission={value} />,
       },
       {
-        Header: "AÇÕES",
-        accessor: "acoes",
+        header: "AÇÕES",
+        accessorKey: "acoes",
         Cell: ({ row }) => (
           <div className="acoes">
             <Button
@@ -137,40 +129,37 @@ function Users() {
             </Button>
           </div>
         ),
-        disableSortBy: true,
       },
     ],
     [],
   );
 
   return (
-    <Container className="users-container">
-      <div className="mt-4">
-        <div className="users-titulo">
-          <h3>Usuários Cadastrados</h3>
-          <OverlayTrigger
-            placement="top"
-            overlay={
-              <Tooltip id="button-tooltip">Adicionar novo usuário</Tooltip>
-            }
+    <Container>
+      <div>
+        <h3 className="text-3xl">Usuários Cadastrados</h3>
+        <OverlayTrigger
+          placement="top"
+          overlay={
+            <Tooltip id="button-tooltip">Adicionar novo usuário</Tooltip>
+          }
+        >
+          <Button
+            variant="outline-dark"
+            className="botao-adicionarUsuario"
+            onClick={handleAddClick}
           >
-            <Button
-              variant="outline-dark"
-              className="botao-adicionarUsuario"
-              onClick={handleAddClick}
-            >
-              <i className="bi bi-plus-lg"></i>
-            </Button>
-          </OverlayTrigger>
-        </div>
-
-        <TabelaPadrao
-          columns={columns}
-          data={dados}
-          filter={filter}
-          setFilter={setFilter}
-        />
+            <i className="bi bi-plus-lg"></i>
+          </Button>
+        </OverlayTrigger>
       </div>
+
+      <TabelaPadrao
+        columns={columns}
+        data={dados}
+        filter={filter}
+        setFilter={setFilter}
+      />
 
       <AddUsuario
         show={showEditModal}
