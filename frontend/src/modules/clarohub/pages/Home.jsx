@@ -112,7 +112,7 @@ const Home = () => {
           <h2 className="family-title mb-4 select-none text-xl font-semibold text-foreground sm:mb-5 sm:text-2xl">
             Favoritos
           </h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {favorites.map((app) => (
               <div key={app._id} className="col">
                 <AppCard
@@ -138,7 +138,7 @@ const Home = () => {
               <h2 className="family-title mb-6 select-none text-xl font-semibold text-white sm:mb-8 sm:text-2xl">
                 {family}
               </h2>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {groupedApps[family]?.map((app) => (
                   <div key={app._id} className="col">
                     <AppCard

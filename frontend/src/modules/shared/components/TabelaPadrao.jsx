@@ -5,6 +5,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -29,11 +30,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "modules/shared/components/ui/pagination";
+import { Input } from "modules/shared/components/ui/input";
 
 export function TabelaPadrao({ columns, data }) {
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data,
@@ -42,18 +45,36 @@ export function TabelaPadrao({ columns, data }) {
       sorting,
       columnVisibility,
       rowSelection,
+      globalFilter,
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: (row, _, filterValue) => {
+      return row.original
+        ? Object.values(row.original)
+            .join(" ")
+            .toLowerCase()
+            .includes(filterValue.toLowerCase())
+        : false;
+    },
   });
 
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
+    <div className="mt-10 w-full">
+      <div className="mb-4 flex">
+        <Input
+          label="Filtrar..."
+          value={globalFilter}
+          onChange={(event) => setGlobalFilter(event.target.value)}
+          className="max-w-sm border-popover bg-menu placeholder-muted focus:placeholder-transparent"
+        />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -81,9 +102,10 @@ export function TabelaPadrao({ columns, data }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-lg border border-border">
+
+      <div>
         <Table>
-          <TableHeader className="bg-menu">
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -106,7 +128,6 @@ export function TabelaPadrao({ columns, data }) {
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="transition-colors hover:bg-popover hover:text-popover-foreground"
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -121,10 +142,7 @@ export function TabelaPadrao({ columns, data }) {
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
-                >
+                <TableCell colSpan={columns.length}>
                   Nenhum dado encontrado.
                 </TableCell>
               </TableRow>

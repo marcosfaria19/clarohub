@@ -4,6 +4,16 @@ import { Button, Modal, Form } from "react-bootstrap";
 import Container from "modules/shared/components/ui/container";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import axiosInstance from "services/axios";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "modules/shared/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 const formatarData = (dataNumerica) => {
   const data = new Date((dataNumerica - 25569) * 86400 * 1000);
@@ -18,7 +28,6 @@ function OCFacilAdmin() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
-  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     fetchDados();
@@ -71,51 +80,103 @@ function OCFacilAdmin() {
   const columns = useMemo(
     () => [
       {
-        header: "CI_NOME",
         accessorKey: "CI_NOME",
+        header: ({ column }) => {
+          return (
+            <Button
+              className="flex"
+              variant="link"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              CIDADE
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
       },
       {
-        header: "UF",
         accessorKey: "UF",
+        header: ({ column }) => {
+          return (
+            <Button
+              className="flex"
+              variant="link"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              UF
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
       },
       {
-        header: "NUM_CONTRATO",
+        header: "CONTRATO",
         accessorKey: "NUM_CONTRATO",
       },
       {
-        header: "DT_CADASTRO",
         accessorKey: "DT_CADASTRO",
-        Cell: ({ value }) => formatarData(value),
+        cell: (info) => formatarData(info.getValue()),
+        header: ({ column }) => {
+          return (
+            <Button
+              className="flex"
+              variant="link"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              CADASTRO
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
       },
       {
-        header: "END_COMPLETO",
+        header: "ENDEREÇO",
         accessorKey: "END_COMPLETO",
       },
       {
-        header: "COD_NODE",
+        header: "NODE",
         accessorKey: "COD_NODE",
       },
       {
-        header: "AÇÕES",
-        accessorKey: "actions",
-        Cell: ({ row }) => (
-          <div className="acoes">
-            <Button
-              variant="outline-dark"
-              onClick={() => handleEditClick(row.original)}
-              className="botaoEditar"
-            >
-              <i className="bi bi-pencil-square"></i>
-            </Button>
-            <Button
-              variant="outline-danger"
-              onClick={() => handleDeleteClick(row.original)}
-              className="botaoDeletar"
-            >
-              <i className="bi bi-trash"></i>
-            </Button>
-          </div>
-        ),
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          const data = row.original;
+
+          const copyDataToClipboard = () => {
+            const values = Object.keys(data)
+              .map((key) => `${key}: ${data[key]}`)
+              .join("\n");
+            navigator.clipboard.writeText(values);
+            toast("teste");
+          };
+
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="link" className="h-8 w-8 p-0">
+                  <span className="sr-only">Menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                <DropdownMenuItem onClick={copyDataToClipboard}>
+                  Copiar dados
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Editar</DropdownMenuItem>
+                <DropdownMenuItem>Excluir</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
       },
     ],
     [],
@@ -125,12 +186,7 @@ function OCFacilAdmin() {
     <Container>
       <div className="mt-4">
         <h3 className="text-3xl">OC Fácil Admin</h3>
-        <TabelaPadrao
-          columns={columns}
-          data={dados}
-          filter={filter}
-          setFilter={setFilter}
-        />
+        <TabelaPadrao columns={columns} data={dados} />
       </div>
 
       {/* Modal de Edição */}

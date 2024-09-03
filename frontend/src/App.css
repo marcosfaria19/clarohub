@@ -8,7 +8,7 @@
     --foreground: 0 0% 98%;
     --card: 210 10% 20%;
     --card-foreground: 0 0% 98%;
-    --popover: 210 10% 22%;
+    --popover: 210 10% 30%;
     --popover-foreground: 0 0% 98%;
     --primary: 210 10.81% 14.51%;
     --primary-foreground: 210 40% 98%;
@@ -22,7 +22,6 @@
     --destructive-foreground: 0 0% 98%;
     --border: 210 10% 10%;
     --border-hover: 210 11% 40%;
-    --input: 210 10% 30%;
     --menu: 214 23% 12%;
     --ring: 222.2 84% 30%;
     --radius: 0.5rem;

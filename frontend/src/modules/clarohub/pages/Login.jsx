@@ -115,13 +115,13 @@ function Login({ setToken }) {
           Claro Hub
         </h1>
         <form className="w-full max-w-md px-4" onSubmit={handleLoginSubmit}>
-          <h2 className="mb-8 text-2xl font-bold text-gray-900">Login</h2>
+          <h2 className="mb-8 text-2xl font-bold">Login</h2>
           <div className="relative mb-4">
             <Input
+              floating
               type="text"
               className="h-12 w-full"
               label="Credencial"
-              floating
               value={credencial}
               onChange={handleCredencialChange}
               required

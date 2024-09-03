@@ -19,7 +19,7 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "text-muted hover:text-foreground border border-muted",
-        link: "text-foreground hover:bg-input cursor-pointer",
+        link: "text-foreground hover:bg-popover cursor-pointer",
       },
       size: {
         default: "h-10 px-4 py-2",
