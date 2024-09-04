@@ -154,7 +154,7 @@ function OCFacilAdmin() {
               .map((key) => `${key}: ${data[key]}`)
               .join("\n");
             navigator.clipboard.writeText(values);
-            toast("teste");
+            toast.success("Item copiado com sucesso", { duration: 2000 });
           };
 
           return (

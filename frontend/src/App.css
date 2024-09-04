@@ -39,6 +39,10 @@
   font-family: "Poppins", sans-serif;
 }
 
+.my-toast {
+  @apply fixed right-0 top-0;
+}
+
 .login-bg {
   background-image: url("./modules/clarohub/assets/background-login.jpg");
 }

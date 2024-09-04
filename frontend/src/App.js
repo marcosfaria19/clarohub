@@ -5,6 +5,7 @@ import Header from "./modules/shared/components/Header";
 import Footer from "./modules/shared/components/Footer";
 import Rotas from "./routes/Rotas";
 import "./App.css";
+import { Toaster } from "modules/shared/components/ui/sonner";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -61,6 +62,7 @@ function App() {
       {token && <Header userName={userName} onLogout={logout} />}
       <Rotas token={token} setToken={setToken} />
       {token && <Footer />}
+      <Toaster position="bottom-right" richColors />
     </Router>
   );
 }
