@@ -4,8 +4,6 @@ import { cva } from "class-variance-authority";
 
 import { cn } from "modules/shared/lib/utils";
 
-<div className="pointer"></div>;
-
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-all duration-250 select-none",
   {

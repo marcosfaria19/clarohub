@@ -85,7 +85,7 @@ function OCFacilAdmin() {
           return (
             <Button
               className="flex"
-              variant="link"
+              variant="link focus:outline-none"
               onClick={() =>
                 column.toggleSorting(column.getIsSorted() === "asc")
               }
@@ -102,7 +102,7 @@ function OCFacilAdmin() {
           return (
             <Button
               className="flex"
-              variant="link"
+              variant="link focus:outline-none"
               onClick={() =>
                 column.toggleSorting(column.getIsSorted() === "asc")
               }
@@ -124,7 +124,7 @@ function OCFacilAdmin() {
           return (
             <Button
               className="flex"
-              variant="link"
+              variant="link focus:outline-none"
               onClick={() =>
                 column.toggleSorting(column.getIsSorted() === "asc")
               }
@@ -160,7 +160,10 @@ function OCFacilAdmin() {
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="link" className="h-8 w-8 p-0">
+                <Button
+                  variant="link"
+                  className="h-8 w-8 p-0 focus:outline-none"
+                >
                   <span className="sr-only">Menu</span>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
@@ -171,8 +174,12 @@ function OCFacilAdmin() {
                   Copiar dados
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Editar</DropdownMenuItem>
-                <DropdownMenuItem>Excluir</DropdownMenuItem>
+                <DropdownMenuItem /* onClick={tableEdit} */>
+                  Editar
+                </DropdownMenuItem>
+                <DropdownMenuItem /* onClick={tableDelete} */>
+                  Excluir
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           );
