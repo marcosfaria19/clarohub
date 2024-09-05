@@ -1,18 +1,8 @@
-// OCFacilAdmin.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import Container from "modules/shared/components/ui/container";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import axiosInstance from "services/axios";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "modules/shared/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 const formatarData = (dataNumerica) => {
@@ -81,37 +71,13 @@ function OCFacilAdmin() {
     () => [
       {
         accessorKey: "CI_NOME",
-        header: ({ column }) => {
-          return (
-            <Button
-              className="flex"
-              variant="link focus:outline-none"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              CIDADE
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
+        header: "CIDADE",
+        sorted: true,
       },
       {
         accessorKey: "UF",
-        header: ({ column }) => {
-          return (
-            <Button
-              className="flex"
-              variant="link focus:outline-none"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              UF
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
+        header: "UF",
+        sorted: true,
       },
       {
         header: "CONTRATO",
@@ -120,20 +86,8 @@ function OCFacilAdmin() {
       {
         accessorKey: "DT_CADASTRO",
         cell: (info) => formatarData(info.getValue()),
-        header: ({ column }) => {
-          return (
-            <Button
-              className="flex"
-              variant="link focus:outline-none"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              CADASTRO
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
+        header: "UF",
+        sorted: true,
       },
       {
         header: "ENDEREÇO",
@@ -143,48 +97,6 @@ function OCFacilAdmin() {
         header: "NODE",
         accessorKey: "COD_NODE",
       },
-      {
-        id: "actions",
-        enableHiding: false,
-        cell: ({ row }) => {
-          const data = row.original;
-
-          const copyDataToClipboard = () => {
-            const values = Object.keys(data)
-              .map((key) => `${key}: ${data[key]}`)
-              .join("\n");
-            navigator.clipboard.writeText(values);
-            toast.success("Item copiado com sucesso", { duration: 2000 });
-          };
-
-          return (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="link"
-                  className="h-8 w-8 p-0 focus:outline-none"
-                >
-                  <span className="sr-only">Menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                <DropdownMenuItem onClick={copyDataToClipboard}>
-                  Copiar dados
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem /* onClick={tableEdit} */>
-                  Editar
-                </DropdownMenuItem>
-                <DropdownMenuItem /* onClick={tableDelete} */>
-                  Excluir
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          );
-        },
-      },
     ],
     [],
   );
@@ -193,7 +105,13 @@ function OCFacilAdmin() {
     <Container>
       <div className="mt-4">
         <h3 className="text-3xl">OC Fácil Admin</h3>
-        <TabelaPadrao columns={columns} data={dados} />
+        <TabelaPadrao
+          columns={columns}
+          data={dados}
+          actions
+          onEdit={handleEditClick}
+          onDelete={handleDeleteClick}
+        />
       </div>
 
       {/* Modal de Edição */}
