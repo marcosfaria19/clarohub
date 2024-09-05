@@ -17,6 +17,7 @@ import {
 } from "modules/shared/components/ui/table";
 import { Button } from "modules/shared/components/ui/button";
 import {
+  DropdownMenuCheckboxItem,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -53,9 +54,14 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
             const data = row.original;
 
             const copyDataToClipboard = () => {
-              const values = Object.keys(data)
-                .map((key) => `${key}: ${data[key]}`)
+              const values = columns
+                .filter((column) => column.accessorKey)
+                .map(
+                  (column) =>
+                    `${column.header || column.accessorKey}: ${data[column.accessorKey]}`,
+                )
                 .join("\n");
+
               navigator.clipboard.writeText(values);
               toast.success("Item copiado com sucesso", { duration: 2000 });
             };
@@ -111,7 +117,7 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
+    onColumnVisibilityChange: setColumnVisibility, // Certifique-se de que isso está atualizando corretamente
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: (row, _, filterValue) => {
@@ -146,7 +152,7 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
               .filter((column) => column.getCanHide())
               .map((column) => {
                 return (
-                  <DropdownMenuItem
+                  <DropdownMenuCheckboxItem
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
@@ -154,8 +160,8 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
-                  </DropdownMenuItem>
+                    {column.columnDef.header}
+                  </DropdownMenuCheckboxItem>
                 );
               })}
           </DropdownMenuContent>

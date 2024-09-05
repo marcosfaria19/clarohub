@@ -1,40 +1,36 @@
 import React from "react";
-import { Badge } from "react-bootstrap";
-import "./UserBadge.css";
+import { Badge } from "modules/shared/components/ui/badge";
+import { Shield, BarChart, User, UserCheck } from "lucide-react";
 
 const UserBadge = ({ permission }) => {
   let badgeVariant;
-  let icon;
+  let IconComponent;
 
   switch (permission) {
     case "admin":
-      badgeVariant = "dark";
-      icon = "bi bi-shield-shaded";
+      badgeVariant = "destructive";
+      IconComponent = Shield;
       break;
     case "manager":
-      badgeVariant = "success";
-      icon = "bi bi-bar-chart-fill";
+      badgeVariant = "default";
+      IconComponent = BarChart;
       break;
     case "basic":
       badgeVariant = "primary";
-      icon = "bi bi-person-fill";
+      IconComponent = User;
       break;
     case "guest":
       badgeVariant = "secondary";
-      icon = "bi bi-person-fill";
+      IconComponent = UserCheck;
       break;
     default:
       return null;
   }
 
   return (
-    <Badge
-      pill
-      bg={badgeVariant}
-      className="d-flex align-items-center userBadge"
-    >
-      <i className={`${icon} me-1`}></i>
-      {permission}
+    <Badge variant={badgeVariant} className="items-center justify-center">
+      <IconComponent className="mr-1 h-4 w-4" />
+      <span>{permission}</span>
     </Badge>
   );
 };

@@ -6,6 +6,7 @@ import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import UserBadge from "modules/clarohub/components/UserBadge";
 import axiosInstance from "services/axios";
 import Container from "modules/shared/components/ui/container";
+import { Badge } from "modules/shared/components/ui/badge";
 
 function Users() {
   const [dados, setDados] = useState([]);
@@ -93,42 +94,25 @@ function Users() {
       {
         header: "LOGIN",
         accessorKey: "LOGIN",
+        enableHiding: true,
       },
       {
         header: "NOME",
         accessorKey: "NOME",
+        enableHiding: true,
       },
       {
         header: "GESTOR",
         accessorKey: "GESTOR",
+        enableHiding: true,
       },
       {
         header: "ACESSO",
         accessorKey: "PERMISSOES",
-
-        Cell: ({ value }) => <UserBadge permission={value} />,
-      },
-      {
-        header: "AÇÕES",
-        accessorKey: "acoes",
-        Cell: ({ row }) => (
-          <div className="acoes">
-            <Button
-              variant="outline-dark"
-              onClick={() => handleEditClick(row.original)}
-              className="botaoEditar"
-            >
-              <i className="bi bi-pencil-square"></i>
-            </Button>
-            <Button
-              variant="outline-danger"
-              onClick={() => handleDeleteClick(row.original)}
-              className="botaoDeletar"
-            >
-              <i className="bi bi-trash"></i>
-            </Button>
-          </div>
-        ),
+        cell: ({ getValue }) => {
+          const permission = getValue();
+          return <UserBadge permission={permission} />;
+        },
       },
     ],
     [],
@@ -157,8 +141,9 @@ function Users() {
       <TabelaPadrao
         columns={columns}
         data={dados}
-        filter={filter}
-        setFilter={setFilter}
+        actions
+        onDelete={handleDeleteClick}
+        onEdit={handleEditClick}
       />
 
       <AddUsuario

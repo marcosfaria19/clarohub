@@ -3,7 +3,6 @@ import { Button, Modal, Form } from "react-bootstrap";
 import Container from "modules/shared/components/ui/container";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import axiosInstance from "services/axios";
-import { toast } from "sonner";
 
 const formatarData = (dataNumerica) => {
   const data = new Date((dataNumerica - 25569) * 86400 * 1000);
@@ -86,7 +85,7 @@ function OCFacilAdmin() {
       {
         accessorKey: "DT_CADASTRO",
         cell: (info) => formatarData(info.getValue()),
-        header: "UF",
+        header: "CADASTRO",
         sorted: true,
       },
       {
