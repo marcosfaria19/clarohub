@@ -4,6 +4,7 @@ import AddApp from "modules/clarohub/components/AddApp";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import Container from "modules/shared/components/ui/container";
 import axiosInstance from "services/axios";
+import UserBadge from "../components/UserBadge";
 
 function AppAdmin() {
   const [dados, setDados] = useState([]);
@@ -97,16 +98,25 @@ function AppAdmin() {
       {
         header: "LOGO LISTA",
         accessorKey: "logoList",
+        cell: ({ getValue }) => {
+          const imageUrl = getValue();
+          return imageUrl ? (
+            <img
+              src={`${process.env.REACT_APP_BACKEND_URL}${imageUrl}`}
+              alt="logo"
+              style={{ height: "50px" }}
+            />
+          ) : (
+            <span>Sem logo</span>
+          );
+        },
       },
       {
         header: "NOME",
         accessorKey: "nome",
+        sorted: true,
       },
 
-      {
-        header: "ROTA",
-        accessorKey: "rota",
-      },
       {
         header: "FAMILIA",
         accessorKey: "familia",
@@ -114,11 +124,10 @@ function AppAdmin() {
       {
         header: "ACESSO",
         accessorKey: "acesso",
-      },
-
-      {
-        header: "AÇÕES",
-        accessorKey: "acoes",
+        cell: ({ getValue }) => {
+          const permission = getValue();
+          return <UserBadge permission={permission} />;
+        },
       },
     ],
     [],
@@ -141,7 +150,13 @@ function AppAdmin() {
           </Button>
         </OverlayTrigger>
 
-        <TabelaPadrao columns={columns} data={dados} />
+        <TabelaPadrao
+          columns={columns}
+          data={dados}
+          actions
+          onDelete={handleDeleteClick}
+          onEdit={handleEditClick}
+        />
       </div>
 
       {/* Modal de edição */}

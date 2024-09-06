@@ -6,13 +6,11 @@ import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import UserBadge from "modules/clarohub/components/UserBadge";
 import axiosInstance from "services/axios";
 import Container from "modules/shared/components/ui/container";
-import { Badge } from "modules/shared/components/ui/badge";
 
 function Users() {
   const [dados, setDados] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [filter, setFilter] = useState("");
   const [currentItem, setCurrentItem] = useState({
     LOGIN: "",
     NOME: "",
