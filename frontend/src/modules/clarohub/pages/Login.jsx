@@ -119,6 +119,7 @@ function Login({ setToken }) {
           <div className="relative mb-4">
             <Input
               floating
+              variant="login"
               type="text"
               className="h-12 w-full"
               label="Credencial"
@@ -130,6 +131,7 @@ function Login({ setToken }) {
           <div className="relative mb-4">
             <Input
               floating
+              variant="login"
               type="password"
               className="h-12 w-full"
               label="Senha"

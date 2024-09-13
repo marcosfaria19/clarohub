@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Modal, Tooltip, OverlayTrigger } from "react-bootstrap";
 import AddApp from "modules/clarohub/components/AddApp";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import Container from "modules/shared/components/ui/container";
 import axiosInstance from "services/axios";
 import UserBadge from "../components/UserBadge";
+import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
+import { Button } from "modules/shared/components/ui/button";
 
 function AppAdmin() {
   const [dados, setDados] = useState([]);
@@ -29,7 +30,6 @@ function AppAdmin() {
     try {
       const response = await axiosInstance.get(`/apps`, {});
       setDados(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
     }
@@ -41,17 +41,22 @@ function AppAdmin() {
     setShowEditModal(true);
   };
 
-  const handleAddClick = () => {
-    setCurrentItem({
-      nome: "",
-      imagemUrl: "",
-      logoCard: "",
-      logoList: "",
-      rota: "",
-      familia: "",
-      acesso: "",
-    });
-    setIsEditMode(false);
+  const handleAddClick = (item = null) => {
+    if (item) {
+      setCurrentItem(item);
+      setIsEditMode(true);
+    } else {
+      setCurrentItem({
+        nome: "",
+        imagemUrl: "",
+        logoCard: "",
+        logoList: "",
+        rota: "",
+        familia: "",
+        acesso: "",
+      });
+      setIsEditMode(false);
+    }
     setShowEditModal(true);
   };
 
@@ -137,19 +142,12 @@ function AppAdmin() {
     <Container>
       <div>
         <h2 className="select-none text-3xl">Apps Cadastrados</h2>
-        <OverlayTrigger
-          placement="top"
-          overlay={<Tooltip id="button-tooltip">Adicionar novo app</Tooltip>}
-        >
-          <Button
-            variant="outline-dark"
-            className="botao-adicionar"
-            onClick={handleAddClick}
-          >
-            <i className="bi bi-plus-lg"></i>
-          </Button>
-        </OverlayTrigger>
 
+        <Button variant="outline" onClick={handleAddClick}>
+          Adicionar
+        </Button>
+
+        {/* Tabela Padrão */}
         <TabelaPadrao
           columns={columns}
           data={dados}
@@ -170,20 +168,11 @@ function AppAdmin() {
       />
 
       {/* Modal de Confirmação de Exclusão */}
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmar Exclusão</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Tem certeza que deseja excluir este app?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Cancelar
-          </Button>
-          <Button variant="danger" onClick={handleDeleteConfirm}>
-            Excluir
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+        handleDeleteConfirm={handleDeleteConfirm}
+      />
     </Container>
   );
 }

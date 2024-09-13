@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-
 import { Form, Button, Card, Alert, Spinner } from "react-bootstrap";
-import "./UploadFile.css";
 import axiosInstance from "../../../services/axios";
 
 const UploadFile = () => {
@@ -45,7 +43,7 @@ const UploadFile = () => {
       } catch (err) {
         console.error(
           "Erro ao copiar texto para a área de transferência:",
-          err
+          err,
         );
       }
       document.body.removeChild(textoCopiado);
@@ -53,7 +51,7 @@ const UploadFile = () => {
       console.error("Erro ao enviar o arquivo:", error);
       setErrorMessage(
         error.response?.data ||
-          "Erro ao enviar o arquivo. Por favor, tente novamente."
+          "Erro ao enviar o arquivo. Por favor, tente novamente.",
       );
     } finally {
       setIsLoading(false);
@@ -62,7 +60,7 @@ const UploadFile = () => {
 
   return (
     <Card className="upload-section" data-bs-theme="dark">
-      <Card.Body className="p-4 mx-2">
+      <Card.Body className="mx-2 p-4">
         <h4 className="mb-5">Envio de Arquivo</h4>
         <Form.Group controlId="fileUpload">
           <Form.Label>Selecione uma extração do QualiNET:</Form.Label>
@@ -75,7 +73,7 @@ const UploadFile = () => {
         <Button
           variant="outline-light"
           onClick={handleFileUpload}
-          className="mt-4 uploadOC"
+          className="uploadOC mt-4"
           disabled={isLoading}
         >
           {isLoading ? (

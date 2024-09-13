@@ -1,6 +1,22 @@
+import { useEffect, useState } from "react";
 import axiosInstance from "services/axios";
-import React, { useEffect, useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "modules/shared/components/ui/dialog";
+import { Button } from "modules/shared/components/ui/button";
+import { Input } from "modules/shared/components/ui/input";
+import { Label } from "modules/shared/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "modules/shared/components/ui/select";
 
 const AddNetSMSFacil = ({
   show,
@@ -46,144 +62,184 @@ const AddNetSMSFacil = ({
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>
-          {isEditMode ? "Editar Código" : "Adicionar Novo Código"}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formId">
-            <Form.Label>ID</Form.Label>
-            <Form.Control
-              type="number"
-              name="ID"
-              value={currentItem.ID}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group controlId="formTratativa">
-            <Form.Label>TRATATIVA</Form.Label>
-            <Form.Control
-              as="select"
-              name="TRATATIVA"
-              value={currentItem.TRATATIVA}
-              onChange={handleChange}
-            >
-              <option value="">Selecione</option>
-              <option value="TAP">TAP</option>
-              <option value="NAP">NAP</option>
-              <option value="MDU">MDU</option>
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="formTipo">
-            <Form.Label>TIPO</Form.Label>
-            <Form.Control
-              as="select"
-              name="TIPO"
-              value={currentItem.TIPO}
-              onChange={handleChange}
-            >
-              <option value="">Selecione</option>
-              <option value="TP1">TP1</option>
-              <option value="TP2">TP2</option>
-              <option value="TP3">TP3</option>
-              <option value="VT1">VT1</option>
-              <option value="VT2">VT2</option>
-              <option value="VT3">VT3</option>
-              <option value="NP1">NP1</option>
-              <option value="NP2">NP2</option>
-              <option value="NP3">NP3</option>
-              <option value="MD1">MD1</option>
-              <option value="MD3">MD3</option>
-              <option value="SAR">SAR</option>
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="formAberturaFechamento">
-            <Form.Label>ABERTURA/FECHAMENTO</Form.Label>
-            <Form.Control
-              as="select"
-              name="ABERTURA/FECHAMENTO"
-              value={currentItem["ABERTURA/FECHAMENTO"]}
-              onChange={handleChange}
-            >
-              <option value="">Selecione</option>
-              <option value="ABERTURA">ABERTURA</option>
-              <option value="FECHAMENTO">FECHAMENTO</option>
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="formNetsms">
-            <Form.Label>NETSMS</Form.Label>
-            <Form.Control
-              type="text"
-              name="NETSMS"
-              value={currentItem.NETSMS}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group controlId="formTextoPadrao">
-            <Form.Label>TEXTO PADRÃO</Form.Label>
-            <Form.Control
-              type="text"
-              name="TEXTO PADRAO"
-              value={currentItem["TEXTO PADRAO"]}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group controlId="formObs">
-            <Form.Label>OBS Obrigatório</Form.Label>
-            <Form.Control
-              as="select"
-              name="OBS"
-              value={currentItem.OBS}
-              onChange={handleChange}
-            >
-              <option value="">Selecione</option>
-              <option value="Sim">Sim</option>
-              <option value="Não">Não</option>
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="formIncidente">
-            <Form.Label>Incidente Obrigatório</Form.Label>
-            <Form.Control
-              as="select"
-              name="INCIDENTE"
-              value={currentItem.INCIDENTE}
-              onChange={handleChange}
-            >
-              <option value="">Selecione</option>
-              <option value="Sim">Sim</option>
-              <option value="Não">Não</option>
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="formSgd">
-            <Form.Label>Fechamento SGD</Form.Label>
-            <Form.Control
-              as="select"
-              name="SGD"
-              value={currentItem.SGD || []}
-              onChange={handleMultiSelectChange}
-              multiple
-            >
-              {sgdOptions.map((id) => (
-                <option key={id} value={id}>
-                  {id}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-        <Button variant="primary" onClick={handleSave}>
-          {isEditMode ? "Salvar" : "Adicionar"}
-        </Button>
-      </Modal.Footer>
-    </Modal>
+    <Dialog open={show} onOpenChange={handleClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {isEditMode ? "Editar Código" : "Adicionar Novo Código"}
+          </DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="formId">ID</Label>
+              <Input
+                type="number"
+                name="ID"
+                value={currentItem.ID}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="formTratativa">TRATATIVA</Label>
+              <Select
+                name="TRATATIVA"
+                value={currentItem.TRATATIVA}
+                onValueChange={(value) =>
+                  handleChange({ target: { name: "TRATATIVA", value } })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="TAP">TAP</SelectItem>
+                  <SelectItem value="NAP">NAP</SelectItem>
+                  <SelectItem value="MDU">MDU</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="formTipo">TIPO</Label>
+              <Select
+                name="TIPO"
+                value={currentItem.TIPO}
+                onValueChange={(value) =>
+                  handleChange({ target: { name: "TIPO", value } })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="TP1">TP1</SelectItem>
+                  <SelectItem value="TP2">TP2</SelectItem>
+                  <SelectItem value="TP3">TP3</SelectItem>
+                  <SelectItem value="VT1">VT1</SelectItem>
+                  <SelectItem value="VT2">VT2</SelectItem>
+                  <SelectItem value="VT3">VT3</SelectItem>
+                  <SelectItem value="NP1">NP1</SelectItem>
+                  <SelectItem value="NP2">NP2</SelectItem>
+                  <SelectItem value="NP3">NP3</SelectItem>
+                  <SelectItem value="MD1">MD1</SelectItem>
+                  <SelectItem value="MD3">MD3</SelectItem>
+                  <SelectItem value="SAR">SAR</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="formAberturaFechamento">
+                ABERTURA/FECHAMENTO
+              </Label>
+              <Select
+                name="ABERTURA/FECHAMENTO"
+                value={currentItem["ABERTURA/FECHAMENTO"]}
+                onValueChange={(value) =>
+                  handleChange({
+                    target: { name: "ABERTURA/FECHAMENTO", value },
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ABERTURA">ABERTURA</SelectItem>
+                  <SelectItem value="FECHAMENTO">FECHAMENTO</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="formNetsms">NETSMS</Label>
+              <Input
+                type="text"
+                name="NETSMS"
+                value={currentItem.NETSMS}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="formTextoPadrao">TEXTO PADRÃO</Label>
+              <Input
+                type="text"
+                name="TEXTO PADRAO"
+                value={currentItem["TEXTO PADRAO"]}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="formObs">OBS Obrigatório</Label>
+              <Select
+                name="OBS"
+                value={currentItem.OBS}
+                onValueChange={(value) =>
+                  handleChange({ target: { name: "OBS", value } })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Sim">Sim</SelectItem>
+                  <SelectItem value="Não">Não</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="formIncidente">Incidente Obrigatório</Label>
+              <Select
+                name="INCIDENTE"
+                value={currentItem.INCIDENTE}
+                onValueChange={(value) =>
+                  handleChange({ target: { name: "INCIDENTE", value } })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Sim">Sim</SelectItem>
+                  <SelectItem value="Não">Não</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="formSgd">Fechamento SGD</Label>
+              <select
+                name="SGD"
+                value={currentItem.SGD || []}
+                onChange={handleMultiSelectChange}
+                multiple
+                className="w-full rounded-md border border-gray-300 p-2"
+              >
+                {sgdOptions.map((id) => (
+                  <option key={id} value={id}>
+                    {id}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </form>
+
+        <DialogFooter className="space-x-2">
+          <Button variant="outline" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button type="submit" onClick={handleSave}>
+            {isEditMode ? "Salvar" : "Adicionar"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -1,6 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "modules/shared/components/ui/dialog";
+import { Input } from "modules/shared/components/ui/input";
+import { Button } from "modules/shared/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "modules/shared/components/ui/select";
+import { Label } from "modules/shared/components/ui/label";
+import axiosInstance from "services/axios";
 
 const AddApp = ({
   show,
@@ -17,22 +35,18 @@ const AddApp = ({
   useEffect(() => {
     const fetchUrls = async () => {
       try {
-        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const cardsResponse = await axiosInstance.get(`/apps/cards`);
+        const logosResponse = await axiosInstance.get(`/apps/logos`);
 
-        // Ajuste para obter o conteúdo do diretório
-        const cardsResponse = await axios.get(`${backendUrl}/apps/cards`);
-        const logosResponse = await axios.get(`${backendUrl}/apps/logos`);
-
-        const formatUrlsCards = (data) => {
-          return data.map((filename) => `/assets/cards/${filename}`);
-        };
-        const formatUrlsLogos = (data) => {
-          return data.map((filename) => `/assets/logos/${filename}`);
-        };
-
-        setImageUrls(formatUrlsCards(cardsResponse.data));
-        setLogoCardUrls(formatUrlsLogos(logosResponse.data));
-        setLogoListUrls(formatUrlsLogos(logosResponse.data));
+        setImageUrls(
+          cardsResponse.data.map((filename) => `/assets/cards/${filename}`),
+        );
+        setLogoCardUrls(
+          logosResponse.data.map((filename) => `/assets/logos/${filename}`),
+        );
+        setLogoListUrls(
+          logosResponse.data.map((filename) => `/assets/logos/${filename}`),
+        );
       } catch (error) {
         console.error("Erro ao buscar URLs de imagens e logos", error);
       }
@@ -47,114 +61,133 @@ const AddApp = ({
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>
-          {isEditMode ? "Editar App" : "Adicionar Novo App"}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formNome">
-            <Form.Label>NOME</Form.Label>
-            <Form.Control
-              type="text"
+    <Dialog open={show} onOpenChange={handleClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {isEditMode ? "Editar App" : "Adicionar Novo App"}
+          </DialogTitle>
+          <DialogDescription>
+            Preencha os campos abaixo e clique em{" "}
+            {isEditMode ? "Salvar" : "Adicionar"}.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="nome">Nome</Label>
+            <Input
+              id="nome"
               name="nome"
               value={currentItem.nome}
               onChange={handleChange}
+              className="h-9 bg-menu text-foreground/90"
             />
-          </Form.Group>
-          <Form.Group controlId="formImgUrl">
-            <Form.Label>IMAGEM CARD</Form.Label>
-            <Form.Control
-              as="select"
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="imagemUrl">Imagem Card</Label>
+            <Select
               name="imagemUrl"
               value={currentItem.imagemUrl}
-              onChange={handleChange}
+              onValueChange={handleChange}
             >
-              <option value="">Selecione</option>
-              {imageUrls.map((url) => (
-                <option key={url} value={`${url}`}>
-                  {url}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="formLogoCard">
-            <Form.Label>LOGO CARD</Form.Label>
-            <Form.Control
-              as="select"
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {imageUrls.map((url) => (
+                  <SelectItem key={url} value={url}>
+                    {url}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="logoCard">Logo Card</Label>
+            <Select
               name="logoCard"
               value={currentItem.logoCard}
-              onChange={handleChange}
+              onValueChange={handleChange}
             >
-              <option value="">Selecione</option>
-              {logoCardUrls.map((url) => (
-                <option key={url} value={`${url}`}>
-                  {url}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="formLogoList">
-            <Form.Label>LOGO LISTA</Form.Label>
-            <Form.Control
-              as="select"
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {logoCardUrls.map((url) => (
+                  <SelectItem key={url} value={url}>
+                    {url}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="logoList">Logo Lista</Label>
+            <Select
               name="logoList"
               value={currentItem.logoList}
-              onChange={handleChange}
+              onValueChange={handleChange}
             >
-              <option value="">Selecione</option>
-              {logoListUrls.map((url) => (
-                <option key={url} value={`${url}`}>
-                  {url}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="formRota">
-            <Form.Label>ROTA</Form.Label>
-            <Form.Control
-              type="text"
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {logoListUrls.map((url) => (
+                  <SelectItem key={url} value={url}>
+                    {url}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="rota">Rota</Label>
+            <Input
+              id="rota"
               name="rota"
               value={currentItem.rota}
               onChange={handleChange}
+              className="h-9 bg-menu text-foreground/90"
             />
-          </Form.Group>
-          <Form.Group controlId="formFamilia">
-            <Form.Label>FAMILIA</Form.Label>
-            <Form.Control
-              type="text"
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="familia">Família</Label>
+            <Input
+              id="familia"
               name="familia"
               value={currentItem.familia}
               onChange={handleChange}
+              className="h-9 bg-menu text-foreground/90"
             />
-          </Form.Group>
-          <Form.Group controlId="formAcesso">
-            <Form.Label>ACESSO</Form.Label>
-            <Form.Control
-              as="select"
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="acesso">Acesso</Label>
+            <Select
               name="acesso"
               value={currentItem.acesso}
-              onChange={handleChange}
+              onValueChange={handleChange}
             >
-              <option value="">Selecione</option>
-              <option value="basic">Basic</option>
-              <option value="manager">Manager</option>
-              <option value="admin">Admin</option>
-            </Form.Control>
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-        <Button variant="primary" onClick={handleSave}>
-          {isEditMode ? "Salvar" : "Adicionar"}
-        </Button>
-      </Modal.Footer>
-    </Modal>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="basic">Basic</SelectItem>
+                <SelectItem value="manager">Manager</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="secondary" onClick={handleClose}>
+              Cancelar
+            </Button>
+            <Button type="submit" variant="outline">
+              {isEditMode ? "Salvar" : "Adicionar"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

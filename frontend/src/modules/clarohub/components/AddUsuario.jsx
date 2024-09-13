@@ -1,7 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
-import "./AddUsuario.css";
-import axiosInstance from "../../../services/axios";
+import { useState, useEffect } from "react";
+import axiosInstance from "services/axios";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "modules/shared/components/ui/dialog";
+import { Button } from "modules/shared/components/ui/button";
+import { Input } from "modules/shared/components/ui/input";
+import { Label } from "modules/shared/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "modules/shared/components/ui/select";
 
 const AddUsuario = ({
   show,
@@ -43,109 +58,119 @@ const AddUsuario = ({
   };
 
   return (
-    <Modal centered show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>
-          {isEditMode ? "Editar Usuário" : "Adicionar Usuário"}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formCredencial">
-            <Form.Label>Credencial</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Digite o login"
-              name="LOGIN"
-              value={currentItem.LOGIN}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group controlId="formNome">
-            <Form.Label>Nome</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Digite o nome"
-              name="NOME"
-              value={currentItem.NOME}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group controlId="formGestor">
-            <Form.Label>Gestor</Form.Label>
-            <Form.Control
-              as="select"
-              placeholder="Selecione o gestor"
-              name="GESTOR"
-              value={currentItem.GESTOR}
-              onChange={handleChange}
-            >
-              <option value="">Selecione um gestor</option>
-              {gestores.map((gestor, index) => (
-                <option key={index} value={gestor}>
-                  {gestor}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="formPermissao">
-            <Form.Label>Permissão</Form.Label>
-            <div className="d-flex gap-2">
-              {permissions.map((permission) => {
-                let icon;
-                switch (permission) {
-                  case "guest":
-                    icon = <i className="bi bi-person-fill"></i>;
-                    break;
-                  case "basic":
-                    icon = <i className="bi bi-person-fill"></i>;
-                    break;
-                  case "manager":
-                    icon = <i className="bi bi-bar-chart-fill"></i>;
-                    break;
-                  case "admin":
-                    icon = <i className="bi bi-shield-shaded"></i>;
-                    break;
-                  default:
-                    icon = <i></i>;
-                }
-
-                return (
-                  <Button
-                    key={permission}
-                    variant="outline-secondary"
-                    className={`permission-button ${permission} ${
-                      currentItem.PERMISSOES === permission ? "active" : ""
-                    }`}
-                    onClick={() =>
-                      handleChange({
-                        target: { name: "PERMISSOES", value: permission },
-                      })
-                    }
-                  >
-                    {icon}{" "}
-                    {permission.charAt(0).toUpperCase() + permission.slice(1)}
-                  </Button>
-                );
-              })}
+    <Dialog open={show} onOpenChange={handleClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {isEditMode ? "Editar Usuário" : "Adicionar Usuário"}
+          </DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="formCredencial">Credencial</Label>
+              <Input
+                type="text"
+                placeholder="Digite o login"
+                name="LOGIN"
+                value={currentItem.LOGIN}
+                onChange={handleChange}
+              />
             </div>
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-        <Button variant="primary" onClick={handleSave}>
-          {isEditMode ? "Salvar" : "Adicionar"}
-        </Button>
-        {isEditMode && (
-          <Button variant="danger" onClick={handleResetPassword}>
-            Resetar Senha
+
+            <div>
+              <Label htmlFor="formNome">Nome</Label>
+              <Input
+                type="text"
+                placeholder="Digite o nome"
+                name="NOME"
+                value={currentItem.NOME}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="formGestor">Gestor</Label>
+              <Select
+                name="GESTOR"
+                value={currentItem.GESTOR}
+                onValueChange={(value) =>
+                  handleChange({ target: { name: "GESTOR", value } })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o gestor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {gestores.map((gestor, index) => (
+                    <SelectItem key={index} value={gestor}>
+                      {gestor}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="formPermissao">Permissão</Label>
+              <div className="flex gap-2">
+                {permissions.map((permission) => {
+                  let icon;
+                  switch (permission) {
+                    case "guest":
+                      icon = <i className="bi bi-person-fill"></i>;
+                      break;
+                    case "basic":
+                      icon = <i className="bi bi-person-fill"></i>;
+                      break;
+                    case "manager":
+                      icon = <i className="bi bi-bar-chart-fill"></i>;
+                      break;
+                    case "admin":
+                      icon = <i className="bi bi-shield-shaded"></i>;
+                      break;
+                    default:
+                      icon = <i></i>;
+                  }
+
+                  return (
+                    <Button
+                      key={permission}
+                      variant={
+                        currentItem.PERMISSOES === permission
+                          ? "default"
+                          : "outline"
+                      }
+                      onClick={() =>
+                        handleChange({
+                          target: { name: "PERMISSOES", value: permission },
+                        })
+                      }
+                    >
+                      {icon}{" "}
+                      {permission.charAt(0).toUpperCase() + permission.slice(1)}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </form>
+        <DialogFooter className="space-x-2">
+          <Button variant="outline" onClick={handleClose}>
+            Cancelar
           </Button>
-        )}
-      </Modal.Footer>
-    </Modal>
+          <Button type="submit" onClick={handleSave}>
+            {isEditMode ? "Salvar" : "Adicionar"}
+          </Button>
+          {isEditMode && (
+            <Button variant="destructive" onClick={handleResetPassword}>
+              Resetar Senha
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

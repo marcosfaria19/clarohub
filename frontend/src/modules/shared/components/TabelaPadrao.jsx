@@ -136,8 +136,8 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
         <Input
           label="Filtrar..."
           value={globalFilter}
+          className="h-10"
           onChange={(event) => setGlobalFilter(event.target.value)}
-          className="max-w-sm border-popover bg-menu placeholder-muted focus:placeholder-transparent"
         />
 
         <DropdownMenu>

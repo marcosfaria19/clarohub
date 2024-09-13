@@ -91,8 +91,6 @@ module.exports = (qualinetCollection) => {
           filteredDataWithoutRS
         );
 
-        console.log("result:", result);
-
         if (!result || !result.insertedIds) {
           return res
             .status(500)

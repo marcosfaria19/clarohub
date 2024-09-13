@@ -2,7 +2,6 @@
 
 import UploadFile from "modules/clarohub/components/UploadFile";
 import Container from "react-bootstrap/Container";
-import "./OCQualinet.css";
 
 function OCQualinet() {
   return (

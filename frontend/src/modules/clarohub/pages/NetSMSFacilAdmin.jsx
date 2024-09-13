@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Modal, Tooltip, OverlayTrigger } from "react-bootstrap";
 import AddNetSMSFacil from "modules/clarohub/components/AddNetSMSFacil";
 import axiosInstance from "services/axios";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import Container from "modules/shared/components/ui/container";
+import DeleteConfirmationModal from "modules/clarohub/components/DeleteConfirmationModal";
+import { Button } from "modules/shared/components/ui/button";
 
 function NetSMSFacilAdmin() {
   const [dados, setDados] = useState([]);
@@ -153,18 +154,10 @@ function NetSMSFacilAdmin() {
       <h2 className="mb-6 select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
         Códigos Cadastrados
       </h2>
-      <OverlayTrigger
-        placement="top"
-        overlay={<Tooltip id="button-tooltip">Adicionar novo código</Tooltip>}
-      >
-        <Button
-          variant="outline-dark"
-          className="botao-adicionar"
-          onClick={handleAddClick}
-        >
-          <i className="bi bi-plus-lg"></i>
-        </Button>
-      </OverlayTrigger>
+
+      <Button variant="outline" onClick={handleAddClick}>
+        Adicionar novo código
+      </Button>
 
       <TabelaPadrao
         columns={columns}
@@ -185,20 +178,11 @@ function NetSMSFacilAdmin() {
       />
 
       {/* Modal de Confirmação de Exclusão */}
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmar Exclusão</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Tem certeza que deseja excluir este cadastro?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Cancelar
-          </Button>
-          <Button variant="danger" onClick={handleDeleteConfirm}>
-            Excluir
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+        handleDeleteConfirm={handleDeleteConfirm}
+      />
     </Container>
   );
 }

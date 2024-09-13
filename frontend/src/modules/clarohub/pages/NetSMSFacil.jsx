@@ -9,7 +9,6 @@ import {
   OverlayTrigger,
   Table,
 } from "react-bootstrap";
-import "./NetSMSFacil.css";
 import TabelaNetFacil from "modules/clarohub/components/TabelaNetFacil";
 import axiosInstance from "services/axios";
 

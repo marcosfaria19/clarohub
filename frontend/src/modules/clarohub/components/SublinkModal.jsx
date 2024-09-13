@@ -38,7 +38,7 @@ const SublinkModal = ({ show, handleClose, selectedApp }) => {
         if (cities.map((city) => city.toLowerCase()).includes(location)) {
           selectedSubLink = selectedApp.subLinks.find(
             (subLink) =>
-              subLink.nome.toLowerCase() === subLinkName.toLowerCase()
+              subLink.nome.toLowerCase() === subLinkName.toLowerCase(),
           );
           break;
         }
@@ -48,7 +48,7 @@ const SublinkModal = ({ show, handleClose, selectedApp }) => {
         if (ufs.map((uf) => uf.toLowerCase()).includes(location)) {
           selectedSubLink = selectedApp.subLinks.find(
             (subLink) =>
-              subLink.nome.toLowerCase() === subLinkName.toLowerCase()
+              subLink.nome.toLowerCase() === subLinkName.toLowerCase(),
           );
           break;
         }
@@ -58,7 +58,7 @@ const SublinkModal = ({ show, handleClose, selectedApp }) => {
         if (ufs.map((uf) => uf.toLowerCase()).includes(location)) {
           selectedSubLink = selectedApp.subLinks.find(
             (subLink) =>
-              subLink.nome.toLowerCase() === subLinkName.toLowerCase()
+              subLink.nome.toLowerCase() === subLinkName.toLowerCase(),
           );
           break;
         }
@@ -66,14 +66,13 @@ const SublinkModal = ({ show, handleClose, selectedApp }) => {
     }
 
     if (selectedSubLink) {
-      console.log(`Opening sublink: ${selectedSubLink.rota}`);
       window.open(selectedSubLink.rota, "_blank");
     } else {
       console.warn(
-        `${selectedApp.nome === "Atlas" ? "Cidade" : "UF"} não encontrada.`
+        `${selectedApp.nome === "Atlas" ? "Cidade" : "UF"} não encontrada.`,
       );
       alert(
-        `${selectedApp.nome === "Atlas" ? "Cidade" : "UF"} não encontrada.`
+        `${selectedApp.nome === "Atlas" ? "Cidade" : "UF"} não encontrada.`,
       );
     }
 

@@ -16,8 +16,9 @@
     --secondary-foreground: 222.2 47.4% 15%;
     --muted: 210 5% 70%;
     --muted-foreground: 0 0% 98%;
-    --accent: 210 40% 40%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 180 60% 45%; /* Um tom de verde ciano */
+    --accent-foreground: 0 0% 98%; /* Manter o foreground claro para contraste */
+
     --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 98%;
     --border: 210 10% 10%;
@@ -37,10 +38,6 @@
 
 .font-poppins {
   font-family: "Poppins", sans-serif;
-}
-
-.my-toast {
-  @apply fixed right-0 top-0;
 }
 
 .login-bg {

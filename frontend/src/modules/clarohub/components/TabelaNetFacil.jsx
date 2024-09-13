@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
-import "./TabelaNetFacil.css";
 import axiosInstance from "../../../services/axios";
 
 const TabelaNetFacil = ({ isOpen, onRequestClose }) => {

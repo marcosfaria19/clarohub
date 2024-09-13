@@ -6,6 +6,7 @@ import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import UserBadge from "modules/clarohub/components/UserBadge";
 import axiosInstance from "services/axios";
 import Container from "modules/shared/components/ui/container";
+import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 
 function Users() {
   const [dados, setDados] = useState([]);
@@ -153,20 +154,11 @@ function Users() {
         isEditMode={isEditMode}
       />
 
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmar Exclusão</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Tem certeza que deseja excluir este cadastro?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Cancelar
-          </Button>
-          <Button variant="danger" onClick={handleDeleteConfirm}>
-            Excluir
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+        handleDeleteConfirm={handleDeleteConfirm}
+      />
     </Container>
   );
 }
