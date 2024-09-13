@@ -1,57 +1,55 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/logo.png";
-import { Button } from "./ui/button";
-import { MenuIcon } from "lucide-react";
+import { Button } from "modules/shared/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "modules/shared/components/ui/sheet";
+import { MenuIcon, LogOut } from "lucide-react";
+import logo from "modules/shared/assets/logo.png";
 
 export default function Header({ userName, onLogout }) {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
-    <header className="m-0 select-none bg-menu p-3">
-      <div className="container mx-auto flex items-center justify-between px-2">
-        <Link to="/home" className="flex items-center">
-          <img src={logo} alt="Logo" className="mr-2 h-8 w-8" />
+    <header className="select-none bg-menu">
+      <div className="container mx-auto flex items-center justify-between px-4 py-3">
+        <Link to="/home" className="flex items-center space-x-2">
+          <img src={logo} alt="Claro Hub" className="h-8 w-8" />
           <span className="text-lg font-semibold text-foreground">
             Claro Hub
           </span>
         </Link>
 
-        {/* Menu suspenso fechado */}
-        <div className="md:hidden">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <MenuIcon />
-          </Button>
-        </div>
-
-        {/* Menu normal */}
-        <div className="hidden flex-col items-center space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0 md:flex">
-          <span className="text-center text-muted sm:text-left">
+        <nav className="hidden items-center space-x-4 md:flex">
+          <span className="text-muted">
             Bem-vindo(a), <span className="font-semibold">{userName}</span>
           </span>
           <Button variant="outline" onClick={onLogout}>
+            <LogOut className="mr-2 h-4 w-4" />
             Logout
           </Button>
-        </div>
-      </div>
+        </nav>
 
-      {/* Menu suspenso aberto */}
-      <nav
-        className={`${
-          isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
-        } overflow-hidden bg-menu transition-all duration-500 md:hidden`}
-      >
-        <span className="block py-2 text-center text-muted">
-          Bem-vindo(a), <span className="font-semibold">{userName}</span>
-        </span>
-        <Button variant="outline" className="mt-2 w-full" onClick={onLogout}>
-          Logout
-        </Button>
-      </nav>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <MenuIcon className="h-6 w-6" />
+              <span className="sr-only">Abrir menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right">
+            <div className="mt-4 flex flex-col space-y-4">
+              <span className="text-muted-foreground">
+                Bem-vindo(a), <span className="font-semibold">{userName}</span>
+              </span>
+              <Button variant="outline" onClick={onLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
     </header>
   );
 }

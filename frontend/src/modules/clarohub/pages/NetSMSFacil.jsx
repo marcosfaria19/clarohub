@@ -106,22 +106,13 @@ const NetSMSFacil = () => {
     setShowObservacaoField(false);
   };
 
-  const handleObservacaoChange = (event) => {
+  const removerAcentos = (event) => {
     const value = event.target.value
       .toUpperCase() // Converter para maiúsculas
       .normalize("NFD") // Decompor caracteres acentuados
       .replace(/[\u0300-\u036f]/g, "") // Remover diacríticos (acentos)
       .replace(/[^A-Z0-9\s]/g, ""); // Remover caracteres especiais (exceto letras, números e espaços)
     setObservacao(value);
-  };
-
-  const handleIncidenteChange = (event) => {
-    const value = event.target.value
-      .toUpperCase() // Converter para maiúsculas
-      .normalize("NFD") // Decompor caracteres acentuados
-      .replace(/[\u0300-\u036f]/g, "") // Remover diacríticos (acentos)
-      .replace(/[^A-Z0-9\s]/g, ""); // Remover caracteres especiais (exceto letras, números e espaços)
-    setIncidente(value);
   };
 
   const handleTextoPadraoChange = (event) => {
@@ -401,7 +392,7 @@ const NetSMSFacil = () => {
             <Form.Control
               type="text"
               value={incidente}
-              onChange={handleIncidenteChange}
+              onChange={removerAcentos}
               required
               placeholder="Por favor insira um incidente"
             />
@@ -416,7 +407,7 @@ const NetSMSFacil = () => {
           <Form.Control
             type="text"
             value={observacao}
-            onChange={handleObservacaoChange}
+            onChange={removerAcentos}
             required={showObservacaoField}
             placeholder={
               showObservacaoField ? "Por favor insira uma observação" : ""
