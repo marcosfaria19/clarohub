@@ -8,10 +8,11 @@ import {
 } from "modules/shared/components/ui/sheet";
 import { MenuIcon, LogOut } from "lucide-react";
 import logo from "modules/shared/assets/logo.png";
+import AvatarDropdown from "modules/shared/components/AvatarDropdown";
 
-export default function Header({ userName, onLogout }) {
+export default function Header({ userName, onLogout, login }) {
   return (
-    <header className="select-none bg-menu">
+    <header className="fixed top-0 z-50 w-screen bg-menu opacity-90">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/home" className="flex items-center space-x-2">
           <img src={logo} alt="Claro Hub" className="h-8 w-8" />
@@ -21,13 +22,14 @@ export default function Header({ userName, onLogout }) {
         </Link>
 
         <nav className="hidden items-center space-x-4 md:flex">
-          <span className="text-muted">
+          <span className="text-foreground/70">
             Bem-vindo(a), <span className="font-semibold">{userName}</span>
           </span>
-          <Button variant="outline" onClick={onLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
+          <AvatarDropdown
+            onLogout={onLogout}
+            login={login}
+            userName={userName}
+          />
         </nav>
 
         <Sheet>

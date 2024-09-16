@@ -127,7 +127,7 @@ const Home = () => {
               </div>
             ))}
           </div>
-          <hr className="mt-6 border-solid border-neutral-500 sm:mt-8" />
+          <hr className="mt-6 border-solid border-foreground/20 sm:mt-8" />
         </div>
       )}
 
@@ -135,7 +135,7 @@ const Home = () => {
         (family) =>
           groupedApps[family] && (
             <div key={family} className="family-section mb-8 sm:mb-10 md:mb-12">
-              <h2 className="family-title mb-6 select-none text-xl font-semibold text-white sm:mb-8 sm:text-2xl">
+              <h2 className="family-title mb-6 select-none text-xl font-semibold text-foreground sm:mb-8 sm:text-2xl">
                 {family}
               </h2>
               <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
@@ -153,7 +153,7 @@ const Home = () => {
                   </div>
                 ))}
               </div>
-              <hr className="mt-6 border-solid border-neutral-500 sm:mt-8" />
+              <hr className="border-input mt-6 border-foreground/20 sm:mt-8" />
             </div>
           ),
       )}

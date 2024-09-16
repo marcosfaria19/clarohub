@@ -10,6 +10,7 @@ import { Toaster } from "modules/shared/components/ui/sonner";
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [userName, setUserName] = useState("");
+  const [login, setLogin] = useState("");
 
   useEffect(() => {
     if (token) {
@@ -21,18 +22,26 @@ function App() {
           localStorage.removeItem("token");
           setToken(null);
           setUserName("");
+          setLogin("");
         } else {
           localStorage.setItem("token", token);
           if (decodedToken && decodedToken.NOME) {
             const nomeCompleto = decodedToken.NOME;
-            const primeiroNome = nomeCompleto.split(" ")[0];
-            const primeiroNomeFormatado =
-              primeiroNome.charAt(0).toUpperCase() +
-              primeiroNome.slice(1).toLowerCase();
-            setUserName(primeiroNomeFormatado);
+            const nomes = nomeCompleto.split(" ");
+            const primeirosNomes = nomes.slice(0, 2).join(" ");
+            const primeirosNomesFormatados = primeirosNomes
+              .split(" ")
+              .map(
+                (nome) =>
+                  nome.charAt(0).toUpperCase() + nome.slice(1).toLowerCase(),
+              )
+              .join(" ");
+
+            setUserName(primeirosNomesFormatados);
 
             localStorage.setItem("userName", nomeCompleto);
             localStorage.setItem("gestor", decodedToken.GESTOR);
+            setLogin(decodedToken.LOGIN);
           }
         }
       } catch (error) {
@@ -40,6 +49,7 @@ function App() {
         localStorage.removeItem("token");
         setToken(null);
         setUserName("");
+        setLogin("");
       }
     } else {
       localStorage.removeItem("token");
@@ -53,13 +63,14 @@ function App() {
     localStorage.removeItem("token");
     localStorage.removeItem("userName");
     localStorage.removeItem("gestor");
+    setLogin("");
     setUserName("");
   };
 
   return (
     <Router>
       {!token && <Navigate to="/login" />}
-      {token && <Header userName={userName} onLogout={logout} />}
+      {token && <Header userName={userName} onLogout={logout} login={login} />}
       <Rotas token={token} setToken={setToken} />
       {token && <Footer />}
       <Toaster position="bottom-right" richColors />
