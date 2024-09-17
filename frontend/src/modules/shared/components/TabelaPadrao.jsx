@@ -117,7 +117,7 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility, // Certifique-se de que isso está atualizando corretamente
+    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: (row, _, filterValue) => {

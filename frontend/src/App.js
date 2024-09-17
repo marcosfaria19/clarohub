@@ -72,7 +72,12 @@ function App() {
     <Router>
       {!token && <Navigate to="/login" />}
       {token && <Header userName={userName} onLogout={logout} login={login} />}
-      <Rotas token={token} setToken={setToken} userName={userName} gestor={gestor} />
+      <Rotas
+        token={token}
+        setToken={setToken}
+        userName={userName}
+        gestor={gestor}
+      />
       {token && <Footer />}
       <Toaster position="bottom-right" richColors />
     </Router>
