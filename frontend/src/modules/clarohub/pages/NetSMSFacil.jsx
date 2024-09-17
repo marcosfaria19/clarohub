@@ -1,16 +1,9 @@
 // NetSMSFacil.js
 import React, { useState, useEffect } from "react";
-import {
-  Form,
-  Button,
-  Container,
-  Alert,
-  Tooltip,
-  OverlayTrigger,
-  Table,
-} from "react-bootstrap";
+import { Form, Container, Alert, Table } from "react-bootstrap";
 import TabelaNetFacil from "modules/clarohub/components/TabelaNetFacil";
 import axiosInstance from "services/axios";
+import { Button } from "modules/shared/components/ui/button";
 
 const NetSMSFacil = () => {
   const [data, setData] = useState([]);
@@ -230,31 +223,17 @@ const NetSMSFacil = () => {
           isInvalid={submitted && !codigo}
         />
 
-        <OverlayTrigger
-          placement="top"
-          overlay={
-            <Tooltip id="button-tooltip">Encontrar automaticamente</Tooltip>
-          }
-        >
-          <Button variant="dark" onClick={handleCodigoSubmit}>
-            <i className="bi bi-check-lg"></i>
-          </Button>
-        </OverlayTrigger>
+        <Button variant="dark" onClick={handleCodigoSubmit}>
+          <i className="bi bi-check-lg"></i>
+        </Button>
 
-        <OverlayTrigger
-          placement="top"
-          overlay={
-            <Tooltip id="button-tooltip">Exibir a lista de códigos</Tooltip>
-          }
+        <Button
+          variant="outline-dark"
+          className="botao-info"
+          onClick={abrirTabelaConsulta}
         >
-          <Button
-            variant="outline-dark"
-            className="botao-info"
-            onClick={abrirTabelaConsulta}
-          >
-            <i className="bi bi-question-lg"></i>
-          </Button>
-        </OverlayTrigger>
+          <i className="bi bi-question-lg"></i>
+        </Button>
 
         <TabelaNetFacil
           isOpen={tabelaConsulta}
@@ -420,26 +399,13 @@ const NetSMSFacil = () => {
           </Form.Control.Feedback>
         </Form.Group>
         <div className="botoes d-flex mb-3">
-          <OverlayTrigger
-            placement="left"
-            overlay={<Tooltip id="button-tooltip">Gerar texto padrão</Tooltip>}
-          >
-            <Button variant="success" className="botao-gerar" type="submit">
-              <i className="bi bi-copy"></i>
-            </Button>
-          </OverlayTrigger>
-          <OverlayTrigger
-            placement="right"
-            overlay={<Tooltip id="button-tooltip">Reiniciar</Tooltip>}
-          >
-            <Button
-              variant="danger"
-              className="botao-reiniciar"
-              onClick={handleReset}
-            >
-              <i className="bi bi-arrow-clockwise"></i>
-            </Button>
-          </OverlayTrigger>
+          <Button variant="primary" onClick={handleSubmit}>
+            TESTE
+          </Button>
+
+          <Button variant="destructive" onClick={handleReset}>
+            <i className="bi bi-arrow-clockwise"></i>
+          </Button>
         </div>
 
         <Alert
