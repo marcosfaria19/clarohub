@@ -34,7 +34,7 @@ export default function Header({ userName, onLogout, login }) {
   };
 
   return (
-    <header className="fixed top-0 z-50 w-full bg-menu opacity-90">
+    <header className="fixed top-0 z-50 w-screen bg-menu opacity-90">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/home" className="flex items-center space-x-2">
           <img

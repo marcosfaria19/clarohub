@@ -24,6 +24,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuPortal,
 } from "modules/shared/components/ui/dropdown-menu";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import {
@@ -67,7 +68,7 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
             };
 
             return (
-              <DropdownMenu>
+              <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="link"
@@ -77,23 +78,25 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={copyDataToClipboard}>
-                    Copiar dados
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {onEdit && (
-                    <DropdownMenuItem onClick={() => onEdit(data)}>
-                      Editar
+                <DropdownMenuPortal>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                    <DropdownMenuItem onClick={copyDataToClipboard}>
+                      Copiar dados
                     </DropdownMenuItem>
-                  )}
-                  {onDelete && (
-                    <DropdownMenuItem onClick={() => onDelete(data)}>
-                      Excluir
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
+                    <DropdownMenuSeparator />
+                    {onEdit && (
+                      <DropdownMenuItem onClick={() => onEdit(data)}>
+                        Editar
+                      </DropdownMenuItem>
+                    )}
+                    {onDelete && (
+                      <DropdownMenuItem onClick={() => onDelete(data)}>
+                        Excluir
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenuPortal>
               </DropdownMenu>
             );
           },
@@ -140,7 +143,7 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
           onChange={(event) => setGlobalFilter(event.target.value)}
         />
 
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               Colunas <ChevronDown className="ml-2 h-4 w-4" />

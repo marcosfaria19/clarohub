@@ -4,10 +4,10 @@
 
 @layer base {
   :root {
-    --menu: 0, 0%, 3%;
+    --menu: 215 27.9% 15%;
     --border-hover: 210 11% 40%;
 
-    --background: 0, 0%, 5%;
+    --background: 215 27.9% 18%;
     --foreground: 210 20% 98%;
 
     --card: 0, 0%, 3%;
@@ -45,10 +45,10 @@
   }
 
   .light-theme {
-    --menu: 273, 82%, 93%;
+    --menu: 273, 82%, 95%;
     --border-hover: 210 11% 60%;
 
-    --background: 273, 82%, 95%;
+    --background: 273, 82%, 97%;
     --foreground: 210 20% 2%;
 
     --card: 273, 82%, 93%;

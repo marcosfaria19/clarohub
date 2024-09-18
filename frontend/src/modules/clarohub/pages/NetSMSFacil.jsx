@@ -1,28 +1,68 @@
-// NetSMSFacil.js
 import React, { useState, useEffect } from "react";
-import { Form, Container, Alert, Table } from "react-bootstrap";
+import { useForm } from "react-hook-form";
 import TabelaNetFacil from "modules/clarohub/components/TabelaNetFacil";
 import axiosInstance from "services/axios";
 import { Button } from "modules/shared/components/ui/button";
+import { Input } from "modules/shared/components/ui/input";
+import { Label } from "modules/shared/components/ui/label";
+import { Select } from "modules/shared/components/ui/select";
+import { Textarea } from "modules/shared/components/ui/textarea";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "modules/shared/components/ui/alert";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "modules/shared/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "modules/shared/components/ui/card";
+import {
+  CheckIcon,
+  MessageCircleQuestionIcon,
+  RefreshCcwIcon,
+} from "lucide-react";
+import Container from "modules/shared/components/ui/container";
 
 const NetSMSFacil = () => {
   const [data, setData] = useState([]);
-  const [tratativa, setTratativa] = useState("");
-  const [tipo, setTipo] = useState("");
-  const [aberturaFechamento, setAberturaFechamento] = useState("");
-  const [netsms, setNetsms] = useState("");
-  const [observacao, setObservacao] = useState("");
-  const [incidente, setIncidente] = useState("");
   const [showIncidenteField, setShowIncidenteField] = useState(false);
   const [showObservacaoField, setShowObservacaoField] = useState(false);
   const [concatenatedText, setConcatenatedText] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const [textoPadrao, setTextoPadrao] = useState("");
-  const [validated, setValidated] = useState(false);
-  const [codigo, setCodigo] = useState("");
-  const [submitted, setSubmitted] = useState(false);
   const [tabelaConsulta, setTabelaConsulta] = useState(false);
   const [sgdData, setSgdData] = useState([]);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      codigo: "",
+      tratativa: "",
+      tipo: "",
+      aberturaFechamento: "",
+      netsms: "",
+      textoPadrao: "",
+      incidente: "",
+      observacao: "",
+    },
+  });
+
+  const watchAllFields = watch();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,153 +78,66 @@ const NetSMSFacil = () => {
 
   const findSelectedItem = (codigo) => {
     const codigoNumber = String(codigo);
-    const selectedItem = data.find((item) => String(item.ID) === codigoNumber);
-    return selectedItem;
+    return data.find((item) => String(item.ID) === codigoNumber);
   };
 
   const handleCodigoSubmit = () => {
-    const item = findSelectedItem(codigo);
+    const item = findSelectedItem(watchAllFields.codigo);
     if (item) {
-      handleReset();
-      setCodigo(codigo);
-      setTratativa(item.TRATATIVA);
-      setTipo(item.TIPO);
-      setAberturaFechamento(item["ABERTURA/FECHAMENTO"]);
-      setNetsms(item.NETSMS);
-      setTextoPadrao(`${item.ID} - ${item["TEXTO PADRAO"]}`);
+      reset({
+        codigo: watchAllFields.codigo,
+        tratativa: item.TRATATIVA,
+        tipo: item.TIPO,
+        aberturaFechamento: item["ABERTURA/FECHAMENTO"],
+        netsms: item.NETSMS,
+        textoPadrao: `${item.ID} - ${item["TEXTO PADRAO"]}`,
+      });
       setShowIncidenteField(item.INCIDENTE === "Sim");
       setShowObservacaoField(item.OBS === "Sim");
-      setValidated(true);
     } else {
-      handleReset();
-      setSubmitted(true);
+      reset();
     }
   };
 
-  const handleTratativaChange = (event) => {
-    setTratativa(event.target.value);
-    setTipo("");
-    setAberturaFechamento("");
-    setNetsms("");
-    setTextoPadrao("");
-    setShowIncidenteField(false);
-    setShowObservacaoField(false);
+  const removerAcentos = (value) => {
+    return value
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^A-Z0-9\s]/g, "");
   };
 
-  const handleCodigoChange = (event) => {
-    setCodigo(event.target.value);
-  };
-
-  const handleTipoChange = (event) => {
-    setTipo(event.target.value);
-    setAberturaFechamento("");
-    setNetsms("");
-    setTextoPadrao("");
-    setShowIncidenteField(false);
-    setShowObservacaoField(false);
-  };
-
-  const handleAberturaFechamentoChange = (event) => {
-    setAberturaFechamento(event.target.value);
-    setNetsms("");
-    setTextoPadrao("");
-    setShowIncidenteField(false);
-    setShowObservacaoField(false);
-  };
-
-  const handleNetsmsChange = (event) => {
-    setNetsms(event.target.value);
-    setTextoPadrao("");
-    setShowIncidenteField(false);
-    setShowObservacaoField(false);
-  };
-
-  const removerAcentos = (event) => {
-    const value = event.target.value
-      .toUpperCase() // Converter para maiúsculas
-      .normalize("NFD") // Decompor caracteres acentuados
-      .replace(/[\u0300-\u036f]/g, "") // Remover diacríticos (acentos)
-      .replace(/[^A-Z0-9\s]/g, ""); // Remover caracteres especiais (exceto letras, números e espaços)
-    setObservacao(value);
-  };
-
-  const handleTextoPadraoChange = (event) => {
-    setTextoPadrao(event.target.value);
-    const item = findSelectedItem(codigo);
+  const onSubmit = async (formData) => {
+    const item = findSelectedItem(formData.codigo);
     if (item) {
-      setShowIncidenteField(item.INCIDENTE === "Sim");
-      setShowObservacaoField(item.OBS === "Sim");
-    }
-  };
+      let textoPadraoConcatenado = formData.textoPadrao;
+      const usuarioAtual = localStorage.getItem("userName");
+      const nomeGestor = localStorage.getItem("gestor");
 
-  const handleReset = () => {
-    setTratativa("");
-    setTipo("");
-    setAberturaFechamento("");
-    setNetsms("");
-    setTextoPadrao("");
-    setObservacao("");
-    setConcatenatedText("");
-    setShowAlert(false);
-    setValidated(false);
-    setIncidente("");
-    setShowIncidenteField(false);
-    setShowObservacaoField(false);
-    setCodigo("");
-    setSgdData([]);
-    setSubmitted(false);
-  };
+      textoPadraoConcatenado += formData.incidente
+        ? ` ${formData.incidente}`
+        : "";
+      textoPadraoConcatenado += formData.observacao
+        ? `\nOBS: ${formData.observacao}`
+        : "";
+      textoPadraoConcatenado += `\n\n${usuarioAtual} // ${nomeGestor}`;
 
-  const handleSubmit = async (event) => {
-    const form = event.currentTarget;
-    const item = findSelectedItem(codigo);
-    event.preventDefault();
-    setSubmitted(true);
-    if (form.checkValidity() === false) {
-      event.stopPropagation();
-    } else {
-      if (item) {
-        let textoPadraoConcatenado = textoPadrao;
-        const usuarioAtual = localStorage.getItem("userName");
-        const nomeGestor = localStorage.getItem("gestor");
+      setConcatenatedText(textoPadraoConcatenado);
+      navigator.clipboard.writeText(textoPadraoConcatenado);
+      setShowAlert(true);
 
-        textoPadraoConcatenado += incidente ? ` ${incidente}` : "";
-        textoPadraoConcatenado += observacao ? `\nOBS: ${observacao}` : "";
-        textoPadraoConcatenado += `\n\n${usuarioAtual} // ${nomeGestor}`;
-
-        setConcatenatedText(textoPadraoConcatenado);
-        const textArea = document.createElement("textarea");
-        textArea.value = textoPadraoConcatenado;
-        document.body.appendChild(textArea);
-        textArea.select();
-
-        try {
-          document.execCommand("copy");
-          setShowAlert(true);
-
-          // Requisição GET para buscar todos os dados de /netfacilsgd
-          const sgdResponse = await axiosInstance.get(`/netfacilsgd`);
-          const allSgdData = sgdResponse.data;
-
-          // Filtragem dos dados com base nos IDs do selectedItem.SGD
-          const sgdIds = item?.SGD.map(Number) || [];
-          const filteredSgdData = allSgdData.filter((item) =>
-            sgdIds.includes(item.ID_SGD),
-          );
-
-          // Atualizar o estado com os dados filtrados
-          setSgdData(filteredSgdData);
-        } catch (err) {
-          console.error(
-            "Erro ao copiar texto para a área de transferência:",
-            err,
-          );
-        }
-        document.body.removeChild(textArea);
+      try {
+        const sgdResponse = await axiosInstance.get(`/netfacilsgd`);
+        const allSgdData = sgdResponse.data;
+        const sgdIds = item?.SGD.map(Number) || [];
+        const filteredSgdData = allSgdData.filter((item) =>
+          sgdIds.includes(item.ID_SGD),
+        );
+        setSgdData(filteredSgdData);
+      } catch (err) {
+        console.error("Erro ao buscar dados SGD:", err);
       }
     }
-
-    setValidated(true);
   };
 
   const filterData = (conditions) => {
@@ -198,262 +151,238 @@ const NetSMSFacil = () => {
     return [...new Set(filteredData.map((item) => item[field]))];
   };
 
-  const abrirTabelaConsulta = () => {
-    setTabelaConsulta(true);
-  };
-
-  const fecharTabelaConsulta = () => {
-    setTabelaConsulta(false);
-  };
-
   return (
-    <Container
-      className="netsmsfacil-container py-5"
-      data-bs-theme="light"
-      fluid
-    >
-      <div className="codigo-container">
-        <Form.Control
-          className="codigo-input"
-          type="text"
-          placeholder="Cód."
-          value={codigo}
-          maxLength={3}
-          onChange={handleCodigoChange}
-          isInvalid={submitted && !codigo}
-        />
-
-        <Button variant="dark" onClick={handleCodigoSubmit}>
-          <i className="bi bi-check-lg"></i>
-        </Button>
-
-        <Button
-          variant="outline-dark"
-          className="botao-info"
-          onClick={abrirTabelaConsulta}
-        >
-          <i className="bi bi-question-lg"></i>
-        </Button>
-
-        <TabelaNetFacil
-          isOpen={tabelaConsulta}
-          onRequestClose={fecharTabelaConsulta}
-        />
-      </div>
-      <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <Form.Group className="form-group-spacing" controlId="tratativa">
-          <Form.Label>Tratativa</Form.Label>
-          <Form.Control
-            as="select"
-            value={tratativa}
-            onChange={handleTratativaChange}
-            required
-          >
-            <option value="">Selecione</option>
-            {getUniqueValues("TRATATIVA").map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </Form.Control>
-          <Form.Control.Feedback type="invalid">
-            Por favor, selecione uma tratativa.
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group className="form-group-spacing" controlId="tipo">
-          <Form.Label>Tipo</Form.Label>
-          <Form.Control
-            as="select"
-            value={tipo}
-            onChange={handleTipoChange}
-            disabled={!tratativa}
-            required
-          >
-            <option value="">Selecione</option>
-            {getUniqueValues("TIPO", [["TRATATIVA", tratativa]]).map(
-              (value) => (
-                <option key={value} value={value}>
-                  {value}
-                </option>
-              ),
-            )}
-          </Form.Control>
-          <Form.Control.Feedback type="invalid">
-            Por favor, selecione um tipo.
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group
-          className="form-group-spacing"
-          controlId="aberturaFechamento"
-        >
-          <Form.Label>Abertura/Fechamento</Form.Label>
-          <Form.Control
-            as="select"
-            value={aberturaFechamento}
-            onChange={handleAberturaFechamentoChange}
-            disabled={!tipo}
-            required
-          >
-            <option value="">Selecione</option>
-            {getUniqueValues("ABERTURA/FECHAMENTO", [
-              ["TIPO", tipo],
-              ["TRATATIVA", tratativa],
-            ]).map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </Form.Control>
-          <Form.Control.Feedback type="invalid">
-            Por favor, selecione abertura ou fechamento.
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group className="form-group-spacing" controlId="netsms">
-          <Form.Label>NetSMS</Form.Label>
-          <Form.Control
-            as="select"
-            value={netsms}
-            onChange={handleNetsmsChange}
-            disabled={!aberturaFechamento}
-            required
-          >
-            <option value="">Selecione</option>
-            {getUniqueValues("NETSMS", [
-              ["ABERTURA/FECHAMENTO", aberturaFechamento],
-              ["TIPO", tipo],
-              ["TRATATIVA", tratativa],
-            ]).map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </Form.Control>
-          <Form.Control.Feedback type="invalid">
-            Por favor, selecione um NetSMS.
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group className="form-group-spacing" controlId="textoPadrao">
-          <Form.Label>Texto Padrão</Form.Label>
-          <Form.Control
-            as="select"
-            value={textoPadrao}
-            onChange={handleTextoPadraoChange}
-            disabled={!netsms}
-            required
-          >
-            <option value="">Selecione</option>
-            {filterData([
-              ["NETSMS", netsms],
-              ["ABERTURA/FECHAMENTO", aberturaFechamento],
-              ["TIPO", tipo],
-              ["TRATATIVA", tratativa],
-            ]).map((item) => (
-              <option
-                key={item.ID}
-                value={`${item.ID} - ${item["TEXTO PADRAO"]}`}
-              >
-                {`${item.ID} - ${item["TEXTO PADRAO"]}`}
-              </option>
-            ))}
-          </Form.Control>
-          <Form.Control.Feedback type="invalid">
-            Por favor, selecione um texto padrão.
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        {showIncidenteField && (
-          <Form.Group className="form-group-spacing" controlId="incidente">
-            <Form.Label>Incidente</Form.Label>
-            <Form.Control
-              type="text"
-              value={incidente}
-              onChange={removerAcentos}
-              required
-              placeholder="Por favor insira um incidente"
+    <Container>
+      <h2 className="mb-6 select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
+        Net Fácil
+      </h2>
+      <Card className="mx-auto w-full">
+        <CardContent>
+          <div className="mb-4 flex space-x-2">
+            <Input
+              className="w-20"
+              placeholder="Cód."
+              maxLength={3}
+              {...register("codigo", { required: true })}
             />
-            <Form.Control.Feedback type="invalid">
-              Por favor, preencha o campo de incidente.
-            </Form.Control.Feedback>
-          </Form.Group>
-        )}
+            <Button onClick={handleCodigoSubmit}>
+              <CheckIcon className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" onClick={() => setTabelaConsulta(true)}>
+              <MessageCircleQuestionIcon className="h-4 w-4" />
+            </Button>
+          </div>
 
-        <Form.Group className="form-group-spacing" controlId="observacao">
-          <Form.Label>Observação</Form.Label>
-          <Form.Control
-            type="text"
-            value={observacao}
-            onChange={removerAcentos}
-            required={showObservacaoField}
-            placeholder={
-              showObservacaoField ? "Por favor insira uma observação" : ""
-            }
+          <TabelaNetFacil
+            isOpen={tabelaConsulta}
+            onRequestClose={() => setTabelaConsulta(false)}
           />
-          <Form.Control.Feedback type="invalid">
-            {showObservacaoField
-              ? "Por favor, preencha o campo de observação."
-              : "Por favor, preencha o campo de observação."}
-          </Form.Control.Feedback>
-        </Form.Group>
-        <div className="botoes d-flex mb-3">
-          <Button variant="primary" onClick={handleSubmit}>
-            TESTE
-          </Button>
 
-          <Button variant="destructive" onClick={handleReset}>
-            <i className="bi bi-arrow-clockwise"></i>
-          </Button>
-        </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <Label htmlFor="tratativa">Tratativa</Label>
+              <Select
+                {...register("tratativa", { required: true })}
+                onValueChange={(value) => setValue("tratativa", value)}
+              >
+                <option value="">Selecione</option>
+                {getUniqueValues("TRATATIVA").map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </Select>
+              {errors.tratativa && (
+                <span className="text-red-500">Este campo é obrigatório</span>
+              )}
+            </div>
 
-        <Alert
-          variant="success"
-          show={showAlert}
-          onClose={() => setShowAlert(false)}
-          dismissible
-        >
-          O texto foi copiado para a área de transferência com sucesso.
-          {sgdData.length > 0 && (
-            <div className="mt-2">
-              Fechamentos SGD:
-              <Table bordered variant="success" className="mt-3">
-                <thead>
-                  <tr>
-                    <th>Fila</th>
-                    <th>Seleção</th>
-                    <th>Motivo</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sgdData.map((item) => (
-                    <tr key={item.ID_SGD}>
-                      <td>{item.FILA}</td>
-                      <td>{item.SELECAO}</td>
-                      <td>{item.MOTIVO}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+            <div>
+              <Label htmlFor="tipo">Tipo</Label>
+              <Select
+                {...register("tipo", { required: true })}
+                onValueChange={(value) => setValue("tipo", value)}
+                disabled={!watchAllFields.tratativa}
+              >
+                <option value="">Selecione</option>
+                {getUniqueValues("TIPO", [
+                  ["TRATATIVA", watchAllFields.tratativa],
+                ]).map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </Select>
+              {errors.tipo && (
+                <span className="text-red-500">Este campo é obrigatório</span>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="aberturaFechamento">Abertura/Fechamento</Label>
+              <Select
+                {...register("aberturaFechamento", { required: true })}
+                onValueChange={(value) => setValue("aberturaFechamento", value)}
+                disabled={!watchAllFields.tipo}
+              >
+                <option value="">Selecione</option>
+                {getUniqueValues("ABERTURA/FECHAMENTO", [
+                  ["TIPO", watchAllFields.tipo],
+                  ["TRATATIVA", watchAllFields.tratativa],
+                ]).map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </Select>
+              {errors.aberturaFechamento && (
+                <span className="text-red-500">Este campo é obrigatório</span>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="netsms">NetSMS</Label>
+              <Select
+                {...register("netsms", { required: true })}
+                onValueChange={(value) => setValue("netsms", value)}
+                disabled={!watchAllFields.aberturaFechamento}
+              >
+                <option value="">Selecione</option>
+                {getUniqueValues("NETSMS", [
+                  ["ABERTURA/FECHAMENTO", watchAllFields.aberturaFechamento],
+                  ["TIPO", watchAllFields.tipo],
+                  ["TRATATIVA", watchAllFields.tratativa],
+                ]).map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </Select>
+              {errors.netsms && (
+                <span className="text-red-500">Este campo é obrigatório</span>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="textoPadrao">Texto Padrão</Label>
+              <Select
+                {...register("textoPadrao", { required: true })}
+                onValueChange={(value) => {
+                  setValue("textoPadrao", value);
+                  const item = findSelectedItem(watchAllFields.codigo);
+                  if (item) {
+                    setShowIncidenteField(item.INCIDENTE === "Sim");
+                    setShowObservacaoField(item.OBS === "Sim");
+                  }
+                }}
+                disabled={!watchAllFields.netsms}
+              >
+                <option value="">Selecione</option>
+                {filterData([
+                  ["NETSMS", watchAllFields.netsms],
+                  ["ABERTURA/FECHAMENTO", watchAllFields.aberturaFechamento],
+                  ["TIPO", watchAllFields.tipo],
+                  ["TRATATIVA", watchAllFields.tratativa],
+                ]).map((item) => (
+                  <option
+                    key={item.ID}
+                    value={`${item.ID} - ${item["TEXTO PADRAO"]}`}
+                  >
+                    {`${item.ID} - ${item["TEXTO PADRAO"]}`}
+                  </option>
+                ))}
+              </Select>
+              {errors.textoPadrao && (
+                <span className="text-red-500">Este campo é obrigatório</span>
+              )}
+            </div>
+
+            {showIncidenteField && (
+              <div>
+                <Label htmlFor="incidente">Incidente</Label>
+                <Input
+                  {...register("incidente", { required: true })}
+                  onChange={(e) =>
+                    setValue("incidente", removerAcentos(e.target.value))
+                  }
+                  placeholder="Por favor insira um incidente"
+                />
+                {errors.incidente && (
+                  <span className="text-red-500">Este campo é obrigatório</span>
+                )}
+              </div>
+            )}
+
+            <div>
+              <Label htmlFor="observacao">Observação</Label>
+              <Input
+                {...register("observacao", { required: showObservacaoField })}
+                onChange={(e) =>
+                  setValue("observacao", removerAcentos(e.target.value))
+                }
+                placeholder={
+                  showObservacaoField ? "Por favor insira uma observação" : ""
+                }
+              />
+              {errors.observacao && (
+                <span className="text-red-500">Este campo é obrigatório</span>
+              )}
+            </div>
+
+            <div className="flex space-x-2">
+              <Button type="submit">TESTE</Button>
+              <Button variant="destructive" onClick={() => reset()}>
+                <RefreshCcwIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          </form>
+
+          {showAlert && (
+            <Alert className="mt-4">
+              <AlertTitle>Sucesso</AlertTitle>
+              <AlertDescription>
+                O texto foi copiado para a área de transferência com sucesso.
+                {sgdData.length > 0 && (
+                  <div className="mt-2">
+                    <h4 className="font-semibold">Fechamentos SGD:</h4>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Fila</TableHead>
+                          <TableHead>Seleção</TableHead>
+                          <TableHead>Motivo</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {sgdData.map((item) => (
+                          <TableRow key={item.ID_SGD}>
+                            <TableCell>{item.FILA}</TableCell>
+                            <TableCell>{item.SELECAO}</TableCell>
+                            <TableCell>{item.MOTIVO}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {concatenatedText && (
+            <div className="mt-4">
+              <Label htmlFor="concatenatedText">Texto Padrão:</Label>
+              <Textarea
+                id="concatenatedText"
+                value={concatenatedText}
+                readOnly
+                rows={5}
+                className="mt-1"
+              />
             </div>
           )}
-        </Alert>
-
-        {concatenatedText && (
-          <div className="mt-5">
-            <p>
-              <strong>Texto Padrão:</strong>
-            </p>
-            <Form.Control
-              as="textarea"
-              rows={5}
-              value={concatenatedText}
-              readOnly
-            />
-          </div>
-        )}
-      </Form>
+        </CardContent>
+      </Card>
     </Container>
   );
 };

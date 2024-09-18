@@ -1,168 +1,166 @@
-import { useState } from "react";
-import { Button } from "modules/shared/components/ui/button";
-import { Input } from "modules/shared/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "modules/shared/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "modules/shared/components/ui/dropdown-menu";
-import {
-  Menu,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  MoreVertical,
-  Plus,
-  Search,
-} from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, Modal, Tooltip, OverlayTrigger } from "react-bootstrap";
+import "./Users.css";
+import AddUsuario from "modules/clarohub/components/AddUsuario";
+import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
+import UserBadge from "modules/clarohub/components/UserBadge";
+import axiosInstance from "services/axios";
 import Container from "modules/shared/components/ui/container";
+import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 
-export default function AdminDashboard() {
-  const [sidenavOpen, setSidenavOpen] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filter, setFilter] = useState("");
+function Users() {
+  const [dados, setDados] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [currentItem, setCurrentItem] = useState({
+    LOGIN: "",
+    NOME: "",
+    GESTOR: "",
+    PERMISSOES: "",
+  });
+  const [isEditMode, setIsEditMode] = useState(false);
 
-  const toggleSidenav = () => setSidenavOpen(!sidenavOpen);
+  useEffect(() => {
+    fetchDados();
+  }, []);
 
-  const mockData = [
-    { id: 1, name: "John Doe", email: "john@example.com", role: "Admin" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Editor" },
-    { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "Viewer" },
-    { id: 4, name: "Alice Brown", email: "alice@example.com", role: "Editor" },
-    {
-      id: 5,
-      name: "Charlie Davis",
-      email: "charlie@example.com",
-      role: "Viewer",
-    },
-  ];
+  const fetchDados = async () => {
+    try {
+      const response = await axiosInstance.get(`/users`);
+      setDados(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar dados do backend:", error);
+    }
+  };
 
-  const filteredData = mockData.filter(
-    (item) =>
-      item.name.toLowerCase().includes(filter.toLowerCase()) ||
-      item.email.toLowerCase().includes(filter.toLowerCase()) ||
-      item.role.toLowerCase().includes(filter.toLowerCase()),
+  const handleEditClick = (item) => {
+    setCurrentItem(item);
+    setIsEditMode(true);
+    setShowEditModal(true);
+  };
+
+  const handleAddClick = () => {
+    setCurrentItem({
+      LOGIN: "",
+      NOME: "",
+      GESTOR: "",
+      PERMISSOES: "",
+    });
+    setIsEditMode(false);
+    setShowEditModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowEditModal(false);
+  };
+
+  const handleDeleteClick = (item) => {
+    setCurrentItem(item);
+    setShowDeleteModal(true);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentItem((prevItem) => ({ ...prevItem, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    try {
+      if (isEditMode) {
+        await axiosInstance.put(`/users/${currentItem._id}`, currentItem);
+      } else {
+        await axiosInstance.post(`/users`, currentItem);
+      }
+      setShowEditModal(false);
+      fetchDados();
+    } catch (error) {
+      console.error("Erro ao salvar dados:", error);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await axiosInstance.delete(`/users/${currentItem._id}`);
+      setShowDeleteModal(false);
+      fetchDados();
+    } catch (error) {
+      console.error("Erro ao deletar dados:", error);
+    }
+  };
+
+  const columns = useMemo(
+    () => [
+      {
+        header: "LOGIN",
+        accessorKey: "LOGIN",
+        enableHiding: true,
+      },
+      {
+        header: "NOME",
+        accessorKey: "NOME",
+        enableHiding: true,
+      },
+      {
+        header: "GESTOR",
+        accessorKey: "GESTOR",
+        enableHiding: true,
+      },
+      {
+        header: "ACESSO",
+        accessorKey: "PERMISSOES",
+        cell: ({ getValue }) => {
+          const permission = getValue();
+          return <UserBadge permission={permission} />;
+        },
+      },
+    ],
+    [],
   );
 
   return (
     <Container>
-      <div className="flex min-h-screen flex-col text-[hsl(220,65%,98%)]">
-        <div className="flex flex-1">
-          {/* Main content */}
-          <main className="flex-1 overflow-x-auto p-4 lg:p-6">
-            <div className="mb-6 flex flex-col items-start justify-between space-y-4 lg:flex-row lg:items-center lg:space-y-0">
-              <h2 className="text-2xl font-semibold">Users</h2>
-              <Button className="bg-primary text-[hsl(220,65%,98%)] hover:bg-[hsl(174,86%,40%)]">
-                <Plus className="mr-2 h-4 w-4" /> Add New User
-              </Button>
-            </div>
-
-            {/* Filter */}
-            <div className="mb-4">
-              <div className="relative">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 transform text-[hsl(220,15%,55%)]" />
-                <Input
-                  type="text"
-                  placeholder="Filter users..."
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  className="max-w-sm border-[hsl(220,26%,18%)] bg-[hsl(218,23%,23%)] pl-8 text-[hsl(220,65%,98%)] focus:border-[hsl(174,86%,45%)] focus:ring-[hsl(174,86%,45%)]"
-                />
-              </div>
-            </div>
-
-            {/* Table */}
-            <div className="overflow-hidden rounded-lg border border-[hsl(220,26%,18%)] bg-[hsl(218,23%,23%)]">
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-[hsl(218,23%,23%)]">
-                    <TableHead className="text-[hsl(220,25%,70%)]">
-                      Name
-                    </TableHead>
-                    <TableHead className="text-[hsl(220,25%,70%)]">
-                      Email
-                    </TableHead>
-                    <TableHead className="text-[hsl(220,25%,70%)]">
-                      Role
-                    </TableHead>
-                    <TableHead className="text-[hsl(220,25%,70%)]">
-                      Actions
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredData.map((user) => (
-                    <TableRow
-                      key={user.id}
-                      className="hover:bg-[hsl(217,19%,27%)]"
-                    >
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.role}</TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              className="h-8 w-8 p-0 hover:bg-[hsl(217,19%,27%)]"
-                            >
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent
-                            align="end"
-                            className="border-[hsl(220,26%,18%)] bg-[hsl(218,23%,23%)] text-[hsl(220,65%,98%)]"
-                          >
-                            <DropdownMenuItem className="focus:bg-[hsl(217,19%,27%)]">
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="focus:bg-[hsl(217,19%,27%)]">
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Pagination */}
-            <div className="flex items-center justify-end space-x-2 py-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-                className="border-[hsl(220,26%,18%)] bg-[hsl(218,23%,23%)] text-[hsl(220,65%,98%)] hover:bg-[hsl(217,19%,27%)]"
-              >
-                <ChevronLeft className="mr-2 h-4 w-4" />
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((page) => page + 1)}
-                className="border-[hsl(220,26%,18%)] bg-[hsl(218,23%,23%)] text-[hsl(220,65%,98%)] hover:bg-[hsl(217,19%,27%)]"
-              >
-                Next
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </main>
-        </div>
+      <div>
+        <h3 className="text-3xl">Usuários Cadastrados</h3>
+        <OverlayTrigger
+          placement="top"
+          overlay={
+            <Tooltip id="button-tooltip">Adicionar novo usuário</Tooltip>
+          }
+        >
+          <Button
+            variant="outline-dark"
+            className="botao-adicionarUsuario"
+            onClick={handleAddClick}
+          >
+            <i className="bi bi-plus-lg"></i>
+          </Button>
+        </OverlayTrigger>
       </div>
+
+      <TabelaPadrao
+        columns={columns}
+        data={dados}
+        actions
+        onDelete={handleDeleteClick}
+        onEdit={handleEditClick}
+      />
+
+      <AddUsuario
+        show={showEditModal}
+        handleClose={handleCloseModal}
+        handleSave={handleSave}
+        currentItem={currentItem}
+        handleChange={handleChange}
+        isEditMode={isEditMode}
+      />
+
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+        handleDeleteConfirm={handleDeleteConfirm}
+      />
     </Container>
   );
 }
+
+export default Users;
