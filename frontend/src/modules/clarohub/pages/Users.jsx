@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Modal, Tooltip, OverlayTrigger } from "react-bootstrap";
-import "./Users.css";
 import AddUsuario from "modules/clarohub/components/AddUsuario";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import UserBadge from "modules/clarohub/components/UserBadge";
 import axiosInstance from "services/axios";
 import Container from "modules/shared/components/ui/container";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
+import { Button } from "modules/shared/components/ui/button";
+import { CirclePlusIcon } from "lucide-react";
 
 function Users() {
   const [dados, setDados] = useState([]);
@@ -119,22 +119,12 @@ function Users() {
 
   return (
     <Container>
-      <div>
+      <div className="flex justify-between">
         <h3 className="text-3xl">Usuários Cadastrados</h3>
-        <OverlayTrigger
-          placement="top"
-          overlay={
-            <Tooltip id="button-tooltip">Adicionar novo usuário</Tooltip>
-          }
-        >
-          <Button
-            variant="outline-dark"
-            className="botao-adicionarUsuario"
-            onClick={handleAddClick}
-          >
-            <i className="bi bi-plus-lg"></i>
-          </Button>
-        </OverlayTrigger>
+
+        <Button variant="primary" onClick={handleAddClick}>
+          <CirclePlusIcon className="mr-2" /> Adicionar
+        </Button>
       </div>
 
       <TabelaPadrao

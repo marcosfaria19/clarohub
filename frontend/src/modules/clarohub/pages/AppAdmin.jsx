@@ -6,6 +6,8 @@ import axiosInstance from "services/axios";
 import UserBadge from "../components/UserBadge";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import { Button } from "modules/shared/components/ui/button";
+import { Card, CardContent } from "modules/shared/components/ui/card";
+import { CirclePlusIcon } from "lucide-react";
 
 function AppAdmin() {
   const [dados, setDados] = useState([]);
@@ -140,22 +142,24 @@ function AppAdmin() {
 
   return (
     <Container>
-      <div>
-        <h2 className="select-none text-3xl">Apps Cadastrados</h2>
+      <div className="flex justify-between">
+        <h2 className="select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
+          Apps Cadastrados
+        </h2>
 
-        <Button variant="outline" onClick={handleAddClick}>
-          Adicionar
+        <Button variant="primary" onClick={handleAddClick}>
+          <CirclePlusIcon className="mr-2" /> Adicionar
         </Button>
-
-        {/* Tabela Padrão */}
-        <TabelaPadrao
-          columns={columns}
-          data={dados}
-          actions
-          onDelete={handleDeleteClick}
-          onEdit={handleEditClick}
-        />
       </div>
+
+      {/* Tabela Padrão */}
+      <TabelaPadrao
+        columns={columns}
+        data={dados}
+        actions
+        onDelete={handleDeleteClick}
+        onEdit={handleEditClick}
+      />
 
       {/* Modal de edição */}
       <AddApp

@@ -26,7 +26,12 @@ import {
   DropdownMenuTrigger,
   DropdownMenuPortal,
 } from "modules/shared/components/ui/dropdown-menu";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronDown,
+  MoreHorizontal,
+  SearchIcon,
+} from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -70,10 +75,7 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
             return (
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="link"
-                    className="h-8 w-8 p-0 focus:outline-none"
-                  >
+                  <Button variant="ghost" className="h-8 w-8 p-0">
                     <span className="sr-only">Menu</span>
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
@@ -134,18 +136,24 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
   });
 
   return (
-    <div className="mt-10 w-full">
+    <>
       <div className="mb-4 flex">
-        <Input
-          label="Filtrar..."
-          value={globalFilter}
-          className="h-10"
-          onChange={(event) => setGlobalFilter(event.target.value)}
-        />
+        <div className="relative">
+          <Input
+            label="Filtrar..."
+            value={globalFilter}
+            className="h-10 rounded-md border border-secondary p-2 pl-10"
+            onChange={(event) => setGlobalFilter(event.target.value)}
+          />
+          <SearchIcon
+            className="absolute left-3 top-2.5 text-foreground/50"
+            size={20}
+          />
+        </div>
 
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="secondary" className="ml-auto">
               Colunas <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -183,8 +191,8 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
                         <>
                           {header.column.columnDef.sorted ? (
                             <Button
-                              className="flex focus:outline-none"
-                              variant="link"
+                              className="flex"
+                              variant="ghost"
                               onClick={() =>
                                 header.column.toggleSorting(
                                   header.column.getIsSorted() === "asc",
@@ -257,6 +265,6 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
           )}
         </PaginationContent>
       </Pagination>
-    </div>
+    </>
   );
 }

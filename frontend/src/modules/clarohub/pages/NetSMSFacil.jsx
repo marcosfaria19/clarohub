@@ -153,10 +153,10 @@ const NetSMSFacil = () => {
 
   return (
     <Container>
-      <h2 className="mb-6 select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
+      <h2 className="select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
         Net Fácil
       </h2>
-      <Card className="mx-auto w-full">
+      <Card className="w-full py-10">
         <CardContent>
           <div className="mb-4 flex space-x-2">
             <Input

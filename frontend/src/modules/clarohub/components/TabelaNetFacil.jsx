@@ -1,41 +1,29 @@
-// TabelaNetFacil.js
 import React, { useEffect, useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Button } from "modules/shared/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "modules/shared/components/ui/dialog";
+
+import { Download, X } from "lucide-react";
+import axiosInstance from "services/axios";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
-import axiosInstance from "../../../services/axios";
 
 const TabelaNetFacil = ({ isOpen, onRequestClose }) => {
   const [data, setData] = useState([]);
-  const [filter, setFilter] = useState("");
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: "ID",
-        accessor: "ID",
-      },
-      {
-        Header: "TRATATIVA",
-        accessor: "TRATATIVA",
-      },
-      {
-        Header: "TIPO",
-        accessor: "TIPO",
-      },
-      {
-        Header: "ABERTURA/FECHAMENTO",
-        accessor: "ABERTURA/FECHAMENTO",
-      },
-      {
-        Header: "NETSMS",
-        accessor: "NETSMS",
-      },
-      {
-        Header: "TEXTO PADRÃO",
-        accessor: "TEXTO PADRAO",
-      },
-    ],
-    [],
-  );
+  const [isLoading, setIsLoading] = useState(false);
+
+  const columns = [
+    { header: "ID", accessorKey: "ID" },
+    { header: "TRATATIVA", accessorKey: "TRATATIVA" },
+    { header: "TIPO", accessorKey: "TIPO" },
+    { header: "ABERTURA/FECHAMENTO", accessorKey: "ABERTURA/FECHAMENTO" },
+    { header: "NETSMS", accessorKey: "NETSMS" },
+    { header: "TEXTO PADRÃO", accessorKey: "TEXTO PADRAO" },
+  ];
 
   const handleDownload = () => {
     axiosInstance({
@@ -56,37 +44,48 @@ const TabelaNetFacil = ({ isOpen, onRequestClose }) => {
 
   useEffect(() => {
     if (isOpen) {
+      setIsLoading(true);
       axiosInstance
         .get("/netsmsfacil")
-        .then((response) => setData(response.data))
-        .catch((error) => console.error("Error fetching data:", error));
+        .then((response) => {
+          setData(response.data);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+          setIsLoading(false);
+        });
     }
   }, [isOpen]);
 
   return (
-    <Modal show={isOpen} onHide={onRequestClose} dialogClassName="modal-custom">
-      <div>
-        <Modal.Header closeButton>
-          <Modal.Title>Códigos Cadastrados</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <TabelaPadrao
-            columns={columns}
-            data={data}
-            filter={filter}
-            setFilter={setFilter}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="success" onClick={handleDownload}>
-            <i className="bi bi-download"></i> Download
+    <Dialog open={isOpen} onOpenChange={onRequestClose}>
+      <DialogContent className="max-w-6xl">
+        <DialogHeader>
+          <DialogTitle>Códigos Cadastrados</DialogTitle>
+        </DialogHeader>
+
+        {isLoading ? (
+          <div className="flex h-[60vh] items-center justify-center">
+            <span className="loading loading-spinner loading-lg"></span>
+          </div>
+        ) : (
+          <div className="custom-scrollbar max-h-[60vh] overflow-auto p-2 pr-4">
+            <TabelaPadrao columns={columns} data={data} />
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button variant="primary" onClick={handleDownload}>
+            <Download className="mr-2 h-4 w-4" />
+            Download
           </Button>
           <Button variant="secondary" onClick={onRequestClose}>
             Fechar
           </Button>
-        </Modal.Footer>
-      </div>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
