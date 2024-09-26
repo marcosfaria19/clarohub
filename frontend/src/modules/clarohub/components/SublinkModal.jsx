@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
 import cidadesAtlas from "../utils/cidadesAtlas";
 import ufVisium from "../utils/ufVisium";
 import ufNuvem from "../utils/ufNuvem";
@@ -79,8 +78,8 @@ const SublinkModal = ({ show, handleClose, selectedApp }) => {
     handleClose();
   };
 
-  return (
-    <Modal show={show} onHide={handleClose}>
+  return <div></div>;
+  /* <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>Selecione a {locationType}</Modal.Title>
       </Modal.Header>
@@ -111,8 +110,7 @@ const SublinkModal = ({ show, handleClose, selectedApp }) => {
           Selecionar
         </Button>
       </Modal.Footer>
-    </Modal>
-  );
+    </Modal> */
 };
 
 export default SublinkModal;

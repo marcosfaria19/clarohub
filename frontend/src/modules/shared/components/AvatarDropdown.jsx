@@ -23,7 +23,7 @@ export default function AvatarHeader({ onLogout, userName, login }) {
         <Button variant="link" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarImage src="" alt="@usuario" />
-            <AvatarFallback className="bg-primary">MF</AvatarFallback>
+            <AvatarFallback className="bg-secondary">MF</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

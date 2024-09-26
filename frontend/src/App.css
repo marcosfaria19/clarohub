@@ -28,13 +28,14 @@
     --accent: 263.4 70% 50.4%;
     --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 357 62% 52%;
     --destructive-foreground: 210 20% 98%;
 
-    --success: 83 67% 47%;
+    --success: 160 60% 45%;
+    --success-foreground: 217.9 10.6% 64.9%;
 
     --border: 215 27.9% 22%;
-    --input: 215 27.9% 22%;
+    --input: 215 20% 35%;
 
     --ring: 263.4 70% 50.4%;
     --chart-1: 220 70% 50%;
@@ -68,14 +69,17 @@
     --muted: 263 60% 85%;
     --muted-foreground: 215 27.9% 40%;
 
-    --accent: 263 60% 85%;
-    --accent-foreground: 215 27.9% 10%;
+    --accent: 263.4 70% 50.4%;
+    --accent-foreground: 210 20% 98%;
 
     --destructive: 0 62.8% 69.4%;
     --destructive-foreground: 210 20% 98%;
 
+    --success: 160 60% 45%;
+    --success-foreground: 217.9 10.6% 64.9%;
+
     --border: 267 69% 97%;
-    --input: 267 69% 97%;
+    --input: 267 69% 93%;
 
     --ring: 263.4 70% 50.4%;
   }
@@ -94,4 +98,13 @@
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--menu)) hsl(var(--secondary));
+}
+
+/* Fix do shifting do shadcn */
+body[data-scroll-locked] {
+  min-width: 100%;
+}
+
+html {
+  overflow-x: hidden;
 }

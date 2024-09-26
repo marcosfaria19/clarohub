@@ -72,6 +72,7 @@ function App() {
     <Router>
       {!token && <Navigate to="/login" />}
       {token && <Header userName={userName} onLogout={logout} login={login} />}
+
       <Rotas
         token={token}
         setToken={setToken}

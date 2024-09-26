@@ -19,7 +19,7 @@ module.exports = {
     extend: {
       colors: {
         border: "hsl(var(--border))",
-        borderHover: "hsl(var(--border-hover))",
+        input: "hsl(var(--input))",
         menu: "hsl(var(--menu))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

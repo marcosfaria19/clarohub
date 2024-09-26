@@ -42,7 +42,16 @@ import {
 import { Input } from "modules/shared/components/ui/input";
 import { toast } from "sonner";
 
-export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
+export function TabelaPadrao({
+  columns,
+  data,
+  actions,
+  onEdit,
+  onDelete,
+  filterInput = true,
+  columnFilter = true,
+  pagination = true,
+}) {
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
@@ -138,45 +147,49 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
   return (
     <>
       <div className="mb-4 flex">
-        <div className="relative">
-          <Input
-            label="Filtrar..."
-            value={globalFilter}
-            className="h-10 rounded-md border border-secondary p-2 pl-10"
-            onChange={(event) => setGlobalFilter(event.target.value)}
-          />
-          <SearchIcon
-            className="absolute left-3 top-2.5 text-foreground/50"
-            size={20}
-          />
-        </div>
+        {filterInput && (
+          <div className="relative">
+            <Input
+              label="Filtrar..."
+              value={globalFilter}
+              className="h-10 rounded-md border border-secondary p-2 pl-10"
+              onChange={(event) => setGlobalFilter(event.target.value)}
+            />
+            <SearchIcon
+              className="absolute left-3 top-2.5 text-foreground/50"
+              size={20}
+            />
+          </div>
+        )}
 
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary" className="ml-auto">
-              Colunas <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.columnDef.header}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {columnFilter && (
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" className="ml-auto">
+                Colunas <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.columnDef.header}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       <div>
@@ -243,28 +256,30 @@ export function TabelaPadrao({ columns, data, actions, onEdit, onDelete }) {
           </TableBody>
         </Table>
       </div>
+      {pagination && (
+        <Pagination className="justify-between py-4">
+          <PaginationContent>
+            <span className="text-sm">
+              Página {table.getState().pagination.pageIndex + 1} de{" "}
+              {table.getPageCount()}
+            </span>
+          </PaginationContent>
+          <PaginationContent>
+            {table.getState().pagination.pageIndex > 0 && (
+              <PaginationItem>
+                <PaginationPrevious onClick={() => table.previousPage()} />
+              </PaginationItem>
+            )}
 
-      <Pagination className="justify-between py-4">
-        <PaginationContent>
-          <span className="text-sm">
-            Página {table.getState().pagination.pageIndex + 1} de{" "}
-            {table.getPageCount()}
-          </span>
-        </PaginationContent>
-        <PaginationContent>
-          {table.getState().pagination.pageIndex > 0 && (
-            <PaginationItem>
-              <PaginationPrevious onClick={() => table.previousPage()} />
-            </PaginationItem>
-          )}
-
-          {table.getState().pagination.pageIndex < table.getPageCount() - 1 && (
-            <PaginationItem>
-              <PaginationNext onClick={() => table.nextPage()} />
-            </PaginationItem>
-          )}
-        </PaginationContent>
-      </Pagination>
+            {table.getState().pagination.pageIndex <
+              table.getPageCount() - 1 && (
+              <PaginationItem>
+                <PaginationNext onClick={() => table.nextPage()} />
+              </PaginationItem>
+            )}
+          </PaginationContent>
+        </Pagination>
+      )}
     </>
   );
 }

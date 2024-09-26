@@ -1,34 +1,25 @@
+import { useTheme } from "next-themes";
 import { Toaster as Sonner } from "sonner";
-import { useEffect, useState } from "react";
 
 const Toaster = ({ ...props }) => {
-  const [theme, setTheme] = useState("light");
-
-  useEffect(() => {
-    // Função para atualizar o tema com base no localStorage
-    const updateTheme = () => {
-      const storedTheme = localStorage.getItem("theme") || "light";
-      setTheme(storedTheme);
-      console.log(storedTheme);
-    };
-
-    // Atualiza o tema ao montar o componente
-    updateTheme();
-
-    // Adiciona um listener para mudanças no localStorage
-    window.addEventListener("storage", updateTheme);
-
-    // Limpa o listener quando o componente for desmontado
-    return () => {
-      window.removeEventListener("storage", updateTheme);
-    };
-  }, []);
+  const { theme = "system" } = useTheme();
 
   return (
     <Sonner
       theme={theme}
       className="toaster group"
-      /* toastOptions={...} */
+      duration={3000}
+      /* toastOptions={{
+        classNames: {
+          toast:
+            "group toast group-[.toaster]:bg-secondary group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
+          description: "group-[.toast]:text-muted-foreground",
+          actionButton:
+            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
+          cancelButton:
+            "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+        },
+      }} */
       {...props}
     />
   );
