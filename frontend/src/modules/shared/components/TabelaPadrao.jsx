@@ -41,6 +41,7 @@ import {
 } from "modules/shared/components/ui/pagination";
 import { Input } from "modules/shared/components/ui/input";
 import { toast } from "sonner";
+import { Skeleton } from "modules/shared/components/ui/skeleton";
 
 export function TabelaPadrao({
   columns,
@@ -51,6 +52,7 @@ export function TabelaPadrao({
   filterInput = true,
   columnFilter = true,
   pagination = true,
+  isLoading = false,
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -144,6 +146,18 @@ export function TabelaPadrao({
     },
   });
 
+  const renderSkeletonRows = () => {
+    return Array.from({ length: 5 }).map((_, index) => (
+      <TableRow key={index}>
+        {columnsWithActions.map((column, cellIndex) => (
+          <TableCell key={cellIndex}>
+            <Skeleton className="h-6 w-full" />
+          </TableCell>
+        ))}
+      </TableRow>
+    ));
+  };
+
   return (
     <>
       <div className="mb-4 flex">
@@ -154,6 +168,7 @@ export function TabelaPadrao({
               value={globalFilter}
               className="h-10 rounded-md border border-secondary p-2 pl-10"
               onChange={(event) => setGlobalFilter(event.target.value)}
+              disabled={isLoading}
             />
             <SearchIcon
               className="absolute left-3 top-2.5 text-foreground/50"
@@ -165,7 +180,11 @@ export function TabelaPadrao({
         {columnFilter && (
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary" className="ml-auto">
+              <Button
+                variant="secondary"
+                className="ml-auto"
+                disabled={isLoading}
+              >
                 Colunas <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -211,6 +230,7 @@ export function TabelaPadrao({
                                   header.column.getIsSorted() === "asc",
                                 )
                               }
+                              disabled={isLoading}
                             >
                               {flexRender(
                                 header.column.columnDef.header,
@@ -233,26 +253,22 @@ export function TabelaPadrao({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length}>
-                  Nenhum dado encontrado.
-                </TableCell>
-              </TableRow>
-            )}
+            {isLoading
+              ? renderSkeletonRows()
+              : table.getRowModel().rows?.length
+                ? table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                : renderSkeletonRows()}
           </TableBody>
         </Table>
       </div>
@@ -267,14 +283,20 @@ export function TabelaPadrao({
           <PaginationContent>
             {table.getState().pagination.pageIndex > 0 && (
               <PaginationItem>
-                <PaginationPrevious onClick={() => table.previousPage()} />
+                <PaginationPrevious
+                  onClick={() => table.previousPage()}
+                  disabled={isLoading}
+                />
               </PaginationItem>
             )}
 
             {table.getState().pagination.pageIndex <
               table.getPageCount() - 1 && (
               <PaginationItem>
-                <PaginationNext onClick={() => table.nextPage()} />
+                <PaginationNext
+                  onClick={() => table.nextPage()}
+                  disabled={isLoading}
+                />
               </PaginationItem>
             )}
           </PaginationContent>

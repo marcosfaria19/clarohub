@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import axiosInstance from "services/axios";
 import {
@@ -18,14 +20,14 @@ import {
   SelectValue,
 } from "modules/shared/components/ui/select";
 
-const AddNetSMSFacil = ({
+export default function AddNetSMSFacil({
   show,
   handleClose,
   handleSave,
   currentItem,
   handleChange,
   isEditMode,
-}) => {
+}) {
   const [sgdOptions, setSgdOptions] = useState([]);
 
   useEffect(() => {
@@ -40,7 +42,6 @@ const AddNetSMSFacil = ({
         console.error("Erro ao buscar dados do SGD:", error);
       }
     };
-
     fetchSgdOptions();
   }, []);
 
@@ -53,35 +54,30 @@ const AddNetSMSFacil = ({
     const selectedOptions = Array.from(e.target.selectedOptions).map(
       (option) => option.value,
     );
-    handleChange({
-      target: {
-        name: e.target.name,
-        value: selectedOptions,
-      },
-    });
+    handleChange({ target: { name: e.target.name, value: selectedOptions } });
   };
 
   return (
     <Dialog open={show} onOpenChange={handleClose}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {isEditMode ? "Editar Código" : "Adicionar Novo Código"}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="mb-3 space-y-3">
               <Label htmlFor="formId">ID</Label>
               <Input
                 type="number"
+                id="formId"
                 name="ID"
                 value={currentItem.ID}
                 onChange={handleChange}
               />
             </div>
-
-            <div>
+            <div className="mb-3 space-y-3">
               <Label htmlFor="formTratativa">TRATATIVA</Label>
               <Select
                 name="TRATATIVA"
@@ -90,18 +86,19 @@ const AddNetSMSFacil = ({
                   handleChange({ target: { name: "TRATATIVA", value } })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger id="formTratativa">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="TAP">TAP</SelectItem>
-                  <SelectItem value="NAP">NAP</SelectItem>
-                  <SelectItem value="MDU">MDU</SelectItem>
+                  {["TAP", "NAP", "MDU"].map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-
-            <div>
+            <div className="mb-3 space-y-3">
               <Label htmlFor="formTipo">TIPO</Label>
               <Select
                 name="TIPO"
@@ -110,27 +107,32 @@ const AddNetSMSFacil = ({
                   handleChange({ target: { name: "TIPO", value } })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger id="formTipo">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="TP1">TP1</SelectItem>
-                  <SelectItem value="TP2">TP2</SelectItem>
-                  <SelectItem value="TP3">TP3</SelectItem>
-                  <SelectItem value="VT1">VT1</SelectItem>
-                  <SelectItem value="VT2">VT2</SelectItem>
-                  <SelectItem value="VT3">VT3</SelectItem>
-                  <SelectItem value="NP1">NP1</SelectItem>
-                  <SelectItem value="NP2">NP2</SelectItem>
-                  <SelectItem value="NP3">NP3</SelectItem>
-                  <SelectItem value="MD1">MD1</SelectItem>
-                  <SelectItem value="MD3">MD3</SelectItem>
-                  <SelectItem value="SAR">SAR</SelectItem>
+                  {[
+                    "TP1",
+                    "TP2",
+                    "TP3",
+                    "VT1",
+                    "VT2",
+                    "VT3",
+                    "NP1",
+                    "NP2",
+                    "NP3",
+                    "MD1",
+                    "MD3",
+                    "SAR",
+                  ].map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-
-            <div>
+            <div className="mb-3 space-y-3">
               <Label htmlFor="formAberturaFechamento">
                 ABERTURA/FECHAMENTO
               </Label>
@@ -143,37 +145,39 @@ const AddNetSMSFacil = ({
                   })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger id="formAberturaFechamento">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ABERTURA">ABERTURA</SelectItem>
-                  <SelectItem value="FECHAMENTO">FECHAMENTO</SelectItem>
+                  {["ABERTURA", "FECHAMENTO"].map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-
-            <div>
+            <div className="mb-3 space-y-3">
               <Label htmlFor="formNetsms">NETSMS</Label>
               <Input
                 type="text"
+                id="formNetsms"
                 name="NETSMS"
                 value={currentItem.NETSMS}
                 onChange={handleChange}
               />
             </div>
-
-            <div>
+            <div className="mb-3 space-y-3">
               <Label htmlFor="formTextoPadrao">TEXTO PADRÃO</Label>
               <Input
                 type="text"
+                id="formTextoPadrao"
                 name="TEXTO PADRAO"
                 value={currentItem["TEXTO PADRAO"]}
                 onChange={handleChange}
               />
             </div>
-
-            <div>
+            <div className="mb-3 space-y-3">
               <Label htmlFor="formObs">OBS Obrigatório</Label>
               <Select
                 name="OBS"
@@ -182,17 +186,19 @@ const AddNetSMSFacil = ({
                   handleChange({ target: { name: "OBS", value } })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger id="formObs">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Sim">Sim</SelectItem>
-                  <SelectItem value="Não">Não</SelectItem>
+                  {["Sim", "Não"].map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-
-            <div>
+            <div className="mb-3 space-y-3">
               <Label htmlFor="formIncidente">Incidente Obrigatório</Label>
               <Select
                 name="INCIDENTE"
@@ -201,24 +207,27 @@ const AddNetSMSFacil = ({
                   handleChange({ target: { name: "INCIDENTE", value } })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger id="formIncidente">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Sim">Sim</SelectItem>
-                  <SelectItem value="Não">Não</SelectItem>
+                  {["Sim", "Não"].map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-
-            <div>
+            <div className="col-span-2 mb-3 space-y-3">
               <Label htmlFor="formSgd">Fechamento SGD</Label>
               <select
+                id="formSgd"
                 name="SGD"
                 value={currentItem.SGD || []}
                 onChange={handleMultiSelectChange}
                 multiple
-                className="w-full rounded-md border border-gray-300 p-2"
+                className="custom-scrollbar border-input max-h-[100px] w-full overflow-auto rounded-md border bg-transparent p-2 pr-4 text-foreground"
               >
                 {sgdOptions.map((id) => (
                   <option key={id} value={id}>
@@ -229,9 +238,8 @@ const AddNetSMSFacil = ({
             </div>
           </div>
         </form>
-
         <DialogFooter className="space-x-2">
-          <Button variant="outline" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleClose}>
             Cancelar
           </Button>
           <Button type="submit" onClick={handleSave}>
@@ -241,6 +249,4 @@ const AddNetSMSFacil = ({
       </DialogContent>
     </Dialog>
   );
-};
-
-export default AddNetSMSFacil;
+}

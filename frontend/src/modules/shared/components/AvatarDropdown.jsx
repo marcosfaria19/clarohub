@@ -31,8 +31,8 @@ export default function AvatarHeader({ onLogout, userName, login }) {
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex select-none flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{userName}</p>
-              <p className="text-xs leading-none">{login}</p>
+              <p className="text-sm font-semibold leading-none">{userName}</p>
+              <p className="text-xs font-normal leading-none">{login}</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

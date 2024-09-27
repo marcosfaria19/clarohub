@@ -17,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "modules/shared/components/ui/select";
+import { toast } from "sonner";
+import { UserIcon, UserCheck, BarChart3Icon, ShieldIcon } from "lucide-react";
 
 const AddUsuario = ({
   show,
@@ -27,8 +29,29 @@ const AddUsuario = ({
   isEditMode,
 }) => {
   const [gestores, setGestores] = useState([]);
-  const permissions = ["guest", "basic", "manager", "admin"];
+  const [selectedPermission, setSelectedPermission] = useState(
+    currentItem.PERMISSOES || "",
+  );
+  const permissions = [
+    { value: "guest", icon: UserIcon, color: "bg-gray-600 hover:bg-gray-700" },
+    {
+      value: "basic",
+      icon: UserCheck,
+      color: "bg-primary",
+    },
+    {
+      value: "manager",
+      icon: BarChart3Icon,
+      color: "bg-destructive hover:bg-destructive/90",
+    },
+    {
+      value: "admin",
+      icon: ShieldIcon,
+      color: "bg-gray-800 hover:bg-gray-900 border",
+    },
+  ];
 
+  <div className="outline-"></div>;
   useEffect(() => {
     const fetchGestores = async () => {
       try {
@@ -42,6 +65,10 @@ const AddUsuario = ({
     fetchGestores();
   }, []);
 
+  useEffect(() => {
+    setSelectedPermission(currentItem.PERMISSOES || "");
+  }, [currentItem]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     handleSave();
@@ -50,11 +77,18 @@ const AddUsuario = ({
   const handleResetPassword = async () => {
     try {
       await axiosInstance.patch(`/users/${currentItem._id}/reset-password`);
-      alert("Senha resetada com sucesso!");
+      toast.success("Senha resetada com sucesso!");
     } catch (error) {
       console.error("Erro ao resetar a senha:", error);
-      alert("Erro ao resetar a senha.");
+      toast.error("Erro ao resetar a senha.");
     }
+  };
+
+  const handlePermissionChange = (permission) => {
+    setSelectedPermission(permission);
+    handleChange({
+      target: { name: "PERMISSOES", value: permission },
+    });
   };
 
   return (
@@ -68,7 +102,9 @@ const AddUsuario = ({
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="formCredencial">Credencial</Label>
+              <Label htmlFor="formCredencial" className="mb-3">
+                Credencial
+              </Label>
               <Input
                 type="text"
                 placeholder="Digite o login"
@@ -79,7 +115,9 @@ const AddUsuario = ({
             </div>
 
             <div>
-              <Label htmlFor="formNome">Nome</Label>
+              <Label htmlFor="formNome" className="mb-3">
+                Nome
+              </Label>
               <Input
                 type="text"
                 placeholder="Digite o nome"
@@ -90,7 +128,9 @@ const AddUsuario = ({
             </div>
 
             <div>
-              <Label htmlFor="formGestor">Gestor</Label>
+              <Label htmlFor="formGestor" className="mb-3">
+                Gestor
+              </Label>
               <Select
                 name="GESTOR"
                 value={currentItem.GESTOR}
@@ -112,43 +152,26 @@ const AddUsuario = ({
             </div>
 
             <div>
-              <Label htmlFor="formPermissao">Permissão</Label>
-              <div className="flex gap-2">
+              <Label htmlFor="formPermissao" className="mb-3">
+                Permissão
+              </Label>
+              <div className="mb-5 flex gap-2">
                 {permissions.map((permission) => {
-                  let icon;
-                  switch (permission) {
-                    case "guest":
-                      icon = <i className="bi bi-person-fill"></i>;
-                      break;
-                    case "basic":
-                      icon = <i className="bi bi-person-fill"></i>;
-                      break;
-                    case "manager":
-                      icon = <i className="bi bi-bar-chart-fill"></i>;
-                      break;
-                    case "admin":
-                      icon = <i className="bi bi-shield-shaded"></i>;
-                      break;
-                    default:
-                      icon = <i></i>;
-                  }
-
+                  const Icon = permission.icon;
                   return (
                     <Button
-                      key={permission}
-                      variant={
-                        currentItem.PERMISSOES === permission
-                          ? "default"
-                          : "outline"
-                      }
-                      onClick={() =>
-                        handleChange({
-                          target: { name: "PERMISSOES", value: permission },
-                        })
-                      }
+                      key={permission.value}
+                      type="button"
+                      className={`flex-1 ${
+                        selectedPermission === permission.value
+                          ? `${permission.color} text-white`
+                          : "bg-secondary/50 hover:bg-secondary/90"
+                      }`}
+                      onClick={() => handlePermissionChange(permission.value)}
                     >
-                      {icon}{" "}
-                      {permission.charAt(0).toUpperCase() + permission.slice(1)}
+                      <Icon className="mr-2 h-4 w-4" />
+                      {permission.value.charAt(0).toUpperCase() +
+                        permission.value.slice(1)}
                     </Button>
                   );
                 })}
@@ -156,18 +179,20 @@ const AddUsuario = ({
             </div>
           </div>
         </form>
-        <DialogFooter className="space-x-2">
-          <Button variant="outline" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button type="submit" onClick={handleSave}>
-            {isEditMode ? "Salvar" : "Adicionar"}
-          </Button>
+        <DialogFooter className="flex sm:justify-between">
           {isEditMode && (
             <Button variant="destructive" onClick={handleResetPassword}>
               Resetar Senha
             </Button>
           )}
+          <div className="ml-auto flex space-x-2">
+            <Button variant="secondary" onClick={handleClose}>
+              Cancelar
+            </Button>
+            <Button type="button" onClick={handleSave}>
+              {isEditMode ? "Salvar" : "Adicionar"}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

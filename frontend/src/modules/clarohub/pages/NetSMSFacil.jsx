@@ -154,9 +154,7 @@ export default function NetSMSFacilForm() {
   return (
     <Container>
       <Card>
-        <CardHeader>
-          <CardTitle>Net Fácil</CardTitle>
-        </CardHeader>
+        <CardHeader></CardHeader>
         <CardContent>
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -183,7 +181,6 @@ export default function NetSMSFacilForm() {
               className="h-10 w-12"
               onClick={abrirTabelaConsulta}
             >
-              {/* <InfoIcon className="h-6 w-6" /> */}
               <span className="text-lg font-normal">?</span>
             </Button>
           </div>

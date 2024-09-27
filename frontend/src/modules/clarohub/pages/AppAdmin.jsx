@@ -6,7 +6,6 @@ import axiosInstance from "services/axios";
 import UserBadge from "../components/UserBadge";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import { Button } from "modules/shared/components/ui/button";
-import { Card, CardContent } from "modules/shared/components/ui/card";
 import { CirclePlusIcon } from "lucide-react";
 
 function AppAdmin() {
@@ -30,7 +29,7 @@ function AppAdmin() {
 
   const fetchDados = async () => {
     try {
-      const response = await axiosInstance.get(`/apps`, {});
+      const response = await axiosInstance.get(`/apps`);
       setDados(response.data);
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
@@ -38,32 +37,27 @@ function AppAdmin() {
   };
 
   const handleEditClick = (item) => {
-    setCurrentItem(item);
+    setCurrentItem({ ...item });
     setIsEditMode(true);
     setShowEditModal(true);
   };
 
-  const handleAddClick = (item = null) => {
-    if (item) {
-      setCurrentItem(item);
-      setIsEditMode(true);
-    } else {
-      setCurrentItem({
-        nome: "",
-        imagemUrl: "",
-        logoCard: "",
-        logoList: "",
-        rota: "",
-        familia: "",
-        acesso: "",
-      });
-      setIsEditMode(false);
-    }
+  const handleAddClick = () => {
+    setCurrentItem({
+      nome: "",
+      imagemUrl: "",
+      logoCard: "",
+      logoList: "",
+      rota: "",
+      familia: "",
+      acesso: "",
+    });
+    setIsEditMode(false);
     setShowEditModal(true);
   };
 
   const handleDeleteClick = (item) => {
-    setCurrentItem(item);
+    setCurrentItem({ ...item });
     setShowDeleteModal(true);
   };
 
@@ -72,16 +66,22 @@ function AppAdmin() {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCurrentItem((prevItem) => ({ ...prevItem, [name]: value }));
+    const { name, value } = e.target ? e.target : { name: e, value: e };
+    setCurrentItem((prevItem) => ({
+      ...prevItem,
+      [name]: value,
+    }));
   };
 
   const handleSave = async () => {
     try {
+      const dataToSend = { ...currentItem };
+      delete dataToSend._id;
+
       if (isEditMode) {
-        await axiosInstance.put(`/apps/${currentItem._id}`, currentItem);
+        await axiosInstance.put(`/apps/${currentItem._id}`, dataToSend);
       } else {
-        await axiosInstance.post(`/apps`, currentItem);
+        await axiosInstance.post(`/apps`, dataToSend);
       }
       setShowEditModal(false);
       fetchDados();
@@ -123,7 +123,6 @@ function AppAdmin() {
         accessorKey: "nome",
         sorted: true,
       },
-
       {
         header: "FAMILIA",
         accessorKey: "familia",
@@ -152,7 +151,6 @@ function AppAdmin() {
         </Button>
       </div>
 
-      {/* Tabela Padrão */}
       <TabelaPadrao
         columns={columns}
         data={dados}
@@ -161,7 +159,6 @@ function AppAdmin() {
         onEdit={handleEditClick}
       />
 
-      {/* Modal de edição */}
       <AddApp
         show={showEditModal}
         handleClose={handleCloseModal}
@@ -171,7 +168,6 @@ function AppAdmin() {
         isEditMode={isEditMode}
       />
 
-      {/* Modal de Confirmação de Exclusão */}
       <DeleteConfirmationModal
         show={showDeleteModal}
         handleClose={() => setShowDeleteModal(false)}

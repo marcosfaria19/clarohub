@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import {
   Dialog,
   DialogContent,
@@ -60,6 +59,10 @@ const AddApp = ({
     handleSave();
   };
 
+  const handleSelectChange = (name) => (value) => {
+    handleChange({ target: { name, value } });
+  };
+
   return (
     <Dialog open={show} onOpenChange={handleClose}>
       <DialogContent>
@@ -88,7 +91,7 @@ const AddApp = ({
             <Select
               name="imagemUrl"
               value={currentItem.imagemUrl}
-              onValueChange={handleChange}
+              onValueChange={handleSelectChange("imagemUrl")}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
@@ -107,7 +110,7 @@ const AddApp = ({
             <Select
               name="logoCard"
               value={currentItem.logoCard}
-              onValueChange={handleChange}
+              onValueChange={handleSelectChange("logoCard")}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
@@ -126,7 +129,7 @@ const AddApp = ({
             <Select
               name="logoList"
               value={currentItem.logoList}
-              onValueChange={handleChange}
+              onValueChange={handleSelectChange("logoList")}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
@@ -165,7 +168,7 @@ const AddApp = ({
             <Select
               name="acesso"
               value={currentItem.acesso}
-              onValueChange={handleChange}
+              onValueChange={handleSelectChange("acesso")}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />

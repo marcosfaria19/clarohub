@@ -28,7 +28,9 @@ function AddQualinet({
         <form>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="formCINome">CI_NOME</Label>
+              <Label htmlFor="formCINome" className="mb-3">
+                CI_NOME
+              </Label>
               <Input
                 type="text"
                 name="CI_NOME"
@@ -38,7 +40,9 @@ function AddQualinet({
             </div>
 
             <div>
-              <Label htmlFor="formNumContrato">NUM_CONTRATO</Label>
+              <Label htmlFor="formNumContrato" className="mb-3">
+                NUM_CONTRATO
+              </Label>
               <Input
                 type="text"
                 name="NUM_CONTRATO"
@@ -48,7 +52,9 @@ function AddQualinet({
             </div>
 
             <div>
-              <Label htmlFor="formDtCadastro">DT_CADASTRO</Label>
+              <Label htmlFor="formDtCadastro" className="mb-3">
+                DT_CADASTRO
+              </Label>
               <Input
                 type="text"
                 name="DT_CADASTRO"
@@ -58,7 +64,9 @@ function AddQualinet({
             </div>
 
             <div>
-              <Label htmlFor="formEndCompleto">END_COMPLETO</Label>
+              <Label htmlFor="formEndCompleto" className="mb-3">
+                END_COMPLETO
+              </Label>
               <Input
                 type="text"
                 name="END_COMPLETO"
@@ -68,7 +76,9 @@ function AddQualinet({
             </div>
 
             <div>
-              <Label htmlFor="formCodNode">COD_NODE</Label>
+              <Label htmlFor="formCodNode" className="mb-3">
+                COD_NODE
+              </Label>
               <Input
                 type="text"
                 name="COD_NODE"
@@ -78,7 +88,9 @@ function AddQualinet({
             </div>
 
             <div>
-              <Label htmlFor="formUf">UF</Label>
+              <Label htmlFor="formUf" className="mb-3">
+                UF
+              </Label>
               <Input
                 type="text"
                 name="UF"
@@ -90,7 +102,7 @@ function AddQualinet({
         </form>
 
         <DialogFooter className="space-x-2">
-          <Button variant="outline" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleClose}>
             Cancelar
           </Button>
           <Button variant="primary" onClick={handleSave}>

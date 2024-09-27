@@ -120,7 +120,9 @@ function Users() {
   return (
     <Container>
       <div className="flex justify-between">
-        <h3 className="text-3xl">Usuários Cadastrados</h3>
+        <h2 className="select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
+          Usuários Cadastrados
+        </h2>
 
         <Button variant="primary" onClick={handleAddClick}>
           <CirclePlusIcon className="mr-2" /> Adicionar

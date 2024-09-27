@@ -3,14 +3,14 @@ import { cva } from "class-variance-authority";
 import { cn } from "modules/shared/lib/utils";
 
 const inputVariants = cva(
-  "border rounded pl-3 outline-none transition duration-200 ease-in select-none",
+  "border rounded pl-3 outline-none transition duration-200 ease-in select-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]",
   {
     variants: {
       variant: {
         login:
           "focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder-muted-foreground",
         default:
-          "flex w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+          "flex w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       },
     },
     defaultVariants: {

@@ -5,6 +5,7 @@ import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import Container from "modules/shared/components/ui/container";
 import DeleteConfirmationModal from "modules/clarohub/components/DeleteConfirmationModal";
 import { Button } from "modules/shared/components/ui/button";
+import { CirclePlusIcon } from "lucide-react";
 
 function NetSMSFacilAdmin() {
   const [dados, setDados] = useState([]);
@@ -151,13 +152,15 @@ function NetSMSFacilAdmin() {
 
   return (
     <Container>
-      <h2 className="mb-6 select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
-        Códigos Cadastrados
-      </h2>
+      <div className="flex justify-between">
+        <h2 className="select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
+          Códigos Cadastrados
+        </h2>
 
-      <Button variant="outline" onClick={handleAddClick}>
-        Adicionar novo código
-      </Button>
+        <Button variant="primary" onClick={handleAddClick}>
+          <CirclePlusIcon className="mr-2" /> Adicionar
+        </Button>
+      </div>
 
       <TabelaPadrao
         columns={columns}
