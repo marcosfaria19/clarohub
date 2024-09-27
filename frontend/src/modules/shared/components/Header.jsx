@@ -6,10 +6,23 @@ import {
   SheetContent,
   SheetTrigger,
 } from "modules/shared/components/ui/sheet";
-import { MenuIcon, LogOut, Sun, Moon } from "lucide-react";
+import {
+  MenuIcon,
+  LogOut,
+  Sun,
+  Moon,
+  UserIcon,
+  SettingsIcon,
+  HelpCircleIcon,
+} from "lucide-react";
 import logo from "modules/shared/assets/logo.png";
 import logoLight from "modules/shared/assets/logo-light.png";
 import AvatarDropdown from "modules/shared/components/AvatarDropdown";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "modules/shared/components/ui/avatar";
 
 export default function Header({ userName, onLogout, login }) {
   const [theme, setTheme] = useState("dark");
@@ -51,7 +64,6 @@ export default function Header({ userName, onLogout, login }) {
         <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
-            className="text-muted-foreground"
             size="icon"
             onClick={toggleTheme}
             aria-label={`Alternar para modo ${theme === "dark" ? "claro" : "escuro"}`}
@@ -63,7 +75,7 @@ export default function Header({ userName, onLogout, login }) {
             )}
           </Button>
 
-          <span className="hidden text-muted-foreground lg:inline-block">
+          <span className="hidden text-popover-foreground/60 lg:inline-block">
             Bem-vindo(a), <span className="font-semibold">{userName}</span>
           </span>
 
@@ -77,24 +89,44 @@ export default function Header({ userName, onLogout, login }) {
 
           <Sheet>
             <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground md:hidden"
-              >
+              <Button variant="ghost" size="icon" className="md:hidden">
                 <MenuIcon className="h-6 w-6" />
                 <span className="sr-only">Abrir menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
               <div className="mt-4 flex flex-col space-y-4">
-                <span className="text-muted-foreground">
-                  Bem-vindo(a),{" "}
-                  <span className="font-semibold">{userName}</span>
-                </span>
-                <Button variant="outline" onClick={onLogout}>
+                <div className="flex items-center space-x-4">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src="" alt="@usuario" />
+                    <AvatarFallback className="bg-secondary">MF</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{userName}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {login}
+                    </span>
+                  </div>
+                </div>
+                <Button variant="outline" className="w-full justify-start">
+                  <UserIcon className="mr-2 h-4 w-4" />
+                  Perfil
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  <SettingsIcon className="mr-2 h-4 w-4" />
+                  Configurações
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  <HelpCircleIcon className="mr-2 h-4 w-4" />
+                  Ajuda
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={onLogout}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
-                  Logout
+                  Sair
                 </Button>
               </div>
             </SheetContent>

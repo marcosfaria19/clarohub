@@ -178,8 +178,13 @@ export default function NetSMSFacilForm() {
               </Button>
             </div>
 
-            <Button variant="outline" onClick={abrirTabelaConsulta}>
-              <InfoIcon className="w-4" />
+            <Button
+              variant="secondary"
+              className="h-10 w-12"
+              onClick={abrirTabelaConsulta}
+            >
+              {/* <InfoIcon className="h-6 w-6" /> */}
+              <span className="text-lg font-normal">?</span>
             </Button>
           </div>
 
