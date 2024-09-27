@@ -1,9 +1,25 @@
 import React, { useState, useEffect } from "react";
-import cidadesAtlas from "../utils/cidadesAtlas";
-import ufVisium from "../utils/ufVisium";
-import ufNuvem from "../utils/ufNuvem";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "modules/shared/components/ui/dialog";
+import { Button } from "modules/shared/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "modules/shared/components/ui/select";
+import { Label } from "modules/shared/components/ui/label";
+import cidadesAtlas from "modules/clarohub/utils/cidadesAtlas";
+import ufVisium from "modules/clarohub/utils/ufVisium";
+import ufNuvem from "modules/clarohub/utils/ufNuvem";
 
-const SublinkModal = ({ show, handleClose, selectedApp }) => {
+export default function SublinkModal({ show, handleClose, selectedApp }) {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [options, setOptions] = useState([]);
   const [locationType, setLocationType] = useState("");
@@ -59,6 +75,11 @@ const SublinkModal = ({ show, handleClose, selectedApp }) => {
             (subLink) =>
               subLink.nome.toLowerCase() === subLinkName.toLowerCase(),
           );
+          if (selectedSubLink) {
+            console.log(selectedSubLink);
+            const updatedSubLink = `${selectedSubLink.rota}%2F${selectedLocation}`;
+            window.open(updatedSubLink, "_blank");
+          }
           break;
         }
       }
@@ -78,39 +99,41 @@ const SublinkModal = ({ show, handleClose, selectedApp }) => {
     handleClose();
   };
 
-  return <div></div>;
-  /* <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Selecione a {locationType}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form>
-          <Form.Group>
-            <Form.Label>{locationType}</Form.Label>
-            <Form.Control
-              as="select"
+  return (
+    <Dialog open={show} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Selecione a {locationType}</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="location" className="text-right">
+              {locationType}
+            </Label>
+            <Select
               value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
+              onValueChange={setSelectedLocation}
             >
-              <option value="">Selecione</option>
-              {options.map((option, index) => (
-                <option key={index} value={option}>
-                  {option}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-        <Button variant="primary" onClick={handleLocationSelect}>
-          Selecionar
-        </Button>
-      </Modal.Footer>
-    </Modal> */
-};
-
-export default SublinkModal;
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {options.map((option, index) => (
+                  <SelectItem key={index} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button onClick={handleLocationSelect}>Selecionar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
