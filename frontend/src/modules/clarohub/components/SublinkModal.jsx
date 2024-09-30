@@ -128,10 +128,10 @@ export default function SublinkModal({ show, handleClose, selectedApp }) {
           </div>
         </div>
         <DialogFooter>
+          <Button onClick={handleLocationSelect}>Selecionar</Button>
           <Button variant="secondary" onClick={handleClose}>
             Cancelar
           </Button>
-          <Button onClick={handleLocationSelect}>Selecionar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

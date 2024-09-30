@@ -99,10 +99,14 @@ export default function Header({ userName, onLogout, login }) {
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src="" alt="@usuario" />
-                    <AvatarFallback className="bg-secondary">MF</AvatarFallback>
+                    <AvatarFallback className="bg-secondary text-accent">
+                      MF
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium">{userName}</span>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      {userName}
+                    </span>
                     <span className="text-xs text-muted-foreground">
                       {login}
                     </span>
