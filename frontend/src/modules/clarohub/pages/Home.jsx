@@ -1,15 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AppCard from "modules/clarohub/components/AppCard";
 import { jwtDecode } from "jwt-decode";
 import SublinkModal from "modules/clarohub/components/SublinkModal";
 import axiosInstance from "services/axios";
 import Container from "modules/shared/components/ui/container";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "modules/shared/components/ui/carousel";
+import { useMediaQuery } from "modules/shared/hooks/use-media-query";
 
 const Home = () => {
   const [groupedApps, setGroupedApps] = useState({});
   const [favorites, setFavorites] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isTablet = useMediaQuery("(max-width: 1024px)");
 
   useEffect(() => {
     axiosInstance
@@ -101,59 +111,71 @@ const Home = () => {
     "Gestão",
   ];
 
+  const renderCarousel = (apps) => {
+    const cardsPerView = isMobile ? 1 : isTablet ? 3 : 5;
+    const showArrows = apps.length > cardsPerView;
+
+    return (
+      <Carousel
+        opts={{
+          align: "start",
+          loop: false,
+        }}
+        className="w-full"
+      >
+        <CarouselContent className="-ml-2 md:-ml-4">
+          {apps.map((app) => (
+            <CarouselItem
+              key={app._id}
+              className="basis-full pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4 lg:basis-1/4 xl:basis-1/5"
+            >
+              <AppCard
+                nome={app.nome}
+                imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
+                logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
+                rota={app.rota}
+                isFavorite={favorites.some((fav) => fav._id === app._id)}
+                onFavoriteClick={() => handleFavoriteClick(app)}
+                onCardClick={() => handleCardClick(app)}
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        {showArrows && (
+          <>
+            <CarouselPrevious className="hidden sm:flex" />
+            <CarouselNext className="hidden sm:flex" />
+          </>
+        )}
+      </Carousel>
+    );
+  };
+
   return (
-    <Container>
-      <h1 className="mb-6 select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
+    <Container className="px-0 sm:px-4">
+      <h1 className="mb-6 select-none px-4 text-2xl font-semibold text-foreground sm:px-0 sm:text-3xl md:mb-8 lg:mb-10">
         Meus Aplicativos
       </h1>
 
       {favorites.length > 0 && (
-        <div className="family-section mb-8 sm:mb-10 md:mb-12">
-          <h2 className="family-title mb-4 select-none text-xl font-semibold text-foreground sm:mb-5 sm:text-2xl">
+        <div className="family-section mb-8 md:mb-10">
+          <h2 className="family-title mb-4 select-none px-4 text-xl font-semibold text-foreground sm:mb-5 sm:px-0 sm:text-2xl">
             Favoritos
           </h2>
-          <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {favorites.map((app) => (
-              <div key={app._id} className="col">
-                <AppCard
-                  nome={app.nome}
-                  imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
-                  logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
-                  rota={app.rota}
-                  isFavorite={favorites.some((fav) => fav._id === app._id)}
-                  onFavoriteClick={() => handleFavoriteClick(app)}
-                  onCardClick={() => handleCardClick(app)}
-                />
-              </div>
-            ))}
-          </div>
-          <hr className="mt-6 border-solid border-foreground/20 sm:mt-8" />
+          {renderCarousel(favorites)}
+          <hr className="mx-4 mt-6 border-solid border-foreground/20 sm:mx-0 sm:mt-8" />
         </div>
       )}
 
       {desiredOrder.map(
         (family) =>
           groupedApps[family] && (
-            <div key={family} className="family-section mb-8 sm:mb-10 md:mb-12">
-              <h2 className="family-title mb-6 select-none text-xl font-semibold text-foreground sm:mb-8 sm:text-2xl">
+            <div key={family} className="family-section mb-8 md:mb-10">
+              <h2 className="family-title mb-6 select-none px-4 text-xl font-semibold text-foreground sm:mb-8 sm:px-0 sm:text-2xl">
                 {family}
               </h2>
-              <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {groupedApps[family]?.map((app) => (
-                  <div key={app._id} className="col">
-                    <AppCard
-                      nome={app.nome}
-                      imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
-                      logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
-                      rota={app.rota}
-                      isFavorite={favorites.some((fav) => fav._id === app._id)}
-                      onFavoriteClick={() => handleFavoriteClick(app)}
-                      onCardClick={() => handleCardClick(app)}
-                    />
-                  </div>
-                ))}
-              </div>
-              <hr className="border-input mt-6 border-foreground/20 sm:mt-8" />
+              {renderCarousel(groupedApps[family])}
+              <hr className="mx-4 mt-6 border-solid border-foreground/20 sm:mx-0 sm:mt-8" />
             </div>
           ),
       )}
