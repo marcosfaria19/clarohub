@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Card,
   CardContent,
@@ -16,8 +16,6 @@ const AppCard = ({
   onFavoriteClick,
   onCardClick,
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
   const handleClick = (e) => {
     e.preventDefault();
     onCardClick();
@@ -31,9 +29,7 @@ const AppCard = ({
 
   return (
     <Card
-      className="group relative h-[200px] w-full cursor-pointer overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="group relative h-[200px] w-full cursor-pointer select-none overflow-hidden rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg"
       onClick={handleClick}
     >
       <CardContent className="h-full p-0">
@@ -68,9 +64,6 @@ const AppCard = ({
       <CardFooter className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
         <h2 className="w-full truncate text-lg font-bold text-white">{nome}</h2>
       </CardFooter>
-      {isHovered && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-      )}
     </Card>
   );
 };

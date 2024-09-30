@@ -151,6 +151,15 @@ const Home = () => {
     );
   };
 
+  const renderSectionTitle = (title, count) => (
+    <div className="relative mb-4 flex items-center px-4 sm:px-0">
+      <h2 className="family-title mr-4 select-none text-xl font-semibold text-foreground sm:text-2xl">
+        {title} <span className="text-lg text-gray-400">({count})</span>
+      </h2>
+      <div className="h-px flex-grow bg-gradient-to-r from-gray-600 to-gray-800"></div>
+    </div>
+  );
+
   return (
     <Container className="px-0 sm:px-4">
       <h1 className="mb-6 select-none px-4 text-2xl font-semibold text-foreground sm:px-0 sm:text-3xl md:mb-8 lg:mb-10">
@@ -159,11 +168,8 @@ const Home = () => {
 
       {favorites.length > 0 && (
         <div className="family-section mb-8 md:mb-10">
-          <h2 className="family-title mb-4 select-none px-4 text-xl font-semibold text-foreground sm:mb-5 sm:px-0 sm:text-2xl">
-            Favoritos
-          </h2>
+          {renderSectionTitle("Favoritos", favorites.length)}
           {renderCarousel(favorites)}
-          <hr className="mx-4 mt-6 border-solid border-foreground/20 sm:mx-0 sm:mt-8" />
         </div>
       )}
 
@@ -171,11 +177,8 @@ const Home = () => {
         (family) =>
           groupedApps[family] && (
             <div key={family} className="family-section mb-8 md:mb-10">
-              <h2 className="family-title mb-6 select-none px-4 text-xl font-semibold text-foreground sm:mb-8 sm:px-0 sm:text-2xl">
-                {family}
-              </h2>
+              {renderSectionTitle(family, groupedApps[family].length)}
               {renderCarousel(groupedApps[family])}
-              <hr className="mx-4 mt-6 border-solid border-foreground/20 sm:mx-0 sm:mt-8" />
             </div>
           ),
       )}

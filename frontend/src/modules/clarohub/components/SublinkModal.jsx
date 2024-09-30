@@ -103,35 +103,43 @@ export default function SublinkModal({ show, handleClose, selectedApp }) {
     <Dialog open={show} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Selecione a {locationType}</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            Selecione a {locationType}
+          </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="location" className="text-right">
-              {locationType}
-            </Label>
-            <Select
-              value={selectedLocation}
-              onValueChange={setSelectedLocation}
+
+        <Label htmlFor="location" className="text-sm font-medium">
+          {locationType}
+        </Label>
+        <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Selecione" />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option, index) => (
+              <SelectItem key={index} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <DialogFooter className="sm:justify-end">
+          <div className="gap-2 sm:mt-4 sm:flex">
+            <Button
+              onClick={handleLocationSelect}
+              className="w-full justify-center sm:ml-3 sm:w-auto"
             >
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                {options.map((option, index) => (
-                  <SelectItem key={index} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              Selecionar
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleClose}
+              className="mt-3 w-full justify-center sm:mt-0 sm:w-auto"
+            >
+              Cancelar
+            </Button>
           </div>
-        </div>
-        <DialogFooter>
-          <Button onClick={handleLocationSelect}>Selecionar</Button>
-          <Button variant="secondary" onClick={handleClose}>
-            Cancelar
-          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
