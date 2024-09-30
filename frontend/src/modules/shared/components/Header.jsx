@@ -17,12 +17,12 @@ import {
 } from "lucide-react";
 import logo from "modules/shared/assets/logo.png";
 import logoLight from "modules/shared/assets/logo-light.png";
-import AvatarDropdown from "modules/shared/components/AvatarDropdown";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "modules/shared/components/ui/avatar";
+import AvatarHeader from "modules/shared/components/AvatarDropdown";
 
 export default function Header({ userName, onLogout, login }) {
   const [theme, setTheme] = useState("dark");
@@ -44,6 +44,18 @@ export default function Header({ userName, onLogout, login }) {
       "light-theme",
       newTheme === "light",
     );
+  };
+
+  const handleSaveAvatar = async (avatarUrl) => {
+    /* try {
+      // Assuming you have an API endpoint to update the user's avatar
+      await api.updateUserAvatar(user.id, avatarUrl);
+      // Optionally, update your local user state with the new avatar URL
+      setUser(prevUser => ({ ...prevUser, avatarUrl }));
+    } catch (error) {
+      console.error('Failed to save avatar:', error);
+      // Handle error (e.g., show an error message to the user)
+    } */
   };
 
   return (
@@ -80,10 +92,11 @@ export default function Header({ userName, onLogout, login }) {
           </span>
 
           <div className="hidden md:block">
-            <AvatarDropdown
+            <AvatarHeader
               onLogout={onLogout}
               login={login}
               userName={userName}
+              onSaveAvatar={handleSaveAvatar}
             />
           </div>
 

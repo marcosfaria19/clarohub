@@ -154,9 +154,9 @@ const Home = () => {
   const renderSectionTitle = (title, count) => (
     <div className="relative mb-4 flex items-center px-4 sm:px-0">
       <h2 className="family-title mr-4 select-none text-xl font-semibold text-foreground sm:text-2xl">
-        {title} <span className="text-lg text-gray-400">({count})</span>
+        {title} <span className="text-lg text-foreground/40">({count})</span>
       </h2>
-      <div className="h-px flex-grow bg-gradient-to-r from-gray-600 to-gray-800"></div>
+      <div className="h-px flex-grow bg-gradient-to-r from-foreground/20 to-foreground/0"></div>
     </div>
   );
 
