@@ -20,7 +20,7 @@ const AvatarCreator = ({ currentAvatar, onClose, isOpen, userId, onSave }) => {
   const [avatarOptions, setAvatarOptions] = useState({
     seed: "Felix",
     glasses: ["variant03"],
-    backgroundColor: ["fafafa"],
+    backgroundColor: ["1c2432"],
     mouth: ["variant05"],
     eyes: ["variant05"],
     eyebrows: ["variant05"],

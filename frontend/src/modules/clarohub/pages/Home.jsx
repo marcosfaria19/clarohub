@@ -120,6 +120,7 @@ const Home = () => {
         opts={{
           align: "start",
           loop: false,
+          skipSnaps: true,
         }}
         className="w-full"
       >
