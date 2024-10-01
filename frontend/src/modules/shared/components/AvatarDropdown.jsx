@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Avatar,
   AvatarFallback,
@@ -16,86 +16,99 @@ import {
   DropdownMenuTrigger,
 } from "modules/shared/components/ui/dropdown-menu";
 import { User, Settings, HelpCircle, LogOut } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "modules/shared/components/ui/dialog";
 import AvatarCreator from "./AvatarCreator";
+import axiosInstance from "services/axios";
 
-export default function AvatarHeader({
-  onLogout,
-  userName,
-  login,
-  onSaveAvatar,
-  initialAvatarUrl,
-}) {
-  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl || "");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+export default function AvatarDropdown({ onLogout, userName, login, userId }) {
+  const [isAvatarCreatorOpen, setIsAvatarCreatorOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState("");
 
-  const handleSaveAvatar = (newAvatarUrl) => {
-    setAvatarUrl(newAvatarUrl);
-    onSaveAvatar(newAvatarUrl);
-    setIsDialogOpen(false);
+  useEffect(() => {
+    const cachedAvatar = localStorage.getItem(`avatar_${userId}`);
+    if (cachedAvatar) {
+      setAvatarUrl(cachedAvatar);
+    }
+  }, [userId]);
+
+  const openAvatarCreator = () => {
+    setIsAvatarCreatorOpen(true);
   };
 
+  const closeAvatarCreator = () => {
+    setIsAvatarCreatorOpen(false);
+  };
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      if (!userId) return;
+
+      try {
+        const response = await axiosInstance.get(`/users/${userId}/avatar`);
+        setAvatarUrl(response.data.avatar);
+        localStorage.setItem(`avatar_${userId}`, response.data.avatar);
+      } catch (error) {
+        console.error("Erro ao buscar avatar:", error);
+      }
+    };
+
+    fetchAvatar();
+  }, [userId]);
+
   return (
-    <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="link" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={avatarUrl} alt="@usuario" />
-            <AvatarFallback className="bg-secondary">
-              {userName ? userName.substring(0, 2).toUpperCase() : "MF"}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuPortal>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex select-none flex-col space-y-1">
-              <p className="text-sm font-semibold leading-none">{userName}</p>
-              <p className="text-xs font-normal leading-none">{login}</p>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>Perfil</span>
+    <>
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="link" className="relative rounded-full px-0">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={avatarUrl || ""} alt="@usuario" />
+              {/* Avatar padrão */}
+              <AvatarFallback className="bg-secondary">
+                {userName ? userName.substring(0, 2).toUpperCase() : ""}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuPortal>
+          <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex select-none flex-col space-y-1">
+                <p className="text-sm font-semibold leading-none">{userName}</p>
+                <p className="text-xs font-normal leading-none">{login}</p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <User className="mr-2 h-4 w-4" />
+                <span>Perfil</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onSelect={openAvatarCreator}>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Alterar Avatar</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem>
+                <HelpCircle className="mr-2 h-4 w-4" />
+                <span>Ajuda</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={onLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Sair</span>
             </DropdownMenuItem>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Alterar Avatar</span>
-                </DropdownMenuItem>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Criar Avatar</DialogTitle>
-                </DialogHeader>
-                <AvatarCreator
-                  onSave={handleSaveAvatar}
-                  currentAvatar={avatarUrl}
-                />
-              </DialogContent>
-            </Dialog>
-            <DropdownMenuItem>
-              <HelpCircle className="mr-2 h-4 w-4" />
-              <span>Ajuda</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={onLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Sair</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenuPortal>
-    </DropdownMenu>
+          </DropdownMenuContent>
+        </DropdownMenuPortal>
+      </DropdownMenu>
+
+      <AvatarCreator
+        isOpen={isAvatarCreatorOpen}
+        onClose={closeAvatarCreator}
+        userId={userId}
+        onSave={setAvatarUrl}
+        currentAvatar={avatarUrl || "Felix"}
+      />
+    </>
   );
 }

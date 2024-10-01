@@ -10,8 +10,18 @@ import { Toaster } from "modules/shared/components/ui/sonner";
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [userName, setUserName] = useState("");
+  const [userId, setUserId] = useState("");
   const [login, setLogin] = useState("");
   const [gestor, setGestor] = useState("");
+  const [avatar, setAvatar] = useState("");
+
+  const handleReset = () => {
+    setUserName("");
+    setUserId("");
+    setLogin("");
+    setGestor("");
+    setToken(null);
+  };
 
   useEffect(() => {
     if (token) {
@@ -21,63 +31,52 @@ function App() {
         if (decodedToken.exp < currentTime) {
           // Token expirado, limpar localStorage
           localStorage.removeItem("token");
-          setToken(null);
-          setUserName("");
-          setLogin("");
+          handleReset();
         } else {
           localStorage.setItem("token", token);
           if (decodedToken && decodedToken.NOME) {
-            const nomeCompleto = decodedToken.NOME;
-            const nomes = nomeCompleto.split(" ");
-            const primeirosNomes = nomes.slice(0, 2).join(" ");
-            const primeirosNomesFormatados = primeirosNomes
-              .split(" ")
-              .map(
-                (nome) =>
-                  nome.charAt(0).toUpperCase() + nome.slice(1).toLowerCase(),
-              )
-              .join(" ");
-
-            setUserName(primeirosNomesFormatados);
-
-            localStorage.setItem("userName", nomeCompleto);
-            localStorage.setItem("gestor", decodedToken.GESTOR);
+            setUserName(decodedToken.NOME);
             setLogin(decodedToken.LOGIN);
+            setUserId(decodedToken.id);
+            setGestor(decodedToken.GESTOR);
+            setAvatar(decodedToken.avatar);
           }
         }
       } catch (error) {
         console.error("Erro ao decodificar o token:", error);
         localStorage.removeItem("token");
-        setToken(null);
-        setUserName("");
-        setLogin("");
+        handleReset();
       }
     } else {
+      handleReset();
       localStorage.removeItem("token");
-      localStorage.removeItem("userName");
-      localStorage.removeItem("gestor");
     }
   }, [token]);
 
   const logout = () => {
-    setToken(null);
+    handleReset();
     localStorage.removeItem("token");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("gestor");
-    setLogin("");
-    setUserName("");
   };
 
   return (
-    <Router>
+    <Router username={userName} gestor={gestor}>
       {!token && <Navigate to="/login" />}
-      {token && <Header userName={userName} onLogout={logout} login={login} />}
+      {token && (
+        <Header
+          userName={userName}
+          gestor={gestor}
+          onLogout={logout}
+          login={login}
+          userId={userId}
+        />
+      )}
 
       <Rotas
         token={token}
         setToken={setToken}
         userName={userName}
         gestor={gestor}
+        userId={userId}
       />
       {token && <Footer />}
       <Toaster position="bottom-right" richColors />

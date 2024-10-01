@@ -11,7 +11,7 @@ import { Input } from "modules/shared/components/ui/input";
 import axiosInstance from "services/axios";
 import { toast } from "sonner";
 import Container from "modules/shared/components/ui/container";
-import { CheckIcon, CopyIcon, InfoIcon, RotateCcwIcon } from "lucide-react";
+import { CheckIcon, CopyIcon, RotateCcwIcon } from "lucide-react";
 import TabelaNetFacil from "modules/clarohub/components/TabelaNetFacil";
 import { Label } from "modules/shared/components/ui/label";
 import TabelaFechamentoSGD from "../components/TabelaFechamentoSGD";
@@ -23,7 +23,7 @@ import {
   CardTitle,
 } from "modules/shared/components/ui/card";
 
-export default function NetSMSFacilForm() {
+export default function NetSMSFacil({ userName, gestor }) {
   const [data, setData] = useState([]);
   const [tratativa, setTratativa] = useState("");
   const [tipo, setTipo] = useState("");
@@ -35,9 +35,7 @@ export default function NetSMSFacilForm() {
   const [observacao, setObservacao] = useState("");
   const [incidente, setIncidente] = useState("");
   const [showIncidenteField, setShowIncidenteField] = useState(false);
-  const [showIncidenteErro, setShowIncidenteErro] = useState(false);
   const [showObservacaoField, setShowObservacaoField] = useState(false);
-  const [showObservacaoErro, setShowObservacaoErro] = useState(false);
   const [tabelaConsulta, setTabelaConsulta] = useState(false);
   const [codigoErro, setCodigoErro] = useState(false);
   const [item, setItem] = useState(null);
@@ -85,13 +83,11 @@ export default function NetSMSFacilForm() {
     );
 
     if (selectedItem) {
-      const usuarioAtual = localStorage.getItem("userName");
-      const nomeGestor = localStorage.getItem("gestor");
       let textoPadraoConcatenado = `${selectedItem.ID} - ${textoPadrao} ${incidente}`;
       if (observacao.trim()) {
         textoPadraoConcatenado += `\nOBS: ${observacao}`;
       }
-      textoPadraoConcatenado += `\n\n${usuarioAtual} // ${nomeGestor}`;
+      textoPadraoConcatenado += `\n\n${userName} // ${gestor}`;
 
       setTextoPadraoConcatenado(textoPadraoConcatenado);
       toast.success("Texto copiado para a área de transferência.");
@@ -154,7 +150,7 @@ export default function NetSMSFacilForm() {
   return (
     <Container>
       <Card>
-        <CardHeader></CardHeader>
+        <CardHeader>Net Fácil</CardHeader>
         <CardContent>
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">

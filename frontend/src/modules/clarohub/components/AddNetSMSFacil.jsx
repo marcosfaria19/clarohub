@@ -227,7 +227,7 @@ export default function AddNetSMSFacil({
                 value={currentItem.SGD || []}
                 onChange={handleMultiSelectChange}
                 multiple
-                className="custom-scrollbar border-input max-h-[100px] w-full overflow-auto rounded-md border bg-transparent p-2 pr-4 text-foreground"
+                className="custom-scrollbar max-h-[100px] w-full overflow-auto rounded-md border border-input bg-transparent p-2 pr-4 text-foreground"
               >
                 {sgdOptions.map((id) => (
                   <option key={id} value={id}>
@@ -239,11 +239,11 @@ export default function AddNetSMSFacil({
           </div>
         </form>
         <DialogFooter className="space-x-2">
-          <Button variant="secondary" onClick={handleClose}>
-            Cancelar
-          </Button>
           <Button type="submit" onClick={handleSave}>
             {isEditMode ? "Salvar" : "Adicionar"}
+          </Button>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancelar
           </Button>
         </DialogFooter>
       </DialogContent>

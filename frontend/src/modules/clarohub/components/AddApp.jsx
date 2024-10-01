@@ -181,11 +181,11 @@ const AddApp = ({
             </Select>
           </div>
           <DialogFooter>
+            <Button type="submit" variant="primary">
+              {isEditMode ? "Salvar" : "Adicionar"}
+            </Button>
             <Button variant="secondary" onClick={handleClose}>
               Cancelar
-            </Button>
-            <Button type="submit" variant="outline">
-              {isEditMode ? "Salvar" : "Adicionar"}
             </Button>
           </DialogFooter>
         </form>

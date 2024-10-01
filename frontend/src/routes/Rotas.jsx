@@ -10,7 +10,14 @@ import NetSMSFacilAdmin from "modules/clarohub/pages/NetSMSFacilAdmin";
 import OCFacilAdmin from "modules/clarohub/pages/OCFacilAdmin";
 import AppAdmin from "modules/clarohub/pages/AppAdmin";
 
-const ProtectedRoute = ({ token, allowedRoles, element }) => {
+const ProtectedRoute = ({
+  token,
+  allowedRoles,
+  element,
+  gestor,
+  userName,
+  userId,
+}) => {
   if (!token) {
     return <Navigate to="/login" />;
   }
@@ -30,10 +37,17 @@ const ProtectedRoute = ({ token, allowedRoles, element }) => {
     return <Navigate to="/home" />;
   }
 
-  return element;
+  return React.cloneElement(element, {
+    token,
+    allowedRoles,
+    element,
+    gestor,
+    userName,
+    userId,
+  });
 };
 
-const Rotas = ({ token, setToken }) => {
+const Rotas = ({ token, setToken, userName, gestor, userId }) => {
   return (
     <Routes>
       <Route
@@ -46,6 +60,7 @@ const Rotas = ({ token, setToken }) => {
         path="/"
         element={
           <ProtectedRoute
+            userId={userId}
             token={token}
             allowedRoles={["guest", "basic", "manager", "admin"]}
             element={<Home />}
@@ -87,6 +102,8 @@ const Rotas = ({ token, setToken }) => {
         element={
           <ProtectedRoute
             token={token}
+            userName={userName}
+            gestor={gestor}
             allowedRoles={["guest", "basic", "manager", "admin"]}
             element={<NetSMSFacil />}
           />

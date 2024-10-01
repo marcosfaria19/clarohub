@@ -5,22 +5,40 @@ import { Button } from "modules/shared/components/ui/button";
 import { Label } from "modules/shared/components/ui/label";
 import { Input } from "modules/shared/components/ui/input";
 import { Checkbox } from "modules/shared/components/ui/checkbox";
-import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw, Save } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "modules/shared/components/ui/dialog";
+import axiosInstance from "services/axios";
+import { toast } from "sonner";
 
-const AvatarCreator = ({ onSave, currentAvatar }) => {
+const AvatarCreator = ({ currentAvatar, onClose, isOpen, userId, onSave }) => {
   const [avatarOptions, setAvatarOptions] = useState({
-    glasses: 0,
-    mouth: 0,
-    eyes: 0,
-    eyebrows: 0,
-    backgroundColor: "#ffffff",
-    glassesProbability: 100,
+    seed: "Felix",
+    glasses: ["variant03"],
+    backgroundColor: ["fafafa"],
+    mouth: ["variant05"],
+    eyes: ["variant05"],
+    eyebrows: ["variant05"],
+    glassesProbability: 0,
   });
-
   const [avatarUrl, setAvatarUrl] = useState("");
 
-  // Acessa as propriedades do adventurerNeutral
-  const optionsList = adventurerNeutral.schema.properties;
+  // Define o avatar inicial
+  useEffect(() => {
+    setAvatarUrl(currentAvatar || "Felix");
+  }, [currentAvatar]);
+
+  const optionsList = {
+    glasses: adventurerNeutral.schema.properties.glasses?.default || [],
+    mouth: adventurerNeutral.schema.properties.mouth?.default || [],
+    eyes: adventurerNeutral.schema.properties.eyes?.default || [],
+    eyebrows: adventurerNeutral.schema.properties.eyebrows?.default || [],
+  };
 
   const optionLabels = {
     glasses: "Óculos",
@@ -31,22 +49,18 @@ const AvatarCreator = ({ onSave, currentAvatar }) => {
     glassesProbability: "Habilitar Óculos",
   };
 
-  const updateAvatar = async () => {
+  const updateAvatar = () => {
     try {
       const avatar = createAvatar(adventurerNeutral, {
-        glasses: optionsList.glasses?.types[avatarOptions.glasses] || undefined,
-        mouth: optionsList.mouth?.types[avatarOptions.mouth] || undefined,
-        eyes: optionsList.eyes?.types[avatarOptions.eyes] || undefined,
-        eyebrows:
-          optionsList.eyebrows?.types[avatarOptions.eyebrows] || undefined,
-        backgroundColor: avatarOptions.backgroundColor,
-        glassesProbability: avatarOptions.glassesProbability,
+        ...avatarOptions,
+        backgroundColor: avatarOptions.backgroundColor
+          ? [avatarOptions.backgroundColor]
+          : undefined,
       });
-
-      const svg = await avatar.toDataUri();
+      const svg = avatar.toDataUri();
       setAvatarUrl(svg);
     } catch (error) {
-      console.error("Erro ao gerar avatar:", error);
+      console.error("Error creating avatar:", error);
     }
   };
 
@@ -56,45 +70,73 @@ const AvatarCreator = ({ onSave, currentAvatar }) => {
 
   const handleOptionChange = (option, value) => {
     setAvatarOptions((prev) => {
-      const optionsCount = optionsList[option]?.types.length || 0; // Usa safe navigation
-      let newIndex;
-
       if (option === "backgroundColor") {
-        return { ...prev, [option]: value };
+        const cleanColor = value.replace("#", "");
+        return { ...prev, [option]: [cleanColor] };
       }
       if (option === "glassesProbability") {
         return { ...prev, [option]: value ? 100 : 0 };
       }
+      const optionsArray = optionsList[option];
+      if (!optionsArray || optionsArray.length === 0) {
+        console.error(`No options available for ${option}`);
+        return prev;
+      }
+      const currentIndex = optionsArray.indexOf(
+        prev[option]?.[0] || optionsArray[0],
+      );
+      const newIndex =
+        (currentIndex + value + optionsArray.length) % optionsArray.length;
 
-      newIndex = (prev[option] + value + optionsCount) % optionsCount;
-      return { ...prev, [option]: newIndex };
+      return { ...prev, [option]: [optionsArray[newIndex]] };
     });
   };
 
-  const handleSave = () => {
-    onSave(avatarUrl);
+  const handleSave = async () => {
+    try {
+      const response = await axiosInstance.patch(`/users/${userId}/avatar`, {
+        avatarSvg: avatarUrl,
+      });
+
+      if (response.status === 200) {
+        toast.success("Avatar atualizado!");
+        onSave(avatarUrl);
+        onClose();
+      } else {
+        throw new Error("Falha ao salvar o avatar");
+      }
+    } catch (error) {
+      console.error("Erro ao salvar avatar:", error);
+      toast.error("Erro ao salvar o avatar.");
+    }
   };
 
   const handleRandomize = () => {
     const randomOptions = {
-      glasses: Math.floor(
-        Math.random() * (optionsList.glasses?.types.length || 1),
-      ),
-      mouth: Math.floor(Math.random() * (optionsList.mouth?.types.length || 1)),
-      eyes: Math.floor(Math.random() * (optionsList.eyes?.types.length || 1)),
-      eyebrows: Math.floor(
-        Math.random() * (optionsList.eyebrows?.types.length || 1),
-      ),
-      backgroundColor: `#${Math.floor(Math.random() * 16777215)
-        .toString(16)
-        .padStart(6, "0")}`,
+      glasses: [getRandomOption(optionsList.glasses)],
+      mouth: [getRandomOption(optionsList.mouth)],
+      eyes: [getRandomOption(optionsList.eyes)],
+      eyebrows: [getRandomOption(optionsList.eyebrows)],
+      backgroundColor: [
+        `${Math.floor(Math.random() * 16777215)
+          .toString(16)
+          .padStart(6, "0")}`,
+      ],
       glassesProbability: Math.random() < 0.5 ? 0 : 100,
     };
     setAvatarOptions(randomOptions);
   };
 
+  const getRandomOption = (options) => {
+    if (!options || options.length === 0) {
+      console.error("No options available");
+      return null;
+    }
+    return options[Math.floor(Math.random() * options.length)];
+  };
+
   const renderOption = (option) => (
-    <div className="flex items-center justify-between space-x-2 rounded-lg bg-secondary p-3">
+    <div className="flex items-center justify-between rounded-lg bg-secondary p-2 shadow-md transition-all duration-300 hover:shadow-lg">
       <Button
         variant="ghost"
         size="icon"
@@ -103,9 +145,9 @@ const AvatarCreator = ({ onSave, currentAvatar }) => {
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <div className="flex-1 text-center">
-        <Label className="text-sm font-medium">{optionLabels[option]}</Label>
-      </div>
+
+      <Label className="text-sm font-medium">{optionLabels[option]}</Label>
+
       <Button
         variant="ghost"
         size="icon"
@@ -118,56 +160,83 @@ const AvatarCreator = ({ onSave, currentAvatar }) => {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col items-center space-y-4">
-        <img
-          src={avatarUrl || currentAvatar}
-          alt="Avatar"
-          className="h-40 w-40 rounded-full border-4 border-primary"
-        />
-        <Button onClick={handleRandomize} variant="outline">
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Randomizar
-        </Button>
-      </div>
-      <div className="space-y-4">
-        {Object.keys(optionLabels).map((option) => (
-          <div key={option}>{renderOption(option)}</div>
-        ))}
-        <div className="space-y-2">
-          <Label htmlFor="backgroundColor" className="text-sm font-medium">
-            {optionLabels.backgroundColor}
-          </Label>
-          <Input
-            type="color"
-            id="backgroundColor"
-            value={avatarOptions.backgroundColor}
-            onChange={(e) =>
-              handleOptionChange("backgroundColor", e.target.value)
-            }
-            className="h-10 w-full p-0"
-          />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[725px]">
+        <DialogHeader>
+          <DialogTitle>Criar Avatar</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col md:flex-row md:space-x-8">
+          <div className="relative mb-6 md:mb-0">
+            <img
+              src={avatarUrl || currentAvatar}
+              alt="Avatar"
+              className="h-64 w-64 rounded-full border-4 border-primary shadow-xl transition-all duration-300 hover:shadow-2xl"
+            />
+            <Button
+              onClick={handleRandomize}
+              variant="outline"
+              size="icon"
+              className="absolute bottom-2 right-2 rounded-full bg-background p-2 shadow-md transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
+              aria-label="Randomizar avatar"
+            >
+              <RefreshCw className="h-5 w-5" />
+            </Button>
+          </div>
+          <div className="flex-1 space-y-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {Object.keys(optionsList).map((option) => (
+                <div key={option}>{renderOption(option)}</div>
+              ))}
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <Label
+                  htmlFor="backgroundColor"
+                  className="text-sm font-medium"
+                >
+                  {optionLabels.backgroundColor}
+                </Label>
+                <Input
+                  type="color"
+                  id="backgroundColor"
+                  value={`#${avatarOptions.backgroundColor}`}
+                  onChange={(e) =>
+                    handleOptionChange("backgroundColor", e.target.value)
+                  }
+                  className="h-10 w-10 cursor-pointer rounded-md p-0 transition-all hover:shadow-md"
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="glassesProbability"
+                  checked={avatarOptions.glassesProbability === 100}
+                  onCheckedChange={(checked) =>
+                    handleOptionChange("glassesProbability", checked)
+                  }
+                  className="border-2 border-primary text-primary focus:ring-2 focus:ring-primary"
+                />
+                <Label
+                  htmlFor="glassesProbability"
+                  className="cursor-pointer text-sm font-medium"
+                >
+                  {optionLabels.glassesProbability}
+                </Label>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="glassesProbability"
-            checked={avatarOptions.glassesProbability === 100}
-            onCheckedChange={(checked) =>
-              handleOptionChange("glassesProbability", checked)
-            }
-          />
-          <Label
-            htmlFor="glassesProbability"
-            className="cursor-pointer text-sm font-medium"
-          >
-            {optionLabels.glassesProbability}
-          </Label>
-        </div>
-      </div>
-      <Button onClick={handleSave} className="w-full">
-        Salvar Avatar
-      </Button>
-    </div>
+        <DialogFooter>
+          <Button onClick={handleSave} className="px-6">
+            <Save className="mr-2 h-4 w-4" />
+            Salvar
+          </Button>
+          <Button variant="secondary" onClick={onClose}>
+            Cancelar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

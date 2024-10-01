@@ -186,11 +186,11 @@ const AddUsuario = ({
             </Button>
           )}
           <div className="ml-auto flex space-x-2">
-            <Button variant="secondary" onClick={handleClose}>
-              Cancelar
-            </Button>
             <Button type="button" onClick={handleSave}>
               {isEditMode ? "Salvar" : "Adicionar"}
+            </Button>
+            <Button variant="secondary" onClick={handleClose}>
+              Cancelar
             </Button>
           </div>
         </DialogFooter>

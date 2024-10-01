@@ -43,6 +43,7 @@ module.exports = (usersCollection) => {
           PERMISSOES: user.PERMISSOES,
           NOME: user.NOME,
           GESTOR: user.GESTOR,
+          avatar: user.avatar,
         },
         SECRET_KEY,
         { expiresIn: "12h" }
@@ -207,6 +208,52 @@ module.exports = (usersCollection) => {
       }
     }
   );
+  // Rota para salvar/editar o Avatar
+  router.patch("/users/:id/avatar", authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { avatarSvg } = req.body;
+
+    if (!avatarSvg) {
+      return res.status(400).json({ message: "Avatar SVG é necessário" });
+    }
+
+    try {
+      const result = await usersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { avatar: avatarSvg } }
+      );
+
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      res.json({ message: "Avatar salvo com sucesso" });
+    } catch (err) {
+      console.error("Erro ao salvar avatar:", err);
+      res
+        .status(500)
+        .json({ message: "Erro ao salvar avatar no banco de dados" });
+    }
+  });
+  // Rota para mostrar o Avatar
+  router.get("/users/:id/avatar", authenticateToken, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+
+      if (!user || !user.avatar) {
+        return res
+          .status(404)
+          .json({ message: "Usuário não encontrado ou avatar não disponível" });
+      }
+
+      res.json({ avatar: user.avatar });
+    } catch (err) {
+      console.error("Erro ao consultar o banco de dados:", err);
+      res.status(500).json({ message: "Erro ao consultar o banco de dados" });
+    }
+  });
 
   return router;
 };

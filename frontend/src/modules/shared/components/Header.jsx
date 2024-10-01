@@ -22,9 +22,9 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "modules/shared/components/ui/avatar";
-import AvatarHeader from "modules/shared/components/AvatarDropdown";
+import AvatarDropdown from "modules/shared/components/AvatarDropdown";
 
-export default function Header({ userName, onLogout, login }) {
+export default function Header({ userName, onLogout, login, userId }) {
   const [theme, setTheme] = useState("dark");
 
   useEffect(() => {
@@ -46,17 +46,14 @@ export default function Header({ userName, onLogout, login }) {
     );
   };
 
-  const handleSaveAvatar = async (avatarUrl) => {
-    /* try {
-      // Assuming you have an API endpoint to update the user's avatar
-      await api.updateUserAvatar(user.id, avatarUrl);
-      // Optionally, update your local user state with the new avatar URL
-      setUser(prevUser => ({ ...prevUser, avatarUrl }));
-    } catch (error) {
-      console.error('Failed to save avatar:', error);
-      // Handle error (e.g., show an error message to the user)
-    } */
+  // Formatar nome para o Header
+  const formatUserName = (name) => {
+    const namesArray = name.split(" ").slice(0, 2); // Pega os dois primeiros nomes
+    return namesArray
+      .map((n) => n.charAt(0).toUpperCase() + n.slice(1).toLowerCase()) // Formata cada nome
+      .join(" "); // Junta os nomes formatados
   };
+  const formattedUserName = formatUserName(userName);
 
   return (
     <header className="fixed top-0 z-50 w-screen bg-menu opacity-90">
@@ -73,7 +70,7 @@ export default function Header({ userName, onLogout, login }) {
           </span>
         </Link>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           <Button
             variant="ghost"
             size="icon"
@@ -88,15 +85,16 @@ export default function Header({ userName, onLogout, login }) {
           </Button>
 
           <span className="hidden text-popover-foreground/60 lg:inline-block">
-            Bem-vindo(a), <span className="font-semibold">{userName}</span>
+            Bem-vindo(a),{" "}
+            <span className="font-semibold">{formattedUserName}</span>
           </span>
 
           <div className="hidden md:block">
-            <AvatarHeader
+            <AvatarDropdown
+              userId={userId}
               onLogout={onLogout}
               login={login}
-              userName={userName}
-              onSaveAvatar={handleSaveAvatar}
+              userName={formattedUserName}
             />
           </div>
 
@@ -118,7 +116,7 @@ export default function Header({ userName, onLogout, login }) {
                   </Avatar>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground">
-                      {userName}
+                      {formattedUserName}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {login}
