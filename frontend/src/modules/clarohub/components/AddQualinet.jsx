@@ -102,11 +102,11 @@ function AddQualinet({
         </form>
 
         <DialogFooter className="space-x-2">
-          <Button variant="secondary" onClick={handleClose}>
-            Cancelar
-          </Button>
           <Button variant="primary" onClick={handleSave}>
             {isEditMode ? "Salvar" : "Adicionar"}
+          </Button>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancelar
           </Button>
         </DialogFooter>
       </DialogContent>

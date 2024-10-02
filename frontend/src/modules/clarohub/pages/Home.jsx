@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import AppCard from "modules/clarohub/components/AppCard";
 import { jwtDecode } from "jwt-decode";
 import SublinkModal from "modules/clarohub/components/SublinkModal";
@@ -12,16 +12,19 @@ import {
   CarouselPrevious,
 } from "modules/shared/components/ui/carousel";
 import { useMediaQuery } from "modules/shared/hooks/use-media-query";
+import { Skeleton } from "modules/shared/components/ui/skeleton";
 
 const Home = () => {
   const [groupedApps, setGroupedApps] = useState({});
   const [favorites, setFavorites] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const isMobile = useMediaQuery("(max-width: 640px)");
   const isTablet = useMediaQuery("(max-width: 1024px)");
 
   useEffect(() => {
+    setIsLoading(true);
     axiosInstance
       .get(`/apps`)
       .then((response) => {
@@ -34,7 +37,8 @@ const Home = () => {
           JSON.parse(localStorage.getItem("favorites")) || [];
         setFavorites(savedFavorites);
       })
-      .catch((error) => console.error("Erro ao buscar aplicativos:", error));
+      .catch((error) => console.error("Erro ao buscar aplicativos:", error))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const handleFavoriteClick = (app) => {
@@ -161,28 +165,67 @@ const Home = () => {
     </div>
   );
 
+  const renderSkeletonCarousel = () => {
+    const cardsPerView = isMobile ? 1 : isTablet ? 1 : 1;
+    return (
+      <Carousel className="w-full">
+        <CarouselContent className="-ml-2 md:-ml-4">
+          {Array.from({ length: cardsPerView }).map((_, index) => (
+            <CarouselItem
+              key={index}
+              className="basis-full pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4 lg:basis-1/4 xl:basis-1/5"
+            >
+              <Skeleton className="h-[200px] w-full rounded-lg" />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+    );
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <>
+          {desiredOrder.map((family) => (
+            <div key={family} className="family-section mb-8 md:mb-10">
+              {renderSectionTitle(family, 0)}
+              {renderSkeletonCarousel()}
+            </div>
+          ))}
+        </>
+      );
+    }
+
+    return (
+      <>
+        {favorites.length > 0 && (
+          <div className="family-section mb-8 md:mb-10">
+            {renderSectionTitle("Favoritos", favorites.length)}
+            {renderCarousel(favorites)}
+          </div>
+        )}
+
+        {desiredOrder.map(
+          (family) =>
+            groupedApps[family] && (
+              <div key={family} className="family-section mb-8 md:mb-10">
+                {renderSectionTitle(family, groupedApps[family].length)}
+                {renderCarousel(groupedApps[family])}
+              </div>
+            ),
+        )}
+      </>
+    );
+  };
+
   return (
     <Container className="px-0 sm:px-4">
       <h1 className="mb-6 select-none px-4 text-2xl font-semibold text-foreground sm:px-0 sm:text-3xl md:mb-8 lg:mb-10">
         Meus Aplicativos
       </h1>
 
-      {favorites.length > 0 && (
-        <div className="family-section mb-8 md:mb-10">
-          {renderSectionTitle("Favoritos", favorites.length)}
-          {renderCarousel(favorites)}
-        </div>
-      )}
-
-      {desiredOrder.map(
-        (family) =>
-          groupedApps[family] && (
-            <div key={family} className="family-section mb-8 md:mb-10">
-              {renderSectionTitle(family, groupedApps[family].length)}
-              {renderCarousel(groupedApps[family])}
-            </div>
-          ),
-      )}
+      {renderContent()}
 
       <SublinkModal
         show={showModal}

@@ -84,7 +84,7 @@ export default function Header({ userName, onLogout, login, userId }) {
             )}
           </Button>
 
-          <span className="hidden text-popover-foreground/60 lg:inline-block">
+          <span className="hidden text-popover-foreground opacity-90 lg:inline-block">
             Bem-vindo(a),{" "}
             <span className="font-semibold">{formattedUserName}</span>
           </span>

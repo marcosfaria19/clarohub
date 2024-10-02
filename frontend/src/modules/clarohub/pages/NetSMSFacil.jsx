@@ -20,7 +20,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "modules/shared/components/ui/card";
 
 export default function NetSMSFacil({ userName, gestor }) {
@@ -370,6 +369,7 @@ export default function NetSMSFacil({ userName, gestor }) {
               <div className="mt-10">
                 <p className="mb-5 font-semibold">Texto Padrão:</p>
                 <Textarea
+                  readOnly
                   className="h-40 overflow-hidden"
                   value={textoPadraoConcatenado}
                 />

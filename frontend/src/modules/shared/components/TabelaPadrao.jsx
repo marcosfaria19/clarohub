@@ -171,7 +171,7 @@ export function TabelaPadrao({
               disabled={isLoading}
             />
             <SearchIcon
-              className="absolute left-3 top-2.5 text-foreground/50"
+              className="absolute left-3 top-2.5 text-foreground hover:opacity-80"
               size={20}
             />
           </div>
