@@ -2,8 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const xlsx = require("xlsx");
 const { ObjectId } = require("mongodb");
-const cidadeParaUF = require("../models/cidadeParaUF");
-const formatarData = require("../models/formatarData");
+const cidadeParaUF = require("../utils/cidadeParaUF");
+const formatarData = require("../utils/formatarData");
 const authenticateToken = require("../middleware/authMiddleware");
 const router = express.Router();
 

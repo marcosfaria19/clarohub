@@ -1,5 +1,6 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
+const Pusher = require("pusher");
 require("dotenv").config();
 const cors = require("cors");
 const path = require("path");
@@ -11,6 +12,15 @@ const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, {
   tls: true,
   tlsInsecure: true,
+});
+
+// Configuração do Pusher
+const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID,
+  key: process.env.PUSHER_KEY,
+  secret: process.env.PUSHER_SECRET,
+  cluster: process.env.PUSHER_CLUSTER,
+  useTLS: false,
 });
 
 async function startServer() {
@@ -35,6 +45,11 @@ async function startServer() {
     const usersRoutes = require("./src/routes/usersRoutes")(
       db.collection("users")
     );
+    const cardRoutes = require("./src/routes/cardRoutes")(
+      db.collection("cards"),
+      pusher
+    );
+    app.use("/", cardRoutes);
 
     const appRoutes = require("./src/routes/appRoutes")(db.collection("apps"));
 
