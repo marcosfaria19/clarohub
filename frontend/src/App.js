@@ -6,6 +6,8 @@ import Footer from "./modules/shared/components/Footer";
 import Rotas from "./routes/Rotas";
 import "./App.css";
 import { Toaster } from "modules/shared/components/ui/sonner";
+import PerfectScrollbar from "react-perfect-scrollbar";
+import "react-perfect-scrollbar/dist/css/styles.css";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -29,7 +31,6 @@ function App() {
         const decodedToken = jwtDecode(token);
         const currentTime = Date.now() / 1000;
         if (decodedToken.exp < currentTime) {
-          // Token expirado, limpar localStorage
           localStorage.removeItem("token");
           handleReset();
         } else {
@@ -60,25 +61,30 @@ function App() {
 
   return (
     <Router username={userName} gestor={gestor}>
-      {!token && <Navigate to="/login" />}
-      {token && (
-        <Header
-          userName={userName}
-          gestor={gestor}
-          onLogout={logout}
-          login={login}
-          userId={userId}
-        />
-      )}
-
-      <Rotas
-        token={token}
-        setToken={setToken}
-        userName={userName}
-        gestor={gestor}
-        userId={userId}
-      />
-      {token && <Footer />}
+      <div className="h-screen overflow-hidden">
+        <PerfectScrollbar>
+          <div className="min-h-screen">
+            {!token && <Navigate to="/login" />}
+            {token && (
+              <Header
+                userName={userName}
+                gestor={gestor}
+                onLogout={logout}
+                login={login}
+                userId={userId}
+              />
+            )}
+            <Rotas
+              token={token}
+              setToken={setToken}
+              userName={userName}
+              gestor={gestor}
+              userId={userId}
+            />
+            {token && <Footer />}
+          </div>
+        </PerfectScrollbar>
+      </div>
       <Toaster position="bottom-right" richColors />
     </Router>
   );

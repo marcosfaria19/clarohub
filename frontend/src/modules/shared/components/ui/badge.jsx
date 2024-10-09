@@ -9,7 +9,7 @@ const badgeVariants = cva(
     variants: {
       variant: {
         guest:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "border-transparent bg-secondary text-secondary-foreground hover:opacity-80",
         basic:
           "border-transparent bg-accent text-accent-foreground hover:bg-accent/80",
         manager:

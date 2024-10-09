@@ -23,6 +23,7 @@ import {
   AvatarImage,
 } from "modules/shared/components/ui/avatar";
 import AvatarDropdown from "modules/shared/components/AvatarDropdown";
+import NotificationsPopover from "modules/shared/components/NotificationsPopover";
 
 export default function Header({ userName, onLogout, login, userId }) {
   const [theme, setTheme] = useState("dark");
@@ -46,25 +47,23 @@ export default function Header({ userName, onLogout, login, userId }) {
     );
   };
 
-  // Formatar nome para o Header
   const formatUserName = (name) => {
-    const namesArray = name.split(" ").slice(0, 2); // Pega os dois primeiros nomes
+    const namesArray = name.split(" ").slice(0, 2);
     return namesArray
-      .map((n) => n.charAt(0).toUpperCase() + n.slice(1).toLowerCase()) // Formata cada nome
-      .join(" "); // Junta os nomes formatados
+      .map((n) => n.charAt(0).toUpperCase() + n.slice(1).toLowerCase())
+      .join(" ");
   };
   const formattedUserName = formatUserName(userName);
 
   return (
-    <header className="fixed top-0 z-50 w-screen bg-menu opacity-90">
-      <div className="container mx-auto flex items-center justify-between px-4 py-3">
+    <header className="fixed z-40 mr-0 w-screen bg-menu opacity-90">
+      <div className="container flex items-center justify-between px-4 py-3 sm:max-w-[1800px]">
         <Link to="/home" className="flex items-center space-x-2">
           <img
             src={theme === "dark" ? logo : logoLight}
             alt="Claro Hub"
             className="h-8 w-8"
           />
-
           <span className="text-lg font-semibold text-foreground">
             Claro Hub
           </span>
@@ -83,6 +82,8 @@ export default function Header({ userName, onLogout, login, userId }) {
               <Moon className="h-5 w-5" />
             )}
           </Button>
+
+          <NotificationsPopover />
 
           <span className="hidden text-popover-foreground opacity-90 lg:inline-block">
             Bem-vindo(a),{" "}

@@ -18,6 +18,7 @@ module.exports = {
     },
     extend: {
       colors: {
+        scrollbar: "hsl(var(--scrollbar))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         menu: "hsl(var(--menu))",
@@ -34,6 +35,10 @@ module.exports = {
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",

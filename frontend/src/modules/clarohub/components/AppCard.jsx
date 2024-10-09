@@ -50,7 +50,7 @@ const AppCard = ({
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-2 top-2 z-50 text-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-80"
+          className="absolute right-2 top-2 z-40 text-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-80"
           onClick={handleFavoriteClick}
         >
           {isFavorite ? (

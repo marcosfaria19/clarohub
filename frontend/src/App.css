@@ -34,10 +34,15 @@
     --success: 160 60% 45%;
     --success-foreground: 217.9 10.6% 64.9%;
 
+    --warning: 46 100% 88%;
+    --warning-foreground: 42 90% 47%;
+
     --border: 215 27.9% 22%;
     --input: 215 20% 35%;
+    --scrollbar: 217.9 10.6% 30%;
 
     --ring: 263.4 70% 50.4%;
+
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -57,7 +62,7 @@
     --card: 267 69% 97%;
     --card-foreground: 215 27.9% 10%;
 
-    --popover: 267 69% 97%;
+    --popover: 263 60% 85%;
     --popover-foreground: 215 27.9% 10%;
 
     --primary: 263.4 70% 50.4%;
@@ -80,6 +85,7 @@
 
     --border: 267 69% 97%;
     --input: 267 69% 93%;
+    --scrollbar: 263 60% 85%;
 
     --ring: 263.4 70% 50.4%;
   }
@@ -98,6 +104,7 @@
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--menu)) hsl(var(--secondary));
+  border-radius: 10px;
 }
 
 /* Fix do shifting do shadcn */
@@ -107,4 +114,21 @@ body[data-scroll-locked] {
 
 html {
   overflow-x: hidden;
+}
+
+/* React Perfect Scrollbar */
+
+.ps__rail-y:hover {
+  background: none !important;
+}
+.ps__rail-y:active {
+  background: hsl(var(--menu)) !important;
+}
+
+.ps__thumb-y {
+  background-color: hsl(var(--scrollbar)) !important;
+}
+
+.ps__rail-y {
+  z-index: 50 !important;
 }

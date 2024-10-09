@@ -27,31 +27,37 @@ async function startServer() {
   try {
     await client.connect();
 
-    const db = client.db("clarohub");
+    const clarohub = client.db("clarohub");
+    const clarostorm = client.db("clarostorm");
 
     app.use(cors());
     app.use(express.json());
 
     // Importar rotas aqui para garantir que a coleção correta foi definida
     const qualinetRoutes = require("./src/routes/qualinetRoutes")(
-      db.collection("ocqualinet")
+      clarohub.collection("ocqualinet")
     );
     const netsmsfacilRoutes = require("./src/routes/netsmsfacilRoutes")(
-      db.collection("netsmsfacil")
+      clarohub.collection("netsmsfacil")
     );
     const netfacilsgdRoutes = require("./src/routes/netfacilsgdRoutes")(
-      db.collection("netfacilsgd")
+      clarohub.collection("netfacilsgd")
     );
     const usersRoutes = require("./src/routes/usersRoutes")(
-      db.collection("users")
+      clarohub.collection("users")
     );
-    const cardRoutes = require("./src/routes/cardRoutes")(
-      db.collection("cards"),
+    const subjectRoutes = require("./src/routes/subjectRoutes")(
+      clarostorm.collection("subjects")
+    );
+
+    const ideaRoutes = require("./src/routes/ideaRoutes")(
+      clarostorm.collection("ideas"),
       pusher
     );
-    app.use("/", cardRoutes);
 
-    const appRoutes = require("./src/routes/appRoutes")(db.collection("apps"));
+    const appRoutes = require("./src/routes/appRoutes")(
+      clarohub.collection("apps")
+    );
 
     // Rotas protegidas
     app.use("/", qualinetRoutes);
@@ -59,6 +65,8 @@ async function startServer() {
     app.use("/", netsmsfacilRoutes);
     app.use("/", netfacilsgdRoutes);
     app.use("/", appRoutes);
+    app.use("/storm/", subjectRoutes);
+    app.use("/storm/", ideaRoutes);
 
     // Middleware para servir imagens estáticas
     app.use(
