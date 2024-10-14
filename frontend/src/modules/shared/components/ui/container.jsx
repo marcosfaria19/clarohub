@@ -1,7 +1,11 @@
-const Container = ({ children, className = "" }) => {
+const Container = ({ children, className = "", innerClassName = "" }) => {
   return (
-    <div className={`min-h-screen bg-background text-foreground ${className}`}>
-      <div className="mx-auto w-full max-w-[1450px] px-4 py-28 sm:px-6 sm:py-16 md:px-8 md:py-16 lg:px-12 lg:py-24">
+    <div
+      className={`flex min-h-[calc(100vh-4rem)] flex-col bg-background text-foreground ${className}`}
+    >
+      <div
+        className={`mx-auto w-full max-w-[1450px] flex-grow px-4 pt-28 sm:px-6 sm:pt-24 md:px-8 md:pt-12 lg:px-12 lg:pt-24 ${innerClassName}`}
+      >
         {children}
       </div>
     </div>

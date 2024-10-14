@@ -7,10 +7,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from "modules/shared/components/ui/dialog";
-import PerfectScrollbar from "react-perfect-scrollbar";
-import "react-perfect-scrollbar/dist/css/styles.css";
 
-import { Download, X } from "lucide-react";
+import { Download } from "lucide-react";
 import axiosInstance from "services/axios";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 
@@ -72,9 +70,9 @@ const TabelaNetFacil = ({ isOpen, onRequestClose }) => {
             <span className="loading loading-spinner loading-lg"></span>
           </div>
         ) : (
-          <PerfectScrollbar className="max-h-[60vh] overflow-auto p-2 pr-5">
+          <div className="max-h-[60vh] overflow-auto p-2 pr-5">
             <TabelaPadrao columns={columns} data={data} />
-          </PerfectScrollbar>
+          </div>
         )}
 
         <DialogFooter>

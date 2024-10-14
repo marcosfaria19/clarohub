@@ -227,10 +227,14 @@ export default function AddNetSMSFacil({
                 value={currentItem.SGD || []}
                 onChange={handleMultiSelectChange}
                 multiple
-                className="custom-scrollbar max-h-[100px] w-full overflow-auto rounded-md border border-input bg-transparent p-2 pr-4 text-foreground"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background transition duration-200 ease-in focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 {sgdOptions.map((id) => (
-                  <option key={id} value={id}>
+                  <option
+                    key={id}
+                    value={id}
+                    className="px-2 py-1 [&:checked]:bg-primary [&:checked]:text-primary-foreground [&:selected]:bg-primary"
+                  >
                     {id}
                   </option>
                 ))}

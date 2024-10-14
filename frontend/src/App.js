@@ -6,8 +6,6 @@ import Footer from "./modules/shared/components/Footer";
 import Rotas from "./routes/Rotas";
 import "./App.css";
 import { Toaster } from "modules/shared/components/ui/sonner";
-import PerfectScrollbar from "react-perfect-scrollbar";
-import "react-perfect-scrollbar/dist/css/styles.css";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -61,30 +59,26 @@ function App() {
 
   return (
     <Router username={userName} gestor={gestor}>
-      <div className="h-screen overflow-hidden">
-        <PerfectScrollbar>
-          <div className="min-h-screen">
-            {!token && <Navigate to="/login" />}
-            {token && (
-              <Header
-                userName={userName}
-                gestor={gestor}
-                onLogout={logout}
-                login={login}
-                userId={userId}
-              />
-            )}
-            <Rotas
-              token={token}
-              setToken={setToken}
-              userName={userName}
-              gestor={gestor}
-              userId={userId}
-            />
-            {token && <Footer />}
-          </div>
-        </PerfectScrollbar>
-      </div>
+      {!token && <Navigate to="/login" />}
+      {token && (
+        <Header
+          userName={userName}
+          gestor={gestor}
+          onLogout={logout}
+          login={login}
+          userId={userId}
+          avatar={avatar}
+        />
+      )}
+      <Rotas
+        token={token}
+        setToken={setToken}
+        userName={userName}
+        gestor={gestor}
+        userId={userId}
+      />
+      {token && <Footer />}
+
       <Toaster position="bottom-right" richColors />
     </Router>
   );

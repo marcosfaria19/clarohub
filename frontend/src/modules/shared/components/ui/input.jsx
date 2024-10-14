@@ -8,7 +8,7 @@ const inputVariants = cva(
     variants: {
       variant: {
         login:
-          "focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder-muted-foreground",
+          "focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder-black",
         default:
           "flex w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       },
@@ -33,9 +33,9 @@ const Input = React.forwardRef(
     );
 
     const floatingLabelClasses = cn(
-      "absolute left-3.5 top-3 transition-all duration-150 ease-in-out pointer-events-none text-muted-foreground",
+      "absolute left-3.5 top-3 transition-all duration-150 ease-in-out pointer-events-none text-black",
       {
-        "text-xs transform -translate-y-6 bg-background rounded px-1 text-primary":
+        "text-xs transform -translate-y-6 bg-white rounded px-1 text-black":
           isFocused || props.value,
       },
     );

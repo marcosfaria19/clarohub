@@ -10,6 +10,7 @@ import NetSMSFacilAdmin from "modules/clarohub/pages/NetSMSFacilAdmin";
 import OCFacilAdmin from "modules/clarohub/pages/OCFacilAdmin";
 import AppAdmin from "modules/clarohub/pages/AppAdmin";
 import ClaroStorm from "modules/clarostorm/pages/Home";
+import ClaroStormPallette from "modules/clarostorm/pages/Pallette";
 
 const ProtectedRoute = ({
   token,
@@ -119,6 +120,18 @@ const Rotas = ({ token, setToken, userName, gestor, userId }) => {
             gestor={gestor}
             allowedRoles={["guest", "basic", "manager", "admin"]}
             element={<ClaroStorm />}
+          />
+        }
+      />
+      <Route
+        path="/pallette"
+        element={
+          <ProtectedRoute
+            token={token}
+            userName={userName}
+            gestor={gestor}
+            allowedRoles={["admin"]}
+            element={<ClaroStormPallette />}
           />
         }
       />

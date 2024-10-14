@@ -17,7 +17,7 @@ export default function NotificationsPopover() {
           <span className="absolute right-0 top-0 h-2 w-2 rounded-full bg-red-500"></span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80">
+      <PopoverContent className="w-80 select-none">
         <div className="grid gap-4">
           <div className="space-y-2">
             <h4 className="font-medium leading-none">Notificações</h4>

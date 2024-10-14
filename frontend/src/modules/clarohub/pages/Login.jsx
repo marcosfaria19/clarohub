@@ -66,10 +66,9 @@ function Login({ setToken }) {
       }
     }
   };
-
   const handleRegisterSubmit = async () => {
     try {
-      const response = await axiosInstance.put("/register", {
+      await axiosInstance.put("/register", {
         LOGIN: credencial,
         senha: senha,
       });
@@ -98,7 +97,7 @@ function Login({ setToken }) {
   };
 
   return (
-    <div className="bg-base-200 flex h-screen w-full select-none flex-col overflow-hidden md:flex-row">
+    <div className="flex h-screen w-full select-none flex-col overflow-hidden md:flex-row">
       <div className="login-bg relative flex flex-1 flex-col items-center justify-center bg-cover bg-center text-center text-foreground">
         <h1 className="text-4xl font-bold">Bem vindo(a)!</h1>
         <p className="mt-2 text-lg">
@@ -110,7 +109,7 @@ function Login({ setToken }) {
           className="absolute bottom-4 left-4 w-1/6"
         />
       </div>
-      <div className="flex flex-1 flex-col items-center justify-center bg-background p-4 md:p-8">
+      <div className="flex flex-1 flex-col items-center justify-center p-4 md:p-8">
         <h1 className="font-poppins mb-8 text-3xl font-bold text-gray-900 md:text-5xl">
           Claro Hub
         </h1>

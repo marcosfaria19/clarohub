@@ -24,6 +24,7 @@ import {
 } from "modules/shared/components/ui/avatar";
 import AvatarDropdown from "modules/shared/components/AvatarDropdown";
 import NotificationsPopover from "modules/shared/components/NotificationsPopover";
+import formatUserName from "modules/shared/utils/formatUsername";
 
 export default function Header({ userName, onLogout, login, userId }) {
   const [theme, setTheme] = useState("dark");
@@ -47,16 +48,8 @@ export default function Header({ userName, onLogout, login, userId }) {
     );
   };
 
-  const formatUserName = (name) => {
-    const namesArray = name.split(" ").slice(0, 2);
-    return namesArray
-      .map((n) => n.charAt(0).toUpperCase() + n.slice(1).toLowerCase())
-      .join(" ");
-  };
-  const formattedUserName = formatUserName(userName);
-
   return (
-    <header className="fixed z-40 mr-0 w-screen bg-menu opacity-90">
+    <header className="fixed z-40 mr-0 w-screen select-none bg-menu opacity-90">
       <div className="container flex items-center justify-between px-4 py-3 sm:max-w-[1800px]">
         <Link to="/home" className="flex items-center space-x-2">
           <img
@@ -87,7 +80,7 @@ export default function Header({ userName, onLogout, login, userId }) {
 
           <span className="hidden text-popover-foreground opacity-90 lg:inline-block">
             Bem-vindo(a),{" "}
-            <span className="font-semibold">{formattedUserName}</span>
+            <span className="font-semibold">{formatUserName(userName)}</span>
           </span>
 
           <div className="hidden md:block">
@@ -95,7 +88,7 @@ export default function Header({ userName, onLogout, login, userId }) {
               userId={userId}
               onLogout={onLogout}
               login={login}
-              userName={formattedUserName}
+              userName={formatUserName(userName)}
             />
           </div>
 
@@ -117,7 +110,7 @@ export default function Header({ userName, onLogout, login, userId }) {
                   </Avatar>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground">
-                      {formattedUserName}
+                      {formatUserName(userName)}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {login}

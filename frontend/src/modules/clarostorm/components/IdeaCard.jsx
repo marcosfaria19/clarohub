@@ -1,7 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import { ThumbsUp } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import { Badge } from "modules/shared/components/ui/badge";
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from "modules/shared/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "modules/shared/components/ui/dialog";
+import { ScrollArea } from "modules/shared/components/ui/scroll-area";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "modules/shared/components/ui/avatar";
+import { Separator } from "modules/shared/components/ui/separator";
+import { cn } from "modules/shared/lib/utils";
+import formatUserName from "modules/shared/utils/formatUsername";
+
+const statusConfig = {
+  "Em análise": {
+    color: "bg-warning text-warning-foreground hover:bg-warning/80",
+    icon: "🕒",
+  },
+  Aprovada: {
+    color: "bg-success text-success-foreground hover:bg-success/80",
+    icon: "✅",
+  },
+  Arquivada: {
+    color: "bg-destructive text-destructive-foreground hover:destructive/80",
+    icon: "📝",
+  },
+};
 
 export default function IdeaCard({
   title = "Título da Ideia",
@@ -11,51 +48,115 @@ export default function IdeaCard({
   avatar = "/placeholder-avatar.png",
   status = "Em análise",
 }) {
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Em análise":
-        return "bg-warning text-warning-foreground hover:opacity-80";
-      case "Aprovado":
-        return "bg-green-200 text-green-800";
-      case "Arquivada":
-        return "bg-red-200 text-red-800";
-      default:
-        return "bg-warning text-warning-foreground";
-    }
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { color, icon } = statusConfig[status] || statusConfig["Em análise"];
+
+  const handleCardClick = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  const isLongDescription = description.length > 100;
+  const truncatedDescription = isLongDescription
+    ? `${description.substring(0, 100)} ... `
+    : description;
 
   return (
-    <div className="relative h-28 select-none rounded-lg bg-white shadow">
-      {/* <h4 className="mb-2 text-lg font-medium">{title}</h4> */}
-      <p className="absolute left-2 top-1 max-w-[250px] truncate text-xs text-muted">
-        {description}
-      </p>
+    <TooltipProvider>
+      <div
+        className="relative h-36 cursor-pointer select-none rounded-lg bg-card p-4 shadow transition-shadow hover:shadow-md"
+        onClick={handleCardClick}
+      >
+        <h4 className="mb-1 max-w-[250px] truncate text-sm font-medium">
+          {title}
+        </h4>
 
-      <div>
-        <img
-          src={avatar}
-          alt={creator}
-          className="absolute bottom-2 left-2 mr-3 h-10 w-10 rounded-full"
-        />
-        <span className="absolute bottom-8 left-[65px] text-xs font-semibold">
-          {creator}
-        </span>
+        <p className="mb-2 line-clamp-3 text-xs text-muted-foreground">
+          {truncatedDescription}
+          {isLongDescription && <span className="underline">Leia mais</span>}
+        </p>
 
-        <Badge
-          className={` ${getStatusColor(status)} absolute bottom-2 left-16 text-[8px]`}
-        >
-          {status}
-        </Badge>
+        <div className="absolute bottom-2 left-2 flex items-center">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={avatar} alt={creator} />
+            <AvatarFallback>{creator[0]}</AvatarFallback>
+          </Avatar>
+          <div className="ml-2 flex max-w-[120px] flex-col">
+            <span className="ml-1 truncate text-xs font-semibold">
+              {formatUserName(creator)}
+            </span>
+            <Badge className={cn("mt-1 w-fit text-[10px]", color)}>
+              {icon} {status}
+            </Badge>
+          </div>
+        </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className="absolute bottom-1 right-2 p-0"
-        >
-          <ThumbsUp size={20} className="mr-1" />
-          <span className="absolute bottom-5 right-0">{likes}</span>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute bottom-1 right-4 p-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ThumbsUp size={16} className="mr-1" />
+              <span className="text-xs">{likes}</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Curtir ideia</TooltipContent>
+        </Tooltip>
       </div>
-    </div>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader className="mb-2 p-0">
+            <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
+            <Badge className={cn("mt-2 w-fit text-sm", color)}>
+              {icon} {status}
+            </Badge>
+          </DialogHeader>
+          <ScrollArea className="max-h-[60vh] pr-4">
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">{description}</p>
+              <Separator />
+
+              <Separator />
+              <div className="flex items-center justify-between"></div>
+            </div>
+          </ScrollArea>
+          <DialogFooter className="flex items-center justify-between">
+            {/* Container para o avatar, nome e likes */}
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-12 w-12">
+                <AvatarImage src={avatar} alt={creator} />
+                <AvatarFallback>{creator[0]}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-semibold text-muted-foreground">
+                  {formatUserName(creator)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Criador(a) da ideia
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {likes} curtidas
+                </p>
+              </div>
+            </div>
+
+            {/* Flex-grow para empurrar os botões para a direita */}
+            <div className="flex-grow" />
+
+            {/* Container para os botões */}
+            <div className="flex space-x-2">
+              <Button variant="primary">
+                <ThumbsUp className="mr-2" size={18} /> Curtir
+              </Button>
+              <Button variant="secondary" onClick={handleCloseModal}>
+                Fechar
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </TooltipProvider>
   );
 }

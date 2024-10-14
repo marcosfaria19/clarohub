@@ -188,7 +188,7 @@ const Home = () => {
       return (
         <>
           {desiredOrder.map((family) => (
-            <div key={family} className="family-section mb-8 md:mb-10">
+            <div key={family} className="mb-8 md:mb-10">
               {renderSectionTitle(family, 0)}
               {renderSkeletonCarousel()}
             </div>
@@ -200,7 +200,7 @@ const Home = () => {
     return (
       <>
         {favorites.length > 0 && (
-          <div className="family-section mb-8 md:mb-10">
+          <div className="mb-8 md:mb-10">
             {renderSectionTitle("Favoritos", favorites.length)}
             {renderCarousel(favorites)}
           </div>
@@ -209,7 +209,7 @@ const Home = () => {
         {desiredOrder.map(
           (family) =>
             groupedApps[family] && (
-              <div key={family} className="family-section mb-8 md:mb-10">
+              <div key={family} className="mb-8 md:mb-10">
                 {renderSectionTitle(family, groupedApps[family].length)}
                 {renderCarousel(groupedApps[family])}
               </div>
