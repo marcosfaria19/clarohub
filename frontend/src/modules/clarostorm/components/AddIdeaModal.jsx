@@ -33,7 +33,7 @@ export default function AddIdeaModal({ subjects, onClose, userName }) {
     e.preventDefault();
     const cardToSubmit = {
       ...newCard,
-      creator: isAnonymous ? "Anônimo" : userName,
+      anonimous: isAnonymous ? 1 : 0,
     };
     const success = await handleAddCard(cardToSubmit);
     if (success) {

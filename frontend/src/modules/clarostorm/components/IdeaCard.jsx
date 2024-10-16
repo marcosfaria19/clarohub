@@ -47,6 +47,7 @@ export default function IdeaCard({
   likes = 0,
   avatar = "/placeholder-avatar.png",
   status = "Em análise",
+  anonimous = 0,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { color, icon } = statusConfig[status] || statusConfig["Em análise"];
@@ -54,34 +55,38 @@ export default function IdeaCard({
   const handleCardClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  const isLongDescription = description.length > 100;
+  const isLongDescription = description.length > 90;
   const truncatedDescription = isLongDescription
-    ? `${description.substring(0, 100)} ... `
+    ? `${description.substring(0, 85)} ... `
     : description;
+
+  // Se anonimous = 1, define o creator como "Anônimo"
+  const displayedCreator =
+    anonimous === 1 ? "Anônimo" : formatUserName(creator);
 
   return (
     <TooltipProvider>
       <div
-        className="relative h-36 cursor-pointer select-none rounded-lg bg-card p-4 shadow transition-shadow hover:shadow-md"
+        className="relative h-36 w-full cursor-pointer rounded-lg bg-card p-4 shadow transition-shadow hover:shadow-md"
         onClick={handleCardClick}
       >
-        <h4 className="mb-1 max-w-[250px] truncate text-sm font-medium">
+        <h4 className="max-w-[250px] truncate text-sm font-semibold">
           {title}
         </h4>
 
-        <p className="mb-2 line-clamp-3 text-xs text-muted-foreground">
+        <p className="line-clamp-3 text-xs text-foreground">
           {truncatedDescription}
           {isLongDescription && <span className="underline">Leia mais</span>}
         </p>
 
-        <div className="absolute bottom-2 left-2 flex items-center">
+        <div className="absolute bottom-3 left-4 flex items-center">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={avatar} alt={creator} />
-            <AvatarFallback>{creator[0]}</AvatarFallback>
+            <AvatarImage src={avatar} alt={displayedCreator} />
+            <AvatarFallback>{displayedCreator[0]}</AvatarFallback>
           </Avatar>
           <div className="ml-2 flex max-w-[120px] flex-col">
             <span className="ml-1 truncate text-xs font-semibold">
-              {formatUserName(creator)}
+              {displayedCreator}
             </span>
             <Badge className={cn("mt-1 w-fit text-[10px]", color)}>
               {icon} {status}
@@ -94,7 +99,7 @@ export default function IdeaCard({
             <Button
               variant="ghost"
               size="sm"
-              className="absolute bottom-1 right-4 p-1"
+              className="absolute bottom-1 right-4 p-1 text-foreground"
               onClick={(e) => e.stopPropagation()}
             >
               <ThumbsUp size={16} className="mr-1" />
@@ -115,7 +120,9 @@ export default function IdeaCard({
           </DialogHeader>
           <ScrollArea className="max-h-[60vh] pr-4">
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">{description}</p>
+              <p className="select-text text-sm text-muted-foreground">
+                {description}
+              </p>
               <Separator />
 
               <Separator />
@@ -123,15 +130,14 @@ export default function IdeaCard({
             </div>
           </ScrollArea>
           <DialogFooter className="flex items-center justify-between">
-            {/* Container para o avatar, nome e likes */}
             <div className="flex items-center space-x-4">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={avatar} alt={creator} />
-                <AvatarFallback>{creator[0]}</AvatarFallback>
+                <AvatarImage src={avatar} alt={displayedCreator} />
+                <AvatarFallback>{displayedCreator[0]}</AvatarFallback>
               </Avatar>
               <div>
                 <p className="text-sm font-semibold text-muted-foreground">
-                  {formatUserName(creator)}
+                  {displayedCreator}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Criador(a) da ideia
@@ -142,10 +148,8 @@ export default function IdeaCard({
               </div>
             </div>
 
-            {/* Flex-grow para empurrar os botões para a direita */}
             <div className="flex-grow" />
 
-            {/* Container para os botões */}
             <div className="flex space-x-2">
               <Button variant="primary">
                 <ThumbsUp className="mr-2" size={18} /> Curtir

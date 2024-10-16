@@ -10,7 +10,8 @@
     --background: 215 27.9% 18%;
     --foreground: 210 20% 98%;
 
-    --card: 215 27.9% 21%;
+    /* --card: 215 20% 35%; */
+    --card: 234 79% 63%;
     --card-foreground: 210 20% 98%;
 
     --popover: 215 27.9% 15%;
@@ -53,7 +54,7 @@
     --background: 263 60% 98%;
     --foreground: 215 27.9% 10%;
 
-    --card: 263 60% 95%;
+    --card: 236 78% 79%;
     --card-foreground: 215 27.9% 10%;
 
     --popover: 263 60% 85%;
@@ -152,4 +153,15 @@ html {
 /* Ensure the scrollbar is always visible */
 .scrollable-content {
   overflow-y: scroll;
+}
+
+.scrollbar-storm::-webkit-scrollbar {
+  width: 6px;
+  height: 10px;
+  background-color: transparent;
+}
+
+.scrollbar-storm::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--card));
+  border-radius: 6px;
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { adventurerNeutral } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
 import { Button } from "modules/shared/components/ui/button";
@@ -49,7 +49,7 @@ const AvatarCreator = ({ currentAvatar, onClose, isOpen, userId, onSave }) => {
     glassesProbability: "Habilitar Óculos",
   };
 
-  const updateAvatar = () => {
+  const updateAvatar = useCallback(() => {
     try {
       const avatar = createAvatar(adventurerNeutral, {
         ...avatarOptions,
@@ -62,11 +62,11 @@ const AvatarCreator = ({ currentAvatar, onClose, isOpen, userId, onSave }) => {
     } catch (error) {
       console.error("Error creating avatar:", error);
     }
-  };
+  }, [avatarOptions]);
 
   useEffect(() => {
     updateAvatar();
-  }, [avatarOptions]);
+  }, [avatarOptions, updateAvatar]);
 
   const handleOptionChange = (option, value) => {
     setAvatarOptions((prev) => {

@@ -42,8 +42,11 @@ const PaginationLink = ({ className, isActive, size = "icon", ...props }) => (
       className,
     )}
     {...props}
-  />
+  >
+    <span className="sr-only">Link de paginação</span>
+  </a>
 );
+
 PaginationLink.displayName = "PaginationLink";
 
 const PaginationPrevious = ({ className, ...props }) => (
