@@ -19,7 +19,7 @@ export default function SubjectColumns({ subjects, cards }) {
   }, []);
 
   return (
-    <div className="mx-10 select-none overflow-hidden rounded-lg border border-border">
+    <div className="mx-10 select-none border border-border">
       {isMobile ? (
         <div className="flex flex-col">
           <div className="flex overflow-x-auto">
@@ -50,19 +50,30 @@ export default function SubjectColumns({ subjects, cards }) {
           {subjects.map((subject, index) => (
             <div
               key={subject}
-              className="relative flex w-[298px] flex-shrink-0 flex-col bg-menu"
+              className="relative flex w-[300px] flex-shrink-0 flex-col bg-menu"
             >
-              <div className="relative right-[5px] top-0 z-10 flex h-20 items-center justify-center bg-card text-foreground">
+              {/* Subjects */}
+              <div
+                className={`relative top-0 z-10 flex h-20 items-center justify-center bg-card text-foreground ${
+                  index === 0 ? "rounded-l-lg" : ""
+                } ${index === subjects.length - 1 ? "rounded-r-lg" : ""} `}
+              >
                 <h2 className="text-center text-xl font-medium antialiased">
                   {subject}
                 </h2>
+
+                {/* Divisor vertical menor */}
                 {index !== 0 && (
-                  <div className="absolute bottom-4 left-0 top-4 w-[1px] bg-foreground/20"></div>
+                  <div className="absolute bottom-4 left-[-2px] top-4 w-[1px] bg-foreground/20"></div>
                 )}
               </div>
-              {index !== 5 && (
-                <div className="absolute bottom-5 right-[3px] top-32 w-[1px] bg-card"></div>
+
+              {/* Divisor vertical maior */}
+              {index !== subjects.length - 1 && (
+                <div className="absolute bottom-5 right-[2.5px] top-32 w-[1px] bg-card"></div>
               )}
+
+              {/* Board e cards */}
               <div className="p-5" />
               <div className="scrollbar-storm flex-1 overflow-y-auto">
                 <div className="space-y-5 px-5 pt-5">

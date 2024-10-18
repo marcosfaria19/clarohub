@@ -120,7 +120,7 @@ export default function IdeaCard({
           </DialogHeader>
           <ScrollArea className="max-h-[60vh] pr-4">
             <div className="space-y-4">
-              <p className="select-text text-sm text-muted-foreground">
+              <p className="select-text text-sm text-foreground">
                 {description}
               </p>
               <Separator />
