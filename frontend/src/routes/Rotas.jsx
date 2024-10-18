@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import OCQualinet from "modules/clarohub/pages/OCQualinet";
@@ -11,15 +11,11 @@ import OCFacilAdmin from "modules/clarohub/pages/OCFacilAdmin";
 import AppAdmin from "modules/clarohub/pages/AppAdmin";
 import ClaroStorm from "modules/clarostorm/pages/Home";
 import ClaroStormPallette from "modules/clarostorm/pages/Pallette";
+import { AuthContext } from "contexts/AuthContext";
 
-const ProtectedRoute = ({
-  token,
-  allowedRoles,
-  element,
-  gestor,
-  userName,
-  userId,
-}) => {
+const ProtectedRoute = ({ allowedRoles, element }) => {
+  const { token, user } = useContext(AuthContext);
+
   if (!token) {
     return <Navigate to="/login" />;
   }
@@ -35,35 +31,27 @@ const ProtectedRoute = ({
   const userPermissions = decodedToken.PERMISSOES || [];
 
   const hasAccess = allowedRoles.some((role) => userPermissions.includes(role));
+
   if (!hasAccess) {
     return <Navigate to="/home" />;
   }
 
-  return React.cloneElement(element, {
-    token,
-    allowedRoles,
-    element,
-    gestor,
-    userName,
-    userId,
-  });
+  return React.cloneElement(element, { token, ...user });
 };
 
-const Rotas = ({ token, setToken, userName, gestor, userId }) => {
+const Rotas = () => {
+  const { token } = useContext(AuthContext);
+
   return (
     <Routes>
       <Route
         path="/login"
-        element={
-          token ? <Navigate to="/home" /> : <Login setToken={setToken} />
-        }
+        element={token ? <Navigate to="/home" /> : <Login />}
       />
       <Route
         path="/"
         element={
           <ProtectedRoute
-            userId={userId}
-            token={token}
             allowedRoles={["guest", "basic", "manager", "admin"]}
             element={<Home />}
           />
@@ -73,7 +61,6 @@ const Rotas = ({ token, setToken, userName, gestor, userId }) => {
         path="/home"
         element={
           <ProtectedRoute
-            token={token}
             allowedRoles={["guest", "basic", "manager", "admin"]}
             element={<Home />}
           />
@@ -83,7 +70,6 @@ const Rotas = ({ token, setToken, userName, gestor, userId }) => {
         path="/ocadmin"
         element={
           <ProtectedRoute
-            token={token}
             allowedRoles={["manager", "admin"]}
             element={<OCFacilAdmin />}
           />
@@ -93,7 +79,6 @@ const Rotas = ({ token, setToken, userName, gestor, userId }) => {
         path="/ocfacil"
         element={
           <ProtectedRoute
-            token={token}
             allowedRoles={["basic", "manager", "admin"]}
             element={<OCQualinet />}
           />
@@ -103,9 +88,6 @@ const Rotas = ({ token, setToken, userName, gestor, userId }) => {
         path="/netfacil"
         element={
           <ProtectedRoute
-            token={token}
-            userName={userName}
-            gestor={gestor}
             allowedRoles={["guest", "basic", "manager", "admin"]}
             element={<NetSMSFacil />}
           />
@@ -115,9 +97,6 @@ const Rotas = ({ token, setToken, userName, gestor, userId }) => {
         path="/storm"
         element={
           <ProtectedRoute
-            token={token}
-            userName={userName}
-            gestor={gestor}
             allowedRoles={["guest", "basic", "manager", "admin"]}
             element={<ClaroStorm />}
           />
@@ -127,9 +106,6 @@ const Rotas = ({ token, setToken, userName, gestor, userId }) => {
         path="/pallette"
         element={
           <ProtectedRoute
-            token={token}
-            userName={userName}
-            gestor={gestor}
             allowedRoles={["admin"]}
             element={<ClaroStormPallette />}
           />
@@ -139,7 +115,6 @@ const Rotas = ({ token, setToken, userName, gestor, userId }) => {
         path="/netadmin"
         element={
           <ProtectedRoute
-            token={token}
             allowedRoles={["admin"]}
             element={<NetSMSFacilAdmin />}
           />
@@ -148,11 +123,7 @@ const Rotas = ({ token, setToken, userName, gestor, userId }) => {
       <Route
         path="/appadmin"
         element={
-          <ProtectedRoute
-            token={token}
-            allowedRoles={["admin"]}
-            element={<AppAdmin />}
-          />
+          <ProtectedRoute allowedRoles={["admin"]} element={<AppAdmin />} />
         }
       />
       <Route

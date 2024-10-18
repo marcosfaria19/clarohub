@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "services/axios";
 import { Input } from "modules/shared/components/ui/input";
@@ -12,8 +12,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "modules/shared/components/ui/dialog";
+import { AuthContext } from "contexts/AuthContext";
 
-function Login({ setToken }) {
+function Login() {
+  const { setToken } = useContext(AuthContext);
   const [credencial, setCredencial] = useState("");
   const [senha, setSenha] = useState("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -40,7 +42,7 @@ function Login({ setToken }) {
 
       const token = response.data.token;
       if (typeof token === "string" && token.trim() !== "") {
-        setToken(token);
+        setToken(token); // Setando token via contexto
         navigate("/home");
       } else {
         setLoginError("Erro ao obter o token de autenticação.");
@@ -66,6 +68,7 @@ function Login({ setToken }) {
       }
     }
   };
+
   const handleRegisterSubmit = async () => {
     try {
       await axiosInstance.put("/register", {
@@ -74,8 +77,6 @@ function Login({ setToken }) {
       });
 
       setShowPasswordModal(false);
-
-      // Após registrar a senha, pode tentar fazer login novamente
       handleLoginSubmit({ preventDefault: () => {} });
     } catch (err) {
       console.error("Erro ao registrar senha", err);

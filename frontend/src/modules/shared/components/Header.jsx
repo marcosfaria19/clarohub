@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "modules/shared/components/ui/button";
 import {
@@ -25,8 +25,10 @@ import {
 import AvatarDropdown from "modules/shared/components/AvatarDropdown";
 import NotificationsPopover from "modules/shared/components/NotificationsPopover";
 import formatUserName from "modules/shared/utils/formatUsername";
+import { AuthContext } from "contexts/AuthContext";
 
-export default function Header({ userName, onLogout, login, userId }) {
+const Header = () => {
+  const { user, logout } = useContext(AuthContext);
   const [theme, setTheme] = useState("dark");
 
   useEffect(() => {
@@ -46,6 +48,10 @@ export default function Header({ userName, onLogout, login, userId }) {
       "light-theme",
       newTheme === "light",
     );
+  };
+
+  const onLogout = () => {
+    logout(); // Chama a função `logout` do AuthContext
   };
 
   return (
@@ -78,70 +84,78 @@ export default function Header({ userName, onLogout, login, userId }) {
 
           <NotificationsPopover />
 
-          <span className="hidden text-popover-foreground opacity-90 lg:inline-block">
-            Bem-vindo(a),{" "}
-            <span className="font-semibold">{formatUserName(userName)}</span>
-          </span>
+          {user && ( // Renderiza o nome do usuário apenas se ele estiver autenticado
+            <>
+              <span className="hidden text-popover-foreground opacity-90 lg:inline-block">
+                Bem-vindo(a),{" "}
+                <span className="font-semibold">
+                  {formatUserName(user.userName)}
+                </span>
+              </span>
 
-          <div className="hidden md:block">
-            <AvatarDropdown
-              userId={userId}
-              onLogout={onLogout}
-              login={login}
-              userName={formatUserName(userName)}
-            />
-          </div>
-
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <MenuIcon className="h-6 w-6" />
-                <span className="sr-only">Abrir menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <div className="mt-4 flex flex-col space-y-4">
-                <div className="flex items-center space-x-4">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src="" alt="@usuario" />
-                    <AvatarFallback className="bg-secondary text-accent">
-                      MF
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      {formatUserName(userName)}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {login}
-                    </span>
-                  </div>
-                </div>
-                <Button variant="outline" className="w-full justify-start">
-                  <UserIcon className="mr-2 h-4 w-4" />
-                  Perfil
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <SettingsIcon className="mr-2 h-4 w-4" />
-                  Configurações
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <HelpCircleIcon className="mr-2 h-4 w-4" />
-                  Ajuda
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start"
-                  onClick={onLogout}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sair
-                </Button>
+              <div className="hidden md:block">
+                <AvatarDropdown
+                  userId={user.userId} // Use os atributos do `user` do AuthContext
+                  onLogout={onLogout}
+                  login={user.login}
+                  userName={formatUserName(user.userName)}
+                />
               </div>
-            </SheetContent>
-          </Sheet>
+
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="md:hidden">
+                    <MenuIcon className="h-6 w-6" />
+                    <span className="sr-only">Abrir menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right">
+                  <div className="mt-4 flex flex-col space-y-4">
+                    <div className="flex items-center space-x-4">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user.avatar} alt="@usuario" />
+                        <AvatarFallback className="bg-secondary text-accent">
+                          {user.userName[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {formatUserName(user.userName)}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {user.login}
+                        </span>
+                      </div>
+                    </div>
+                    <Button variant="outline" className="w-full justify-start">
+                      <UserIcon className="mr-2 h-4 w-4" />
+                      Perfil
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <SettingsIcon className="mr-2 h-4 w-4" />
+                      Configurações
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <HelpCircleIcon className="mr-2 h-4 w-4" />
+                      Ajuda
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={onLogout}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sair
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </>
+          )}
         </div>
       </div>
     </header>
   );
-}
+};
+
+export default Header;
