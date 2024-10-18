@@ -17,21 +17,30 @@ import axiosInstance from "services/axios";
 import { toast } from "sonner";
 
 const AvatarCreator = ({ currentAvatar, onClose, isOpen, userId, onSave }) => {
-  const [avatarOptions, setAvatarOptions] = useState({
-    seed: "Felix",
-    glasses: ["variant03"],
-    backgroundColor: ["1c2432"],
-    mouth: ["variant05"],
-    eyes: ["variant05"],
-    eyebrows: ["variant05"],
-    glassesProbability: 0,
+  const [avatarOptions, setAvatarOptions] = useState(() => {
+    // Recupera as opções do localStorage ao inicializar
+    const savedOptions = localStorage.getItem("avatarOptions");
+    return JSON.parse(savedOptions)
+      ? JSON.parse(savedOptions)
+      : {
+          seed: "Felix",
+          glasses: ["variant03"],
+          backgroundColor: ["fffff"],
+          mouth: ["variant05"],
+          eyes: ["variant05"],
+          eyebrows: ["variant05"],
+          glassesProbability: 0,
+        };
   });
+
   const [avatarUrl, setAvatarUrl] = useState("");
 
-  // Define o avatar inicial
+  // Define o avatar inicial apenas quando o diálogo é aberto
   useEffect(() => {
-    setAvatarUrl(currentAvatar || "Felix");
-  }, [currentAvatar]);
+    if (isOpen) {
+      setAvatarUrl(currentAvatar);
+    }
+  }, [currentAvatar, isOpen]);
 
   const optionsList = {
     glasses: adventurerNeutral.schema.properties.glasses?.default || [],
@@ -101,6 +110,8 @@ const AvatarCreator = ({ currentAvatar, onClose, isOpen, userId, onSave }) => {
       if (response.status === 200) {
         toast.success("Avatar atualizado!");
         onSave(avatarUrl);
+        // Salva as opções do avatar no localStorage
+        localStorage.setItem("avatarOptions", JSON.stringify(avatarOptions));
         onClose();
       } else {
         throw new Error("Falha ao salvar o avatar");
