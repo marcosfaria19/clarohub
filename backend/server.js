@@ -52,6 +52,7 @@ async function startServer() {
 
     const ideaRoutes = require("./src/routes/ideaRoutes")(
       clarostorm.collection("ideas"),
+      clarohub.collection("users"),
       pusher
     );
 

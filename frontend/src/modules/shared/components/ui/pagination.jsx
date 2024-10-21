@@ -43,7 +43,7 @@ const PaginationLink = ({ className, isActive, size = "icon", ...props }) => (
     )}
     {...props}
   >
-    <span className="sr-only">Link de paginação</span>
+    {props.children || <span className="sr-only">Pagination Link</span>}
   </a>
 );
 

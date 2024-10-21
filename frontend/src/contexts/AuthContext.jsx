@@ -36,6 +36,8 @@ export const AuthProvider = ({ children }) => {
               login: decodedToken.LOGIN,
               gestor: decodedToken.GESTOR,
               avatar: decodedToken.avatar,
+              dailyLikesUsed: decodedToken.dailyLikesUsed,
+              dailyIdeasCreated: decodedToken.dailyIdeasCreated,
             });
           }
         }

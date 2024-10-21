@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { ThumbsUp } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import { Badge } from "modules/shared/components/ui/badge";
@@ -24,6 +24,8 @@ import {
 import { Separator } from "modules/shared/components/ui/separator";
 import { cn } from "modules/shared/lib/utils";
 import formatUserName from "modules/shared/utils/formatUsername";
+import { AuthContext } from "contexts/AuthContext";
+import { useLikes } from "../hooks/useLikes";
 
 const statusConfig = {
   "Em análise": {
@@ -41,14 +43,17 @@ const statusConfig = {
 };
 
 export default function IdeaCard({
-  title = "Título da Ideia",
-  description = "Descrição da ideia vai aqui. Se nenhuma descrição for fornecida, este texto será exibido como padrão.",
-  creator = "Usuário Anônimo",
-  likes = 0,
-  avatar = "/placeholder-avatar.png",
-  status = "Em análise",
-  anonimous = 0,
+  title,
+  description,
+  creator,
+  likesCount: initialLikesCount,
+  avatar,
+  status,
+  anonimous,
+  ideaId,
 }) {
+  const { user } = useContext(AuthContext);
+  const { likesCount, handleLike, updateLikeCount } = useLikes();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { color, icon } = statusConfig[status] || statusConfig["Em análise"];
 
@@ -60,9 +65,21 @@ export default function IdeaCard({
     ? `${description.substring(0, 85)} ... `
     : description;
 
-  // Se anonimous = 1, define o creator como "Anônimo"
   const displayedCreator =
     anonimous === 1 ? "Anônimo" : formatUserName(creator);
+
+  useEffect(() => {
+    updateLikeCount(ideaId, initialLikesCount);
+  }, [ideaId, initialLikesCount, updateLikeCount]);
+
+  const handleLikeClick = async (e) => {
+    e.stopPropagation();
+    try {
+      await handleLike(ideaId, user.userId);
+    } catch (error) {
+      console.error("Error handling like:", error);
+    }
+  };
 
   return (
     <TooltipProvider>
@@ -100,10 +117,12 @@ export default function IdeaCard({
               variant="ghost"
               size="sm"
               className="absolute bottom-1 right-4 p-1 text-foreground"
-              onClick={(e) => e.stopPropagation()}
+              onClick={handleLikeClick}
             >
               <ThumbsUp size={16} className="mr-1" />
-              <span className="text-xs">{likes}</span>
+              <span className="text-xs">
+                {likesCount[ideaId] || initialLikesCount}
+              </span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>Curtir ideia</TooltipContent>
@@ -124,8 +143,6 @@ export default function IdeaCard({
                 {description}
               </p>
               <Separator />
-
-              <Separator />
               <div className="flex items-center justify-between"></div>
             </div>
           </ScrollArea>
@@ -143,7 +160,7 @@ export default function IdeaCard({
                   Criador(a) da ideia
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {likes} curtidas
+                  {likesCount[ideaId] || initialLikesCount} curtidas
                 </p>
               </div>
             </div>
@@ -151,7 +168,7 @@ export default function IdeaCard({
             <div className="flex-grow" />
 
             <div className="flex space-x-2">
-              <Button variant="primary">
+              <Button variant="primary" onClick={handleLikeClick}>
                 <ThumbsUp className="mr-2" size={18} /> Curtir
               </Button>
               <Button variant="secondary" onClick={handleCloseModal}>

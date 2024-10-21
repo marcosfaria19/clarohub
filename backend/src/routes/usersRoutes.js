@@ -44,6 +44,8 @@ module.exports = (usersCollection) => {
           NOME: user.NOME,
           GESTOR: user.GESTOR,
           avatar: user.avatar,
+          dailyLikesUsed: user.dailyLikesUsed,
+          dailyIdeasCreated: user.dailyIdeasCreated,
         },
         SECRET_KEY,
         { expiresIn: "12h" }
@@ -249,6 +251,28 @@ module.exports = (usersCollection) => {
       }
 
       res.json({ avatar: user.avatar });
+    } catch (err) {
+      console.error("Erro ao consultar o banco de dados:", err);
+      res.status(500).json({ message: "Erro ao consultar o banco de dados" });
+    }
+  });
+
+  // Rota para mostrar os likes e ideas restantes
+  router.get("/users/:id/stats", authenticateToken, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      res.json({
+        avatar: user.avatar,
+        dailyLikesUsed: user.dailyLikesUsed || 0,
+        dailyIdeasCreated: user.dailyIdeasCreated || 0,
+      });
     } catch (err) {
       console.error("Erro ao consultar o banco de dados:", err);
       res.status(500).json({ message: "Erro ao consultar o banco de dados" });

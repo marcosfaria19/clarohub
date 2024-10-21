@@ -10,7 +10,6 @@ import NetSMSFacilAdmin from "modules/clarohub/pages/NetSMSFacilAdmin";
 import OCFacilAdmin from "modules/clarohub/pages/OCFacilAdmin";
 import AppAdmin from "modules/clarohub/pages/AppAdmin";
 import ClaroStorm from "modules/clarostorm/pages/Home";
-import ClaroStormPallette from "modules/clarostorm/pages/Pallette";
 import { AuthContext } from "contexts/AuthContext";
 
 const ProtectedRoute = ({ allowedRoles, element }) => {
@@ -99,15 +98,6 @@ const Rotas = () => {
           <ProtectedRoute
             allowedRoles={["guest", "basic", "manager", "admin"]}
             element={<ClaroStorm />}
-          />
-        }
-      />
-      <Route
-        path="/pallette"
-        element={
-          <ProtectedRoute
-            allowedRoles={["admin"]}
-            element={<ClaroStormPallette />}
           />
         }
       />

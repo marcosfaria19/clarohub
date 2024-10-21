@@ -40,7 +40,7 @@ export default function SubjectColumns({ subjects, cards }) {
           <div className="max-h-[75vh] flex-1 overflow-y-auto">
             <div className="mt-4 space-y-5 p-4">
               {cards[activeSubject]?.map((card, cardIndex) => (
-                <IdeaCard key={cardIndex} {...card} />
+                <IdeaCard key={cardIndex} ideaId={card._id} {...card} />
               ))}
             </div>
           </div>
@@ -78,7 +78,7 @@ export default function SubjectColumns({ subjects, cards }) {
               <div className="scrollbar-storm flex-1 overflow-y-auto">
                 <div className="space-y-5 px-5 pt-5">
                   {cards[subject]?.map((card, cardIndex) => (
-                    <IdeaCard key={cardIndex} {...card} />
+                    <IdeaCard key={cardIndex} ideaId={card._id} {...card} />
                   ))}
                 </div>
               </div>

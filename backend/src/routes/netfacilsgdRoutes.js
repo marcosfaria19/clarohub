@@ -4,7 +4,7 @@ const authenticateToken = require("../middleware/authMiddleware");
 
 module.exports = (netfacilsgd) => {
   // Endpoint para buscar todos os documentos
-  router.get("/netfacilsgd", async (req, res) => {
+  router.get("/netfacilsgd", authenticateToken, async (req, res) => {
     try {
       const docs = await netfacilsgd.find({}).toArray();
       res.json(docs);
@@ -15,7 +15,7 @@ module.exports = (netfacilsgd) => {
   });
 
   // Endpoint para buscar por ID
-  router.get("/netfacilsgd/:id", async (req, res) => {
+  router.get("/netfacilsgd/:id", authenticateToken, async (req, res) => {
     const idSgd = parseInt(req.params.id, 10);
     try {
       const doc = await netfacilsgd.findOne({ ID_SGD: idSgd });
