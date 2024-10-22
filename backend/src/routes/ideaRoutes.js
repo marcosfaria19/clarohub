@@ -21,7 +21,6 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
   // Rota para criar um novo cartão
   router.post("/add-idea", authenticateToken, async (req, res) => {
     const { userId } = req.body;
-    /* await resetDailyCountersIfNeeded(userId, usersCollection); */
 
     try {
       const newIdea = req.body;
@@ -38,10 +37,9 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
     }
   });
 
+  // Rota para curtir uma ideia
   router.post("/like-idea", async (req, res) => {
     const { userId, ideaId } = req.body;
-
-    /* await resetDailyCountersIfNeeded(userId, usersCollection); */
 
     try {
       const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
@@ -71,10 +69,16 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
           { $inc: { dailyLikesUsed: -1 } }
         );
 
-        // Atualiza o contador de likes em tempo real
+        // Atualiza o contador de likes dos cartões em tempo real
         pusher.trigger("claro-storm", "update-likes", {
           ideaId: ideaId,
           likesCount: idea.likesCount - 1, // Atualiza o número de likes
+        });
+
+        // Atualiza o contador de likes diários do usuário em tempo real
+        pusher.trigger("claro-storm", "update-remaining-likes", {
+          userId: userId,
+          remainingLikes: Math.max(3 - (user.dailyLikesUsed - 1), 0), // Corrige a contagem
         });
 
         return res.status(200).json({ message: "Like removido com sucesso!" });
@@ -101,6 +105,12 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
         pusher.trigger("claro-storm", "update-likes", {
           ideaId: ideaId,
           likesCount: idea.likesCount + 1, // Atualiza o número de likes
+        });
+
+        // Atualiza o contador de likes diários do usuário em tempo real
+        pusher.trigger("claro-storm", "update-remaining-likes", {
+          userId: userId,
+          remainingLikes: Math.max(3 - (user.dailyLikesUsed + 1), 0), // Corrige a contagem
         });
 
         return res

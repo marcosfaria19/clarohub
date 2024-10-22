@@ -9,31 +9,27 @@ export function useLikes() {
   const { remainingLikes, fetchRemainingLikes } = useDailyLikes(user.userId);
 
   const handleLike = useCallback(
-    async (ideaId) => {
-      if (remainingLikes > 0) {
-        try {
-          const response = await axiosInstance.post("/storm/like-idea", {
-            ideaId,
-            userId: user.userId,
-          });
-          if (response.status === 200) {
-            setLikesCount((prev) => ({
-              ...prev,
-              [ideaId]: response.data.likesCount,
-            }));
-            fetchRemainingLikes();
-            return response.data.likesCount;
-          }
-        } catch (error) {
-          console.error("Error liking idea:", error);
-          throw error;
+    async (ideaId, hasLiked) => {
+      try {
+        const response = await axiosInstance.post("/storm/like-idea", {
+          ideaId,
+          userId: user.userId,
+        });
+
+        if (response.status === 200) {
+          setLikesCount((prev) => ({
+            ...prev,
+            [ideaId]: response.data.likesCount,
+          }));
+          fetchRemainingLikes(); // Atualiza a contagem de likes restantes
+          return response.data.likesCount;
         }
-      } else {
-        console.log("No remaining likes for today");
-        // You might want to show a notification to the user here
+      } catch (error) {
+        console.error("Erro ao curtir/remover curtida:", error);
+        throw error;
       }
     },
-    [user.userId, remainingLikes, fetchRemainingLikes],
+    [user.userId, fetchRemainingLikes],
   );
 
   const updateLikeCount = useCallback((ideaId, newCount) => {

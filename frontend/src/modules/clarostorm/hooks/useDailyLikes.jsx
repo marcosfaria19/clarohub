@@ -1,13 +1,15 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import axiosInstance from "services/axios";
-import Pusher from "pusher-js";
+import { getPusherInstance } from "services/pusher";
 
 export function useDailyLikes(userId) {
   const [remainingLikes, setRemainingLikes] = useState(3);
 
   const fetchRemainingLikes = useCallback(async () => {
+    if (!userId) return;
     try {
-      const response = await axiosInstance.get(`/user/${userId}/stats`);
+      const response = await axiosInstance.get(`/users/${userId}/stats`);
+
       if (response.status === 200) {
         const { dailyLikesUsed } = response.data;
         const remainingLikes = Math.max(3 - dailyLikesUsed, 0);
@@ -21,11 +23,9 @@ export function useDailyLikes(userId) {
   useEffect(() => {
     fetchRemainingLikes();
 
-    const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
-      cluster: process.env.REACT_APP_PUSHER_CLUSTER,
-    });
-
+    const pusher = getPusherInstance();
     const channel = pusher.subscribe("claro-storm");
+
     channel.bind("update-remaining-likes", function (data) {
       if (data.userId === userId) {
         setRemainingLikes(data.remainingLikes);

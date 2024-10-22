@@ -18,8 +18,8 @@ export function useSubjectsAndCards() {
           updatedCards[subject] = updatedCards[subject].map((card) => {
             if (card._id === ideaId) {
               const updatedLikedBy = isLiked
-                ? [...card.likedBy, userId]
-                : card.likedBy.filter((id) => id !== userId);
+                ? card.likedBy.filter((id) => id !== userId)
+                : [...card.likedBy, userId];
               return {
                 ...card,
                 likesCount: newLikesCount,
