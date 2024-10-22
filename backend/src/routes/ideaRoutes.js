@@ -19,7 +19,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
   });
 
   // Rota para criar um novo cartão
-  router.post("/add-idea", async (req, res) => {
+  router.post("/add-idea", authenticateToken, async (req, res) => {
     const { userId, ...rest } = req.body;
     console.log(req.body);
 
@@ -50,7 +50,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
   });
 
   // Rota para curtir uma ideia
-  router.post("/like-idea", async (req, res) => {
+  router.post("/like-idea", authenticateToken, async (req, res) => {
     const { userId, ideaId } = req.body;
 
     try {

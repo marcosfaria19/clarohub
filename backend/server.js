@@ -49,13 +49,16 @@ async function startServer() {
     const subjectRoutes = require("./src/routes/subjectRoutes")(
       clarostorm.collection("subjects")
     );
-
     const ideaRoutes = require("./src/routes/ideaRoutes")(
       clarostorm.collection("ideas"),
       clarohub.collection("users"),
       pusher
     );
-
+    const rankingRoutes = require("./src/routes/rankingRoutes")(
+      clarostorm.collection("rankings"),
+      clarostorm.collection("ideas"),
+      clarohub.collection("users")
+    );
     const appRoutes = require("./src/routes/appRoutes")(
       clarohub.collection("apps")
     );
@@ -68,6 +71,7 @@ async function startServer() {
     app.use("/", appRoutes);
     app.use("/storm/", subjectRoutes);
     app.use("/storm/", ideaRoutes);
+    app.use("/storm/", rankingRoutes);
 
     // Middleware para servir imagens estáticas
     app.use(
