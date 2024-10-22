@@ -21,7 +21,7 @@ export function useLikes() {
             ...prev,
             [ideaId]: response.data.likesCount,
           }));
-          fetchRemainingLikes(); // Atualiza a contagem de likes restantes
+          fetchRemainingLikes();
           return response.data.likesCount;
         }
       } catch (error) {

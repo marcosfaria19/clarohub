@@ -46,7 +46,7 @@ export default function IdeaCard({
   title,
   description,
   creator,
-  likesCount: initialLikesCount,
+  likesCount: initialLikesCount = 0,
   avatar,
   status,
   anonimous,
@@ -98,7 +98,9 @@ export default function IdeaCard({
 
         <div className="absolute bottom-3 left-4 flex items-center">
           <Avatar className="h-8 w-8">
+            {/* Exibindo o avatar do criador da ideia */}
             <AvatarImage src={avatar} alt={displayedCreator} />
+
             <AvatarFallback>{displayedCreator[0]}</AvatarFallback>
           </Avatar>
           <div className="ml-2 flex max-w-[120px] flex-col">
@@ -149,6 +151,7 @@ export default function IdeaCard({
           <DialogFooter className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Avatar className="h-12 w-12">
+                {/* Exibindo o avatar do criador da ideia aqui também */}
                 <AvatarImage src={avatar} alt={displayedCreator} />
                 <AvatarFallback>{displayedCreator[0]}</AvatarFallback>
               </Avatar>

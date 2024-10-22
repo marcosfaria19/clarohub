@@ -7,9 +7,9 @@ export function useNewCard(subjects, initialCreator = "") {
     description: "",
     subject: subjects[0] || "",
     creator: initialCreator,
-    likes: 0,
+    likesCount: 0,
     status: "Em Análise",
-    likedBy:[]
+    likedBy: [],
   });
 
   const handleAddCard = async (cardData) => {
@@ -21,7 +21,7 @@ export function useNewCard(subjects, initialCreator = "") {
           description: "",
           subject: subjects[0] || "",
           creator: initialCreator,
-          likes: 0,
+          likesCount: 0,
           status: "Em Análise",
           likedBy: [],
         });
