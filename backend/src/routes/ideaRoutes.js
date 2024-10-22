@@ -19,12 +19,24 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
   });
 
   // Rota para criar um novo cartão
-  router.post("/add-idea", authenticateToken, async (req, res) => {
-    const { userId } = req.body;
+  router.post("/add-idea", async (req, res) => {
+    const { userId, ...rest } = req.body;
+    console.log(req.body);
 
     try {
-      const newIdea = req.body;
-      const result = await ideasCollection.insertOne(newIdea);
+      const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado." });
+      }
+
+      const newIdea = {
+        ...rest,
+        creatorId: userId,
+        creatorName: user.NOME,
+        creatorAvatar: user.avatar,
+      };
+
+      await ideasCollection.insertOne(newIdea);
       pusher.trigger("claro-storm", "new-idea", {
         card: newIdea,
       });

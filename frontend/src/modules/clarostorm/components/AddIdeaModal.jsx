@@ -25,9 +25,9 @@ import {
 import { InfoIcon } from "lucide-react";
 import { useNewCard } from "../hooks/useNewCard";
 
-export default function AddIdeaModal({ subjects, onClose, userName }) {
-  const { newCard, setNewCard, handleAddCard } = useNewCard(subjects, userName);
+export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const { newCard, setNewCard, handleAddCard } = useNewCard(subjects, userId);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,6 +35,7 @@ export default function AddIdeaModal({ subjects, onClose, userName }) {
       ...newCard,
       anonimous: isAnonymous ? 1 : 0,
     };
+    console.log("Submitting card:", cardToSubmit); // Adicionando log aqui
     const success = await handleAddCard(cardToSubmit);
     if (success) {
       onClose();

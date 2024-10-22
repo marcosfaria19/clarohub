@@ -84,7 +84,7 @@ const Header = () => {
 
           <NotificationsPopover />
 
-          {user && ( // Renderiza o nome do usuário apenas se ele estiver autenticado
+          {user && (
             <>
               <span className="hidden text-popover-foreground opacity-90 lg:inline-block">
                 Bem-vindo(a),{" "}
@@ -95,7 +95,7 @@ const Header = () => {
 
               <div className="hidden md:block">
                 <AvatarDropdown
-                  userId={user.userId} // Use os atributos do `user` do AuthContext
+                  userId={user.userId}
                   onLogout={onLogout}
                   login={user.login}
                   userName={formatUserName(user.userName)}

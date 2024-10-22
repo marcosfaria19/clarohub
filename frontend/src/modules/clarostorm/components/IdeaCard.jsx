@@ -45,9 +45,10 @@ const statusConfig = {
 export default function IdeaCard({
   title,
   description,
-  creator,
+  creatorName,
+  creatorId,
+  creatorAvatar,
   likesCount: initialLikesCount = 0,
-  avatar,
   status,
   anonimous,
   ideaId,
@@ -66,7 +67,10 @@ export default function IdeaCard({
     : description;
 
   const displayedCreator =
-    anonimous === 1 ? "Anônimo" : formatUserName(creator);
+    anonimous === 1 ? "Anônimo" : formatUserName(creatorName);
+
+  const displayedAvatar =
+    anonimous === 1 ? "/placeholder-avatar.png" : creatorAvatar;
 
   useEffect(() => {
     updateLikeCount(ideaId, initialLikesCount);
@@ -98,9 +102,8 @@ export default function IdeaCard({
 
         <div className="absolute bottom-3 left-4 flex items-center">
           <Avatar className="h-8 w-8">
-            {/* Exibindo o avatar do criador da ideia */}
-            <AvatarImage src={avatar} alt={displayedCreator} />
-
+            <AvatarImage src={displayedAvatar} alt={displayedCreator} />{" "}
+            {/* Usando o avatar do criador aqui */}
             <AvatarFallback>{displayedCreator[0]}</AvatarFallback>
           </Avatar>
           <div className="ml-2 flex max-w-[120px] flex-col">
@@ -151,8 +154,8 @@ export default function IdeaCard({
           <DialogFooter className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Avatar className="h-12 w-12">
-                {/* Exibindo o avatar do criador da ideia aqui também */}
-                <AvatarImage src={avatar} alt={displayedCreator} />
+                <AvatarImage src={displayedAvatar} alt={displayedCreator} />{" "}
+                {/* Usando o avatar do criador aqui também */}
                 <AvatarFallback>{displayedCreator[0]}</AvatarFallback>
               </Avatar>
               <div>

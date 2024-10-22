@@ -11,7 +11,7 @@ import ErrorDisplay from "../components/ErrorDisplay";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Container from "modules/shared/components/ui/container";
 
-export default function ClaroStorm({ userName }) {
+export default function ClaroStorm({ userName, userId }) {
   const { subjects, cards, isLoading, error } = useSubjectsAndCards();
   const { newCard, setNewCard, handleAddCard } = useNewCard(subjects);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -39,6 +39,7 @@ export default function ClaroStorm({ userName }) {
           subjects={subjects}
           onClose={() => setShowAddModal(false)}
           userName={userName}
+          userId={userId}
         />
       </Dialog>
     </Container>
