@@ -25,7 +25,7 @@ import { Separator } from "modules/shared/components/ui/separator";
 import { cn } from "modules/shared/lib/utils";
 import formatUserName from "modules/shared/utils/formatUsername";
 import { AuthContext } from "contexts/AuthContext";
-import { useLikes } from "../hooks/useLikes";
+import { useLikes } from "modules/clarostorm/hooks/useLikes";
 
 const statusConfig = {
   "Em análise": {
@@ -50,7 +50,7 @@ export default function IdeaCard({
   creatorAvatar,
   likesCount: initialLikesCount = 0,
   status,
-  anonimous,
+  anonymous,
   ideaId,
 }) {
   const { user } = useContext(AuthContext);
@@ -67,10 +67,10 @@ export default function IdeaCard({
     : description;
 
   const displayedCreator =
-    anonimous === 1 ? "Anônimo" : formatUserName(creatorName);
+    anonymous === 1 ? "Anônimo" : formatUserName(creatorName);
 
   const displayedAvatar =
-    anonimous === 1 ? "/placeholder-avatar.png" : creatorAvatar;
+    anonymous === 1 ? "/anonymous-avatar.png" : creatorAvatar;
 
   useEffect(() => {
     updateLikeCount(ideaId, initialLikesCount);

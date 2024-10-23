@@ -6,19 +6,36 @@ module.exports = (rankingCollection, ideasCollection, usersCollection) => {
   // Function to calculate and update rankings
   async function updateRankings() {
     try {
-      // Ranking for "curtidas" (users with most likes received)
-      const curtidas = await ideasCollection
+      // Ranking for "criadas" (users with most ideas created)
+      const criadas = await ideasCollection
         .aggregate([
           {
             $group: {
               _id: "$creatorId", // Agrupa por criador
-              totalLikes: { $sum: "$likesCount" }, // Soma as curtidas de todas as ideias do criador
-              creatorName: { $first: "$creatorName" }, // Pega o nome do criador
-              creatorAvatar: { $first: "$creatorAvatar" }, // Pega o avatar do criador
+              ideaCount: { $sum: 1 }, // Conta o número de ideias criadas
             },
           },
-          { $sort: { totalLikes: -1 } }, // Ordena pelos criadores com mais curtidas
+          { $sort: { ideaCount: -1 } }, // Ordena pelos criadores com mais ideias
           { $limit: 30 }, // Limita o número de resultados
+          {
+            $lookup: {
+              from: "users", // Busca o nome e avatar do criador na coleção de usuários
+              localField: "_id", // Campo em ideasCollection (creatorId)
+              foreignField: "_id", // Campo em usersCollection (userId)
+              as: "creatorInfo", // Aloca o resultado do lookup aqui
+            },
+          },
+          {
+            $unwind: "$creatorInfo", // Descompacta o array do lookup
+          },
+          {
+            $project: {
+              _id: 1, // creatorId
+              ideaCount: 1, // Contagem de ideias
+              creatorName: "$creatorInfo.NOME", // Nome do criador vindo do lookup
+              creatorAvatar: "$creatorInfo.avatar", // Avatar do criador vindo do lookup
+            },
+          },
         ])
         .toArray();
 
@@ -72,8 +89,8 @@ module.exports = (rankingCollection, ideasCollection, usersCollection) => {
 
       // Update rankings in the rankingCollection
       await rankingCollection.updateOne(
-        { type: "curtidas" },
-        { $set: { rankings: curtidas, lastUpdated: new Date() } },
+        { type: "criadas" },
+        { $set: { rankings: criadas, lastUpdated: new Date() } },
         { upsert: true }
       );
 

@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react";
 import { ThumbsUp, Trophy, SlidersHorizontal } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
-import RankingModal from "./RankingModal";
+import RankingModal from "../rankings/RankingModal";
 import { AuthContext } from "contexts/AuthContext";
-import { useDailyLikes } from "../hooks/useDailyLikes";
+import { useDailyLikes } from "modules/clarostorm/hooks/useDailyLikes";
 
 export default function StormMenu() {
   const [showRankingModal, setShowRankingModal] = useState(false);

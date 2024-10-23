@@ -11,7 +11,24 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
   router.get("/ideas", authenticateToken, async (req, res) => {
     try {
       const ideas = await ideasCollection.find({}).toArray();
-      res.status(200).json(ideas);
+
+      const ideasWithUpdatedCreators = await Promise.all(
+        ideas.map(async (idea) => {
+          const user = await usersCollection.findOne({
+            _id: new ObjectId(idea.creatorId),
+          });
+          if (user) {
+            return {
+              ...idea,
+              creatorName: user.NOME,
+              creatorAvatar: user.avatar,
+            };
+          }
+          return idea;
+        })
+      );
+
+      res.status(200).json(ideasWithUpdatedCreators);
     } catch (error) {
       console.error("Erro ao buscar cartões:", error);
       res.status(500).json({ error: "Error fetching ideas" });

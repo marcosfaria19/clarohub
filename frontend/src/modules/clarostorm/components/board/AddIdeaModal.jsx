@@ -23,7 +23,7 @@ import {
   TooltipTrigger,
 } from "modules/shared/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
-import { useNewCard } from "../hooks/useNewCard";
+import { useNewCard } from "modules/clarostorm/hooks/useNewCard";
 
 export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -31,15 +31,17 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const cardToSubmit = {
       ...newCard,
-      anonimous: isAnonymous ? 1 : 0,
+      anonymous: isAnonymous ? 1 : 0,
     };
-    console.log("Submitting card:", cardToSubmit); // Adicionando log aqui
+
     const success = await handleAddCard(cardToSubmit);
     if (success) {
       onClose();
     }
+    console.log(cardToSubmit);
   };
 
   return (

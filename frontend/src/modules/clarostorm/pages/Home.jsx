@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import { Dialog, DialogTrigger } from "modules/shared/components/ui/dialog";
-import { useSubjectsAndCards } from "../hooks/useSubjectsAndCards";
-import { useNewCard } from "../hooks/useNewCard";
-import StormMenu from "../components/StormMenu";
-import SubjectColumns from "../components/SubjectColumns";
-import AddIdeaModal from "../components/AddIdeaModal";
-import ErrorDisplay from "../components/ErrorDisplay";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { useSubjectsAndCards } from "modules/clarostorm/hooks/useSubjectsAndCards";
+import { useNewCard } from "modules/clarostorm/hooks/useNewCard";
+import StormMenu from "modules/clarostorm/components/board/StormMenu";
+import SubjectColumns from "modules/clarostorm/components/board/SubjectColumns";
+import AddIdeaModal from "modules/clarostorm/components//board/AddIdeaModal";
+import ErrorDisplay from "modules/clarostorm/components/ErrorDisplay";
+import LoadingSpinner from "modules/clarostorm/components/LoadingSpinner";
 import Container from "modules/shared/components/ui/container";
 
 export default function ClaroStorm({ userName, userId }) {

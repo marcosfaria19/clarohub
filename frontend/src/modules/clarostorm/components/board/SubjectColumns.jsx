@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import IdeaCard from "modules/clarostorm/components/IdeaCard";
+import IdeaCard from "modules/clarostorm/components/board/IdeaCard";
 
 export default function SubjectColumns({ subjects, cards }) {
   const [activeSubject, setActiveSubject] = useState(subjects[0]);

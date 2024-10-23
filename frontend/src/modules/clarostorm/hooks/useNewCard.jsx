@@ -9,7 +9,7 @@ export function useNewCard(subjects, userId) {
     likesCount: 0,
     status: "Em Análise",
     likedBy: [],
-    anonimous: 0,
+    anonymous: 0,
   });
 
   const handleAddCard = async (cardData) => {
@@ -26,7 +26,7 @@ export function useNewCard(subjects, userId) {
           likesCount: 0,
           status: "Em Análise",
           likedBy: [],
-          anonimous: 0,
+          anonymous: 0,
         });
         return true;
       }
