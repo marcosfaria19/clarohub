@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const authenticateToken = require("../middleware/authMiddleware");
 const SECRET_KEY = process.env.SECRET_KEY;
 
-module.exports = (usersCollection) => {
+module.exports = (usersCollection, ideasCollection) => {
   // Rota de login com verificação de senha
   router.post("/login", async (req, res) => {
     const { LOGIN, senha } = req.body;
@@ -51,7 +51,6 @@ module.exports = (usersCollection) => {
         { expiresIn: "12h" }
       );
 
-      console.log("Login bem-sucedido:", { LOGIN });
       res.json({ token });
     } catch (err) {
       console.error("Erro no login:", err);
@@ -220,6 +219,7 @@ module.exports = (usersCollection) => {
     }
 
     try {
+      // Atualize o avatar do usuário
       const result = await usersCollection.updateOne(
         { _id: new ObjectId(id) },
         { $set: { avatar: avatarSvg } }
@@ -229,7 +229,13 @@ module.exports = (usersCollection) => {
         return res.status(404).json({ message: "Usuário não encontrado" });
       }
 
-      res.json({ message: "Avatar salvo com sucesso" });
+      // Atualize o avatar em todos os cards onde o usuário é o criador
+      await ideasCollection.updateMany(
+        { "creator._id": new ObjectId(id) },
+        { $set: { "creator.avatar": avatarSvg } }
+      );
+
+      res.json({ message: "Avatar atualizado com sucesso" });
     } catch (err) {
       console.error("Erro ao salvar avatar:", err);
       res
@@ -237,6 +243,7 @@ module.exports = (usersCollection) => {
         .json({ message: "Erro ao salvar avatar no banco de dados" });
     }
   });
+
   // Rota para mostrar o Avatar
   router.get("/users/:id/avatar", authenticateToken, async (req, res) => {
     const { id } = req.params;

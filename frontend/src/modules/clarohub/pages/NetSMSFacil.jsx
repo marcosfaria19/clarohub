@@ -98,7 +98,6 @@ export default function NetSMSFacil({ userName, gestor }) {
     setTextoPadrao(value);
 
     const item = data.find((item) => item["TEXTO PADRAO"] === value);
-    console.log(item);
     if (item) {
       setShowIncidenteField(item.INCIDENTE === "Sim");
       setShowObservacaoField(item.OBS === "Sim");

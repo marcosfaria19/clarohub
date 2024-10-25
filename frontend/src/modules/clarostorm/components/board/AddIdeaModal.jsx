@@ -41,7 +41,6 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
     if (success) {
       onClose();
     }
-    console.log(cardToSubmit);
   };
 
   return (

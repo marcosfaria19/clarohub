@@ -45,9 +45,7 @@ const statusConfig = {
 export default function IdeaCard({
   title,
   description,
-  creatorName,
-  creatorId,
-  creatorAvatar,
+  creator,
   likesCount: initialLikesCount = 0,
   status,
   anonymous,
@@ -67,10 +65,10 @@ export default function IdeaCard({
     : description;
 
   const displayedCreator =
-    anonymous === 1 ? "Anônimo" : formatUserName(creatorName);
+    anonymous === 1 ? "Anônimo" : formatUserName(creator.name);
 
   const displayedAvatar =
-    anonymous === 1 ? "/anonymous-avatar.png" : creatorAvatar;
+    anonymous === 1 ? "/anonymous-avatar.png" : creator.avatar;
 
   useEffect(() => {
     updateLikeCount(ideaId, initialLikesCount);

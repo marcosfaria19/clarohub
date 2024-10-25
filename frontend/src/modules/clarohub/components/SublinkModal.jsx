@@ -76,7 +76,6 @@ export default function SublinkModal({ show, handleClose, selectedApp }) {
               subLink.nome.toLowerCase() === subLinkName.toLowerCase(),
           );
           if (selectedSubLink) {
-            console.log(selectedSubLink);
             const updatedSubLink = `${selectedSubLink.rota}%2F${selectedLocation}`;
             window.open(updatedSubLink, "_blank");
           }

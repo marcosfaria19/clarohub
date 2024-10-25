@@ -12,9 +12,9 @@ const RankingPodium = ({ rank, index, scoreLabel }) => {
       case 0:
         return "h-36 bg-card/40 border-yellow-500";
       case 1:
-        return "h-32 bg-card/80 border-gray-400";
+        return "h-32 bg-card/80 border-gray-400 rounded-l-lg";
       case 2:
-        return "h-28 bg-card/90 border-yellow-900";
+        return "h-28 bg-card/90 border-yellow-900 rounded-r-lg";
       default:
         return "";
     }
@@ -71,8 +71,8 @@ const RankingPodium = ({ rank, index, scoreLabel }) => {
             alt={`Medalha: ${index + 1}`}
           />
           <img
-            src={rank.creatorAvatar || "/placeholder-avatar.png"}
-            alt={rank.creatorName}
+            src={rank.avatar || "/placeholder-avatar.png"}
+            alt={rank.name}
             className={`absolute ${getAvatarSize()} z-10 rounded-full`}
           />
         </div>
@@ -82,13 +82,13 @@ const RankingPodium = ({ rank, index, scoreLabel }) => {
         className={`relative ${getPodium()} flex w-28 flex-col items-center justify-center rounded-t-lg border-t-4`}
       >
         {/* Nome */}
-        <span className="relative bottom-4 mt-2 text-center text-sm font-semibold text-foreground shadow-lg">
-          {rank.creatorName ? formatUserName(rank.creatorName) : "erro"}
+        <span className="relative bottom-4 mt-2 text-center text-sm font-semibold text-foreground">
+          {rank.name ? formatUserName(rank.name) : ""}
         </span>
 
         {/* Pontuação */}
         <span className="absolute bottom-9 text-sm font-bold">
-          {rank[scoreLabel] ? rank[scoreLabel] : "erro"}
+          {rank[scoreLabel] ? rank[scoreLabel] : "0"}
         </span>
       </div>
     </div>

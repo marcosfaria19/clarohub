@@ -33,6 +33,7 @@ export default function StormMenu() {
       <RankingModal
         isOpen={showRankingModal}
         onClose={() => setShowRankingModal(false)}
+        userId={user.userId}
       />
     </>
   );

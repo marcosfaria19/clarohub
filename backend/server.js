@@ -28,7 +28,6 @@ async function startServer() {
     await client.connect();
 
     const clarohub = client.db("clarohub");
-    const clarostorm = client.db("clarostorm");
 
     app.use(cors());
     app.use(express.json());
@@ -44,19 +43,20 @@ async function startServer() {
       clarohub.collection("netfacilsgd")
     );
     const usersRoutes = require("./src/routes/usersRoutes")(
-      clarohub.collection("users")
+      clarohub.collection("users"),
+      clarohub.collection("ideas")
     );
     const subjectRoutes = require("./src/routes/subjectRoutes")(
-      clarostorm.collection("subjects")
+      clarohub.collection("subjects")
     );
     const ideaRoutes = require("./src/routes/ideaRoutes")(
-      clarostorm.collection("ideas"),
+      clarohub.collection("ideas"),
       clarohub.collection("users"),
       pusher
     );
     const rankingRoutes = require("./src/routes/rankingRoutes")(
-      clarostorm.collection("rankings"),
-      clarostorm.collection("ideas"),
+      clarohub.collection("rankings"),
+      clarohub.collection("ideas"),
       clarohub.collection("users")
     );
     const appRoutes = require("./src/routes/appRoutes")(

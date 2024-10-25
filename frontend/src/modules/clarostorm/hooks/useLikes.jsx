@@ -26,6 +26,7 @@ export function useLikes() {
         }
       } catch (error) {
         console.error("Erro ao curtir/remover curtida:", error);
+
         throw error;
       }
     },

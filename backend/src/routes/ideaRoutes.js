@@ -8,27 +8,11 @@ const resetDailyCountersIfNeeded = require("../utils/resetDailyCounters");
 
 module.exports = (ideasCollection, usersCollection, pusher) => {
   // Rota para obter todos os cartões
-  router.get("/ideas", authenticateToken, async (req, res) => {
+  router.get("/ideas", async (req, res) => {
     try {
       const ideas = await ideasCollection.find({}).toArray();
 
-      const ideasWithUpdatedCreators = await Promise.all(
-        ideas.map(async (idea) => {
-          const user = await usersCollection.findOne({
-            _id: new ObjectId(idea.creatorId),
-          });
-          if (user) {
-            return {
-              ...idea,
-              creatorName: user.NOME,
-              creatorAvatar: user.avatar,
-            };
-          }
-          return idea;
-        })
-      );
-
-      res.status(200).json(ideasWithUpdatedCreators);
+      res.status(200).json(ideas);
     } catch (error) {
       console.error("Erro ao buscar cartões:", error);
       res.status(500).json({ error: "Error fetching ideas" });
@@ -38,7 +22,6 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
   // Rota para criar um novo cartão
   router.post("/add-idea", authenticateToken, async (req, res) => {
     const { userId, ...rest } = req.body;
-    console.log(req.body);
 
     try {
       const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
@@ -48,9 +31,11 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
 
       const newIdea = {
         ...rest,
-        creatorId: userId,
-        creatorName: user.NOME,
-        creatorAvatar: user.avatar,
+        creator: {
+          _id: new ObjectId(userId),
+          name: user.NOME,
+          avatar: user.avatar,
+        },
       };
 
       await ideasCollection.insertOne(newIdea);
@@ -75,80 +60,89 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       const idea = await ideasCollection.findOne({ _id: new ObjectId(ideaId) });
 
       if (!idea) {
-        return res.status(404).json({ message: "Ideia não encontrada." });
+        return res.status(404).json({ message: "Idea not found." });
       }
 
       if (!user) {
-        return res.status(404).json({ message: "Usuário não encontrado." });
+        return res.status(404).json({ message: "User not found." });
       }
 
-      // Verifica se o usuário já deu like na ideia
-      const alreadyLiked = idea.likedBy.includes(userId);
+      // Check if the user has already liked the idea
+      const alreadyLiked = idea.likedBy.some((id) =>
+        id.equals(new ObjectId(userId))
+      );
 
       if (alreadyLiked) {
-        // Remove o like
+        // Remove the like
         await ideasCollection.updateOne(
           { _id: new ObjectId(ideaId) },
-          { $pull: { likedBy: userId }, $inc: { likesCount: -1 } }
+          { $pull: { likedBy: new ObjectId(userId) }, $inc: { likesCount: -1 } }
         );
 
-        // Decrementa a contagem de likes do usuário
+        // Decrement the user's daily like count
         await usersCollection.updateOne(
           { _id: new ObjectId(userId) },
           { $inc: { dailyLikesUsed: -1 } }
         );
 
-        // Atualiza o contador de likes dos cartões em tempo real
+        // Update the idea's like count in real-time
         pusher.trigger("claro-storm", "update-likes", {
           ideaId: ideaId,
-          likesCount: idea.likesCount - 1, // Atualiza o número de likes
+          likesCount: idea.likesCount - 1,
         });
 
-        // Atualiza o contador de likes diários do usuário em tempo real
+        // Update the user's remaining likes in real-time
         pusher.trigger("claro-storm", "update-remaining-likes", {
           userId: userId,
-          remainingLikes: Math.max(3 - (user.dailyLikesUsed - 1), 0), // Corrige a contagem
+          remainingLikes: 3 - (user.dailyLikesUsed - 1),
         });
 
-        return res.status(200).json({ message: "Like removido com sucesso!" });
+        return res.status(200).json({
+          message: "Like removed successfully!",
+          likesCount: idea.likesCount - 1,
+        });
       } else {
-        // Adiciona o like
+        // Add the like
         if (user.dailyLikesUsed >= 3) {
           return res
             .status(403)
-            .json({ message: "Você já usou todos os seus likes de hoje." });
+            .json({ message: "You've used all your daily likes." });
         }
 
         await ideasCollection.updateOne(
           { _id: new ObjectId(ideaId) },
-          { $push: { likedBy: userId }, $inc: { likesCount: 1 } }
+          {
+            $addToSet: { likedBy: new ObjectId(userId) },
+            $inc: { likesCount: 1 },
+          }
         );
 
-        // Incrementa a contagem de likes do usuário
+        // Increment the user's daily like count
         await usersCollection.updateOne(
           { _id: new ObjectId(userId) },
           { $inc: { dailyLikesUsed: 1 } }
         );
 
-        // Atualiza o contador de likes em tempo real
+        // Update the idea's like count in real-time
         pusher.trigger("claro-storm", "update-likes", {
           ideaId: ideaId,
-          likesCount: idea.likesCount + 1, // Atualiza o número de likes
+          likesCount: idea.likesCount + 1,
         });
 
-        // Atualiza o contador de likes diários do usuário em tempo real
+        // Update the user's remaining likes in real-time
         pusher.trigger("claro-storm", "update-remaining-likes", {
           userId: userId,
-          remainingLikes: Math.max(3 - (user.dailyLikesUsed + 1), 0), // Corrige a contagem
+          remainingLikes: 3 - (user.dailyLikesUsed + 1),
         });
 
-        return res
-          .status(200)
-          .json({ message: "Like registrado com sucesso!" });
+        return res.status(200).json({
+          message: "Like added successfully!",
+          likesCount: idea.likesCount + 1,
+        });
       }
     } catch (error) {
-      console.error("Erro ao dar like:", error);
-      res.status(500).json({ message: "Erro ao dar like." });
+      console.error("Error liking/unliking:", error);
+      res.status(500).json({ message: "Error processing like/unlike." });
     }
   });
 

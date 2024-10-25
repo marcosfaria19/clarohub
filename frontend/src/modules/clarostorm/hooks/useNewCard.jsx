@@ -32,7 +32,6 @@ export function useNewCard(subjects, userId) {
       }
     } catch (error) {
       console.error("Erro ao adicionar cartão:", error);
-      console.log(cardData);
       return false;
     }
   };

@@ -44,31 +44,25 @@ export default function RankingModal({ isOpen, onClose, userId }) {
   const { rankings, loading, error } = useRankings(activeTab);
 
   const getRankingData = () => {
-    if (!rankings) return { data: [], scoreLabel: "" };
-    switch (activeTab) {
-      case "criadas":
-        return { data: rankings, scoreLabel: "likesCount" };
-      case "ideias":
-        return { data: rankings, scoreLabel: "ideaCount" };
-      case "apoiadores":
-        return { data: rankings, scoreLabel: "likeCount" };
-      default:
-        return { data: [], scoreLabel: "" };
-    }
+    if (!rankings) return { data: [], score: "" };
+    return {
+      data: rankings,
+      score: "score",
+    };
   };
 
-  const { data, scoreLabel } = getRankingData();
+  const { data, score } = getRankingData();
   const podiumRankings = data.slice(0, 3);
   const listRankings = data.slice(3);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:min-h-[650px] sm:max-w-[500px]">
         <DialogTitle className="sr-only">Ranking</DialogTitle>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="criadas">Criadas</TabsTrigger>
-            <TabsTrigger value="ideias">Ideias</TabsTrigger>
+            <TabsTrigger value="aprovadas">Aprovadas</TabsTrigger>
             <TabsTrigger value="apoiadores">Apoiadores</TabsTrigger>
           </TabsList>
           <TabsContent value={activeTab} className="mt-4">
@@ -82,22 +76,22 @@ export default function RankingModal({ isOpen, onClose, userId }) {
                   <RankingPodium
                     rank={podiumRankings[1]}
                     index={1}
-                    scoreLabel={scoreLabel}
+                    scoreLabel={score}
                   />
                   <RankingPodium
                     rank={podiumRankings[0]}
                     index={0}
-                    scoreLabel={scoreLabel}
+                    scoreLabel={score}
                   />
                   <RankingPodium
                     rank={podiumRankings[2]}
                     index={2}
-                    scoreLabel={scoreLabel}
+                    scoreLabel={score}
                   />
                 </div>
                 <RankingList
                   rankings={listRankings}
-                  scoreLabel={scoreLabel}
+                  scoreLabel={score}
                   userId={userId}
                 />
               </>

@@ -6,107 +6,131 @@ module.exports = (rankingCollection, ideasCollection, usersCollection) => {
   // Function to calculate and update rankings
   async function updateRankings() {
     try {
-      // Ranking for "criadas" (users with most ideas created)
-      const criadas = await ideasCollection
+      /* Ranking de criadores de ideias */
+      const criadasRanking = await usersCollection
         .aggregate([
           {
-            $group: {
-              _id: "$creatorId", // Agrupa por criador
-              ideaCount: { $sum: 1 }, // Conta o número de ideias criadas
-            },
-          },
-          { $sort: { ideaCount: -1 } }, // Ordena pelos criadores com mais ideias
-          { $limit: 30 }, // Limita o número de resultados
-          {
             $lookup: {
-              from: "users", // Busca o nome e avatar do criador na coleção de usuários
-              localField: "_id", // Campo em ideasCollection (creatorId)
-              foreignField: "_id", // Campo em usersCollection (userId)
-              as: "creatorInfo", // Aloca o resultado do lookup aqui
+              from: "ideas", // Nome da coleção de ideias
+              localField: "_id", // Campo do usuário
+              foreignField: "creator._id", // Campo correspondente na coleção de ideias
+              as: "userIdeas", // Nome do array resultante
             },
-          },
-          {
-            $unwind: "$creatorInfo", // Descompacta o array do lookup
           },
           {
             $project: {
-              _id: 1, // creatorId
-              ideaCount: 1, // Contagem de ideias
-              creatorName: "$creatorInfo.NOME", // Nome do criador vindo do lookup
-              creatorAvatar: "$creatorInfo.avatar", // Avatar do criador vindo do lookup
+              _id: 0,
+              userId: "$_id",
+              name: "$NOME",
+              avatar: "$avatar",
+              score: { $size: "$userIdeas" }, // Conta o número de ideias
             },
           },
+          { $sort: { score: -1 } }, // Ordena por número de ideias, do maior para o menor
+          /* { $limit: 30 }, // Limita qtd de usuarios procurados */
         ])
         .toArray();
 
-      // Ranking for "ideias" (users with most ideas)
-      const ideias = await usersCollection
+      /* Ranking de ideias aprovadas */
+      const aprovadasRanking = await usersCollection
         .aggregate([
           {
             $lookup: {
-              from: "ideas",
-              localField: "_id",
-              foreignField: "creatorId",
-              as: "userIdeas",
+              from: "ideas", // Nome da coleção de ideias
+              let: { userId: "$_id" }, // Variável para o ID do usuário
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $and: [
+                        { $eq: ["$creator._id", "$$userId"] }, // Comparar IDs
+                        { $eq: ["$status", "Aprovada"] }, // Filtrar ideias aprovadas
+                      ],
+                    },
+                  },
+                },
+                {
+                  $count: "approvedCount", // Contar as ideias aprovadas
+                },
+              ],
+              as: "approvedIdeas", // Nome do array resultante
             },
           },
           {
             $project: {
-              _id: 1,
-              NOME: 1,
-              ideaCount: { $size: "$userIdeas" },
-              avatar: { $ifNull: ["$avatar", "/placeholder-avatar.png"] },
+              _id: 0,
+              userId: "$_id",
+              name: "$NOME",
+              avatar: "$avatar",
+              score: {
+                $ifNull: [
+                  { $arrayElemAt: ["$approvedIdeas.approvedCount", 0] },
+                  0,
+                ],
+              }, // Pega a contagem ou retorna 0
             },
           },
-          { $sort: { ideaCount: -1 } },
-          { $limit: 30 },
+          { $sort: { score: -1 } }, // Ordena por contagem de ideias aprovadas
+          /* { $limit: 30 }, // Limita a 30 usuários */
         ])
         .toArray();
 
-      // Ranking for "apoiadores" (users who gave most likes)
-      const apoiadores = await usersCollection
+      /* Ranking de usuarios que mais deram like */
+      const apoiadoresRanking = await usersCollection
         .aggregate([
           {
             $lookup: {
-              from: "ideas",
-              localField: "_id",
-              foreignField: "likedBy",
-              as: "likedIdeas",
+              from: "ideas", // Nome da coleção de ideias
+              let: { userId: "$_id" }, // Variável para o ID do usuário
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $in: ["$$userId", "$likedBy"], // Verifica se o userId está em likedBy
+                    },
+                  },
+                },
+                {
+                  $count: "likesCount", // Conta os likes dados pelo usuário
+                },
+              ],
+              as: "userLikes", // Nome do array resultante
             },
           },
           {
             $project: {
-              _id: 1,
-              NOME: 1,
-              likeCount: { $size: "$likedIdeas" },
-              avatar: { $ifNull: ["$avatar", "/placeholder-avatar.png"] },
+              _id: 0,
+              userId: "$_id",
+              name: "$NOME",
+              avatar: "$avatar",
+              score: {
+                $ifNull: [{ $arrayElemAt: ["$userLikes.likesCount", 0] }, 0],
+              }, // Pega a contagem ou retorna 0
             },
           },
-          { $sort: { likeCount: -1 } },
-          { $limit: 30 },
+          { $sort: { score: -1 } }, // Ordena por contagem de likes
+          /* { $limit: 30 }, // Limita a 30 usuários */
         ])
         .toArray();
 
       // Update rankings in the rankingCollection
       await rankingCollection.updateOne(
         { type: "criadas" },
-        { $set: { rankings: criadas, lastUpdated: new Date() } },
+        { $set: { rankings: criadasRanking, lastUpdated: new Date() } },
         { upsert: true }
       );
 
       await rankingCollection.updateOne(
-        { type: "ideias" },
-        { $set: { rankings: ideias, lastUpdated: new Date() } },
+        { type: "aprovadas" },
+        { $set: { rankings: aprovadasRanking, lastUpdated: new Date() } },
         { upsert: true }
       );
 
       await rankingCollection.updateOne(
         { type: "apoiadores" },
-        { $set: { rankings: apoiadores, lastUpdated: new Date() } },
+        { $set: { rankings: apoiadoresRanking, lastUpdated: new Date() } },
         { upsert: true }
       );
-
-      console.log("Rankings updated successfully");
     } catch (error) {
       console.error("Error updating rankings:", error);
     }
@@ -118,7 +142,7 @@ module.exports = (rankingCollection, ideasCollection, usersCollection) => {
   // Initial update
   updateRankings();
 
-  // Rota para obter todos os rankings por tipo
+  // Route to get all rankings by type
   router.get("/rankings/:type", async (req, res) => {
     const { type } = req.params;
     try {
