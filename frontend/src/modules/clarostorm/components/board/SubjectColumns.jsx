@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import IdeaCard from "modules/clarostorm/components/board/IdeaCard";
 
 export default function SubjectColumns({ subjects, cards }) {
@@ -17,6 +17,16 @@ export default function SubjectColumns({ subjects, cards }) {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  const sortedCards = useMemo(() => {
+    const sorted = {};
+    for (const subject in cards) {
+      sorted[subject] = [...cards[subject]].sort(
+        (a, b) => (b.likedBy?.length || 0) - (a.likedBy?.length || 0),
+      );
+    }
+    return sorted;
+  }, [cards]);
 
   return (
     <div className="mx-10 select-none border border-border">
@@ -39,8 +49,8 @@ export default function SubjectColumns({ subjects, cards }) {
           </div>
           <div className="max-h-[75vh] flex-1 overflow-y-auto">
             <div className="mt-4 space-y-5 p-4">
-              {cards[activeSubject]?.map((card, cardIndex) => (
-                <IdeaCard key={cardIndex} ideaId={card._id} {...card} />
+              {sortedCards[activeSubject]?.map((card, cardIndex) => (
+                <IdeaCard key={card._id} ideaId={card._id} {...card} />
               ))}
             </div>
           </div>
@@ -77,8 +87,8 @@ export default function SubjectColumns({ subjects, cards }) {
               <div className="p-5" />
               <div className="scrollbar-storm flex-1 overflow-y-auto">
                 <div className="space-y-5 px-5 pt-5">
-                  {cards[subject]?.map((card, cardIndex) => (
-                    <IdeaCard key={cardIndex} ideaId={card._id} {...card} />
+                  {sortedCards[subject]?.map((card, cardIndex) => (
+                    <IdeaCard key={card._id} ideaId={card._id} {...card} />
                   ))}
                 </div>
               </div>

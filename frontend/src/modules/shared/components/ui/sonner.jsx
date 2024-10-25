@@ -7,7 +7,7 @@ const Toaster = ({ ...props }) => {
   return (
     <Sonner
       theme={theme}
-      className="toaster group"
+      className="toaster group select-none"
       duration={3000}
       /* toastOptions={{
         classNames: {

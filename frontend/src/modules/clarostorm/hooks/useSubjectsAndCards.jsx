@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Pusher from "pusher-js";
 import axiosInstance from "services/axios";
 import { useLikes } from "./useLikes";
@@ -15,25 +15,42 @@ export function useSubjectsAndCards() {
       setCards((prevCards) => {
         const updatedCards = { ...prevCards };
         for (const subject in updatedCards) {
-          updatedCards[subject] = updatedCards[subject].map((card) => {
-            if (card._id === ideaId) {
-              const updatedLikedBy = isLiked
-                ? card.likedBy.filter((id) => id !== userId)
-                : [...card.likedBy, userId];
-              return {
-                ...card,
-                likesCount: newLikesCount,
-                likedBy: updatedLikedBy,
-              };
+          const cardIndex = updatedCards[subject].findIndex(
+            (card) => card._id === ideaId,
+          );
+          if (cardIndex !== -1) {
+            const updatedCard = { ...updatedCards[subject][cardIndex] };
+            updatedCard.likesCount = newLikesCount;
+            if (isLiked) {
+              updatedCard.likedBy = updatedCard.likedBy.filter(
+                (id) => id !== userId,
+              );
+            } else {
+              updatedCard.likedBy = [...updatedCard.likedBy, userId];
             }
-            return card;
-          });
+            updatedCards[subject][cardIndex] = updatedCard;
+            break; // Saia do loop após encontrar e atualizar o card
+          }
         }
         return updatedCards;
       });
     },
     [],
   );
+
+  const sortedCards = useMemo(() => {
+    const sorted = {};
+    for (const subject in cards) {
+      sorted[subject] = [...cards[subject]].sort((a, b) => {
+        const likeDiff = b.likedBy.length - a.likedBy.length;
+        /* if (likeDiff === 0) {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        } */
+        return likeDiff;
+      });
+    }
+    return sorted;
+  }, [cards]);
 
   useEffect(() => {
     const fetchSubjectsAndCards = async () => {
@@ -99,5 +116,5 @@ export function useSubjectsAndCards() {
     };
   }, [updateCardLikes, updateLikeCount]);
 
-  return { subjects, cards, isLoading, error };
+  return { subjects, sortedCards, isLoading, error };
 }

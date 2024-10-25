@@ -12,7 +12,7 @@ import LoadingSpinner from "modules/clarostorm/components/LoadingSpinner";
 import Container from "modules/shared/components/ui/container";
 
 export default function ClaroStorm({ userName, userId }) {
-  const { subjects, cards, isLoading, error } = useSubjectsAndCards();
+  const { subjects, sortedCards, isLoading, error } = useSubjectsAndCards();
   const { newCard, setNewCard, handleAddCard } = useNewCard(subjects);
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -22,7 +22,7 @@ export default function ClaroStorm({ userName, userId }) {
   return (
     <Container innerClassName="lg:px-7 max-w-[1920px] relative mx-0">
       <StormMenu />
-      <SubjectColumns subjects={subjects} cards={cards} />
+      <SubjectColumns subjects={subjects} cards={sortedCards} />
       <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
         <DialogTrigger asChild>
           <Button

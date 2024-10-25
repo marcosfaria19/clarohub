@@ -10,11 +10,11 @@ const RankingPodium = ({ rank, index, scoreLabel }) => {
   const getPodium = () => {
     switch (index) {
       case 0:
-        return "h-36 bg-card/40 border-yellow-500";
+        return "h-[160px] bg-podium w-[125px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]";
       case 1:
-        return "h-32 bg-card/80 border-gray-400 rounded-l-lg";
+        return "h-28 bg-podium/60 rounded-l-lg w-28";
       case 2:
-        return "h-28 bg-card/90 border-yellow-900 rounded-r-lg";
+        return "h-24 bg-podium/60 rounded-r-lg w-28";
       default:
         return "";
     }
@@ -38,9 +38,9 @@ const RankingPodium = ({ rank, index, scoreLabel }) => {
       case 0:
         return "min-h-[75px] min-w-[75px] max-h-[75px] top-[60px] right-3";
       case 1:
-        return "min-h-[60px] min-w-[60px] max-h-[65px] top-[40px]";
+        return "min-h-[60px] min-w-[60px] max-h-[66px] top-[38px]";
       case 2:
-        return "min-h-[60px] min-w-[60px] max-h-[65px] top-[40px]";
+        return "min-h-[60px] min-w-[60px] max-h-[66px] top-[38px]";
       default:
         return null;
     }
@@ -79,10 +79,10 @@ const RankingPodium = ({ rank, index, scoreLabel }) => {
       )}
       {/* Podium */}
       <div
-        className={`relative ${getPodium()} flex w-28 flex-col items-center justify-center rounded-t-lg border-t-4`}
+        className={`relative ${getPodium()} flex flex-col items-center justify-center rounded-t-xl`}
       >
         {/* Nome */}
-        <span className="relative bottom-4 mt-2 text-center text-sm font-semibold text-foreground">
+        <span className="relative bottom-2 mt-2 text-center text-sm font-semibold text-primary-foreground drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
           {rank.name ? formatUserName(rank.name) : ""}
         </span>
 

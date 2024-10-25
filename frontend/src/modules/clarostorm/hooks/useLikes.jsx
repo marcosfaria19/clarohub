@@ -2,6 +2,7 @@ import { useState, useCallback, useContext } from "react";
 import axiosInstance from "services/axios";
 import { AuthContext } from "contexts/AuthContext";
 import { useDailyLikes } from "./useDailyLikes";
+import { toast } from "sonner";
 
 export function useLikes() {
   const [likesCount, setLikesCount] = useState({});
@@ -25,7 +26,7 @@ export function useLikes() {
           return response.data.likesCount;
         }
       } catch (error) {
-        console.error("Erro ao curtir/remover curtida:", error);
+        toast.warning("Você já utilizou todos os seus likes diários");
 
         throw error;
       }

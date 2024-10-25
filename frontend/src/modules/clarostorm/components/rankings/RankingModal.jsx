@@ -57,12 +57,12 @@ export default function RankingModal({ isOpen, onClose, userId }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:min-h-[650px] sm:max-w-[500px]">
+      <DialogContent className="sm:max-h-[630px] sm:max-w-[458px]">
         <DialogTitle className="sr-only">Ranking</DialogTitle>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="criadas">Criadas</TabsTrigger>
-            <TabsTrigger value="aprovadas">Aprovadas</TabsTrigger>
+            <TabsTrigger value="criadas">Criadores</TabsTrigger>
+            <TabsTrigger value="aprovadas">Ideias Aprovadas</TabsTrigger>
             <TabsTrigger value="apoiadores">Apoiadores</TabsTrigger>
           </TabsList>
           <TabsContent value={activeTab} className="mt-4">
@@ -72,7 +72,7 @@ export default function RankingModal({ isOpen, onClose, userId }) {
               <div className="text-center text-red-500">{error}</div>
             ) : (
               <>
-                <div className="flex items-end justify-center py-4">
+                <div className="flex items-end justify-center">
                   <RankingPodium
                     rank={podiumRankings[1]}
                     index={1}

@@ -143,7 +143,7 @@ module.exports = (rankingCollection, ideasCollection, usersCollection) => {
   updateRankings();
 
   // Route to get all rankings by type
-  router.get("/rankings/:type", async (req, res) => {
+  router.get("/rankings/:type", authenticateToken, async (req, res) => {
     const { type } = req.params;
     try {
       const ranking = await rankingCollection.findOne({ type });
