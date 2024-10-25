@@ -82,12 +82,12 @@ const RankingPodium = ({ rank, index, scoreLabel }) => {
         className={`relative ${getPodium()} flex flex-col items-center justify-center rounded-t-xl`}
       >
         {/* Nome */}
-        <span className="relative bottom-2 mt-2 text-center text-sm font-semibold text-primary-foreground drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+        <span className="relative mt-2 text-center text-sm font-semibold text-primary-foreground drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
           {rank.name ? formatUserName(rank.name) : ""}
         </span>
 
         {/* Pontuação */}
-        <span className="absolute bottom-9 text-sm font-bold">
+        <span className="absolute bottom-2 text-lg font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
           {rank[scoreLabel] ? rank[scoreLabel] : "0"}
         </span>
       </div>

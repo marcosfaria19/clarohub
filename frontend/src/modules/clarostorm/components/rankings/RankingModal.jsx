@@ -57,7 +57,7 @@ export default function RankingModal({ isOpen, onClose, userId }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-h-[630px] sm:max-w-[458px]">
+      <DialogContent className="sm:h-[650px] sm:max-w-[458px]">
         <DialogTitle className="sr-only">Ranking</DialogTitle>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
@@ -67,7 +67,7 @@ export default function RankingModal({ isOpen, onClose, userId }) {
           </TabsList>
           <TabsContent value={activeTab} className="mt-4">
             {loading ? (
-              <div className="text-center">Carregando...</div>
+              <div className="text-center"></div>
             ) : error ? (
               <div className="text-center text-red-500">{error}</div>
             ) : (

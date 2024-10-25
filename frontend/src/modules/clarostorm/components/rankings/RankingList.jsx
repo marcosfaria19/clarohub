@@ -18,7 +18,7 @@ export default function RankingList({ rankings, scoreLabel, userId }) {
   }
 
   return (
-    <div className="mx-5 space-y-2 rounded-full px-3">
+    <div className="mx-5 mt-5 space-y-2 rounded-lg px-3">
       {rankingsToShow.map((rank, index) => {
         const actualPosition =
           rank.userId === userId && userIndex > 4 ? userIndex + 1 : index + 4;
@@ -27,8 +27,8 @@ export default function RankingList({ rankings, scoreLabel, userId }) {
         return (
           <div
             key={rank.userId}
-            className={`flex items-center justify-between rounded-full p-3 transition-colors hover:bg-gray-100 ${
-              isUserRanking ? "bg-blue-100" : ""
+            className={`flex items-center justify-between rounded-full p-3 text-foreground transition-colors hover:bg-card ${
+              isUserRanking ? "bg-primary/80 text-primary-foreground" : ""
             }`}
           >
             <div className="flex items-center">
