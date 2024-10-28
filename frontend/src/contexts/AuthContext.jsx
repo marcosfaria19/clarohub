@@ -11,10 +11,18 @@ export const AuthProvider = ({ children }) => {
     login: "",
     gestor: "",
     avatar: "",
+    permissoes: "",
   });
 
   const handleReset = () => {
-    setUser({ userName: "", userId: "", login: "", gestor: "", avatar: "" });
+    setUser({
+      userName: "",
+      userId: "",
+      login: "",
+      gestor: "",
+      avatar: "",
+      permissoes: "",
+    });
     setToken(null);
   };
 
@@ -35,6 +43,7 @@ export const AuthProvider = ({ children }) => {
               userId: decodedToken.id,
               login: decodedToken.LOGIN,
               gestor: decodedToken.GESTOR,
+              permissoes: decodedToken.PERMISSOES,
               avatar: decodedToken.avatar,
               dailyLikesUsed: decodedToken.dailyLikesUsed,
               dailyIdeasCreated: decodedToken.dailyIdeasCreated,

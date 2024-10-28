@@ -146,5 +146,34 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
     }
   });
 
+  // Rota para alterar o status da ideia
+  router.patch("/ideas/:id", authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // Verifica se o novo status é válido
+    const validStatuses = ["Em Análise", "Aprovada", "Arquivada"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: "Status inválido." });
+    }
+
+    try {
+      // Atualiza o status da ideia no banco de dados
+      const updatedIdea = await ideasCollection.updateOne(
+        { _id: new ObjectId(id) }, // Converte id para ObjectId
+        { $set: { status } }
+      );
+
+      if (updatedIdea.matchedCount === 0) {
+        return res.status(404).json({ error: "Ideia não encontrada." });
+      }
+
+      res.json({ message: "Status atualizado com sucesso." });
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
+      res.status(500).json({ error: "Erro no servidor." });
+    }
+  });
+
   return router;
 };

@@ -51,19 +51,19 @@ const Header = () => {
   };
 
   const onLogout = () => {
-    logout(); // Chama a função `logout` do AuthContext
+    logout(); //
   };
 
   return (
     <header className="fixed z-40 mr-0 w-screen select-none bg-menu opacity-90">
-      <div className="container flex items-center justify-between px-4 py-3 sm:max-w-[1800px]">
+      <div className="container flex items-center justify-between px-4 py-2 sm:max-w-[1800px]">
         <Link to="/home" className="flex items-center space-x-2">
           <img
             src={theme === "dark" ? logo : logoLight}
             alt="Claro Hub"
-            className="h-8 w-8"
+            className="mr-1 h-7 w-7"
           />
-          <span className="text-lg font-semibold text-foreground">
+          <span className="text-2xl font-semibold text-foreground">
             Claro Hub
           </span>
         </Link>

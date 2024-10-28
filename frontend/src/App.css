@@ -4,10 +4,13 @@
 
 @layer base {
   :root {
-    --menu: 215 27.9% 15%;
+    /* --menu: 215 27.9% 15%; */
+    --menu: 215 29% 16%;
+
     --border-hover: 263 60% 60%;
 
-    --background: 215 27.9% 18%;
+    --background: 217 32% 14%;
+    /* --background: 215 27.9% 18%; */
     --foreground: 210 20% 98%;
 
     --card: 215 20% 35%;

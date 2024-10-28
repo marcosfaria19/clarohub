@@ -5,7 +5,9 @@ import { cn } from "modules/shared/lib/utils";
 
 const TooltipProvider = TooltipPrimitive.Provider;
 
-const Tooltip = TooltipPrimitive.Root;
+const Tooltip = React.forwardRef(({ delayDuration = 100, ...props }, ref) => (
+  <TooltipPrimitive.Root ref={ref} delayDuration={delayDuration} {...props} />
+));
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 

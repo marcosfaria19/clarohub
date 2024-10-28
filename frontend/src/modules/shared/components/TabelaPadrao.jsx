@@ -73,10 +73,14 @@ export function TabelaPadrao({
             const copyDataToClipboard = () => {
               const values = columns
                 .filter((column) => column.accessorKey)
-                .map(
-                  (column) =>
-                    `${column.header || column.accessorKey}: ${data[column.accessorKey]}`,
-                )
+                .map((column) => {
+                  const keys = column.accessorKey.split(".");
+                  const value = keys.reduce(
+                    (acc, key) => (acc ? acc[key] : undefined),
+                    data,
+                  );
+                  return `${column.header || column.accessorKey}: ${value || ""}`;
+                })
                 .join("\n");
 
               navigator.clipboard.writeText(values);
@@ -136,13 +140,25 @@ export function TabelaPadrao({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: (row, _, filterValue) => {
-      return row.original
-        ? Object.values(row.original)
-            .join(" ")
-            .toLowerCase()
-            .includes(filterValue.toLowerCase())
-        : false;
+    globalFilterFn: (row, columnId, filterValue) => {
+      const getValue = (obj, path) => {
+        const keys = path.split(".");
+        return keys.reduce(
+          (acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined),
+          obj,
+        );
+      };
+
+      const searchableValue = columnsWithActions
+        .filter((column) => column.accessorKey)
+        .map((column) => {
+          const value = getValue(row.original, column.accessorKey);
+          return value !== undefined ? String(value) : "";
+        })
+        .join(" ")
+        .toLowerCase();
+
+      return searchableValue.includes(filterValue.toLowerCase());
     },
   });
 
@@ -164,10 +180,10 @@ export function TabelaPadrao({
         {filterInput && (
           <div className="relative">
             <Input
-              label="Filtrar..."
-              value={globalFilter}
-              className="h-10 rounded-md border border-secondary p-2 pl-10"
+              placeholder="Filtrar..."
+              value={globalFilter ?? ""}
               onChange={(event) => setGlobalFilter(event.target.value)}
+              className="h-10 rounded-md border border-secondary p-2 pl-10"
               disabled={isLoading}
             />
             <SearchIcon
@@ -253,22 +269,31 @@ export function TabelaPadrao({
             ))}
           </TableHeader>
           <TableBody>
-            {isLoading
-              ? renderSkeletonRows()
-              : table.getRowModel().rows?.length
-                ? table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                : renderSkeletonRows()}
+            {isLoading ? (
+              renderSkeletonRows()
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columnsWithActions.length}
+                  className="h-24 text-center"
+                >
+                  Nenhum dado encontrado.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

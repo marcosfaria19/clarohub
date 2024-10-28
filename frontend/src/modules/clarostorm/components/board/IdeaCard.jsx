@@ -26,21 +26,7 @@ import { cn } from "modules/shared/lib/utils";
 import formatUserName from "modules/shared/utils/formatUsername";
 import { AuthContext } from "contexts/AuthContext";
 import { useLikes } from "modules/clarostorm/hooks/useLikes";
-
-const statusConfig = {
-  "Em análise": {
-    color: "bg-warning text-warning-foreground hover:bg-warning/80",
-    icon: "🕒",
-  },
-  Aprovada: {
-    color: "bg-success text-success-foreground hover:bg-success/80",
-    icon: "✅",
-  },
-  Arquivada: {
-    color: "bg-destructive text-destructive-foreground hover:destructive/80",
-    icon: "📝",
-  },
-};
+import statusConfig from "modules/clarostorm/utils/statusConfig";
 
 export default function IdeaCard({
   title,
