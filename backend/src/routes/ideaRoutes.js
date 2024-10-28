@@ -31,6 +31,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
 
       const newIdea = {
         ...rest,
+        createdAt: new Date(),
         creator: {
           _id: new ObjectId(userId),
           name: user.NOME,
