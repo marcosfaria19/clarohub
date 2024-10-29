@@ -10,10 +10,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "modules/shared/components/ui/dropdown-menu";
+import { Badge } from "modules/shared/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "modules/shared/components/ui/dialog";
 import { Button } from "modules/shared/components/ui/button";
 
 function ManagerTable() {
   const [dados, setDados] = useState([]);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [newStatus, setNewStatus] = useState("");
 
   useEffect(() => {
     fetchDados();
@@ -28,17 +40,35 @@ function ManagerTable() {
     }
   };
 
-  const updateStatus = async (id, newStatus) => {
+  const updateStatus = async () => {
+    if (!selectedItem || !newStatus) return;
+
     try {
-      await axiosInstance.patch(`/storm/ideas/${id}`, { status: newStatus });
+      await axiosInstance.patch(`/storm/ideas/${selectedItem._id}`, {
+        status: newStatus,
+      });
       setDados((prevDados) =>
         prevDados.map((item) =>
-          item._id === id ? { ...item, status: newStatus } : item,
+          item._id === selectedItem._id ? { ...item, status: newStatus } : item,
         ),
       );
+      setIsConfirmOpen(false);
+      setSelectedItem(null);
+      setNewStatus("");
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
     }
+  };
+
+  const handleStatusChange = (item, status) => {
+    setSelectedItem(item);
+    setNewStatus(status);
+    setIsConfirmOpen(true);
+  };
+
+  const statusDisplayMap = {
+    Aprovar: "Aprovada",
+    Arquivar: "Arquivada",
   };
 
   const columns = useMemo(
@@ -86,26 +116,35 @@ function ManagerTable() {
         sorted: true,
         cell: ({ row }) => {
           const status = row.original.status;
-          const { color, icon } = statusConfig[status] || {};
+          const { color } = statusConfig[status] || {};
 
           return (
             <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className={`${color} px-2 text-sm`}>
-                  {icon} {status}
-                </Button>
+              <DropdownMenuTrigger disabled={status !== "Em Análise"}>
+                <Badge
+                  variant="outline"
+                  className={`${color} min-w-20 border-0`}
+                >
+                  {status}
+                </Badge>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Alterar Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {Object.keys(statusConfig).map((statusKey) => (
+                {Object.keys(statusDisplayMap).map((displayText) => (
                   <DropdownMenuItem
-                    key={statusKey}
-                    onClick={() => updateStatus(row.original._id, statusKey)}
+                    key={displayText}
+                    onClick={() =>
+                      handleStatusChange(
+                        row.original,
+                        statusDisplayMap[displayText],
+                      )
+                    }
                   >
-                    {statusKey}
+                    {displayText}
                   </DropdownMenuItem>
                 ))}
+
                 <DropdownMenuSeparator />
               </DropdownMenuContent>
             </DropdownMenu>
@@ -119,6 +158,24 @@ function ManagerTable() {
   return (
     <div className="relative top-[-50px] px-12">
       <TabelaPadrao columnFilter={false} columns={columns} data={dados} />
+      <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="mb-5">
+              Confirmar alteração de status
+            </DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja alterar o status para {newStatus}?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={updateStatus}>Confirmar</Button>
+            <Button variant="secondary" onClick={() => setIsConfirmOpen(false)}>
+              Cancelar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -174,7 +174,7 @@ const AvatarCreator = ({ currentAvatar, onClose, isOpen, userId, onSave }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[725px]">
         <DialogHeader>
-          <DialogTitle>Criar Avatar</DialogTitle>
+          <DialogTitle>Meu Avatar</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col md:flex-row md:space-x-8">
           <div className="relative mb-6 md:mb-0">

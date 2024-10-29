@@ -3,7 +3,6 @@ import {
   ThumbsUp,
   Trophy,
   SlidersHorizontal,
-  Settings,
   ArrowDownToLine,
 } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";

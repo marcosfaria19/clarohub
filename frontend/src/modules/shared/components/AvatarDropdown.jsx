@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "modules/shared/components/ui/dropdown-menu";
-import { User, Settings, HelpCircle, LogOut } from "lucide-react";
+import { User, LogOut } from "lucide-react";
 import AvatarCreator from "./AvatarCreator";
 import axiosInstance from "services/axios";
 
@@ -78,20 +78,20 @@ export default function AvatarDropdown({ onLogout, userName, login, userId }) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <User className="mr-2 h-4 w-4" />
                 <span>Perfil</span>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
 
               <DropdownMenuItem onSelect={openAvatarCreator}>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Alterar Avatar</span>
+                <User className="mr-2 h-4 w-4" />
+                <span>Meu Avatar</span>
               </DropdownMenuItem>
 
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <HelpCircle className="mr-2 h-4 w-4" />
                 <span>Ajuda</span>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onLogout}>

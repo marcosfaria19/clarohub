@@ -3,7 +3,6 @@ import React from "react";
 
 export default function RankingList({ rankings, scoreLabel, userId }) {
   const userIndex = rankings.findIndex((rank) => rank.userId === userId);
-  const userRanking = userIndex !== -1 ? rankings[userIndex] : null;
 
   let rankingsToShow = [];
   if (userIndex >= 3 && userIndex <= 6) {
