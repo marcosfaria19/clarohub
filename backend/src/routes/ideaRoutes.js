@@ -159,10 +159,22 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
     }
 
     try {
-      // Atualiza o status da ideia no banco de dados
+      const managerName = req.user.NOME;
+
+      // Cria um novo registro de histórico
+      const historyEntry = {
+        changedBy: managerName,
+        newStatus: status,
+        changedAt: new Date(),
+      };
+
+      // Atualiza o status da ideia e adiciona o histórico
       const updatedIdea = await ideasCollection.updateOne(
-        { _id: new ObjectId(id) }, // Converte id para ObjectId
-        { $set: { status } }
+        { _id: new ObjectId(id) },
+        {
+          $set: { status },
+          $push: { history: historyEntry },
+        }
       );
 
       if (updatedIdea.matchedCount === 0) {
