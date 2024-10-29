@@ -176,7 +176,7 @@ export function TabelaPadrao({
 
   return (
     <>
-      <div className="mb-4 flex">
+      <div className="mb-4 flex w-1/2">
         {filterInput && (
           <div className="relative">
             <Input

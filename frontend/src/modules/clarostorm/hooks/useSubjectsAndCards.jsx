@@ -29,7 +29,7 @@ export function useSubjectsAndCards() {
               updatedCard.likedBy = [...updatedCard.likedBy, userId];
             }
             updatedCards[subject][cardIndex] = updatedCard;
-            break; // Saia do loop após encontrar e atualizar o card
+            break;
           }
         }
         return updatedCards;
@@ -43,9 +43,9 @@ export function useSubjectsAndCards() {
     for (const subject in cards) {
       sorted[subject] = [...cards[subject]].sort((a, b) => {
         const likeDiff = b.likedBy.length - a.likedBy.length;
-        /* if (likeDiff === 0) {
+        if (likeDiff === 0) {
           return new Date(b.createdAt) - new Date(a.createdAt);
-        } */
+        }
         return likeDiff;
       });
     }

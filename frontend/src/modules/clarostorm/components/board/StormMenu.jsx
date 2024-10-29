@@ -1,5 +1,11 @@
 import React, { useState, useContext } from "react";
-import { ThumbsUp, Trophy, SlidersHorizontal, Settings } from "lucide-react";
+import {
+  ThumbsUp,
+  Trophy,
+  SlidersHorizontal,
+  Settings,
+  ArrowDownToLine,
+} from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import RankingModal from "../rankings/RankingModal";
 import { AuthContext } from "contexts/AuthContext";
@@ -10,9 +16,18 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "modules/shared/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "modules/shared/components/ui/dropdown-menu";
 
 export default function StormMenu({ onToggleView }) {
   const [showRankingModal, setShowRankingModal] = useState(false);
+  const [isManagerialView, setIsManagerialView] = useState(true); // Estado para alternar o modo de visão
   const { user } = useContext(AuthContext);
   const { remainingLikes } = useDailyLikes(user.userId);
 
@@ -20,9 +35,16 @@ export default function StormMenu({ onToggleView }) {
   const canToggleView =
     user.permissoes === "manager" || user.permissoes === "admin";
 
+  // Alterna o modo de visão e executa a função de toggle recebida
+  const handleToggleView = () => {
+    setIsManagerialView(!isManagerialView);
+    console.log(isManagerialView);
+    onToggleView();
+  };
+
   return (
     <>
-      <div className="flex justify-end space-x-2 sm:mx-10 sm:mt-24 lg:mx-10 lg:mt-0">
+      <div className="relative z-50 flex w-1/2 justify-end space-x-2 justify-self-end sm:mr-10 sm:mt-24 lg:mr-10 lg:mt-0">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -49,24 +71,55 @@ export default function StormMenu({ onToggleView }) {
             <TooltipContent>Ver Ranking</TooltipContent>
           </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={() => {}}>
-                <SlidersHorizontal className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Filtrar</TooltipContent>
-          </Tooltip>
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <SlidersHorizontal className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Filtrar</TooltipContent>
+            </Tooltip>
 
-          {/* Renderize o botão onToggleView somente se o usuário tiver permissões  */}
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Filtrar</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => console.log("Filtrar: Em Análise")}
+              >
+                Em Análise
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => console.log("Filtrar: Aprovados")}
+              >
+                Aprovados
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => console.log("Filtrar: Arquivados")}
+              >
+                Arquivados
+              </DropdownMenuItem>
+              {canToggleView && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleToggleView}>
+                    {isManagerialView ? "Visão Gerencial" : "Quadro de Ideias"}
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {canToggleView && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={onToggleView}>
-                  <Settings className="h-5 w-5" />
+                <Button variant="ghost" size="icon" onClick={handleToggleView}>
+                  <ArrowDownToLine className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Gestão</TooltipContent>
+              <TooltipContent>Baixar Relatório</TooltipContent>
             </Tooltip>
           )}
         </TooltipProvider>

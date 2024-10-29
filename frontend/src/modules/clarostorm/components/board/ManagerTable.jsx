@@ -55,6 +55,11 @@ function ManagerTable() {
       {
         header: "Descrição",
         accessorKey: "description",
+        cell: ({ row }) => (
+          <div className="max-w-lg truncate" title={row.original.description}>
+            {row.original.description}
+          </div>
+        ),
       },
       {
         header: "Setor",
@@ -65,6 +70,15 @@ function ManagerTable() {
         header: "Likes",
         accessorKey: "likesCount",
         sorted: true,
+      },
+      {
+        header: "Criada em",
+        accessorKey: "createdAt",
+        sorted: true,
+        cell: ({ row }) => {
+          const date = new Date(row.original.createdAt);
+          return date.toLocaleDateString("pt-BR");
+        },
       },
       {
         header: "Status",
@@ -82,13 +96,14 @@ function ManagerTable() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                <DropdownMenuLabel>Alterar Status</DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 {Object.keys(statusConfig).map((statusKey) => (
                   <DropdownMenuItem
                     key={statusKey}
                     onClick={() => updateStatus(row.original._id, statusKey)}
                   >
-                    {statusConfig[statusKey].icon} {statusKey}
+                    {statusKey}
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
@@ -102,13 +117,8 @@ function ManagerTable() {
   );
 
   return (
-    <div className="px-12">
-      <TabelaPadrao
-        columns={columns}
-        data={dados}
-        onDelete={() => {}}
-        onEdit={() => {}}
-      />
+    <div className="relative top-[-50px] px-12">
+      <TabelaPadrao columnFilter={false} columns={columns} data={dados} />
     </div>
   );
 }
