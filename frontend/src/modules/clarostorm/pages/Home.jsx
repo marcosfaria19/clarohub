@@ -22,7 +22,7 @@ export default function ClaroStorm({ userName, userId }) {
   if (error) return <ErrorDisplay message={error} />;
 
   return (
-    <Container innerClassName="lg:px-7 max-w-[1920px] relative mx-0">
+    <Container innerClassName="lg:px-7 max-w-[1920px] relative mx-0 mt-4">
       <StormMenu onToggleView={() => setIsManagerView(!isManagerView)} />
       {isManagerView ? (
         <ManagerTable subjects={subjects} cards={sortedCards} />
@@ -32,7 +32,7 @@ export default function ClaroStorm({ userName, userId }) {
           <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
             <DialogTrigger asChild>
               <Button
-                className="fixed bottom-4 right-4 rounded-full p-3 shadow-lg transition-shadow duration-300 hover:shadow-xl sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 lg:bottom-24 lg:right-12"
+                className="fixed bottom-0 left-[calc(100%-100px)] rounded-full p-3 shadow-lg transition-shadow duration-300 hover:shadow-xl sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 lg:bottom-24 lg:right-12"
                 size="icon"
               >
                 <Plus className="h-5 w-5" />

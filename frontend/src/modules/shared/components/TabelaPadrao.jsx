@@ -176,55 +176,59 @@ export function TabelaPadrao({
 
   return (
     <>
-      <div className="mb-4 flex w-1/2">
-        {filterInput && (
-          <div className="relative">
-            <Input
-              placeholder="Filtrar..."
-              value={globalFilter ?? ""}
-              onChange={(event) => setGlobalFilter(event.target.value)}
-              className="h-10 rounded-md border border-secondary p-2 pl-10"
-              disabled={isLoading}
-            />
-            <SearchIcon
-              className="absolute left-3 top-2.5 text-foreground hover:opacity-80"
-              size={20}
-            />
-          </div>
-        )}
-
-        {columnFilter && (
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="secondary"
-                className="ml-auto"
+      <div className="mb-4 flex w-full justify-between">
+        <div className="flex w-1/2">
+          {filterInput && (
+            <div className="relative">
+              <Input
+                placeholder="Filtrar..."
+                value={globalFilter ?? ""}
+                onChange={(event) => setGlobalFilter(event.target.value)}
+                className="h-10 rounded-md border border-secondary p-2 pl-10"
                 disabled={isLoading}
-              >
-                Colunas <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.columnDef.header}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+              />
+              <SearchIcon
+                className="absolute left-3 top-2.5 text-foreground hover:opacity-80"
+                size={20}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="flex w-1/2 justify-end">
+          {columnFilter && (
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="secondary"
+                  className="ml-auto"
+                  disabled={isLoading}
+                >
+                  Colunas <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.columnDef.header}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
       </div>
 
       <div>
