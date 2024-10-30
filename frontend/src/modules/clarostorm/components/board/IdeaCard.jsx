@@ -106,7 +106,8 @@ export default function IdeaCard({
               variant="ghost"
               size="sm"
               className="absolute bottom-1 right-4 p-1 text-foreground"
-              onClick={handleLikeClick}
+              onClick={status === "Em Análise" ? handleLikeClick : undefined}
+              disabled={status !== "Em Análise"}
             >
               <ThumbsUp size={16} className="mr-1" />
               <span className="text-xs">
@@ -114,7 +115,9 @@ export default function IdeaCard({
               </span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Curtir ideia</TooltipContent>
+          <TooltipContent>
+            {status === "Em Análise" ? "Curtir ideia" : "Like desativado"}
+          </TooltipContent>
         </Tooltip>
       </div>
 
@@ -158,9 +161,11 @@ export default function IdeaCard({
             <div className="flex-grow" />
 
             <div className="flex space-x-2">
-              <Button variant="primary" onClick={handleLikeClick}>
-                <ThumbsUp className="mr-2" size={18} /> Curtir
-              </Button>
+              {status === "Em Análise" && (
+                <Button variant="primary" onClick={handleLikeClick}>
+                  <ThumbsUp className="mr-2" size={18} /> Curtir
+                </Button>
+              )}
               <Button variant="secondary" onClick={handleCloseModal}>
                 Fechar
               </Button>

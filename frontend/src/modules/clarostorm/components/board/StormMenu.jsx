@@ -24,21 +24,27 @@ import {
   DropdownMenuSeparator,
 } from "modules/shared/components/ui/dropdown-menu";
 
-export default function StormMenu({ onToggleView }) {
+export default function StormMenu({
+  onToggleView,
+  onFilterChange,
+  currentFilter,
+}) {
   const [showRankingModal, setShowRankingModal] = useState(false);
-  const [isManagerialView, setIsManagerialView] = useState(true); // Estado para alternar o modo de visão
+  const [isManagerialView, setIsManagerialView] = useState(false);
   const { user } = useContext(AuthContext);
   const { remainingLikes } = useDailyLikes(user.userId);
 
-  // Verifica se o usuário tem permissões de manager ou admin para visualizar a tabela
   const canToggleView =
     user.permissoes === "manager" || user.permissoes === "admin";
 
   // Alterna o modo de visão e executa a função de toggle recebida
   const handleToggleView = () => {
     setIsManagerialView(!isManagerialView);
-    console.log(isManagerialView);
     onToggleView();
+  };
+
+  const handleFilterChange = (filter) => {
+    onFilterChange(filter);
   };
 
   return (
@@ -84,22 +90,31 @@ export default function StormMenu({ onToggleView }) {
 
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Filtrar</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => console.log("Filtrar: Em Análise")}
-              >
-                Em Análise
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => console.log("Filtrar: Aprovados")}
-              >
-                Aprovados
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => console.log("Filtrar: Arquivados")}
-              >
-                Arquivados
-              </DropdownMenuItem>
+              {!isManagerialView && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => handleFilterChange("emAnalise")}
+                    className={currentFilter === "emAnalise" ? "bg-accent" : ""}
+                  >
+                    Em Análise
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleFilterChange("aprovados")}
+                    className={currentFilter === "aprovados" ? "bg-accent" : ""}
+                  >
+                    Aprovadas
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleFilterChange("arquivados")}
+                    className={
+                      currentFilter === "arquivados" ? "bg-accent" : ""
+                    }
+                  >
+                    Arquivadas
+                  </DropdownMenuItem>
+                </>
+              )}
               {canToggleView && (
                 <>
                   <DropdownMenuSeparator />

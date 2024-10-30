@@ -17,18 +17,27 @@ export default function ClaroStorm({ userName, userId }) {
   const { newCard, setNewCard, handleAddCard } = useNewCard(subjects);
   const [showAddModal, setShowAddModal] = useState(false);
   const [isManagerView, setIsManagerView] = useState(false);
+  const [currentFilter, setCurrentFilter] = useState("emAnalise");
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorDisplay message={error} />;
 
   return (
     <Container innerClassName="lg:px-7 max-w-[1920px] relative mx-0 mt-4">
-      <StormMenu onToggleView={() => setIsManagerView(!isManagerView)} />
+      <StormMenu
+        onToggleView={() => setIsManagerView(!isManagerView)}
+        onFilterChange={setCurrentFilter}
+        currentFilter={currentFilter}
+      />
       {isManagerView ? (
         <ManagerTable subjects={subjects} cards={sortedCards} />
       ) : (
         <>
-          <SubjectColumns subjects={subjects} cards={sortedCards} />
+          <SubjectColumns
+            subjects={subjects}
+            cards={sortedCards}
+            currentFilter={currentFilter}
+          />
           <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
             <DialogTrigger asChild>
               <Button

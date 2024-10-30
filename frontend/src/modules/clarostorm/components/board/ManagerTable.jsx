@@ -66,13 +66,12 @@ function ManagerTable() {
     setIsConfirmOpen(true);
   };
 
-  const statusDisplayMap = {
-    Aprovar: "Aprovada",
-    Arquivar: "Arquivada",
-  };
-
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const statusDisplayMap = {
+      Aprovar: "Aprovada",
+      Arquivar: "Arquivada",
+    };
+    return [
       {
         header: "Colaborador",
         accessorKey: "creator.name",
@@ -144,16 +143,14 @@ function ManagerTable() {
                     {displayText}
                   </DropdownMenuItem>
                 ))}
-
                 <DropdownMenuSeparator />
               </DropdownMenuContent>
             </DropdownMenu>
           );
         },
       },
-    ],
-    [],
-  );
+    ];
+  }, []);
 
   return (
     <div className="relative top-[-50px] px-12">

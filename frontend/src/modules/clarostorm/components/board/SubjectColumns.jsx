@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import IdeaCard from "modules/clarostorm/components/board/IdeaCard";
 
-export default function SubjectColumns({ subjects, cards }) {
+export default function SubjectColumns({ subjects, cards, currentFilter }) {
   const [activeSubject, setActiveSubject] = useState(subjects[0]);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -18,15 +18,23 @@ export default function SubjectColumns({ subjects, cards }) {
     };
   }, []);
 
-  const sortedCards = useMemo(() => {
-    const sorted = {};
+  const filteredAndSortedCards = useMemo(() => {
+    const filtered = {};
     for (const subject in cards) {
-      sorted[subject] = [...cards[subject]].sort(
-        (a, b) => (b.likedBy?.length || 0) - (a.likedBy?.length || 0),
-      );
+      filtered[subject] = cards[subject]
+        .filter((card) => {
+          if (currentFilter === "all") return true;
+          if (currentFilter === "emAnalise")
+            return card.status === "Em Análise";
+          if (currentFilter === "aprovados") return card.status === "Aprovada";
+          if (currentFilter === "arquivados")
+            return card.status === "Arquivada";
+          return true;
+        })
+        .sort((a, b) => (b.likedBy?.length || 0) - (a.likedBy?.length || 0));
     }
-    return sorted;
-  }, [cards]);
+    return filtered;
+  }, [cards, currentFilter]);
 
   return (
     <div className="mx-10 select-none border border-border">
@@ -49,14 +57,14 @@ export default function SubjectColumns({ subjects, cards }) {
           </div>
           <div className="max-h-[75vh] flex-1 overflow-y-auto">
             <div className="mt-4 space-y-5 p-4">
-              {sortedCards[activeSubject]?.map((card, cardIndex) => (
+              {filteredAndSortedCards[activeSubject]?.map((card) => (
                 <IdeaCard key={card._id} ideaId={card._id} {...card} />
               ))}
             </div>
           </div>
         </div>
       ) : (
-        <div className="flex max-h-[75vh]">
+        <div className="flex max-h-[75vh] min-h-[75vh]">
           {subjects.map((subject, index) => (
             <div
               key={subject}
@@ -87,7 +95,7 @@ export default function SubjectColumns({ subjects, cards }) {
               <div className="p-5" />
               <div className="scrollbar-storm flex-1 overflow-y-auto">
                 <div className="space-y-5 px-5 pt-5">
-                  {sortedCards[subject]?.map((card, cardIndex) => (
+                  {filteredAndSortedCards[subject]?.map((card) => (
                     <IdeaCard key={card._id} ideaId={card._id} {...card} />
                   ))}
                 </div>
