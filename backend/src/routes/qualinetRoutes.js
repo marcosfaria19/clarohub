@@ -72,18 +72,16 @@ module.exports = (qualinetCollection) => {
             )
         );
 
-        const filteredDataWithoutRS = filteredData
-          .filter((item) => cidadeParaUF[item.CI_NOME] !== "RS")
-          .map((item) => ({
-            CI_NOME: item.CI_NOME,
-            NUM_CONTRATO: item.NUM_CONTRATO,
-            DT_CADASTRO: item.DT_CADASTRO,
-            END_COMPLETO: item.END_COMPLETO,
-            COD_NODE: item.COD_NODE,
-            UF: item.UF,
-          }));
+        const filteredDataAllUFs = filteredData.map((item) => ({
+          CI_NOME: item.CI_NOME,
+          NUM_CONTRATO: item.NUM_CONTRATO,
+          DT_CADASTRO: item.DT_CADASTRO,
+          END_COMPLETO: item.END_COMPLETO,
+          COD_NODE: item.COD_NODE,
+          UF: item.UF,
+        }));
 
-        if (filteredDataWithoutRS.length === 0) {
+        if (filteredDataAllUFs.length === 0) {
           return res.status(400).send("Nenhum dado novo a ser inserido.");
         }
 
