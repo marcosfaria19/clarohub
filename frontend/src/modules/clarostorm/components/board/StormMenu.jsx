@@ -9,11 +9,11 @@ import { Button } from "modules/shared/components/ui/button";
 import RankingModal from "../rankings/RankingModal";
 import { AuthContext } from "contexts/AuthContext";
 import { useDailyLikes } from "modules/clarostorm/hooks/useDailyLikes";
-import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
+  TooltipTrigger,
 } from "modules/shared/components/ui/tooltip";
 import {
   DropdownMenu,
@@ -23,6 +23,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "modules/shared/components/ui/dropdown-menu";
+import { useDownloadIdeas } from "modules/clarostorm/hooks/useDownloadIdeas";
 
 export default function StormMenu({
   onToggleView,
@@ -33,11 +34,11 @@ export default function StormMenu({
   const [isManagerialView, setIsManagerialView] = useState(false);
   const { user } = useContext(AuthContext);
   const { remainingLikes } = useDailyLikes(user.userId);
+  const { downloadIdeas, isDownloading, error } = useDownloadIdeas();
 
   const canToggleView =
     user.permissoes === "manager" || user.permissoes === "admin";
 
-  // Alterna o modo de visão e executa a função de toggle recebida
   const handleToggleView = () => {
     setIsManagerialView(!isManagerialView);
     onToggleView();
@@ -45,6 +46,13 @@ export default function StormMenu({
 
   const handleFilterChange = (filter) => {
     onFilterChange(filter);
+  };
+
+  const handleDownload = async () => {
+    await downloadIdeas();
+    if (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -119,7 +127,7 @@ export default function StormMenu({
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleToggleView}>
-                    {isManagerialView ? "Visão Gerencial" : "Quadro de Ideias"}
+                    {!isManagerialView ? "Visão Gerencial" : "Quadro de Ideias"}
                   </DropdownMenuItem>
                 </>
               )}
@@ -129,11 +137,18 @@ export default function StormMenu({
           {canToggleView && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={handleToggleView}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                >
                   <ArrowDownToLine className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Baixar Relatório</TooltipContent>
+              <TooltipContent>
+                {isDownloading ? "Baixando..." : "Baixar Relatório"}
+              </TooltipContent>
             </Tooltip>
           )}
         </TooltipProvider>

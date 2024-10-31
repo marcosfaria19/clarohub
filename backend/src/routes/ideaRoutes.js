@@ -4,11 +4,12 @@ const express = require("express");
 const router = express.Router();
 const authenticateToken = require("../middleware/authMiddleware");
 const { ObjectId } = require("mongodb");
+const { Parser } = require("json2csv");
 const resetDailyCountersIfNeeded = require("../utils/resetDailyCounters");
 
 module.exports = (ideasCollection, usersCollection, pusher) => {
   // Rota para obter todos os cartões
-  router.get("/ideas", async (req, res) => {
+  router.get("/ideas", authenticateToken, async (req, res) => {
     try {
       const ideas = await ideasCollection.find({}).toArray();
 
@@ -185,6 +186,54 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
       res.status(500).json({ error: "Erro no servidor." });
+    }
+  });
+
+  // Rota para download da tabela gerencial em CSV
+  router.get("/ideas/download", async (req, res) => {
+    try {
+      let data = await ideasCollection.find({}).toArray();
+
+      // Crie um novo array que irá armazenar as linhas formatadas
+      const formattedData = data.flatMap((idea) => {
+        // Para cada ideia, mapeie para o formato desejado
+        return idea.history.map((historyItem) => ({
+          title: idea.title,
+          description: idea.description,
+          likesCount: idea.likesCount,
+          status: idea.status,
+          createdAt: idea.createdAt,
+          creatorName: idea.creator.name,
+          manager: historyItem.changedBy,
+          newStatus: historyItem.newStatus,
+          changedAt: historyItem.changedAt,
+        }));
+      });
+
+      const fields = [
+        { label: "Título", value: "title" },
+        { label: "Descrição", value: "description" },
+        { label: "Curtidas", value: "likesCount" },
+        { label: "Status", value: "status" },
+        { label: "Data Criação", value: "createdAt" },
+        { label: "Responsável", value: "creatorName" },
+        { label: "Gestor Alteração", value: "manager" },
+        { label: "Novo Status", value: "newStatus" },
+        { label: "Alterado em", value: "changedAt" },
+      ];
+
+      const json2csvParser = new Parser({ fields, delimiter: ";" });
+      const csv = json2csvParser.parse(formattedData);
+
+      res.header("Content-Type", "text/csv; charset=utf-8");
+      res.header(
+        "Content-Disposition",
+        "attachment; filename=clarostorm_ideas.csv"
+      );
+      res.send("\uFEFF" + csv); // Adiciona BOM UTF-8 para suportar caracteres especiais
+    } catch (err) {
+      console.error("Erro ao gerar CSV:", err);
+      res.status(500).json({ message: "Erro ao gerar CSV" });
     }
   });
 
