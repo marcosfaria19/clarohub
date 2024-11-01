@@ -33,13 +33,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       const newIdea = {
         ...rest,
         createdAt: new Date(),
-        history: [
-          {
-            manager: "",
-            newStatus: "",
-            changedAt: "",
-          },
-        ],
+        history: [],
         creator: {
           _id: new ObjectId(userId),
           name: user.NOME,
@@ -195,26 +189,42 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       res.status(500).json({ error: "Erro no servidor." });
     }
   });
-
   // Rota para download da tabela gerencial em CSV
   router.get("/ideas/download", async (req, res) => {
     try {
       let data = await ideasCollection.find({}).toArray();
 
-      // Crie um novo array que irá armazenar as linhas formatadas
+      // Crie um novo array com as linhas formatadas
       const formattedData = data.flatMap((idea) => {
-        // Para cada ideia, mapeie para o formato desejado
-        return idea.history.map((historyItem) => ({
-          title: idea.title,
-          description: idea.description,
-          likesCount: idea.likesCount,
-          status: idea.status,
-          createdAt: idea.createdAt,
-          creatorName: idea.creator.name,
-          manager: historyItem.changedBy,
-          newStatus: historyItem.newStatus,
-          changedAt: historyItem.changedAt,
-        }));
+        if (idea.history && idea.history.length > 0) {
+          // Mapeia o history existente
+          return idea.history.map((historyItem) => ({
+            title: idea.title,
+            description: idea.description,
+            likesCount: idea.likesCount,
+            status: idea.status,
+            createdAt: idea.createdAt,
+            creatorName: idea.creator.name,
+            manager: historyItem.changedBy,
+            newStatus: historyItem.newStatus,
+            changedAt: historyItem.changedAt,
+          }));
+        } else {
+          // Entrada padrão para ideias sem histórico ("Em Análise")
+          return [
+            {
+              title: idea.title,
+              description: idea.description,
+              likesCount: idea.likesCount,
+              status: idea.status,
+              createdAt: idea.createdAt,
+              creatorName: idea.creator.name,
+              manager: "",
+              newStatus: "",
+              changedAt: "",
+            },
+          ];
+        }
       });
 
       const fields = [
@@ -237,7 +247,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
         "Content-Disposition",
         "attachment; filename=clarostorm_ideas.csv"
       );
-      res.send("\uFEFF" + csv); // Adiciona BOM UTF-8 para suportar caracteres especiais
+      res.send("\uFEFF" + csv);
     } catch (err) {
       console.error("Erro ao gerar CSV:", err);
       res.status(500).json({ message: "Erro ao gerar CSV" });

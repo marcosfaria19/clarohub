@@ -1,12 +1,12 @@
 import { AuthContext } from "contexts/AuthContext";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import axiosInstance from "services/axios";
 
 const useNotifications = () => {
   const [notifications, setNotifications] = useState([]);
   const { user } = useContext(AuthContext);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!user || !user.userId) {
       console.error("User ID is not available");
       return;
@@ -29,13 +29,13 @@ const useNotifications = () => {
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user && user.userId) {
       fetchNotifications();
     }
-  }, [user]);
+  }, [user, fetchNotifications]);
 
   const markAsRead = async (notificationId) => {
     try {

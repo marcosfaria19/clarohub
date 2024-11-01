@@ -1,6 +1,6 @@
 // src/modules/your-path/ManagerTable.js
 
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import statusConfig from "modules/clarostorm/utils/statusConfig";
 import {
@@ -27,7 +27,6 @@ function ManagerTable() {
   const {
     dados,
     isConfirmOpen,
-    selectedItem,
     newStatus,
     fetchDados,
     updateStatus,
@@ -38,13 +37,16 @@ function ManagerTable() {
 
   useEffect(() => {
     fetchDados();
-  }, []);
+  }, [fetchDados]);
 
-  const handleStatusChange = (item, status) => {
-    setSelectedItem(item);
-    setNewStatus(status);
-    setIsConfirmOpen(true);
-  };
+  const handleStatusChange = useCallback(
+    (item, status) => {
+      setSelectedItem(item);
+      setNewStatus(status);
+      setIsConfirmOpen(true);
+    },
+    [setSelectedItem, setNewStatus, setIsConfirmOpen],
+  );
 
   const columns = useMemo(() => {
     const statusDisplayMap = {
@@ -130,7 +132,7 @@ function ManagerTable() {
         },
       },
     ];
-  }, []);
+  }, [handleStatusChange]);
 
   return (
     <div className="relative top-[-50px] px-12">
