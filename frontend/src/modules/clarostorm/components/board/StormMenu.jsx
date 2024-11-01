@@ -4,6 +4,7 @@ import {
   Trophy,
   SlidersHorizontal,
   ArrowDownToLine,
+  Check,
 } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import RankingModal from "../rankings/RankingModal";
@@ -101,25 +102,33 @@ export default function StormMenu({
               {!isManagerialView && (
                 <>
                   <DropdownMenuSeparator />
+
                   <DropdownMenuItem
                     onClick={() => handleFilterChange("emAnalise")}
-                    className={currentFilter === "emAnalise" ? "bg-accent" : ""}
+                    className={`flex justify-between ${currentFilter === "emAnalise" ? "bg-accent text-accent-foreground" : ""}`}
                   >
                     Em Análise
+                    {currentFilter === "emAnalise" && (
+                      <Check className="h-4 w-4 text-primary-foreground" />
+                    )}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleFilterChange("aprovados")}
-                    className={currentFilter === "aprovados" ? "bg-accent" : ""}
+                    className={`flex justify-between ${currentFilter === "aprovados" ? "bg-accent text-accent-foreground" : ""}`}
                   >
                     Aprovadas
+                    {currentFilter === "aprovados" && (
+                      <Check className="h-4 w-4 text-primary-foreground" />
+                    )}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleFilterChange("arquivados")}
-                    className={
-                      currentFilter === "arquivados" ? "bg-accent" : ""
-                    }
+                    className={`flex justify-between ${currentFilter === "arquivados" ? "bg-accent text-accent-foreground" : ""}`}
                   >
                     Arquivadas
+                    {currentFilter === "arquivados" && (
+                      <Check className="h-4 w-4 text-primary-foreground" />
+                    )}
                   </DropdownMenuItem>
                 </>
               )}

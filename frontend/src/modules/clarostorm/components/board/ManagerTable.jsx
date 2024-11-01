@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+// src/modules/your-path/ManagerTable.js
+
+import React, { useEffect, useMemo } from "react";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
-import axiosInstance from "services/axios";
 import statusConfig from "modules/clarostorm/utils/statusConfig";
 import {
   DropdownMenu,
@@ -20,45 +21,24 @@ import {
   DialogFooter,
 } from "modules/shared/components/ui/dialog";
 import { Button } from "modules/shared/components/ui/button";
+import useManagerTable from "modules/clarostorm/hooks/useManagerTable";
 
 function ManagerTable() {
-  const [dados, setDados] = useState([]);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [newStatus, setNewStatus] = useState("");
+  const {
+    dados,
+    isConfirmOpen,
+    selectedItem,
+    newStatus,
+    fetchDados,
+    updateStatus,
+    setIsConfirmOpen,
+    setSelectedItem,
+    setNewStatus,
+  } = useManagerTable();
 
   useEffect(() => {
     fetchDados();
   }, []);
-
-  const fetchDados = async () => {
-    try {
-      const response = await axiosInstance.get(`/storm/ideas`);
-      setDados(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar dados do backend:", error);
-    }
-  };
-
-  const updateStatus = async () => {
-    if (!selectedItem || !newStatus) return;
-
-    try {
-      await axiosInstance.patch(`/storm/ideas/${selectedItem._id}`, {
-        status: newStatus,
-      });
-      setDados((prevDados) =>
-        prevDados.map((item) =>
-          item._id === selectedItem._id ? { ...item, status: newStatus } : item,
-        ),
-      );
-      setIsConfirmOpen(false);
-      setSelectedItem(null);
-      setNewStatus("");
-    } catch (error) {
-      console.error("Erro ao atualizar status:", error);
-    }
-  };
 
   const handleStatusChange = (item, status) => {
     setSelectedItem(item);

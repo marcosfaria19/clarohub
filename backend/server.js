@@ -78,7 +78,7 @@ async function startServer() {
     app.use("/storm/", subjectRoutes);
     app.use("/storm/", ideaRoutes);
     app.use("/storm/", rankingRoutes);
-    app.use("/notifications", notificationRoutes);
+    app.use("/notifications/", notificationRoutes);
 
     // Middleware para servir imagens estáticas
     app.use(

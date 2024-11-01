@@ -78,5 +78,22 @@ module.exports = (notificationsCollection) => {
     }
   });
 
+// DELETE /notifications/:userId/read - Exclui notificações lidas do usuário caso ele queira
+  router.delete("/:userId/read", async (req, res) => {
+    const { userId } = req.params;
+  
+    try {
+      const result = await notificationsCollection.deleteMany({
+        userId: new ObjectId(userId),
+        readBy: { $elemMatch: { $eq: new ObjectId(userId) } }
+      });
+  
+      res.status(200).json({ message: `${result.deletedCount} read notifications removed` });
+    } catch (error) {
+      console.error("Error removing read notifications:", error);
+      res.status(500).json({ error: "Error removing read notifications" });
+    }
+  });
+
   return router;
 };
