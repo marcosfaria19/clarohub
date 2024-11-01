@@ -62,6 +62,12 @@ async function startServer() {
     const appRoutes = require("./src/routes/appRoutes")(
       clarohub.collection("apps")
     );
+    const notificationRoutes = require("./src/routes/notificationRoutes")(
+      clarohub.collection("notifications"),
+      clarohub.collection("rankings"),
+      clarohub.collection("ideas"),
+      clarohub.collection("users")
+    );
 
     // Rotas protegidas
     app.use("/", qualinetRoutes);
@@ -72,6 +78,7 @@ async function startServer() {
     app.use("/storm/", subjectRoutes);
     app.use("/storm/", ideaRoutes);
     app.use("/storm/", rankingRoutes);
+    app.use("/notifications", notificationRoutes);
 
     // Middleware para servir imagens estáticas
     app.use(

@@ -63,13 +63,17 @@ backend
 │   │       └── user_white.png
 │   ├── middleware
 │   │   └── authMiddleware.js
-│   ├── models
-│   │   ├── cidadeParaUF.js
-│   │   └── formatarData.js
-│   └── routes
-│       ├── appRoutes.js
-│       ├── netfacilsgdRoutes.js
-│       ├── netsmsfacilRoutes.js
-│       ├── qualinetRoutes.js
-│       └── usersRoutes.js
+│   ├── routes
+│   │   ├── appRoutes.js
+│   │   ├── ideaRoutes.js
+│   │   ├── netfacilsgdRoutes.js
+│   │   ├── netsmsfacilRoutes.js
+│   │   ├── qualinetRoutes.js
+│   │   ├── rankingRoutes.js
+│   │   ├── subjectRoutes.js
+│   │   └── usersRoutes.js
+│   └── utils
+│       ├── cidadeParaUF.js
+│       ├── formatarData.js
+│       └── resetDailyCounters.js
 └── vercel.json
