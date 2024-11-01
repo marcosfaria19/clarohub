@@ -33,6 +33,13 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       const newIdea = {
         ...rest,
         createdAt: new Date(),
+        history: [
+          {
+            manager: "",
+            newStatus: "",
+            changedAt: "",
+          },
+        ],
         creator: {
           _id: new ObjectId(userId),
           name: user.NOME,
