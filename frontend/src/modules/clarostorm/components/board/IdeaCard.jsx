@@ -72,7 +72,7 @@ export default function IdeaCard({
   return (
     <TooltipProvider>
       <div
-        className="relative h-36 w-full cursor-pointer rounded-lg bg-card p-4 shadow transition-shadow hover:shadow-md"
+        className="bg-card-storm relative h-36 w-full cursor-pointer rounded-lg p-4 shadow transition-shadow hover:shadow-md"
         onClick={handleCardClick}
       >
         <h4 className="max-w-[250px] truncate text-sm font-semibold">
@@ -122,7 +122,7 @@ export default function IdeaCard({
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="bg-card sm:max-w-[550px]">
+        <DialogContent className="bg-card-storm sm:max-w-[550px]">
           <DialogHeader className="mb-2 p-0">
             <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
             <Badge className={cn("mt-2 w-fit text-sm", color)}>

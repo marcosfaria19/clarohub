@@ -16,7 +16,6 @@ import {
   HelpCircleIcon,
 } from "lucide-react";
 import logo from "modules/shared/assets/logo.png";
-import logoLight from "modules/shared/assets/logo-light.png";
 import {
   Avatar,
   AvatarFallback,
@@ -86,9 +85,9 @@ const Header = () => {
 
           {user && (
             <>
-              <span className="text-menu-foreground hidden opacity-90 lg:inline-block">
+              <span className="text-menu-foreground/80 hidden lg:inline-block">
                 Bem-vindo(a),{" "}
-                <span className="font-semibold">
+                <span className="text-menu-foreground font-semibold">
                   {formatUserName(user.userName)}
                 </span>
               </span>
@@ -113,7 +112,7 @@ const Header = () => {
                     <span className="sr-only">Abrir menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="bg-menu">
+                <SheetContent side="right" className="select-none bg-menu">
                   <div className="mt-4 flex flex-col space-y-4">
                     <div className="flex items-center space-x-4">
                       <Avatar className="h-10 w-10">
@@ -131,21 +130,30 @@ const Header = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" className="w-full justify-start">
+                    <Button
+                      variant="outline"
+                      className="text-menu-foreground w-full justify-start"
+                    >
                       <UserIcon className="mr-2 h-4 w-4" />
                       Perfil
                     </Button>
-                    <Button variant="outline" className="w-full justify-start">
+                    <Button
+                      variant="outline"
+                      className="text-menu-foreground w-full justify-start"
+                    >
                       <SettingsIcon className="mr-2 h-4 w-4" />
                       Configurações
                     </Button>
-                    <Button variant="outline" className="w-full justify-start">
+                    <Button
+                      variant="outline"
+                      className="text-menu-foreground w-full justify-start"
+                    >
                       <HelpCircleIcon className="mr-2 h-4 w-4" />
                       Ajuda
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full justify-start"
+                      className="text-menu-foreground w-full justify-start"
                       onClick={onLogout}
                     >
                       <LogOut className="mr-2 h-4 w-4" />

@@ -4,7 +4,7 @@ import { cva } from "class-variance-authority";
 import { cn } from "modules/shared/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 select-none justify-center",
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 select-none justify-center drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]",
   {
     variants: {
       variant: {
@@ -14,7 +14,7 @@ const badgeVariants = cva(
           "border-transparent bg-accent text-accent-foreground hover:bg-accent/80",
         manager:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        admin: "text-foreground",
+        admin: "border-transparent bg-black/80 text-white hover:opacity-80",
       },
     },
     defaultVariants: {

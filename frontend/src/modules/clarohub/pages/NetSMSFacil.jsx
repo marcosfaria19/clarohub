@@ -146,9 +146,9 @@ export default function NetSMSFacil({ userName, gestor }) {
   };
 
   return (
-    <Container>
+    <Container className="pb-5">
       <Card>
-        <CardHeader>Net Fácil</CardHeader>
+        <CardHeader className="text-xl font-semibold">Net Fácil</CardHeader>
         <CardContent>
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -171,8 +171,8 @@ export default function NetSMSFacil({ userName, gestor }) {
             </div>
 
             <Button
-              variant="secondary"
-              className="h-10 w-12"
+              variant="outline"
+              className="h-10 w-10 rounded-full"
               onClick={abrirTabelaConsulta}
             >
               <span className="text-lg font-normal">?</span>

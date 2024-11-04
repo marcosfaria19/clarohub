@@ -82,9 +82,7 @@ const UploadFile = () => {
         <div
           {...getRootProps()}
           className={`cursor-pointer rounded-md border-2 border-dashed p-6 text-center transition-colors ${
-            isDragActive
-              ? "border-primary bg-primary/10"
-              : "border-popover-foreground/30"
+            isDragActive ? "border-primary bg-primary/10" : "border-primary/50"
           }`}
         >
           <input {...getInputProps()} />

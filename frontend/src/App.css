@@ -14,7 +14,7 @@
     --background: 215 28% 18%;
     --foreground: 210 20% 98%;
 
-    --card: 218 41% 11%;
+    --card: 218 28% 15%;
     --card-foreground: 210 20% 98%;
 
     --popover: 215 27.9% 15%;
@@ -32,8 +32,8 @@
     --accent: 263.4 70% 50.4%;
     --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 90.8% 80%;
-    --destructive-foreground: 0 90.8% 40%;
+    --destructive: 0 90.8% 60%;
+    --destructive-foreground: 0 90.8% 95%;
 
     --success: 160 60% 80%;
     --success-foreground: 160 60% 35%;
@@ -45,8 +45,11 @@
     --input: 215 20% 35%;
 
     --scrollbar: 217.9 10.6% 30%;
+    --scrollbar-track: 218 28% 15%;
+
     --board: 218 28% 15%;
     --board-title: 218 41% 11%;
+    --card-storm: 218 41% 11%;
     --podium: 215 16% 47%;
 
     --ring: 263.4 70% 50.4%;
@@ -58,7 +61,7 @@
     --menu: 218 84% 5.6%;
     --menu-foreground: 210 20% 98% ;
 
-    --container: 0 0% 83%;
+    --container: 0 0% 98%;
 
     --border-hover: 263 60% 40%;
 
@@ -68,14 +71,14 @@
     --card: 0 0% 100%;
     --card-foreground: 215 27.9% 10%;
 
-    --popover: 263 60% 95%;
+    --popover: 263 60% 100%;
     --popover-foreground: 215 27.9% 10%;
 
     --primary: 263.4 70% 50.4%;
     --primary-foreground: 210 20% 98%;
 
-    --secondary: 263 60% 95%;
-    --secondary-foreground: 263.4 70% 50.4%;
+    --secondary: 0 0% 92%;
+    --secondary-foreground: 215 27.9% 10%;
 
     --muted: 263 60% 65%;
     --muted-foreground: 263.4 70% 50.4%;
@@ -83,8 +86,8 @@
     --accent: 263.4 70% 50.4%;
     --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 90.8% 80%;
-    --destructive-foreground: 0 90.8% 40%;
+    --destructive: 0 90.8% 50%;
+    --destructive-foreground: 0 90.8% 100%;
 
     --warning: 48 100% 50%;
     --warning-foreground: 34 100% 33%;
@@ -92,12 +95,15 @@
     --success: 160 60% 80%;
     --success-foreground: 160 60% 35%;
 
-    --border: 267 69% 97%;
-    --input: 267 69% 93%;
+    --border: 267 69% 93%;
+    --input: 267 69% 83%;
 
     --scrollbar: 263 60% 95%;
+    --scrollbar-track: 217 28% 15%;
+
     --board: 0 0% 95%;
     --board-title: 217 28% 15%;
+    --card-storm: 0 0% 100%;
     --podium: 215 16% 47%;
 
     --ring: 263.4 70% 50.4%;
@@ -136,7 +142,7 @@ html {
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
-  background-color: hsl(var(--menu));
+  background-color: hsl(var(--scrollbar-track));
  
 }
 
@@ -148,7 +154,7 @@ html {
 
 /* Styling for the scrollbar track piece */
 ::-webkit-scrollbar-track-piece {
-  background-color: hsl(var(--menu));
+  background-color: transparent;
   border-radius: 6px;
 }
 

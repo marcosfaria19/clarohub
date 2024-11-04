@@ -34,15 +34,15 @@ export default function NotificationsPopover() {
         >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+            <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
               {unreadCount}
             </span>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
+      <PopoverContent className="w-80 select-none p-0" align="end">
         <div className="flex items-center justify-between border-b p-4">
-          <h4 className="text-lg font-medium">Notifications</h4>
+          <h4 className="text-lg font-medium">Notificações</h4>
           <div className="flex gap-2">
             <Button
               variant="ghost"

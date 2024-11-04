@@ -33,7 +33,7 @@ const AddUsuario = ({
     currentItem.PERMISSOES || "",
   );
   const permissions = [
-    { value: "guest", icon: UserIcon, color: "bg-gray-600 hover:bg-gray-700" },
+    { value: "guest", icon: UserIcon, color: "bg-gray-700" },
     {
       value: "basic",
       icon: UserCheck,
@@ -165,7 +165,7 @@ const AddUsuario = ({
                       className={`flex-1 ${
                         selectedPermission === permission.value
                           ? `${permission.color} text-white`
-                          : "bg-secondary/50 hover:bg-secondary/90"
+                          : "bg-gray-500 hover:bg-gray-600/90"
                       }`}
                       onClick={() => handlePermissionChange(permission.value)}
                     >

@@ -4,7 +4,7 @@ import { Dialog, DialogTrigger } from "modules/shared/components/ui/dialog";
 import { useSubjectsAndCards } from "modules/clarostorm/hooks/useSubjectsAndCards";
 import { useNewCard } from "modules/clarostorm/hooks/useNewCard";
 import StormMenu from "modules/clarostorm/components/board/StormMenu";
-import SubjectColumns from "modules/clarostorm/components/board/SubjectColumns";
+import StormBoard from "modules/clarostorm/components/board/StormBoard";
 import ManagerTable from "modules/clarostorm/components/board/ManagerTable";
 import AddIdeaModal from "modules/clarostorm/components/board/AddIdeaModal";
 import ErrorDisplay from "modules/clarostorm/components/ErrorDisplay";
@@ -23,7 +23,7 @@ export default function ClaroStorm({ userName, userId }) {
   if (error) return <ErrorDisplay message={error} />;
 
   return (
-    <Container innerClassName="lg:px-7 max-w-[1920px] relative mx-0 mt-4">
+    <Container innerClassName="lg:px-7 max-w-[1920px] bg-container">
       <StormMenu
         onToggleView={() => setIsManagerView(!isManagerView)}
         onFilterChange={setCurrentFilter}
@@ -33,7 +33,7 @@ export default function ClaroStorm({ userName, userId }) {
         <ManagerTable subjects={subjects} cards={sortedCards} />
       ) : (
         <>
-          <SubjectColumns
+          <StormBoard
             subjects={subjects}
             cards={sortedCards}
             currentFilter={currentFilter}
