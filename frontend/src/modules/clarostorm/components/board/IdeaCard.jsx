@@ -122,7 +122,7 @@ export default function IdeaCard({
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[550px]">
+        <DialogContent className="bg-card sm:max-w-[550px]">
           <DialogHeader className="mb-2 p-0">
             <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
             <Badge className={cn("mt-2 w-fit text-sm", color)}>

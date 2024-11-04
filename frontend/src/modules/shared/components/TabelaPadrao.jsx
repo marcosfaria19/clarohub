@@ -243,7 +243,7 @@ export function TabelaPadrao({
                         <>
                           {header.column.columnDef.sorted ? (
                             <Button
-                              className="flex"
+                              className="text-menu-foreground flex"
                               variant="ghost"
                               onClick={() =>
                                 header.column.toggleSorting(

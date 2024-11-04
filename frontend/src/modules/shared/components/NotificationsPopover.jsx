@@ -29,7 +29,7 @@ export default function NotificationsPopover() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative"
+          className="text-menu-foreground relative"
           aria-label="Notifications"
         >
           <Bell className="h-5 w-5" />

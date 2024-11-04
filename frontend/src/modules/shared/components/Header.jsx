@@ -55,17 +55,16 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed z-40 mr-0 w-screen select-none bg-menu opacity-90">
+    <header className="text-menu-foreground fixed z-40 mr-0 w-screen select-none bg-menu opacity-90">
       <div className="container flex items-center justify-between px-4 py-2 sm:max-w-[1800px]">
         <Link to="/home" className="flex items-center space-x-2">
           <img
-            src={theme === "dark" ? logo : logoLight}
+            /* src={theme === "dark" ? logo : logoLight} */
+            src={logo}
             alt="Claro Hub"
             className="mr-1 h-7 w-7"
           />
-          <span className="text-2xl font-semibold text-foreground">
-            Claro Hub
-          </span>
+          <span className="text-2xl font-semibold">Claro Hub</span>
         </Link>
 
         <div className="flex items-center space-x-3">
@@ -73,6 +72,7 @@ const Header = () => {
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
+            className="text-menu-foreground"
             aria-label={`Alternar para modo ${theme === "dark" ? "claro" : "escuro"}`}
           >
             {theme === "dark" ? (
@@ -86,7 +86,7 @@ const Header = () => {
 
           {user && (
             <>
-              <span className="hidden text-popover-foreground opacity-90 lg:inline-block">
+              <span className="text-menu-foreground hidden opacity-90 lg:inline-block">
                 Bem-vindo(a),{" "}
                 <span className="font-semibold">
                   {formatUserName(user.userName)}
@@ -104,12 +104,16 @@ const Header = () => {
 
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="md:hidden">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-menu-foreground md:hidden"
+                  >
                     <MenuIcon className="h-6 w-6" />
                     <span className="sr-only">Abrir menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right">
+                <SheetContent side="right" className="bg-menu">
                   <div className="mt-4 flex flex-col space-y-4">
                     <div className="flex items-center space-x-4">
                       <Avatar className="h-10 w-10">
@@ -119,10 +123,10 @@ const Header = () => {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium text-muted-foreground">
+                        <span className="text-menu-foreground text-sm font-medium">
                           {formatUserName(user.userName)}
                         </span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-menu-foreground text-xs">
                           {user.login}
                         </span>
                       </div>

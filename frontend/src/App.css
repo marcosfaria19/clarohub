@@ -4,17 +4,17 @@
 
 @layer base {
   :root {
-    /* --menu: 215 27.9% 15%; */
-    --menu: 215 29% 16%;
+    --menu: 218 28% 15%;
+    --menu-foreground: 210 20% 98% ;
+
+    --container: 215 28% 18%;
 
     --border-hover: 263 60% 60%;
 
-    --background: 217 32% 14%;
-    /* --background: 215 27.9% 18%; */
+    --background: 215 28% 18%;
     --foreground: 210 20% 98%;
 
-    --card: 215 20% 35%;
-    /*  --card: 234 79% 63%; */
+    --card: 218 41% 11%;
     --card-foreground: 210 20% 98%;
 
     --popover: 215 27.9% 15%;
@@ -43,7 +43,10 @@
 
     --border: 215 27.9% 22%;
     --input: 215 20% 35%;
+
     --scrollbar: 217.9 10.6% 30%;
+    --board: 218 28% 15%;
+    --board-title: 218 41% 11%;
     --podium: 215 16% 47%;
 
     --ring: 263.4 70% 50.4%;
@@ -52,22 +55,26 @@
   }
 
   .light-theme {
-    --menu: 267 69% 97%;
+    --menu: 218 84% 5.6%;
+    --menu-foreground: 210 20% 98% ;
+
+    --container: 0 0% 83%;
+
     --border-hover: 263 60% 40%;
 
-    --background: 263 60% 98%;
+    --background: 0 0% 98%;
     --foreground: 215 27.9% 10%;
 
-    --card: 236 78% 79%;
+    --card: 0 0% 100%;
     --card-foreground: 215 27.9% 10%;
 
-    --popover: 263 60% 85%;
+    --popover: 263 60% 95%;
     --popover-foreground: 215 27.9% 10%;
 
     --primary: 263.4 70% 50.4%;
     --primary-foreground: 210 20% 98%;
 
-    --secondary: 263 60% 85%;
+    --secondary: 263 60% 95%;
     --secondary-foreground: 263.4 70% 50.4%;
 
     --muted: 263 60% 65%;
@@ -87,7 +94,10 @@
 
     --border: 267 69% 97%;
     --input: 267 69% 93%;
-    --scrollbar: 263 60% 85%;
+
+    --scrollbar: 263 60% 95%;
+    --board: 0 0% 95%;
+    --board-title: 217 28% 15%;
     --podium: 215 16% 47%;
 
     --ring: 263.4 70% 50.4%;
@@ -127,6 +137,7 @@ html {
   width: 10px;
   height: 10px;
   background-color: hsl(var(--menu));
+ 
 }
 
 /* Styling for the scrollbar thumb */
@@ -143,10 +154,12 @@ html {
 
 /* Styling for the scrollbar track when active */
 ::-webkit-scrollbar-track:active {
-  background-color: hsl(var(--menu));
+  /* background-color: hsl(var(--menu)); */
+  background-color: transparent;
 }
 ::-webkit-scrollbar-track {
-  background-color: hsl(var(--menu));
+  /* background-color: hsl(var(--menu)); */
+  background-color: transparent;
   border-radius: 6px;
 }
 
@@ -167,6 +180,11 @@ html {
 }
 
 .scrollbar-storm::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--card));
+  background-color: hsl(var(--foreground)/ 0.8);
+  filter: brightness(10);
+  opacity: 10;
   border-radius: 6px;
+}
+.scrollbar-storm::-webkit-scrollbar-track-piece {
+  background-color:transparent;
 }
