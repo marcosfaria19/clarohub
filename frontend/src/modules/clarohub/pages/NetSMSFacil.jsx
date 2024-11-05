@@ -11,7 +11,12 @@ import { Input } from "modules/shared/components/ui/input";
 import axiosInstance from "services/axios";
 import { toast } from "sonner";
 import Container from "modules/shared/components/ui/container";
-import { CheckIcon, CopyIcon, RotateCcwIcon } from "lucide-react";
+import {
+  BookOpenCheck,
+  CheckIcon,
+  CopyIcon,
+  RotateCcwIcon,
+} from "lucide-react";
 import TabelaNetFacil from "modules/clarohub/components/TabelaNetFacil";
 import { Label } from "modules/shared/components/ui/label";
 import TabelaFechamentoSGD from "../components/TabelaFechamentoSGD";
@@ -20,6 +25,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CardTitle,
 } from "modules/shared/components/ui/card";
 
 export default function NetSMSFacil({ userName, gestor }) {
@@ -148,7 +154,16 @@ export default function NetSMSFacil({ userName, gestor }) {
   return (
     <Container className="pb-5">
       <Card>
-        <CardHeader className="text-xl font-semibold">Net Fácil</CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Net Fácil</CardTitle>
+          <Button
+            variant="ghost"
+            className="text-foreground/60"
+            onClick={abrirTabelaConsulta}
+          >
+            <BookOpenCheck className="w-6" />
+          </Button>
+        </CardHeader>
         <CardContent>
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -169,14 +184,6 @@ export default function NetSMSFacil({ userName, gestor }) {
                 <CheckIcon className="w-4" />
               </Button>
             </div>
-
-            <Button
-              variant="outline"
-              className="h-10 w-10 rounded-full"
-              onClick={abrirTabelaConsulta}
-            >
-              <span className="text-lg font-normal">?</span>
-            </Button>
           </div>
 
           <TabelaNetFacil

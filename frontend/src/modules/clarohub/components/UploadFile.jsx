@@ -76,7 +76,7 @@ const UploadFile = () => {
   return (
     <Card className="mx-auto w-full border border-secondary">
       <CardHeader>
-        <CardTitle>Envio de Arquivo</CardTitle>
+        <CardTitle>OC Fácil</CardTitle>
       </CardHeader>
       <CardContent>
         <div
