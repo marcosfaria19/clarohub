@@ -29,7 +29,7 @@ const useManagerTable = () => {
       await axiosInstance.post(`/notifications`, {
         userId: selectedItem.creator._id,
         type: "idea_status",
-        message: `Uma ideia sua foi atualizada para: ${newStatus}.`,
+        message: `Uma ideia sua foi ${newStatus}.`,
       });
 
       setDados((prevDados) =>

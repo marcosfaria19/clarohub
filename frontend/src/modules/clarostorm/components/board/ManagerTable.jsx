@@ -1,6 +1,6 @@
 // src/modules/your-path/ManagerTable.js
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import statusConfig from "modules/clarostorm/utils/statusConfig";
 import {
@@ -35,8 +35,13 @@ function ManagerTable() {
     setNewStatus,
   } = useManagerTable();
 
+  const initialFetchDone = useRef(false);
+
   useEffect(() => {
-    fetchDados();
+    if (!initialFetchDone.current) {
+      fetchDados();
+      initialFetchDone.current = true;
+    }
   }, [fetchDados]);
 
   const handleStatusChange = useCallback(

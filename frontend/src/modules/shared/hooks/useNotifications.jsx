@@ -56,12 +56,21 @@ const useNotifications = () => {
       console.error("Error clearing read notifications:", error);
     }
   };
+  const markAllAsRead = async () => {
+    try {
+      await axiosInstance.patch(`/notifications/${user.userId}/mark-all-read`);
+      await fetchNotifications();
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+    }
+  };
 
   return {
     notifications,
     refetchNotifications: fetchNotifications,
     markAsRead,
     clearReadNotifications,
+    markAllAsRead,
   };
 };
 
