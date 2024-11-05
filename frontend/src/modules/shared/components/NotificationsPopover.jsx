@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Bell, Trash2 } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import {
@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "modules/shared/components/ui/popover";
 import useNotifications from "../hooks/useNotifications";
+import { getRandomNoNotificationMessage } from "../utils/noNotificationMessages";
 
 export default function NotificationsPopover() {
   const { notifications, clearReadNotifications, markAllAsRead } =
@@ -26,6 +27,11 @@ export default function NotificationsPopover() {
     }
   };
 
+  const noNotificationMessage = useMemo(
+    () => getRandomNoNotificationMessage(),
+    [],
+  );
+
   return (
     <Popover open={open} onOpenChange={handlePopoverChange}>
       <PopoverTrigger asChild>
@@ -43,14 +49,14 @@ export default function NotificationsPopover() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 select-none rounded-xl p-0" align="end">
+      <PopoverContent className="w-80 select-none rounded-xl px-2" align="end">
         <div className="flex items-center justify-center p-4">
           <h4 className="text-md font-medium">Notificações</h4>
         </div>
         <div className="max-h-[300px] overflow-y-auto">
           {notifications.length === 0 ? (
             <p className="pb-7 text-center text-sm text-foreground">
-              Sem novidades no momento ☕
+              {noNotificationMessage}
             </p>
           ) : (
             <>
