@@ -24,7 +24,7 @@ import {
 import AvatarDropdown from "modules/shared/components/AvatarDropdown";
 import NotificationsPopover from "modules/shared/components/NotificationsPopover";
 import formatUserName from "modules/shared/utils/formatUsername";
-import { AuthContext } from "contexts/AuthContext";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);

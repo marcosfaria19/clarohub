@@ -6,7 +6,7 @@ import Footer from "./modules/shared/components/Footer";
 import Rotas from "./routes/Rotas";
 import "./App.css";
 import { Toaster } from "modules/shared/components/ui/sonner";
-import { AuthContext } from "contexts/AuthContext";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
 
 function App() {
   // Acessa o contexto de autenticação

@@ -94,12 +94,6 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
           likesCount: idea.likesCount - 1,
         });
 
-        // Update the user's remaining likes in real-time
-        pusher.trigger("claro-storm", "update-remaining-likes", {
-          userId: userId,
-          remainingLikes: 3 - (user.dailyLikesUsed - 1),
-        });
-
         return res.status(200).json({
           message: "Like removed successfully!",
           likesCount: idea.likesCount - 1,
@@ -130,12 +124,6 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
         pusher.trigger("claro-storm", "update-likes", {
           ideaId: ideaId,
           likesCount: idea.likesCount + 1,
-        });
-
-        // Update the user's remaining likes in real-time
-        pusher.trigger("claro-storm", "update-remaining-likes", {
-          userId: userId,
-          remainingLikes: 3 - (user.dailyLikesUsed + 1),
         });
 
         return res.status(200).json({

@@ -1,4 +1,4 @@
-import { AuthContext } from "contexts/AuthContext";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useContext, useEffect, useState, useCallback } from "react";
 import axiosInstance from "services/axios";
 

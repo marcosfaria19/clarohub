@@ -10,7 +10,7 @@ import NetSMSFacilAdmin from "modules/clarohub/pages/NetSMSFacilAdmin";
 import OCFacilAdmin from "modules/clarohub/pages/OCFacilAdmin";
 import AppAdmin from "modules/clarohub/pages/AppAdmin";
 import ClaroStorm from "modules/clarostorm/pages/Home";
-import { AuthContext } from "contexts/AuthContext";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
 
 const ProtectedRoute = ({ allowedRoles, element }) => {
   const { token, user } = useContext(AuthContext);

@@ -24,7 +24,7 @@ import {
 import { Separator } from "modules/shared/components/ui/separator";
 import { cn } from "modules/shared/lib/utils";
 import formatUserName from "modules/shared/utils/formatUsername";
-import { AuthContext } from "contexts/AuthContext";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useLikes } from "modules/clarostorm/hooks/useLikes";
 import statusConfig from "modules/clarostorm/utils/statusConfig";
 
@@ -72,7 +72,7 @@ export default function IdeaCard({
   return (
     <TooltipProvider>
       <div
-        className="bg-card-storm relative h-36 w-full cursor-pointer rounded-lg p-4 shadow transition-shadow hover:shadow-md"
+        className="relative h-36 w-full cursor-pointer rounded-lg bg-card-storm p-4 shadow transition-shadow hover:shadow-md"
         onClick={handleCardClick}
       >
         <h4 className="max-w-[250px] truncate text-sm font-semibold">

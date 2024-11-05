@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import RankingModal from "../rankings/RankingModal";
-import { AuthContext } from "contexts/AuthContext";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useDailyLikes } from "modules/clarostorm/hooks/useDailyLikes";
 import {
   Tooltip,

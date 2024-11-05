@@ -1,6 +1,6 @@
 import { useState, useCallback, useContext } from "react";
 import axiosInstance from "services/axios";
-import { AuthContext } from "contexts/AuthContext";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useDailyLikes } from "./useDailyLikes";
 import { toast } from "sonner";
 

@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "modules/shared/components/ui/dialog";
-import { AuthContext } from "contexts/AuthContext";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
 
 function Login() {
   const { setToken } = useContext(AuthContext);
