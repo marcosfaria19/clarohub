@@ -147,7 +147,7 @@ const AvatarCreator = ({ currentAvatar, onClose, isOpen, userId, onSave }) => {
   };
 
   const renderOption = (option) => (
-    <div className="flex items-center justify-between rounded-lg bg-secondary p-2 shadow-md transition-all duration-300 hover:shadow-lg">
+    <div className="flex items-center justify-between rounded-lg bg-primary p-2 text-primary-foreground shadow-md transition-all duration-300 hover:shadow-lg">
       <Button
         variant="ghost"
         size="icon"
@@ -157,7 +157,9 @@ const AvatarCreator = ({ currentAvatar, onClose, isOpen, userId, onSave }) => {
         <ChevronLeft className="h-4 w-4" />
       </Button>
 
-      <Label className="text-sm font-medium">{optionLabels[option]}</Label>
+      <Label className="text-sm font-medium text-primary-foreground">
+        {optionLabels[option]}
+      </Label>
 
       <Button
         variant="ghost"

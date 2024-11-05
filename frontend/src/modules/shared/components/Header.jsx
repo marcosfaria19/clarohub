@@ -54,7 +54,7 @@ const Header = () => {
   };
 
   return (
-    <header className="text-menu-foreground fixed z-40 mr-0 w-screen select-none bg-menu opacity-90">
+    <header className="fixed z-40 mr-0 w-screen select-none bg-menu text-menu-foreground opacity-90">
       <div className="container flex items-center justify-between px-4 py-2 sm:max-w-[1800px]">
         <Link to="/home" className="flex items-center space-x-2">
           <img
@@ -85,9 +85,9 @@ const Header = () => {
 
           {user && (
             <>
-              <span className="text-menu-foreground/80 hidden lg:inline-block">
+              <span className="hidden text-menu-foreground/80 lg:inline-block">
                 Bem-vindo(a),{" "}
-                <span className="text-menu-foreground font-semibold">
+                <span className="font-semibold text-menu-foreground">
                   {formatUserName(user.userName)}
                 </span>
               </span>
@@ -112,7 +112,10 @@ const Header = () => {
                     <span className="sr-only">Abrir menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="select-none bg-menu">
+                <SheetContent
+                  side="right"
+                  className="select-none bg-background"
+                >
                   <div className="mt-4 flex flex-col space-y-4">
                     <div className="flex items-center space-x-4">
                       <Avatar className="h-10 w-10">
@@ -122,38 +125,38 @@ const Header = () => {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span className="text-menu-foreground text-sm font-medium">
+                        <span className="text-sm font-medium text-foreground">
                           {formatUserName(user.userName)}
                         </span>
-                        <span className="text-menu-foreground text-xs">
+                        <span className="text-xs text-foreground">
                           {user.login}
                         </span>
                       </div>
                     </div>
                     <Button
                       variant="outline"
-                      className="text-menu-foreground w-full justify-start"
+                      className="w-full justify-start text-foreground"
                     >
                       <UserIcon className="mr-2 h-4 w-4" />
                       Perfil
                     </Button>
                     <Button
                       variant="outline"
-                      className="text-menu-foreground w-full justify-start"
+                      className="w-full justify-start text-foreground"
                     >
                       <SettingsIcon className="mr-2 h-4 w-4" />
                       Configurações
                     </Button>
                     <Button
                       variant="outline"
-                      className="text-menu-foreground w-full justify-start"
+                      className="w-full justify-start text-foreground"
                     >
                       <HelpCircleIcon className="mr-2 h-4 w-4" />
                       Ajuda
                     </Button>
                     <Button
                       variant="outline"
-                      className="text-menu-foreground w-full justify-start"
+                      className="w-full justify-start text-foreground"
                       onClick={onLogout}
                     >
                       <LogOut className="mr-2 h-4 w-4" />
