@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "services/axios";
-import { getPusherInstance } from "services/pusher";
 
 export function useDailyLikes(userId) {
   const [remainingLikes, setRemainingLikes] = useState(3);
@@ -22,20 +21,6 @@ export function useDailyLikes(userId) {
 
   useEffect(() => {
     fetchRemainingLikes();
-
-    const pusher = getPusherInstance();
-    const channel = pusher.subscribe("claro-storm");
-
-    channel.bind("update-remaining-likes", function (data) {
-      if (data.userId === userId) {
-        setRemainingLikes(data.remainingLikes);
-      }
-    });
-
-    return () => {
-      channel.unbind("update-remaining-likes");
-      pusher.unsubscribe("claro-storm");
-    };
   }, [userId, fetchRemainingLikes]);
 
   return { remainingLikes, fetchRemainingLikes };

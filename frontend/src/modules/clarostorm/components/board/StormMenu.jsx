@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   ThumbsUp,
   Trophy,
@@ -34,7 +34,7 @@ export default function StormMenu({
   const [showRankingModal, setShowRankingModal] = useState(false);
   const [isManagerialView, setIsManagerialView] = useState(false);
   const { user } = useContext(AuthContext);
-  const { remainingLikes } = useDailyLikes(user.userId);
+  const { remainingLikes, fetchRemainingLikes } = useDailyLikes(user.userId);
   const { downloadIdeas, isDownloading, error } = useDownloadIdeas();
 
   const canToggleView =
@@ -55,6 +55,10 @@ export default function StormMenu({
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    fetchRemainingLikes();
+  });
 
   return (
     <>
