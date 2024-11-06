@@ -46,8 +46,8 @@ export default function StormBoard({ subjects, cards, currentFilter }) {
                 key={subject}
                 className={`whitespace-nowrap px-4 py-2 ${
                   activeSubject === subject
-                    ? "text-menu-foreground bg-accent"
-                    : "text-menu-foreground bg-menu"
+                    ? "bg-accent text-menu-foreground"
+                    : "bg-menu text-menu-foreground"
                 }`}
                 onClick={() => setActiveSubject(subject)}
               >
@@ -68,13 +68,13 @@ export default function StormBoard({ subjects, cards, currentFilter }) {
           {subjects.map((subject, index) => (
             <div
               key={subject}
-              className={`bg-board relative flex w-[300px] flex-shrink-0 flex-col ${
+              className={`relative flex w-[300px] flex-shrink-0 flex-col bg-board ${
                 index === 0 ? "rounded-l-lg" : ""
               } ${index === subjects.length - 1 ? "rounded-r-lg" : ""}`}
             >
               {/* Subjects */}
               <div
-                className={`text-menu-foreground bg-board-title relative top-0 flex h-20 items-center justify-center drop-shadow-[0_3px_3px_rgba(0,0,0,0.25)] ${
+                className={`relative top-0 flex h-20 items-center justify-center bg-board-title text-menu-foreground drop-shadow-[0_3px_3px_rgba(0,0,0,0.25)] ${
                   index === 0 ? "rounded-l-lg" : ""
                 } ${index === subjects.length - 1 ? "rounded-r-lg" : ""}`}
               >
@@ -90,13 +90,13 @@ export default function StormBoard({ subjects, cards, currentFilter }) {
 
               {/* Divisor vertical maior */}
               {index !== subjects.length - 1 && (
-                <div className="absolute right-[2.5px] top-32 w-[1px] bg-foreground/20"></div>
+                <div className="absolute bottom-5 right-[1px] top-32 w-[1px] bg-foreground/30"></div>
               )}
 
               {/* Board e cards */}
               <div className="bg-board py-2" />
               <div
-                className={`scrollbar-storm bg-board flex-1 overflow-y-auto ${
+                className={`scrollbar-storm flex-1 overflow-y-auto bg-board ${
                   index === 0 ? "rounded-bl-lg" : ""
                 } ${index === subjects.length - 1 ? "rounded-br-lg" : ""}`}
               >
