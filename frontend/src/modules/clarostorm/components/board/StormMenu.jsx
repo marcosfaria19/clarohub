@@ -62,7 +62,7 @@ export default function StormMenu({
 
   return (
     <>
-      <div className="relative z-50 flex w-1/2 justify-end space-x-2 justify-self-end sm:mr-10 sm:mt-24 lg:mr-10 lg:mt-0">
+      <div className="relative bottom-0 top-[5px] z-20 flex w-1/2 justify-end space-x-2 justify-self-end sm:mr-10 sm:mt-24 lg:mr-10 lg:mt-0">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -101,7 +101,7 @@ export default function StormMenu({
               <TooltipContent>Filtrar</TooltipContent>
             </Tooltip>
 
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="select-none">
               <DropdownMenuLabel>Filtrar</DropdownMenuLabel>
               {!isManagerialView && (
                 <>

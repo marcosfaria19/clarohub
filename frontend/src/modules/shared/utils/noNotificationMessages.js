@@ -13,6 +13,7 @@ export const noNotificationMessages = [
     "Caixa de entrada tão vazia quanto pote de biscoitos na segunda-feira. 🍪",
     "Nada novo? Hora de criar suas próprias aventuras! 🗺️",
     "Sem notificações. Seu tempo é todo seu! ⏳",
+    "Sem notificações, ou seja, parabéns Yago! 🥳🎉",
     "Notificações em modo stealth. Ninja level: expert 🥷"
   ];
   
