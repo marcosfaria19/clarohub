@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { Button } from "modules/shared/components/ui/button";
 import {
   Sheet,
@@ -15,7 +15,6 @@ import {
   SettingsIcon,
   HelpCircleIcon,
 } from "lucide-react";
-import logo from "modules/shared/assets/logo.png";
 import {
   Avatar,
   AvatarFallback,
@@ -25,10 +24,12 @@ import AvatarDropdown from "modules/shared/components/AvatarDropdown";
 import NotificationsPopover from "modules/shared/components/NotificationsPopover";
 import formatUserName from "modules/shared/utils/formatUsername";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
+import appHeaderInfo from "../utils/appHeaderInfo";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
   const [theme, setTheme] = useState("dark");
+  const location = useLocation();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "dark";
@@ -50,7 +51,12 @@ const Header = () => {
   };
 
   const onLogout = () => {
-    logout(); //
+    logout();
+  };
+
+  const currentApp = appHeaderInfo[location.pathname] || {
+    name: "Claro Hub",
+    icon: "/logo.png",
   };
 
   return (
@@ -58,12 +64,11 @@ const Header = () => {
       <div className="container flex items-center justify-between px-4 py-2 sm:max-w-[1800px]">
         <Link to="/home" className="flex items-center space-x-2">
           <img
-            /* src={theme === "dark" ? logo : logoLight} */
-            src={logo}
+            src={`${currentApp.icon}`}
             alt="Claro Hub"
             className="mr-1 h-7 w-7"
           />
-          <span className="text-2xl font-semibold">Claro Hub</span>
+          <span className="text-2xl font-semibold">{currentApp.name}</span>
         </Link>
 
         <div className="flex items-center space-x-3">
