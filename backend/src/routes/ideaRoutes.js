@@ -12,11 +12,10 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
   router.get("/ideas", authenticateToken, async (req, res) => {
     try {
       const ideas = await ideasCollection.find({}).toArray();
-
       res.status(200).json(ideas);
     } catch (error) {
       console.error("Erro ao buscar cartões:", error);
-      res.status(500).json({ error: "Error fetching ideas" });
+      res.status(500).json({ error: "Erro ao buscar ideias" });
     }
   });
 
@@ -45,95 +44,62 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       pusher.trigger("claro-storm", "new-idea", {
         card: newIdea,
       });
-      res
-        .status(201)
-        .json({ message: "Card created successfully", idea: newIdea });
+      res.status(201).json({ message: "Card criado com sucesso", idea: newIdea });
     } catch (error) {
       console.error("Erro ao criar ideia:", error);
-      res.status(500).json({ error: "Error creating card" });
+      res.status(500).json({ error: "Erro ao criar card" });
     }
   });
 
   // Rota para curtir uma ideia
   router.post("/like-idea", authenticateToken, async (req, res) => {
     const { userId, ideaId } = req.body;
+    await resetDailyCountersIfNeeded(userId, usersCollection);
 
     try {
       const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
       const idea = await ideasCollection.findOne({ _id: new ObjectId(ideaId) });
 
       if (!idea) {
-        return res.status(404).json({ message: "Idea not found." });
+        return res.status(404).json({ message: "Ideia não encontrada." });
       }
 
       if (!user) {
-        return res.status(404).json({ message: "User not found." });
+        return res.status(404).json({ message: "Usuário não encontrado." });
       }
 
-      // Check if the user has already liked the idea
-      const alreadyLiked = idea.likedBy.some((id) =>
-        id.equals(new ObjectId(userId))
+      /* Verificar likes diários */
+      if (user.dailyLikesUsed >= 3) {
+        return res.status(403).json({ message: "Você já usou todos os seus likes diários." });
+      }
+
+      await ideasCollection.updateOne(
+        { _id: new ObjectId(ideaId) },
+        {
+          $addToSet: { likedBy: new ObjectId(userId) },
+          $inc: { likesCount: 1 },
+        }
       );
 
-      if (alreadyLiked) {
-        // Remove the like
-        await ideasCollection.updateOne(
-          { _id: new ObjectId(ideaId) },
-          { $pull: { likedBy: new ObjectId(userId) }, $inc: { likesCount: -1 } }
-        );
+      // Incrementar contagem de likes diários do usuário
+      await usersCollection.updateOne(
+        { _id: new ObjectId(userId) },
+        { $inc: { dailyLikesUsed: 1 } }
+      );
 
-        // Decrement the user's daily like count
-        await usersCollection.updateOne(
-          { _id: new ObjectId(userId) },
-          { $inc: { dailyLikesUsed: -1 } }
-        );
+      // Atualizar contagem de likes em tempo real
+      pusher.trigger("claro-storm", "update-likes", {
+        ideaId: ideaId,
+        likesCount: idea.likesCount + 1,
+      });
 
-        // Update the idea's like count in real-time
-        pusher.trigger("claro-storm", "update-likes", {
-          ideaId: ideaId,
-          likesCount: idea.likesCount - 1,
-        });
-
-        return res.status(200).json({
-          message: "Like removed successfully!",
-          likesCount: idea.likesCount - 1,
-        });
-      } else {
-        // Add the like
-        if (user.dailyLikesUsed >= 3) {
-          return res
-            .status(403)
-            .json({ message: "You've used all your daily likes." });
-        }
-
-        await ideasCollection.updateOne(
-          { _id: new ObjectId(ideaId) },
-          {
-            $addToSet: { likedBy: new ObjectId(userId) },
-            $inc: { likesCount: 1 },
-          }
-        );
-
-        // Increment the user's daily like count
-        await usersCollection.updateOne(
-          { _id: new ObjectId(userId) },
-          { $inc: { dailyLikesUsed: 1 } }
-        );
-
-        // Update the idea's like count in real-time
-        pusher.trigger("claro-storm", "update-likes", {
-          ideaId: ideaId,
-          likesCount: idea.likesCount + 1,
-        });
-
-        return res.status(200).json({
-          message: "Like added successfully!",
-          likesCount: idea.likesCount + 1,
-        });
-      }
+      return res.status(200).json({
+        message: "Curtida adicionada com sucesso!",
+        likesCount: idea.likesCount + 1,
+      });
     } catch (error) {
       console.error("Error liking/unliking:", error);
-      res.status(500).json({ message: "Error processing like/unlike." });
+      res.status(500).json({ message: "Erro ao processar curtida/remoção de curtida." });
     }
   });
 
@@ -177,6 +143,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       res.status(500).json({ error: "Erro no servidor." });
     }
   });
+
   // Rota para download da tabela gerencial em CSV
   router.get("/ideas/download", async (req, res) => {
     try {
@@ -231,10 +198,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       const csv = json2csvParser.parse(formattedData);
 
       res.header("Content-Type", "text/csv; charset=utf-8");
-      res.header(
-        "Content-Disposition",
-        "attachment; filename=clarostorm_ideas.csv"
-      );
+      res.header("Content-Disposition", "attachment; filename=clarostorm_ideas.csv");
       res.send("\uFEFF" + csv);
     } catch (err) {
       console.error("Erro ao gerar CSV:", err);

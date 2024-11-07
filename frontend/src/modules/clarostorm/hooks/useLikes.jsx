@@ -10,7 +10,7 @@ export function useLikes() {
   const { remainingLikes, fetchRemainingLikes } = useDailyLikes(user.userId);
 
   const handleLike = useCallback(
-    async (ideaId, hasLiked) => {
+    async (ideaId) => {
       try {
         const response = await axiosInstance.post("/storm/like-idea", {
           ideaId,

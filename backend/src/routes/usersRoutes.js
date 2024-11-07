@@ -4,6 +4,7 @@ const { ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const authenticateToken = require("../middleware/authMiddleware");
+const resetDailyCountersIfNeeded = require("../utils/resetDailyCounters");
 const SECRET_KEY = process.env.SECRET_KEY;
 
 module.exports = (usersCollection, ideasCollection) => {
@@ -267,6 +268,7 @@ module.exports = (usersCollection, ideasCollection) => {
   // Rota para mostrar os likes e ideas restantes
   router.get("/users/:id/stats", authenticateToken, async (req, res) => {
     const { id } = req.params;
+    await resetDailyCountersIfNeeded(id, usersCollection);
 
     try {
       const user = await usersCollection.findOne({ _id: new ObjectId(id) });
