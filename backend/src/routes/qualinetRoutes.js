@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const xlsx = require("xlsx");
 const { ObjectId } = require("mongodb");
-const cidadeParaUF = require("../utils/cidadeParaUF");
+const cidadeParaUF = require("../utils/cidadeParaUF")
 const formatarData = require("../utils/formatarData");
 const authenticateToken = require("../middleware/authMiddleware");
 const router = express.Router();
@@ -80,14 +80,14 @@ module.exports = (qualinetCollection) => {
           COD_NODE: item.COD_NODE,
           UF: item.UF,
         }));
-
+        
         if (filteredDataAllUFs.length === 0) {
           return res.status(400).send("Nenhum dado novo a ser inserido.");
         }
+        
+        const result = await qualinetCollection.insertMany(filteredDataAllUFs);
 
-        const result = await qualinetCollection.insertMany(
-          filteredDataWithoutRS
-        );
+        console.log("result:", result);
 
         if (!result || !result.insertedIds) {
           return res

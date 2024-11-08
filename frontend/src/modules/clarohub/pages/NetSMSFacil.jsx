@@ -154,23 +154,29 @@ export default function NetSMSFacil({ userName, gestor }) {
   return (
     <Container className="pb-5">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Net Fácil</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <CardTitle className="text-2xl font-bold">Formulário</CardTitle>
           <Button
-            variant="ghost"
-            className="text-foreground/60"
+            variant="outline"
+            className="text-foreground/60 hover:bg-secondary"
             onClick={abrirTabelaConsulta}
           >
-            <BookOpenCheck className="w-6" />
+            <BookOpenCheck className="mr-2 h-4 w-4" />
+            Consultar Tabela
           </Button>
         </CardHeader>
-        <CardContent>
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="flex w-20 flex-col">
+        <CardContent className="space-y-6">
+          {/* Código Input Group */}
+          <div className="flex items-center gap-4">
+            <div>
+              <Label htmlFor="codigo" className="mb-2">
+                Código
+              </Label>
+              <div className="flex gap-2">
                 <Input
-                  className={`w-full ${codigoErro ? "border-destructive" : ""}`}
-                  placeholder="Código"
+                  id="codigo"
+                  className={`${codigoErro ? "border-destructive" : ""} max-w-[120px]`}
+                  placeholder="Exemplo: 123"
                   value={codigo}
                   maxLength={3}
                   onChange={(e) => {
@@ -178,11 +184,10 @@ export default function NetSMSFacil({ userName, gestor }) {
                     setCodigoErro(false);
                   }}
                 />
+                <Button onClick={handleCodigoSubmit} size="icon">
+                  <CheckIcon className="w-4" />
+                </Button>
               </div>
-
-              <Button onClick={handleCodigoSubmit}>
-                <CheckIcon className="w-4" />
-              </Button>
             </div>
           </div>
 
@@ -190,197 +195,216 @@ export default function NetSMSFacil({ userName, gestor }) {
             isOpen={tabelaConsulta}
             onRequestClose={fecharTabelaConsulta}
           />
-          <Label htmlFor="tratativa" className="mb-3 mt-5">
-            Tratativa
-          </Label>
-          <Select value={tratativa} onValueChange={setTratativa}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione a Tratativa" />
-            </SelectTrigger>
-            <SelectContent>
-              {getOptions("TRATATIVA").map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
 
-          <Label htmlFor="tipo" className="mb-3 mt-5">
-            Tipo
-          </Label>
-          <Select value={tipo} onValueChange={setTipo} disabled={!tratativa}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione o Tipo" />
-            </SelectTrigger>
-            <SelectContent>
-              {getOptions("TIPO")
-                .filter((option) =>
-                  data.some(
-                    (item) =>
-                      item.TRATATIVA === tratativa && item.TIPO === option,
-                  ),
-                )
-                .map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
+          {/* Form Fields Grid */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="tratativa">Tratativa</Label>
+              <Select value={tratativa} onValueChange={setTratativa}>
+                <SelectTrigger id="tratativa">
+                  <SelectValue placeholder="Selecione a Tratativa" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getOptions("TRATATIVA").map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Label htmlFor="aberturaFechamento" className="mb-3 mt-5">
-            Abertura/Fechamento
-          </Label>
-          <Select
-            value={aberturaFechamento}
-            onValueChange={setAberturaFechamento}
-            disabled={!tipo}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione Abertura/Fechamento" />
-            </SelectTrigger>
-            <SelectContent>
-              {getOptions("ABERTURA/FECHAMENTO")
-                .filter((option) =>
-                  data.some(
-                    (item) =>
-                      item.TRATATIVA === tratativa &&
-                      item.TIPO === tipo &&
-                      item["ABERTURA/FECHAMENTO"] === option,
-                  ),
-                )
-                .map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
+            <div className="space-y-2">
+              <Label htmlFor="tipo">Tipo</Label>
+              <Select
+                value={tipo}
+                onValueChange={setTipo}
+                disabled={!tratativa}
+              >
+                <SelectTrigger id="tipo">
+                  <SelectValue placeholder="Selecione o Tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getOptions("TIPO")
+                    .filter((option) =>
+                      data.some(
+                        (item) =>
+                          item.TRATATIVA === tratativa && item.TIPO === option,
+                      ),
+                    )
+                    .map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Label htmlFor="netsms" className="mb-3 mt-5">
-            NetSMS
-          </Label>
-          <Select
-            value={netSMS}
-            onValueChange={setNetSMS}
-            disabled={!aberturaFechamento}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione NetSMS" />
-            </SelectTrigger>
-            <SelectContent>
-              {getOptions("NETSMS")
-                .filter((option) =>
-                  data.some(
-                    (item) =>
-                      item.TRATATIVA === tratativa &&
-                      item.TIPO === tipo &&
-                      item["ABERTURA/FECHAMENTO"] === aberturaFechamento &&
-                      item.NETSMS === option,
-                  ),
-                )
-                .map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
+            <div className="space-y-2">
+              <Label htmlFor="aberturaFechamento">Abertura/Fechamento</Label>
+              <Select
+                value={aberturaFechamento}
+                onValueChange={setAberturaFechamento}
+                disabled={!tipo}
+              >
+                <SelectTrigger id="aberturaFechamento">
+                  <SelectValue placeholder="Selecione Abertura/Fechamento" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getOptions("ABERTURA/FECHAMENTO")
+                    .filter((option) =>
+                      data.some(
+                        (item) =>
+                          item.TRATATIVA === tratativa &&
+                          item.TIPO === tipo &&
+                          item["ABERTURA/FECHAMENTO"] === option,
+                      ),
+                    )
+                    .map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Label htmlFor="textoPadrao" className="mb-3 mt-5">
-            Texto Padrão
-          </Label>
-          <Select
-            value={textoPadrao}
-            onValueChange={handleTextoPadraoChange}
-            disabled={!netSMS}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione o Texto Padrão" />
-            </SelectTrigger>
-            <SelectContent>
-              {getOptions("TEXTO PADRAO")
-                .filter((option) =>
-                  data.some(
-                    (item) =>
-                      item.TRATATIVA === tratativa &&
-                      item.TIPO === tipo &&
-                      item["ABERTURA/FECHAMENTO"] === aberturaFechamento &&
-                      item.NETSMS === netSMS &&
-                      item["TEXTO PADRAO"] === option,
-                  ),
-                )
-                .map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
+            <div className="space-y-2">
+              <Label htmlFor="netsms">NetSMS</Label>
+              <Select
+                value={netSMS}
+                onValueChange={setNetSMS}
+                disabled={!aberturaFechamento}
+              >
+                <SelectTrigger id="netsms">
+                  <SelectValue placeholder="Selecione NetSMS" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getOptions("NETSMS")
+                    .filter((option) =>
+                      data.some(
+                        (item) =>
+                          item.TRATATIVA === tratativa &&
+                          item.TIPO === tipo &&
+                          item["ABERTURA/FECHAMENTO"] === aberturaFechamento &&
+                          item.NETSMS === option,
+                      ),
+                    )
+                    .map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="textoPadrao">Texto Padrão</Label>
+            <Select
+              value={textoPadrao}
+              onValueChange={handleTextoPadraoChange}
+              disabled={!netSMS}
+            >
+              <SelectTrigger id="textoPadrao">
+                <SelectValue placeholder="Selecione o Texto Padrão" />
+              </SelectTrigger>
+              <SelectContent>
+                {getOptions("TEXTO PADRAO")
+                  .filter((option) =>
+                    data.some(
+                      (item) =>
+                        item.TRATATIVA === tratativa &&
+                        item.TIPO === tipo &&
+                        item["ABERTURA/FECHAMENTO"] === aberturaFechamento &&
+                        item.NETSMS === netSMS &&
+                        item["TEXTO PADRAO"] === option,
+                    ),
+                  )
+                  .map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Conditional Fields */}
           {showIncidenteField && (
-            <>
-              <Label htmlFor="incidente" className="mb-2 mt-4">
-                Incidente
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="incidente">Incidente</Label>
               <Input
+                id="incidente"
                 type="text"
+                autoComplete="off"
                 value={incidente}
                 onChange={(e) => setIncidente(e.target.value)}
                 className={
                   showIncidenteField && !incidente ? "ring-1 ring-primary" : ""
                 }
-                placeholder="Por favor insira um incidente"
+                placeholder="Insira o número do incidente"
               />
-            </>
+            </div>
           )}
 
-          <Label htmlFor="observacao" className="mb-2 mt-4">
-            Observação
-          </Label>
-          <Input
-            type="text"
-            value={observacao}
-            onChange={removerAcentos}
-            className={
-              showObservacaoField && !observacao ? "ring-1 ring-primary" : ""
-            }
-            placeholder={
-              showObservacaoField ? "Por favor insira uma observação" : ""
-            }
-          />
-
-          <div className="mt-4 flex space-x-2">
-            <Button
-              onClick={handleGenerateText}
-              disabled={
-                !textoPadrao ||
-                (showIncidenteField && !incidente.trim()) ||
-                (showObservacaoField && !observacao.trim())
+          <div className="space-y-2">
+            <Label htmlFor="observacao">Observação</Label>
+            <Input
+              id="observacao"
+              type="text"
+              value={observacao}
+              onChange={removerAcentos}
+              className={
+                showObservacaoField && !observacao ? "ring-1 ring-primary" : ""
               }
-            >
-              <CopyIcon className="mr-2 w-4" />
-              Gerar e copiar texto
-            </Button>
-            <Button onClick={handleReset} variant="destructive">
-              <RotateCcwIcon className="mr-2 w-4" />
-              Reiniciar
-            </Button>
+              placeholder={
+                showObservacaoField ? "Insira sua observação" : "Opcional"
+              }
+            />
           </div>
 
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
+            <div className="flex gap-2">
+              <Button
+                onClick={handleGenerateText}
+                className="flex-1 sm:flex-none"
+                disabled={
+                  !textoPadrao ||
+                  (showIncidenteField && !incidente.trim()) ||
+                  (showObservacaoField && !observacao.trim())
+                }
+              >
+                <CopyIcon className="mr-2 h-4 w-4" />
+                Gerar e copiar texto
+              </Button>
+              <Button
+                onClick={handleReset}
+                variant="outline"
+                className="flex-1 sm:flex-none"
+              >
+                <RotateCcwIcon className="mr-2 h-4 w-4" />
+                Reiniciar
+              </Button>
+            </div>
+          </div>
+
+          {/* Results Section */}
           {textoPadraoConcatenado && (
-            <>
+            <div className="space-y-6 border-t border-border">
               <TabelaFechamentoSGD item={item} />
-              <div className="mt-10">
-                <p className="mb-5 font-semibold">Texto Padrão:</p>
+              <div>
+                <Label className="text-lg font-semibold">Texto Gerado:</Label>
                 <Textarea
                   readOnly
-                  className="h-40 overflow-hidden"
+                  className="mt-2 h-40 resize-none text-sm"
                   value={textoPadraoConcatenado}
                 />
               </div>
-            </>
+            </div>
           )}
         </CardContent>
       </Card>
