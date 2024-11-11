@@ -7,6 +7,7 @@ import Container from "modules/shared/components/ui/container";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import { Button } from "modules/shared/components/ui/button";
 import { CirclePlusIcon } from "lucide-react";
+import { Avatar, AvatarImage } from "modules/shared/components/ui/avatar";
 
 function Users() {
   const [dados, setDados] = useState([]);
@@ -14,6 +15,7 @@ function Users() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentItem, setCurrentItem] = useState({
     LOGIN: "",
+    AVATAR: "",
     NOME: "",
     GESTOR: "",
     PERMISSOES: "",
@@ -91,10 +93,24 @@ function Users() {
   const columns = useMemo(
     () => [
       {
+        header: "AVATAR",
+        accessorKey: "avatar",
+        enableHiding: true,
+        cell: ({ row }) => {
+          const user = row.original;
+          return (
+            <Avatar className="h-12 w-12">
+              <AvatarImage src={user.avatar} alt={user.NOME} />
+            </Avatar>
+          );
+        },
+      },
+      {
         header: "LOGIN",
         accessorKey: "LOGIN",
         enableHiding: true,
       },
+
       {
         header: "NOME",
         accessorKey: "NOME",
