@@ -14,6 +14,7 @@ import {
   Zap,
   CheckCircle2,
   Hexagon,
+  RefreshCw,
 } from "lucide-react";
 import axiosInstance from "services/axios";
 import { toast } from "sonner";
@@ -27,10 +28,15 @@ const OCQualinet = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const onDrop = useCallback((acceptedFiles) => {
-    setSelectedFile(acceptedFiles[0]);
-    setCurrentStep(1);
-  }, []);
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      if (currentStep === 0) {
+        setSelectedFile(acceptedFiles[0]);
+        setCurrentStep(1);
+      }
+    },
+    [currentStep],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -42,11 +48,11 @@ const OCQualinet = () => {
       ],
     },
     multiple: false,
+    disabled: currentStep !== 0,
   });
 
   const handleFileUpload = async () => {
-    if (!selectedFile) {
-      toast.error("Nenhum arquivo selecionado.");
+    if (!selectedFile || currentStep !== 1) {
       return;
     }
 
@@ -67,7 +73,7 @@ const OCQualinet = () => {
       const textoResposta = response.data.join("\n");
       setNewData(textoResposta);
       await navigator.clipboard.writeText(textoResposta);
-      toast.success("Texto copiado para a área de transferência com sucesso.");
+      toast.success("Texto copiado para a área de transferência.");
       setCurrentStep(2);
     } catch (error) {
       console.error("Erro ao enviar o arquivo:", error);
@@ -81,6 +87,13 @@ const OCQualinet = () => {
     }
   };
 
+  const handleRestart = () => {
+    setSelectedFile(null);
+    setNewData("");
+    setCurrentStep(0);
+    setIsProcessing(false);
+  };
+
   useEffect(() => {
     return () => {
       toast.dismiss();
@@ -88,20 +101,18 @@ const OCQualinet = () => {
   }, []);
 
   return (
-    <Container innerClassName="sm:mt-5">
-      <div className="relative mb-16 text-center">
+    <Container>
+      <div className="relative mb-11 text-center">
         <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-primary/30 blur-3xl"></div>
-        {/* <Atom className="mx-auto mb-6 h-20 w-20 animate-spin text-primary [animation-duration:10s]" /> */}
         <img
           src={appHeaderInfo["/ocfacil"].icon}
           alt="Net Fácil Icon"
           className="mx-auto mb-6 h-20 w-20 text-primary"
         />
-
         <h1 className="relative text-4xl font-bold tracking-tight text-foreground">
           OC Fácil
         </h1>
-        <p className="mt-3 text-lg text-muted">
+        <p className="mt-2 text-lg text-muted-foreground">
           Transforme extrações do QualiNET em Ocorrências no PowerApps
         </p>
       </div>
@@ -136,19 +147,22 @@ const OCQualinet = () => {
                     <div
                       {...getRootProps()}
                       className={`group flex flex-1 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-all ${
-                        isDragActive
+                        isDragActive && currentStep === 0
                           ? "border-primary bg-primary/10"
                           : "border-primary/40 hover:border-primary hover:bg-primary/5"
-                      }`}
+                      } ${currentStep !== 0 ? "pointer-events-none" : ""}`}
                     >
-                      <input {...getInputProps()} />
+                      <input
+                        {...getInputProps()}
+                        disabled={currentStep !== 0}
+                      />
                       {selectedFile ? (
                         <div className="text-center">
                           <FileIcon className="mx-auto mb-4 h-16 w-16 text-primary" />
                           <p className="text-sm font-medium text-foreground">
                             {selectedFile.name}
                           </p>
-                          <p className="mt-2 text-xs text-muted">
+                          <p className="mt-2 text-xs text-muted-foreground">
                             Carregado com sucesso
                           </p>
                         </div>
@@ -158,7 +172,7 @@ const OCQualinet = () => {
                           <p className="text-sm font-medium text-foreground">
                             Arraste aqui a planilha do QualiNet
                           </p>
-                          <p className="mt-2 text-xs text-muted">
+                          <p className="mt-2 text-xs text-muted-foreground">
                             ou clique para selecionar
                           </p>
                         </div>
@@ -171,7 +185,7 @@ const OCQualinet = () => {
                       {isProcessing ? (
                         <div className="text-center">
                           <Loader2 className="mx-auto mb-4 h-16 w-16 animate-spin text-primary" />
-                          <p className="text-sm font-medium text-muted">
+                          <p className="text-sm font-medium text-muted-foreground">
                             Processando dados...
                           </p>
                         </div>
@@ -182,7 +196,9 @@ const OCQualinet = () => {
                             className="relative mt-6 w-full gap-2"
                             size="lg"
                             onClick={handleFileUpload}
-                            disabled={isLoading || !selectedFile}
+                            disabled={
+                              isLoading || !selectedFile || currentStep !== 1
+                            }
                           >
                             <Zap className="h-5 w-5" />
                             Iniciar Processamento
@@ -197,28 +213,41 @@ const OCQualinet = () => {
                     <div className="flex flex-1 flex-col items-center justify-center">
                       {newData ? (
                         <div className="mt-8 flex flex-col items-center gap-6 text-center text-sm">
-                          <CheckCircle2 className="w-8" />
-                          <span className="flex items-center gap-2 text-success">
+                          <CheckCircle2 className="h-16 w-16 text-green-600" />
+                          <span className="flex items-center gap-2 font-semibold text-green-600">
                             <span>
-                              Sucesso! Dados copiados para área de transferência
+                              <strong>Sucesso! </strong>
+                              <br /> Dados copiados para a área de transferência
                             </span>
                           </span>
+
                           <Button
                             variant="outline"
                             size="sm"
                             className="gap-2"
-                            onClick={() =>
-                              navigator.clipboard.writeText(newData)
-                            }
+                            onClick={() => {
+                              navigator.clipboard
+                                .writeText(newData)
+                                .then(() => {
+                                  toast.success(
+                                    "Texto copiado para a área de transferência.",
+                                  );
+                                })
+                                .catch((error) => {
+                                  toast.error(
+                                    "Falha ao copiar o texto para a área de transferência.",
+                                  );
+                                });
+                            }}
                           >
                             <Copy className="h-4 w-4" />
                             Copiar novamente
                           </Button>
                         </div>
                       ) : (
-                        <div className="mt-8 flex flex-col items-center text-center">
+                        <div className="flex flex-col items-center text-center">
                           <Sparkles className="mb-4 h-16 w-16 text-primary" />
-                          <p className="text-sm text-muted">
+                          <p className="text-sm text-muted-foreground">
                             Aguardando dados processados...
                           </p>
                         </div>
@@ -242,6 +271,20 @@ const OCQualinet = () => {
               />
             ))}
           </div>
+
+          {currentStep === 2 && newData && (
+            <div className="mt-8 flex justify-center">
+              <Button
+                onClick={handleRestart}
+                className="gap-2"
+                variant="outline"
+                size="lg"
+              >
+                <RefreshCw className="h-5 w-5" />
+                Transformar Nova Extração
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </Container>
