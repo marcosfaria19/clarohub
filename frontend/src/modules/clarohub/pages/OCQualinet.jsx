@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "modules/shared/components/ui/button";
 import { Card, CardContent } from "modules/shared/components/ui/card";
-import { Textarea } from "modules/shared/components/ui/textarea";
 import {
   Loader2,
   FileIcon,
@@ -15,18 +14,20 @@ import {
   CheckCircle2,
   Hexagon,
   RefreshCw,
+  AlertCircle,
 } from "lucide-react";
 import axiosInstance from "services/axios";
 import { toast } from "sonner";
 import Container from "modules/shared/components/ui/container";
 import appHeaderInfo from "modules/shared/utils/appHeaderInfo";
 
-const OCQualinet = () => {
+export default function OCQualinet() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [newData, setNewData] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState(null);
 
   const onDrop = useCallback(
     (acceptedFiles) => {
@@ -59,6 +60,7 @@ const OCQualinet = () => {
     setIsLoading(true);
     setNewData("");
     setIsProcessing(true);
+    setError(null);
 
     try {
       const formData = new FormData();
@@ -74,9 +76,12 @@ const OCQualinet = () => {
       setNewData(textoResposta);
       await navigator.clipboard.writeText(textoResposta);
       toast.success("Texto copiado para a área de transferência.");
-      setCurrentStep(2);
     } catch (error) {
       console.error("Erro ao enviar o arquivo:", error);
+      setError(
+        error.response?.data ||
+          "Erro ao enviar o arquivo. Por favor, tente novamente.",
+      );
       toast.error(
         error.response?.data ||
           "Erro ao enviar o arquivo. Por favor, tente novamente.",
@@ -84,6 +89,7 @@ const OCQualinet = () => {
     } finally {
       setIsLoading(false);
       setIsProcessing(false);
+      setCurrentStep(2);
     }
   };
 
@@ -92,6 +98,7 @@ const OCQualinet = () => {
     setNewData("");
     setCurrentStep(0);
     setIsProcessing(false);
+    setError(null);
   };
 
   useEffect(() => {
@@ -211,7 +218,17 @@ const OCQualinet = () => {
 
                   {step === 2 && (
                     <div className="flex flex-1 flex-col items-center justify-center">
-                      {newData ? (
+                      {error ? (
+                        <div className="mt-8 flex flex-col items-center gap-6 text-center text-sm">
+                          <AlertCircle className="h-16 w-16 text-destructive" />
+                          <span className="flex items-center gap-2 font-semibold text-destructive">
+                            <span>
+                              <strong>Ops! </strong>
+                              <br /> {error}
+                            </span>
+                          </span>
+                        </div>
+                      ) : newData ? (
                         <div className="mt-8 flex flex-col items-center gap-6 text-center text-sm">
                           <CheckCircle2 className="h-16 w-16 text-green-600" />
                           <span className="flex items-center gap-2 font-semibold text-green-600">
@@ -272,7 +289,7 @@ const OCQualinet = () => {
             ))}
           </div>
 
-          {currentStep === 2 && newData && (
+          {currentStep === 2 && (
             <div className="mt-8 flex justify-center">
               <Button
                 onClick={handleRestart}
@@ -289,6 +306,4 @@ const OCQualinet = () => {
       </Card>
     </Container>
   );
-};
-
-export default OCQualinet;
+}

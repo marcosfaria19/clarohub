@@ -1,24 +1,18 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useDropzone } from "react-dropzone";
+import React, { useState, useEffect } from "react";
 import { Button } from "modules/shared/components/ui/button";
 import { Card, CardContent } from "modules/shared/components/ui/card";
 import { Textarea } from "modules/shared/components/ui/textarea";
 import {
   Loader2,
-  FileIcon,
   Sparkles,
   ArrowRight,
   Copy,
-  UploadCloud,
-  Atom,
   Zap,
   CheckCircle2,
   Hexagon,
   RefreshCw,
   BookOpenCheck,
   CheckIcon,
-  CopyIcon,
-  RotateCcwIcon,
   Hash,
   ClipboardPen,
 } from "lucide-react";
@@ -56,6 +50,7 @@ export default function NetSMSFacil({ userName, gestor }) {
   const [item, setItem] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSGDTable, setShowSGDTable] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -110,6 +105,7 @@ export default function NetSMSFacil({ userName, gestor }) {
       textoPadraoConcatenado += `\n\n${userName} // ${gestor}`;
 
       setTextoPadraoConcatenado(textoPadraoConcatenado);
+      setItem(selectedItem);
       toast.success("Texto copiado para a área de transferência.");
       navigator.clipboard.writeText(textoPadraoConcatenado);
       setCurrentStep(2);
@@ -167,6 +163,10 @@ export default function NetSMSFacil({ userName, gestor }) {
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^A-Z0-9\s]/g, "");
     setObservacao(value);
+  };
+
+  const handleViewSGDClosures = () => {
+    setShowSGDTable(true);
   };
 
   return (
@@ -436,15 +436,27 @@ export default function NetSMSFacil({ userName, gestor }) {
                   {step === 2 && (
                     <div className="flex flex-1 flex-col items-center justify-center">
                       {textoPadraoConcatenado ? (
-                        <div className="mt-8 flex w-full flex-col items-center gap-6 text-center text-sm">
+                        <div className="mt-4 flex w-full flex-col items-center space-y-4 text-center text-sm">
                           <CheckCircle2 className="h-16 w-16 text-green-600" />
-                          <span className="flex items-center gap-2 font-semibold text-green-600">
-                            <span>
-                              <strong>Sucesso! </strong>
-                              <br /> Dados copiados para a área de transferência
+                          <span className="flex flex-col items-center text-green-600">
+                            <span className="text-lg font-semibold">
+                              Sucesso!
+                            </span>
+                            <span className="text-sm">
+                              Dados copiados para a área de transferência
                             </span>
                           </span>
 
+                          {item && item.SGD && item.SGD.length > 0 && (
+                            <Button
+                              onClick={handleViewSGDClosures}
+                              variant="outline"
+                              size="sm"
+                              className="gap-2"
+                            >
+                              Fechamentos Sugeridos no SGD
+                            </Button>
+                          )}
                           <Textarea
                             readOnly
                             className="h-40 w-full resize-none text-sm"
@@ -460,7 +472,7 @@ export default function NetSMSFacil({ userName, gestor }) {
                                 .writeText(textoPadraoConcatenado)
                                 .then(() => {
                                   toast.success(
-                                    "Texto copiado para a área de transferência com sucesso.",
+                                    "Texto copiado para a área de transferência.",
                                   );
                                 })
                                 .catch((error) => {
@@ -520,6 +532,13 @@ export default function NetSMSFacil({ userName, gestor }) {
             isOpen={tabelaConsulta}
             onRequestClose={fecharTabelaConsulta}
           />
+          {item && (
+            <TabelaFechamentoSGD
+              item={item}
+              isOpen={showSGDTable}
+              onRequestClose={() => setShowSGDTable(false)}
+            />
+          )}
         </CardContent>
       </Card>
     </Container>

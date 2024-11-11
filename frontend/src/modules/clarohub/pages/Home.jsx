@@ -112,6 +112,7 @@ const Home = () => {
     "Plataformas",
     "PowerApps",
     "SharePoint",
+    "Central do Colaborador",
     "Gestão",
   ];
 

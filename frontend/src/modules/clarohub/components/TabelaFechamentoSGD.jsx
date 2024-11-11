@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "services/axios";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "modules/shared/components/ui/dialog";
+import { Button } from "modules/shared/components/ui/button";
 
-const TabelaFechamentoSGD = ({ item }) => {
+const TabelaFechamentoSGD = ({ item, isOpen, onRequestClose }) => {
   const columns = [
     {
       accessorKey: "FILA",
@@ -47,24 +55,33 @@ const TabelaFechamentoSGD = ({ item }) => {
   }, [item]);
 
   return (
-    <>
-      {isLoading ? (
-        <div className="flex h-[60vh] items-center justify-center">
-          <span className="loading loading-spinner loading-lg"></span>
-        </div>
-      ) : sgdData.length > 0 ? (
-        <div className="custom-scrollbar my-10 max-h-[60vh] overflow-auto">
-          <p className="mb-2 font-semibold">Fechamentos sugeridos no SGD:</p>
-          <TabelaPadrao
-            columns={columns}
-            data={sgdData}
-            filterInput={false}
-            columnFilter={false}
-            pagination={false}
-          />
-        </div>
-      ) : null}
-    </>
+    <Dialog open={isOpen} onOpenChange={onRequestClose}>
+      <DialogContent className="max-w-6xl">
+        <DialogHeader>
+          <DialogTitle>Fechamentos Sugeridos no SGD</DialogTitle>
+        </DialogHeader>
+        {isLoading ? (
+          <div className="flex h-[60vh] items-center justify-center">
+            <span className="loading loading-spinner loading-lg"></span>
+          </div>
+        ) : sgdData.length > 0 ? (
+          <div className="custom-scrollbar max-h-[60vh] overflow-auto pb-10">
+            <TabelaPadrao
+              columns={columns}
+              data={sgdData}
+              filterInput={false}
+              columnFilter={false}
+              pagination={false}
+            />
+          </div>
+        ) : null}
+        <DialogFooter>
+          <Button variant="secondary" onClick={onRequestClose}>
+            Fechar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
