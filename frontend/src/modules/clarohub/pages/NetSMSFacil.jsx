@@ -19,6 +19,8 @@ import {
   CheckIcon,
   CopyIcon,
   RotateCcwIcon,
+  Hash,
+  ClipboardPen,
 } from "lucide-react";
 import axiosInstance from "services/axios";
 import { toast } from "sonner";
@@ -184,14 +186,14 @@ export default function NetSMSFacil({ userName, gestor }) {
         </p>
       </div>
 
-      <Card className="relative mx-auto mb-44 max-w-full overflow-hidden border-primary/20 bg-background/50 shadow-2xl backdrop-blur-sm">
+      <Card className="relative mx-auto mb-12 max-w-full overflow-hidden border-primary/20 bg-background/50 shadow-2xl backdrop-blur-sm">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-card/15"></div>
 
         <CardContent className="relative p-8">
           <div className="grid gap-8 md:grid-cols-3">
             {[
-              { step: 0, title: "Inserir Código", icon: UploadCloud },
-              { step: 1, title: "Preencher Dados", icon: Atom },
+              { step: 0, title: "Inserir Código", icon: Hash },
+              { step: 1, title: "Preencher Dados", icon: ClipboardPen },
               { step: 2, title: "Resultado", icon: Sparkles },
             ].map(({ step, title, icon: Icon }) => (
               <div
@@ -211,7 +213,7 @@ export default function NetSMSFacil({ userName, gestor }) {
                   </div>
 
                   {step === 0 && (
-                    <div className="flex flex-1 flex-col items-center justify-center space-y-4">
+                    <div className="flex flex-1 flex-col items-center justify-start space-y-4">
                       <div className="w-full max-w-xs">
                         <Label htmlFor="codigo" className="mb-2 block">
                           Código
@@ -219,7 +221,7 @@ export default function NetSMSFacil({ userName, gestor }) {
                         <div className="flex gap-2">
                           <Input
                             id="codigo"
-                            className={`${codigoErro ? "border-destructive" : ""} flex-1`}
+                            className={`${codigoErro ? "border-destructive" : ""} w-[120px] flex-1`}
                             placeholder="Exemplo: 123"
                             value={codigo}
                             maxLength={3}
