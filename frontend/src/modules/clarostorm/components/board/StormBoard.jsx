@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import IdeaCard from "modules/clarostorm/components/board/IdeaCard";
 import { useMediaQuery } from "modules/shared/hooks/use-media-query";
 import {

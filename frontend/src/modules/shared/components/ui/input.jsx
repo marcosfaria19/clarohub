@@ -50,6 +50,7 @@ const Input = React.forwardRef(
           onBlur={handleBlur}
           {...props}
           ref={ref}
+          translate="no"
         />
         {floating && <label className={floatingLabelClasses}>{label}</label>}
       </div>
