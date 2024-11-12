@@ -126,6 +126,7 @@ const Rotas = () => {
           />
         }
       />
+      <Route path="*" element={<Navigate to="/home" />} />
     </Routes>
   );
 };
