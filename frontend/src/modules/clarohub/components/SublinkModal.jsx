@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,84 +18,83 @@ import { Label } from "modules/shared/components/ui/label";
 import cidadesAtlas from "modules/clarohub/utils/cidadesAtlas";
 import ufVisium from "modules/clarohub/utils/ufVisium";
 import ufNuvem from "modules/clarohub/utils/ufNuvem";
+import { toast } from "sonner";
 
 export default function SublinkModal({ show, handleClose, selectedApp }) {
   const [selectedLocation, setSelectedLocation] = useState("");
-  const [options, setOptions] = useState([]);
-  const [locationType, setLocationType] = useState("");
 
-  useEffect(() => {
-    if (selectedApp) {
-      if (selectedApp.nome === "Atlas") {
-        setOptions(Object.values(cidadesAtlas).flat().sort());
-        setLocationType("Cidade");
-      } else if (selectedApp.nome === "Visium") {
-        setOptions(Object.values(ufVisium).flat());
-        setLocationType("UF");
-      } else if (selectedApp.nome === "Nuvem") {
-        setOptions(Object.values(ufNuvem).flat().sort());
-        setLocationType("UF");
-      }
+  const { options, locationType } = useMemo(() => {
+    if (!selectedApp) return { options: [], locationType: "" };
+
+    switch (selectedApp.nome) {
+      case "Atlas":
+        return {
+          options: Object.values(cidadesAtlas).flat().sort(),
+          locationType: "Cidade",
+        };
+      case "Visium":
+        return {
+          options: Object.values(ufVisium).flat(),
+          locationType: "UF",
+        };
+      case "Nuvem":
+        return {
+          options: Object.values(ufNuvem).flat().sort(),
+          locationType: "UF",
+        };
+      default:
+        return { options: [], locationType: "" };
     }
   }, [selectedApp]);
 
+  useEffect(() => {
+    setSelectedLocation("");
+  }, [selectedApp]);
+
   const handleLocationSelect = () => {
-    const location = selectedLocation.trim().toLowerCase();
-    if (!selectedApp) {
-      console.warn("No selected app");
+    if (!selectedApp || !selectedLocation) {
+      toast.error("Por favor, selecione uma localização.");
       return;
     }
 
+    const location = selectedLocation.trim().toLowerCase();
     let selectedSubLink = null;
+    let locationData;
 
-    if (selectedApp.nome === "Atlas") {
-      for (const [subLinkName, cities] of Object.entries(cidadesAtlas)) {
-        if (cities.map((city) => city.toLowerCase()).includes(location)) {
-          selectedSubLink = selectedApp.subLinks.find(
-            (subLink) =>
-              subLink.nome.toLowerCase() === subLinkName.toLowerCase(),
-          );
-          break;
-        }
-      }
-    } else if (selectedApp.nome === "Visium") {
-      for (const [subLinkName, ufs] of Object.entries(ufVisium)) {
-        if (ufs.map((uf) => uf.toLowerCase()).includes(location)) {
-          selectedSubLink = selectedApp.subLinks.find(
-            (subLink) =>
-              subLink.nome.toLowerCase() === subLinkName.toLowerCase(),
-          );
-          break;
-        }
-      }
-    } else if (selectedApp.nome === "Nuvem") {
-      for (const [subLinkName, ufs] of Object.entries(ufNuvem)) {
-        if (ufs.map((uf) => uf.toLowerCase()).includes(location)) {
-          selectedSubLink = selectedApp.subLinks.find(
-            (subLink) =>
-              subLink.nome.toLowerCase() === subLinkName.toLowerCase(),
-          );
-          if (selectedSubLink) {
-            const updatedSubLink = `${selectedSubLink.rota}%2F${selectedLocation}`;
-            window.open(updatedSubLink, "_blank");
-          }
-          break;
-        }
+    switch (selectedApp.nome) {
+      case "Atlas":
+        locationData = cidadesAtlas;
+        break;
+      case "Visium":
+        locationData = ufVisium;
+        break;
+      case "Nuvem":
+        locationData = ufNuvem;
+        break;
+      default:
+        toast.error("Aplicativo não reconhecido.");
+        return;
+    }
+
+    for (const [subLinkName, locations] of Object.entries(locationData)) {
+      if (locations.map((loc) => loc.toLowerCase()).includes(location)) {
+        selectedSubLink = selectedApp.subLinks.find(
+          (subLink) => subLink.nome.toLowerCase() === subLinkName.toLowerCase(),
+        );
+        break;
       }
     }
 
     if (selectedSubLink) {
-      window.open(selectedSubLink.rota, "_blank");
+      let url = selectedSubLink.rota;
+      if (selectedApp.nome === "Nuvem") {
+        url = `${url}%2F${selectedLocation}`;
+      }
+      window.open(url, "_blank");
+      handleClose();
     } else {
-      console.warn(
-        `${selectedApp.nome === "Atlas" ? "Cidade" : "UF"} não encontrada.`,
-      );
-      alert(
-        `${selectedApp.nome === "Atlas" ? "Cidade" : "UF"} não encontrada.`,
-      );
+      toast.error(`${locationType} não encontrada.`);
     }
-
-    handleClose();
   };
 
   return (
@@ -107,36 +106,43 @@ export default function SublinkModal({ show, handleClose, selectedApp }) {
           </DialogTitle>
         </DialogHeader>
 
-        <Label htmlFor="location" className="text-sm font-medium">
-          {locationType}
-        </Label>
-        <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Selecione" />
-          </SelectTrigger>
-          <SelectContent>
-            {options.map((option, index) => (
-              <SelectItem key={index} value={option}>
-                {option}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="location" className="text-sm font-medium">
+              {locationType}
+            </Label>
+            <Select
+              value={selectedLocation}
+              onValueChange={setSelectedLocation}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {options.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         <DialogFooter className="sm:justify-end">
-          <div className="gap-2 sm:mt-4 sm:flex">
-            <Button
-              onClick={handleLocationSelect}
-              className="w-full justify-center sm:ml-3 sm:w-auto"
-            >
-              Selecionar
-            </Button>
+          <div className="mt-4 flex gap-2">
             <Button
               variant="secondary"
               onClick={handleClose}
-              className="mt-3 w-full justify-center sm:mt-0 sm:w-auto"
+              className="flex-1 sm:flex-none"
             >
               Cancelar
+            </Button>
+            <Button
+              onClick={handleLocationSelect}
+              className="flex-1 sm:flex-none"
+            >
+              Selecionar
             </Button>
           </div>
         </DialogFooter>
