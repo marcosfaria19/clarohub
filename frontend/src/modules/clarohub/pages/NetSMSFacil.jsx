@@ -182,7 +182,7 @@ export default function NetSMSFacil({ userName, gestor }) {
           Net SMS Fácil
         </h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Gerador de texto padrão para Net SMS
+          Gerador de texto padrão para o NetSMS
         </p>
       </div>
 
