@@ -25,6 +25,8 @@ import {
 } from "modules/shared/components/ui/dropdown-menu";
 import { useDownloadIdeas } from "modules/clarospark/hooks/useDownloadIdeas";
 import spark from "modules/clarospark/assets/f0.png";
+import sparkw from "modules/clarospark/assets/f0w.png";
+import { useTheme } from "modules/shared/contexts/ThemeContext";
 
 export default function SparkMenu({
   onToggleView,
@@ -60,6 +62,8 @@ export default function SparkMenu({
     fetchRemainingLikes();
   });
 
+  const { theme } = useTheme();
+
   return (
     <>
       <div className="relative bottom-0 top-[4px] z-20 flex w-1/2 justify-end space-x-2 justify-self-end sm:mr-10 sm:mt-24 lg:mr-10 lg:mt-0">
@@ -68,7 +72,7 @@ export default function SparkMenu({
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
                 <img
-                  src={spark}
+                  src={theme === "dark" ? spark : sparkw}
                   alt="Quantidade de Sparks"
                   width={22}
                   draggable={false}
@@ -78,7 +82,7 @@ export default function SparkMenu({
                 </span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Curtidas Restantes</TooltipContent>
+            <TooltipContent>Sparks Restantes</TooltipContent>
           </Tooltip>
 
           <Tooltip>

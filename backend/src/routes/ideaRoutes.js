@@ -70,7 +70,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
 
       /* Verificar likes diários */
       if (user.dailyLikesUsed >= 3) {
-        return res.status(403).json({ message: "Você já usou todos os seus likes diários." });
+        return res.status(403).json({ message: "Você já usou todos os seus sparks diários." });
       }
 
       await ideasCollection.updateOne(

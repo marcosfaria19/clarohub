@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { Button } from "modules/shared/components/ui/button";
 import {
@@ -24,31 +24,13 @@ import AvatarDropdown from "modules/shared/components/AvatarDropdown";
 import NotificationsPopover from "modules/shared/components/NotificationsPopover";
 import formatUserName from "modules/shared/utils/formatUsername";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
+import { useTheme } from "modules/shared/contexts/ThemeContext"; // Importa o hook de tema
 import appHeaderInfo from "../utils/appHeaderInfo";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
-  const [theme, setTheme] = useState("dark");
+  const { theme, toggleTheme } = useTheme(); // Usa o contexto para acessar e alternar o tema
   const location = useLocation();
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "dark";
-    setTheme(savedTheme);
-    document.documentElement.classList.toggle(
-      "light-theme",
-      savedTheme === "light",
-    );
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle(
-      "light-theme",
-      newTheme === "light",
-    );
-  };
 
   const onLogout = () => {
     logout();
@@ -78,7 +60,7 @@ const Header = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={toggleTheme}
+            onClick={toggleTheme} // Chama a função de alternar tema do contexto
             className="text-menu-foreground"
             aria-label={`Alternar para modo ${theme === "dark" ? "claro" : "escuro"}`}
           >

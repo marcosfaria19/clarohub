@@ -5,7 +5,7 @@ import f2 from "modules/clarospark/assets/f2.png";
 import f3 from "modules/clarospark/assets/f3.png";
 
 const iconMap = [
-  { threshold: 0, icon: f0, lightIcon: f0w },
+  { threshold: 0, iconDark: f0, iconLight: f0w },
   { threshold: 1, icon: f1 },
   { threshold: 15, icon: f2 },
   { threshold: 22, icon: f3 },
@@ -14,11 +14,12 @@ const iconMap = [
 export function getLikeIcon(likes, theme) {
   for (let i = iconMap.length - 1; i >= 0; i--) {
     if (likes >= iconMap[i].threshold) {
-      if (i === 0 && theme === "light") {
-        return iconMap[i].lightIcon;
+      // Retorna o ícone correto com base no tema
+      if (iconMap[i].iconDark && iconMap[i].iconLight) {
+        return theme === "dark" ? iconMap[i].iconDark : iconMap[i].iconLight;
       }
       return iconMap[i].icon;
     }
   }
-  return theme === "light" ? iconMap[0].lightIcon : iconMap[0].icon;
+  return iconMap[0].icon;
 }

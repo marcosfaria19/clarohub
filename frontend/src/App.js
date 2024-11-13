@@ -7,6 +7,7 @@ import Rotas from "./routes/Rotas";
 import "./App.css";
 import { Toaster } from "modules/shared/components/ui/sonner";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
+import { ThemeProvider } from "modules/shared/contexts/ThemeContext";
 
 function App() {
   // Acessa o contexto de autenticação
@@ -14,12 +15,14 @@ function App() {
 
   return (
     <Router>
+      <ThemeProvider>
       {!token && <Navigate to="/login" />}
       {token && <Header />}
       <Rotas />
       {token && <Footer />}
 
       <Toaster position="bottom-right" richColors />
+      </ThemeProvider>
     </Router>
   );
 }

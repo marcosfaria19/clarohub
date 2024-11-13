@@ -51,6 +51,7 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
       <form onSubmit={handleSubmit} className="grid gap-4">
         <Input
           placeholder="Título"
+          maxLength={50}
           value={newCard.title}
           onChange={(e) => setNewCard({ ...newCard, title: e.target.value })}
           required
@@ -58,6 +59,7 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
         <Textarea
           placeholder="Descrição"
           value={newCard.description}
+          maxLength={200}
           onChange={(e) =>
             setNewCard({ ...newCard, description: e.target.value })
           }

@@ -28,6 +28,7 @@ import { useLikes } from "modules/clarospark/hooks/useLikes";
 import statusConfig from "modules/clarospark/utils/statusConfig";
 import { getLikeIcon } from "modules/clarospark/utils/getLikeIcon";
 import spark from "modules/clarospark/assets/f0.png";
+import { useTheme } from "modules/shared/contexts/ThemeContext";
 
 export default function IdeaCard({
   title,
@@ -42,14 +43,14 @@ export default function IdeaCard({
   const { likesCount, handleLike, updateLikeCount } = useLikes();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { color, icon } = statusConfig[status] || statusConfig["Em análise"];
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
+  const { theme } = useTheme();
 
   const handleCardClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
   const isLongDescription = description.length > 90;
   const truncatedDescription = isLongDescription
-    ? `${description.substring(0, 85)} ... `
+    ? `${description.substring(0, 90)} ... `
     : description;
 
   const displayedCreator =
@@ -61,20 +62,6 @@ export default function IdeaCard({
   useEffect(() => {
     updateLikeCount(ideaId, initialLikesCount);
   }, [ideaId, initialLikesCount, updateLikeCount]);
-
-  useEffect(() => {
-    const handleThemeChange = () => {
-      const newTheme = localStorage.getItem("theme") || "dark";
-      setTheme(newTheme);
-    };
-
-    // Monitora mudanças no tema
-    window.addEventListener("storage", handleThemeChange);
-
-    return () => {
-      window.removeEventListener("storage", handleThemeChange);
-    };
-  }, []);
 
   const handleLikeClick = async (e) => {
     e.stopPropagation();
@@ -127,14 +114,14 @@ export default function IdeaCard({
               onClick={status === "Em Análise" ? handleLikeClick : undefined}
               disabled={status !== "Em Análise"}
             >
-              <img src={likeIcon} alt="Like" className="w-6" />
+              <img src={likeIcon} alt="Sparks" className="w-6" />
               <span className="relative bottom-4 right-1 text-xs">
                 {currentLikes}
               </span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            {status === "Em Análise" ? "Curtir ideia" : "Like desativado"}
+            {status === "Em Análise" ? "Apoiar ideia" : "Like desativado"}
           </TooltipContent>
         </Tooltip>
       </div>
@@ -170,7 +157,7 @@ export default function IdeaCard({
                   Criador(a) da ideia
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {currentLikes} curtidas
+                  {currentLikes} sparks
                 </p>
               </div>
             </div>
@@ -180,8 +167,8 @@ export default function IdeaCard({
             <div className="flex space-x-2">
               {status === "Em Análise" && (
                 <Button variant="primary" onClick={handleLikeClick}>
-                  <img src={spark} alt="Like" className="mr-2 w-6" />
-                  Curtir
+                  <img src={spark} alt="Sparks" className="mr-2 w-6" />
+                  Apoiar
                 </Button>
               )}
               <Button variant="secondary" onClick={handleCloseModal}>

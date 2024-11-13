@@ -26,7 +26,7 @@ export function useLikes() {
           return response.data.likesCount;
         }
       } catch (error) {
-        toast.warning("Você já utilizou todos os seus likes diários");
+        toast.warning("Você já utilizou todos os seus sparks diários");
 
         throw error;
       }
