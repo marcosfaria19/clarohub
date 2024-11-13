@@ -87,8 +87,6 @@ module.exports = (qualinetCollection) => {
         
         const result = await qualinetCollection.insertMany(filteredDataAllUFs);
 
-        console.log("result:", result);
-
         if (!result || !result.insertedIds) {
           return res
             .status(500)

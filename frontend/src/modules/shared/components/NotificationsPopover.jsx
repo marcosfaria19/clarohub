@@ -16,8 +16,10 @@ export default function NotificationsPopover() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const handleClearReadNotifications = async () => {
-    await clearReadNotifications();
+  const handleClearReadNotifications = async (notificationId) => {
+    if (notificationId) {
+      await clearReadNotifications(notificationId);
+    }
   };
 
   const handlePopoverChange = async (isOpen) => {
@@ -78,18 +80,18 @@ export default function NotificationsPopover() {
                       {new Date(notification.createdAt).toLocaleString()}
                     </p>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() =>
+                      handleClearReadNotifications(notification._id)
+                    } // Passando o ID aqui
+                    aria-label="Clear read notifications"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </Button>
                 </div>
               ))}
-              <div className="mb-2 mr-1 flex justify-end">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleClearReadNotifications}
-                  aria-label="Clear read notifications"
-                >
-                  <Trash2 className="h-5 w-5" />
-                </Button>
-              </div>
             </>
           )}
         </div>

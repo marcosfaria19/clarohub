@@ -1,13 +1,13 @@
-// useManagerTable.js
-
 import { useState } from "react";
 import axiosInstance from "services/axios";
+import useNotifications from "modules/shared/hooks/useNotifications";
 
 const useManagerTable = () => {
   const [dados, setDados] = useState([]);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [newStatus, setNewStatus] = useState("");
+  const { createUserNotification } = useNotifications();
 
   const fetchDados = async () => {
     try {
@@ -25,12 +25,12 @@ const useManagerTable = () => {
         status: newStatus,
       });
 
-      // Notifique o usuário que sua a ideia mudou de status
-      await axiosInstance.post(`/notifications`, {
-        userId: selectedItem.creator._id,
-        type: "idea_status",
-        message: `Uma ideia sua foi ${newStatus}.`,
-      });
+      // Cria a notificação para o usuário
+      await createUserNotification(
+        selectedItem.creator._id,
+        "idea_status",
+        `Uma ideia sua foi ${newStatus}.`,
+      );
 
       setDados((prevDados) =>
         prevDados.map((item) =>

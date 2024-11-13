@@ -92,7 +92,8 @@ const Rotas = () => {
           />
         }
       />
-      <Route
+
+      {/* <Route
         path="/storm"
         element={
           <ProtectedRoute
@@ -100,7 +101,8 @@ const Rotas = () => {
             element={<ClaroStorm />}
           />
         }
-      />
+      /> */}
+
       <Route
         path="/netadmin"
         element={

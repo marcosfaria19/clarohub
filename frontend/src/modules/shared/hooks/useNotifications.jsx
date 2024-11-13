@@ -37,25 +37,17 @@ const useNotifications = () => {
     }
   }, [user, fetchNotifications]);
 
-  const markAsRead = async (notificationId) => {
+  const clearReadNotifications = async (notificationId) => {
     try {
-      await axiosInstance.patch(`/notifications/${notificationId}/read`, {
+      await axiosInstance.patch(`/notifications/${notificationId}/hide`, {
         userId: user.userId,
       });
       await fetchNotifications();
     } catch (error) {
-      console.error("Error marking notification as read:", error);
+      console.error("Erro ao ocultar notificação:", error);
     }
   };
 
-  const clearReadNotifications = async () => {
-    try {
-      await axiosInstance.delete(`/notifications/${user.userId}/read`);
-      await fetchNotifications();
-    } catch (error) {
-      console.error("Error clearing read notifications:", error);
-    }
-  };
   const markAllAsRead = async () => {
     try {
       await axiosInstance.patch(`/notifications/${user.userId}/mark-all-read`);
@@ -65,12 +57,40 @@ const useNotifications = () => {
     }
   };
 
+  const createGlobalNotification = async (type, message) => {
+    try {
+      await axiosInstance.post("/notifications", {
+        type,
+        message,
+        isGlobal: true,
+      });
+      await fetchNotifications();
+    } catch (error) {
+      console.error("Error creating global notification:", error);
+    }
+  };
+
+  const createUserNotification = async (userId, type, message) => {
+    try {
+      await axiosInstance.post("/notifications", {
+        userId,
+        type,
+        message,
+        isGlobal: false,
+      });
+      await fetchNotifications();
+    } catch (error) {
+      console.error("Error creating user notification:", error);
+    }
+  };
+
   return {
     notifications,
     refetchNotifications: fetchNotifications,
-    markAsRead,
     clearReadNotifications,
     markAllAsRead,
+    createGlobalNotification,
+    createUserNotification,
   };
 };
 
