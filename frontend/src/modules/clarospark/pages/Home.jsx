@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { Dialog, DialogTrigger } from "modules/shared/components/ui/dialog";
-import { useSubjectsAndCards } from "modules/clarostorm/hooks/useSubjectsAndCards";
-import { useNewCard } from "modules/clarostorm/hooks/useNewCard";
-import StormMenu from "modules/clarostorm/components/board/StormMenu";
-import StormBoard from "modules/clarostorm/components/board/StormBoard";
-import ManagerTable from "modules/clarostorm/components/board/ManagerTable";
-import AddIdeaModal from "modules/clarostorm/components/board/AddIdeaModal";
-import ErrorDisplay from "modules/clarostorm/components/ErrorDisplay";
-import LoadingSpinner from "modules/clarostorm/components/LoadingSpinner";
+import { useSubjectsAndCards } from "modules/clarospark/hooks/useSubjectsAndCards";
+import { useNewCard } from "modules/clarospark/hooks/useNewCard";
+import SparkMenu from "modules/clarospark/components/board/SparkMenu";
+import SparkBoard from "modules/clarospark/components/board/SparkBoard";
+import ManagerTable from "modules/clarospark/components/board/ManagerTable";
+import AddIdeaModal from "modules/clarospark/components/board/AddIdeaModal";
+import ErrorDisplay from "modules/clarospark/components/ErrorDisplay";
+import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
 import Container from "modules/shared/components/ui/container";
 import { Button } from "modules/shared/components/ui/button";
 
-export default function ClaroStorm({ userName, userId }) {
+export default function Clarospark({ userName, userId }) {
   const { subjects, sortedCards, isLoading, error } = useSubjectsAndCards();
   const { newCard, setNewCard, handleAddCard } = useNewCard(subjects);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -24,7 +24,7 @@ export default function ClaroStorm({ userName, userId }) {
 
   return (
     <Container innerClassName="lg:px-7 max-w-[1920px] bg-container">
-      <StormMenu
+      <SparkMenu
         onToggleView={() => setIsManagerView(!isManagerView)}
         onFilterChange={setCurrentFilter}
         currentFilter={currentFilter}
@@ -33,7 +33,7 @@ export default function ClaroStorm({ userName, userId }) {
         <ManagerTable subjects={subjects} cards={sortedCards} />
       ) : (
         <>
-          <StormBoard
+          <SparkBoard
             subjects={subjects}
             cards={sortedCards}
             currentFilter={currentFilter}

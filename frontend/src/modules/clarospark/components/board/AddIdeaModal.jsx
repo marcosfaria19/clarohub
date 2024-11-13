@@ -23,7 +23,7 @@ import {
   TooltipTrigger,
 } from "modules/shared/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
-import { useNewCard } from "modules/clarostorm/hooks/useNewCard";
+import { useNewCard } from "modules/clarospark/hooks/useNewCard";
 
 export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
   const [isAnonymous, setIsAnonymous] = useState(false);

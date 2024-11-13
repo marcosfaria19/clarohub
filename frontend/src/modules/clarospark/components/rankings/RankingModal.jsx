@@ -20,7 +20,7 @@ const useRankings = (type) => {
     const fetchRankings = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get(`/storm/rankings/${type}`);
+        const response = await axiosInstance.get(`/spark/rankings/${type}`);
         setRankings(response.data.rankings);
         setError(null);
       } catch (err) {

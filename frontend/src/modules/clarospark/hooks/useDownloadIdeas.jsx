@@ -11,7 +11,7 @@ export const useDownloadIdeas = () => {
 
     try {
       const response = await axiosInstance({
-        url: "/storm/ideas/download",
+        url: "/spark/ideas/download",
         method: "GET",
         responseType: "blob",
       });
@@ -20,7 +20,7 @@ export const useDownloadIdeas = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "clarostorm_ideas.csv");
+      link.setAttribute("download", "clarospark_ideas.csv");
       document.body.appendChild(link);
       link.click();
       link.parentNode?.removeChild(link);

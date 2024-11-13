@@ -9,7 +9,7 @@ import Home from "modules/clarohub/pages/Home";
 import NetSMSFacilAdmin from "modules/clarohub/pages/NetSMSFacilAdmin";
 import OCFacilAdmin from "modules/clarohub/pages/OCFacilAdmin";
 import AppAdmin from "modules/clarohub/pages/AppAdmin";
-import ClaroStorm from "modules/clarostorm/pages/Home";
+import Clarospark from "modules/clarospark/pages/Home";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 
 const ProtectedRoute = ({ allowedRoles, element }) => {
@@ -94,11 +94,11 @@ const Rotas = () => {
       />
 
       <Route
-        path="/storm"
+        path="/spark"
         element={
           <ProtectedRoute
             allowedRoles={["guest", "basic", "manager", "admin"]}
-            element={<ClaroStorm />}
+            element={<Clarospark />}
           />
         }
       />

@@ -9,7 +9,7 @@ import {
 import { Button } from "modules/shared/components/ui/button";
 import RankingModal from "../rankings/RankingModal";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
-import { useDailyLikes } from "modules/clarostorm/hooks/useDailyLikes";
+import { useDailyLikes } from "modules/clarospark/hooks/useDailyLikes";
 import {
   Tooltip,
   TooltipContent,
@@ -24,9 +24,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "modules/shared/components/ui/dropdown-menu";
-import { useDownloadIdeas } from "modules/clarostorm/hooks/useDownloadIdeas";
+import { useDownloadIdeas } from "modules/clarospark/hooks/useDownloadIdeas";
 
-export default function StormMenu({
+export default function SparkMenu({
   onToggleView,
   onFilterChange,
   currentFilter,

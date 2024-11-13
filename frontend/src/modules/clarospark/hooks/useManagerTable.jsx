@@ -11,7 +11,7 @@ const useManagerTable = () => {
 
   const fetchDados = async () => {
     try {
-      const response = await axiosInstance.get(`/storm/ideas`);
+      const response = await axiosInstance.get(`/spark/ideas`);
       setDados(response.data);
     } catch (error) {
       console.error("Erro ao buscar dados do backend:", error);
@@ -21,7 +21,7 @@ const useManagerTable = () => {
   const updateStatus = async () => {
     if (!selectedItem || !newStatus) return;
     try {
-      await axiosInstance.patch(`/storm/ideas/${selectedItem._id}`, {
+      await axiosInstance.patch(`/spark/ideas/${selectedItem._id}`, {
         status: newStatus,
       });
 

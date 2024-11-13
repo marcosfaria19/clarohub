@@ -25,8 +25,8 @@ import { Separator } from "modules/shared/components/ui/separator";
 import { cn } from "modules/shared/lib/utils";
 import formatUserName from "modules/shared/utils/formatUsername";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
-import { useLikes } from "modules/clarostorm/hooks/useLikes";
-import statusConfig from "modules/clarostorm/utils/statusConfig";
+import { useLikes } from "modules/clarospark/hooks/useLikes";
+import statusConfig from "modules/clarospark/utils/statusConfig";
 
 export default function IdeaCard({
   title,
@@ -72,7 +72,7 @@ export default function IdeaCard({
   return (
     <TooltipProvider>
       <div
-        className="relative h-36 w-full cursor-pointer rounded-lg bg-card-storm p-4 shadow transition-shadow hover:shadow-md"
+        className="relative h-36 w-full cursor-pointer rounded-lg bg-card-spark p-4 shadow transition-shadow hover:shadow-md"
         onClick={handleCardClick}
       >
         <h4 className="max-w-[250px] truncate text-sm font-semibold">
@@ -122,7 +122,7 @@ export default function IdeaCard({
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="bg-card-storm sm:max-w-[550px]">
+        <DialogContent className="bg-card-spark sm:max-w-[550px]">
           <DialogHeader className="mb-2 p-0">
             <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
             <Badge className={cn("mt-2 w-fit text-sm", color)}>

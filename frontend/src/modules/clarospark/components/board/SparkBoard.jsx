@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import IdeaCard from "modules/clarostorm/components/board/IdeaCard";
+import IdeaCard from "modules/clarospark/components/board/IdeaCard";
 import { useMediaQuery } from "modules/shared/hooks/use-media-query";
 import {
   Carousel,
@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "modules/shared/components/ui/carousel";
 
-export default function StormBoard({ subjects, cards, currentFilter }) {
+export default function SparkBoard({ subjects, cards, currentFilter }) {
   const [activeSubject, setActiveSubject] = useState(subjects[0]);
   const isMobile = useMediaQuery("(max-width: 640px)");
   const isTablet = useMediaQuery("(max-width: 1024px)");
@@ -33,7 +33,7 @@ export default function StormBoard({ subjects, cards, currentFilter }) {
   }, [cards, currentFilter]);
 
   const renderSubjectTabs = () => (
-    <div className="scrollbar-storm mb-4 flex overflow-x-auto rounded-lg">
+    <div className="scrollbar-spark mb-4 flex overflow-x-auto rounded-lg">
       {subjects.map((subject) => (
         <button
           key={subject}
@@ -84,7 +84,7 @@ export default function StormBoard({ subjects, cards, currentFilter }) {
                   {subject}
                 </h2>
               </div>
-              <div className="scrollbar-storm flex-1 space-y-5 overflow-y-auto p-5">
+              <div className="scrollbar-spark flex-1 space-y-5 overflow-y-auto p-5">
                 {filteredAndSortedCards[subject]?.map((card) => (
                   <IdeaCard key={card._id} ideaId={card._id} {...card} />
                 ))}
@@ -124,7 +124,7 @@ export default function StormBoard({ subjects, cards, currentFilter }) {
           )}
           <div className="bg-board py-2" />
           <div
-            className={`scrollbar-storm flex-1 overflow-y-auto bg-board ${
+            className={`scrollbar-spark flex-1 overflow-y-auto bg-board ${
               index === 0 ? "rounded-bl-lg" : ""
             } ${index === subjects.length - 1 ? "rounded-br-lg" : ""}`}
           >

@@ -58,8 +58,8 @@ export function useSubjectsAndCards() {
       setError(null);
       try {
         const [subjectsResponse, cardsResponse] = await Promise.all([
-          axiosInstance.get("/storm/subjects"),
-          axiosInstance.get("/storm/ideas"),
+          axiosInstance.get("/spark/subjects"),
+          axiosInstance.get("/spark/ideas"),
         ]);
 
         if (subjectsResponse.status === 200 && cardsResponse.status === 200) {
@@ -93,7 +93,7 @@ export function useSubjectsAndCards() {
       cluster: process.env.REACT_APP_PUSHER_CLUSTER,
     });
 
-    const channel = pusher.subscribe("claro-storm");
+    const channel = pusher.subscribe("claro-spark");
     channel.bind("new-idea", function (data) {
       setCards((prevCards) => ({
         ...prevCards,
@@ -112,7 +112,7 @@ export function useSubjectsAndCards() {
     return () => {
       channel.unbind("new-idea");
       channel.unbind("update-likes");
-      pusher.unsubscribe("claro-storm");
+      pusher.unsubscribe("claro-spark");
     };
   }, [updateCardLikes, updateLikeCount]);
 

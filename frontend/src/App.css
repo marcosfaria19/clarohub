@@ -49,7 +49,7 @@
 
     --board: 218 28% 15%;
     --board-title: 218 41% 11%;
-    --card-storm: 218 41% 11%;
+    --card-spark: 218 41% 11%;
     --podium: 215 16% 47%;
 
     --ring: 263.4 70% 50.4%;
@@ -103,7 +103,7 @@
 
     --board: 0 0% 95%;
     --board-title: 217 28% 15%;
-    --card-storm: 0 0% 100%;
+    --card-spark: 0 0% 100%;
     --podium: 215 16% 47%;
 
     --ring: 263.4 70% 50.4%;
@@ -179,18 +179,18 @@ html {
   overflow-y: scroll;
 }
 
-.scrollbar-storm::-webkit-scrollbar {
+.scrollbar-spark::-webkit-scrollbar {
   width: 6px;
   height: 10px;
   background-color: transparent;
 }
 
-.scrollbar-storm::-webkit-scrollbar-thumb {
+.scrollbar-spark::-webkit-scrollbar-thumb {
   background-color: hsl(var(--foreground)/ 0.8);
   filter: brightness(10);
   opacity: 10;
   border-radius: 6px;
 }
-.scrollbar-storm::-webkit-scrollbar-track-piece {
+.scrollbar-spark::-webkit-scrollbar-track-piece {
   background-color:transparent;
 }

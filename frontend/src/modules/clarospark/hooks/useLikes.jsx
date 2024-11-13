@@ -12,7 +12,7 @@ export function useLikes() {
   const handleLike = useCallback(
     async (ideaId) => {
       try {
-        const response = await axiosInstance.post("/storm/like-idea", {
+        const response = await axiosInstance.post("/spark/like-idea", {
           ideaId,
           userId: user.userId,
         });

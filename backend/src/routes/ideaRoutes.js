@@ -41,7 +41,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       };
 
       await ideasCollection.insertOne(newIdea);
-      pusher.trigger("claro-storm", "new-idea", {
+      pusher.trigger("claro-spark", "new-idea", {
         card: newIdea,
       });
       res.status(201).json({ message: "Card criado com sucesso", idea: newIdea });
@@ -88,7 +88,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       );
 
       // Atualizar contagem de likes em tempo real
-      pusher.trigger("claro-storm", "update-likes", {
+      pusher.trigger("claro-spark", "update-likes", {
         ideaId: ideaId,
         likesCount: idea.likesCount + 1,
       });
@@ -198,7 +198,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       const csv = json2csvParser.parse(formattedData);
 
       res.header("Content-Type", "text/csv; charset=utf-8");
-      res.header("Content-Disposition", "attachment; filename=clarostorm_ideas.csv");
+      res.header("Content-Disposition", "attachment; filename=clarospark_ideas.csv");
       res.send("\uFEFF" + csv);
     } catch (err) {
       console.error("Erro ao gerar CSV:", err);

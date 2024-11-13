@@ -75,9 +75,9 @@ async function startServer() {
     app.use("/", netsmsfacilRoutes);
     app.use("/", netfacilsgdRoutes);
     app.use("/", appRoutes);
-    app.use("/storm/", subjectRoutes);
-    app.use("/storm/", ideaRoutes);
-    app.use("/storm/", rankingRoutes);
+    app.use("/spark/", subjectRoutes);
+    app.use("/spark/", ideaRoutes);
+    app.use("/spark/", rankingRoutes);
     app.use("/notifications/", notificationRoutes);
 
     // Middleware para servir imagens estáticas

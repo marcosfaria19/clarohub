@@ -9,7 +9,7 @@ const useRanking = (type) => {
     const fetchRanking = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/storm/rankings/${type}`);
+        const response = await fetch(`/spark/rankings/${type}`);
         if (!response.ok) {
           throw new Error("Failed to fetch ranking");
         }

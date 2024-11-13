@@ -70,7 +70,7 @@ const TabelaNetFacil = ({ isOpen, onRequestClose }) => {
             <span className="loading loading-spinner loading-lg"></span>
           </div>
         ) : (
-          <div className="scrollbar-storm max-h-[60vh] overflow-auto p-2 pr-5">
+          <div className="scrollbar-spark max-h-[60vh] overflow-auto p-2 pr-5">
             <TabelaPadrao columns={columns} data={data} />
           </div>
         )}

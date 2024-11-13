@@ -14,7 +14,7 @@ export function useNewCard(subjects, userId) {
 
   const handleAddCard = async (cardData) => {
     try {
-      const response = await axiosInstance.post("/storm/add-idea", {
+      const response = await axiosInstance.post("/spark/add-idea", {
         ...cardData,
         userId,
       });

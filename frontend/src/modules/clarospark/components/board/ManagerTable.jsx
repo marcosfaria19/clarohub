@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
-import statusConfig from "modules/clarostorm/utils/statusConfig";
+import statusConfig from "modules/clarospark/utils/statusConfig";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -21,7 +21,7 @@ import {
   DialogFooter,
 } from "modules/shared/components/ui/dialog";
 import { Button } from "modules/shared/components/ui/button";
-import useManagerTable from "modules/clarostorm/hooks/useManagerTable";
+import useManagerTable from "modules/clarospark/hooks/useManagerTable";
 
 function ManagerTable() {
   const {
