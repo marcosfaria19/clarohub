@@ -78,7 +78,9 @@ export default function IdeaCard({
   return (
     <TooltipProvider>
       <div
-        className="bg-card-spark relative h-36 w-full cursor-pointer rounded-lg p-4 shadow transition-shadow hover:shadow-md"
+        className={`bg-card-spark relative h-36 w-full max-w-md cursor-pointer rounded-lg p-4 ${
+          currentLikes > 19 ? "animate-shadow-pulse" : "border-0"
+        } `}
         onClick={handleCardClick}
       >
         <h4 className="max-w-[250px] truncate text-sm font-semibold">
