@@ -25,7 +25,7 @@ const AvatarCreator = ({ currentAvatar, onClose, isOpen, userId, onSave }) => {
       : {
           seed: "Felix",
           glasses: ["variant03"],
-          backgroundColor: ["fffff"],
+          backgroundColor: ["000554"],
           mouth: ["variant05"],
           eyes: ["variant05"],
           eyebrows: ["variant05"],
@@ -37,7 +37,7 @@ const AvatarCreator = ({ currentAvatar, onClose, isOpen, userId, onSave }) => {
 
   // Define o avatar inicial apenas quando o diálogo é aberto
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !currentAvatar) {
       setAvatarUrl(currentAvatar);
     }
   }, [currentAvatar, isOpen]);
