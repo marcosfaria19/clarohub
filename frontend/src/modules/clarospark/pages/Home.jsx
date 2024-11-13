@@ -19,8 +19,18 @@ export default function Clarospark({ userName, userId }) {
   const [isManagerView, setIsManagerView] = useState(false);
   const [currentFilter, setCurrentFilter] = useState("emAnalise");
 
-  if (isLoading) return <LoadingSpinner />;
-  if (error) return <ErrorDisplay message={error} />;
+  if (isLoading)
+    return (
+      <Container>
+        <LoadingSpinner />;
+      </Container>
+    );
+  if (error)
+    return (
+      <Container>
+        <ErrorDisplay message={error} />
+      </Container>
+    );
 
   return (
     <Container innerClassName="lg:px-7 max-w-[1920px] bg-container">

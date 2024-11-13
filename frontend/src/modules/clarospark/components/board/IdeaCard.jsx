@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from "react";
-import { ThumbsUp } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import { Badge } from "modules/shared/components/ui/badge";
 import {
@@ -27,6 +26,8 @@ import formatUserName from "modules/shared/utils/formatUsername";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useLikes } from "modules/clarospark/hooks/useLikes";
 import statusConfig from "modules/clarospark/utils/statusConfig";
+import { getLikeIcon } from "modules/clarospark/utils/getLikeIcon";
+import spark from "modules/clarospark/assets/f0.png";
 
 export default function IdeaCard({
   title,
@@ -41,6 +42,7 @@ export default function IdeaCard({
   const { likesCount, handleLike, updateLikeCount } = useLikes();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { color, icon } = statusConfig[status] || statusConfig["Em análise"];
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
 
   const handleCardClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
@@ -60,6 +62,20 @@ export default function IdeaCard({
     updateLikeCount(ideaId, initialLikesCount);
   }, [ideaId, initialLikesCount, updateLikeCount]);
 
+  useEffect(() => {
+    const handleThemeChange = () => {
+      const newTheme = localStorage.getItem("theme") || "dark";
+      setTheme(newTheme);
+    };
+
+    // Monitora mudanças no tema
+    window.addEventListener("storage", handleThemeChange);
+
+    return () => {
+      window.removeEventListener("storage", handleThemeChange);
+    };
+  }, []);
+
   const handleLikeClick = async (e) => {
     e.stopPropagation();
     try {
@@ -69,10 +85,13 @@ export default function IdeaCard({
     }
   };
 
+  const currentLikes = likesCount[ideaId] || initialLikesCount;
+  const likeIcon = getLikeIcon(currentLikes, theme);
+
   return (
     <TooltipProvider>
       <div
-        className="relative h-36 w-full cursor-pointer rounded-lg bg-card-spark p-4 shadow transition-shadow hover:shadow-md"
+        className="bg-card-spark relative h-36 w-full cursor-pointer rounded-lg p-4 shadow transition-shadow hover:shadow-md"
         onClick={handleCardClick}
       >
         <h4 className="max-w-[250px] truncate text-sm font-semibold">
@@ -86,8 +105,7 @@ export default function IdeaCard({
 
         <div className="absolute bottom-3 left-4 flex items-center">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={displayedAvatar} alt={displayedCreator} />{" "}
-            {/* Usando o avatar do criador aqui */}
+            <AvatarImage src={displayedAvatar} alt={displayedCreator} />
             <AvatarFallback>{displayedCreator[0]}</AvatarFallback>
           </Avatar>
           <div className="ml-2 flex max-w-[120px] flex-col">
@@ -105,13 +123,13 @@ export default function IdeaCard({
             <Button
               variant="ghost"
               size="sm"
-              className="absolute bottom-1 right-4 p-1 text-foreground"
+              className="absolute bottom-1 right-1 p-1 text-foreground"
               onClick={status === "Em Análise" ? handleLikeClick : undefined}
               disabled={status !== "Em Análise"}
             >
-              <ThumbsUp size={16} className="mr-1" />
-              <span className="text-xs">
-                {likesCount[ideaId] || initialLikesCount}
+              <img src={likeIcon} alt="Like" className="w-6" />
+              <span className="relative bottom-4 right-1 text-xs">
+                {currentLikes}
               </span>
             </Button>
           </TooltipTrigger>
@@ -141,8 +159,7 @@ export default function IdeaCard({
           <DialogFooter className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={displayedAvatar} alt={displayedCreator} />{" "}
-                {/* Usando o avatar do criador aqui também */}
+                <AvatarImage src={displayedAvatar} alt={displayedCreator} />
                 <AvatarFallback>{displayedCreator[0]}</AvatarFallback>
               </Avatar>
               <div>
@@ -153,7 +170,7 @@ export default function IdeaCard({
                   Criador(a) da ideia
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {likesCount[ideaId] || initialLikesCount} curtidas
+                  {currentLikes} curtidas
                 </p>
               </div>
             </div>
@@ -163,7 +180,8 @@ export default function IdeaCard({
             <div className="flex space-x-2">
               {status === "Em Análise" && (
                 <Button variant="primary" onClick={handleLikeClick}>
-                  <ThumbsUp className="mr-2" size={18} /> Curtir
+                  <img src={spark} alt="Like" className="mr-2 w-6" />
+                  Curtir
                 </Button>
               )}
               <Button variant="secondary" onClick={handleCloseModal}>

@@ -67,8 +67,11 @@ const Header = () => {
             src={`${currentApp.icon}`}
             alt="Claro Hub"
             className="mr-1 h-7 w-7"
+            draggable={false}
           />
-          <span className="text-2xl font-semibold">{currentApp.name}</span>
+          <span className="pointer-events-none text-2xl font-semibold">
+            {currentApp.name}
+          </span>
         </Link>
 
         <div className="flex items-center space-x-3">

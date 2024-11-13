@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
 import {
-  ThumbsUp,
   Trophy,
   SlidersHorizontal,
   ArrowDownToLine,
@@ -25,6 +24,7 @@ import {
   DropdownMenuSeparator,
 } from "modules/shared/components/ui/dropdown-menu";
 import { useDownloadIdeas } from "modules/clarospark/hooks/useDownloadIdeas";
+import spark from "modules/clarospark/assets/f0.png";
 
 export default function SparkMenu({
   onToggleView,
@@ -62,12 +62,17 @@ export default function SparkMenu({
 
   return (
     <>
-      <div className="relative bottom-0 top-[5px] z-20 flex w-1/2 justify-end space-x-2 justify-self-end sm:mr-10 sm:mt-24 lg:mr-10 lg:mt-0">
+      <div className="relative bottom-0 top-[4px] z-20 flex w-1/2 justify-end space-x-2 justify-self-end sm:mr-10 sm:mt-24 lg:mr-10 lg:mt-0">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
-                <ThumbsUp className="h-5 w-5" />
+                <img
+                  src={spark}
+                  alt="Quantidade de Sparks"
+                  width={22}
+                  draggable={false}
+                />
                 <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
                   {remainingLikes}
                 </span>

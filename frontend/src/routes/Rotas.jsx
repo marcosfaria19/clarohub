@@ -12,10 +12,22 @@ import AppAdmin from "modules/clarohub/pages/AppAdmin";
 import Clarospark from "modules/clarospark/pages/Home";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  try {
+    const decodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+    return decodedToken.exp < currentTime;
+  } catch (error) {
+    console.error("Erro ao decodificar o token:", error);
+    return true;
+  }
+};
+
 const ProtectedRoute = ({ allowedRoles, element }) => {
   const { token, user } = useContext(AuthContext);
 
-  if (!token) {
+  if (!token || isTokenExpired(token)) {
     return <Navigate to="/login" />;
   }
 

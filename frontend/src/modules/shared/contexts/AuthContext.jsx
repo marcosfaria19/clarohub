@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { Navigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
@@ -35,6 +36,7 @@ export const AuthProvider = ({ children }) => {
         if (decodedToken.exp < currentTime) {
           localStorage.removeItem("token");
           handleReset();
+          <Navigate to="/login" />;
         } else {
           localStorage.setItem("token", token);
           if (decodedToken) {
