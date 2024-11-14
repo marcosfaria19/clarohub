@@ -74,8 +74,6 @@ export default function OCQualinet() {
 
       const textoResposta = response.data.join("\n");
       setNewData(textoResposta);
-      await navigator.clipboard.writeText(textoResposta);
-      toast.success("Texto copiado para a área de transferência.");
     } catch (error) {
       console.error("Erro ao enviar o arquivo:", error);
       setError(
@@ -234,7 +232,8 @@ export default function OCQualinet() {
                           <span className="flex items-center gap-2 font-semibold text-green-600">
                             <span>
                               <strong>Sucesso! </strong>
-                              <br /> Dados copiados para a área de transferência
+                              <br /> Clique para copiar os dados para a área de
+                              transferência
                             </span>
                           </span>
 
@@ -258,7 +257,7 @@ export default function OCQualinet() {
                             }}
                           >
                             <Copy className="h-4 w-4" />
-                            Copiar novamente
+                            Copiar resultado
                           </Button>
                         </div>
                       ) : (
