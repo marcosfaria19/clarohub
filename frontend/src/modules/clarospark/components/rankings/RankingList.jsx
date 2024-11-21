@@ -26,7 +26,7 @@ export default function RankingList({ rankings, scoreLabel, userId }) {
         return (
           <div
             key={rank.userId}
-            className={`flex items-center justify-between rounded-full p-3 text-foreground transition-colors hover:bg-card ${
+            className={`flex items-center justify-between rounded-full bg-secondary p-3 text-foreground transition-colors hover:bg-podium ${
               isUserRanking ? "bg-primary/80 text-primary-foreground" : ""
             }`}
           >
