@@ -26,9 +26,14 @@ export function useLikes() {
           return response.data.likesCount;
         }
       } catch (error) {
-        toast.warning("Você já utilizou todos os seus sparks diários");
-
-        throw error;
+        if (error.response?.status === 403) {
+          const errorMessage =
+            error.response?.data?.message || "Erro ao curtir.";
+          toast.warning(errorMessage);
+        } else {
+          toast.error("Erro inesperado. Tente novamente.");
+        }
+        // Não relança o erro para evitar exibição no console
       }
     },
     [user.userId, fetchRemainingLikes],

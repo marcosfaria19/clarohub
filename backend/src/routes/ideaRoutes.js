@@ -54,8 +54,9 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
   // Rota para curtir uma ideia
   router.post("/like-idea", authenticateToken, async (req, res) => {
     const { userId, ideaId } = req.body;
+  
     await resetDailyCountersIfNeeded(userId, usersCollection);
-
+  
     try {
       const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
       const idea = await ideasCollection.findOne({ _id: new ObjectId(ideaId) });
@@ -63,16 +64,31 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       if (!idea) {
         return res.status(404).json({ message: "Ideia não encontrada." });
       }
-
+  
       if (!user) {
         return res.status(404).json({ message: "Usuário não encontrado." });
       }
-
-      /* Verificar likes diários */
-      if (user.dailyLikesUsed >= 3) {
-        return res.status(403).json({ message: "Você já usou todos os seus sparks diários." });
+  
+      // Verificar se a ideia possui um creatorId válido
+      if (!idea.creator._id) {
+        return res.status(500).json({ message: "A ideia não possui um criador associado." });
       }
-
+  
+      // Verificar se o usuário está tentando curtir sua própria ideia
+      if (idea.creator._id.equals(new ObjectId(userId))) {
+        return res
+          .status(403)
+          .json({ message: "Você não pode curtir sua própria ideia." });
+      }
+  
+      // Verificar likes diários
+      if (user.dailyLikesUsed >= 3) {
+        return res
+          .status(403)
+          .json({ message: "Você já usou todos os seus sparks diários." });
+      }
+  
+      // Atualizar a ideia com o like
       await ideasCollection.updateOne(
         { _id: new ObjectId(ideaId) },
         {
@@ -80,28 +96,31 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
           $inc: { likesCount: 1 },
         }
       );
-
+  
       // Incrementar contagem de likes diários do usuário
       await usersCollection.updateOne(
         { _id: new ObjectId(userId) },
         { $inc: { dailyLikesUsed: 1 } }
       );
-
+  
       // Atualizar contagem de likes em tempo real
       pusher.trigger("claro-spark", "update-likes", {
         ideaId: ideaId,
         likesCount: idea.likesCount + 1,
       });
-
+  
       return res.status(200).json({
         message: "Curtida adicionada com sucesso!",
         likesCount: idea.likesCount + 1,
       });
     } catch (error) {
       console.error("Error liking/unliking:", error);
-      res.status(500).json({ message: "Erro ao processar curtida/remoção de curtida." });
+      res
+        .status(500)
+        .json({ message: "Erro ao processar curtida/remoção de curtida." });
     }
   });
+  
 
   // Rota para alterar o status da ideia
   router.patch("/ideas/:id", authenticateToken, async (req, res) => {
