@@ -29,11 +29,20 @@ export function useLikes() {
         if (error.response?.status === 403) {
           const errorMessage =
             error.response?.data?.message || "Erro ao curtir.";
-          toast.warning(errorMessage);
+
+          // Verifica qual é a mensagem específica do erro
+          if (errorMessage.includes("Você não pode curtir sua própria ideia")) {
+            toast.warning("Você não pode curtir sua própria ideia.");
+          } else if (
+            errorMessage.includes("Você já usou todos os seus sparks diários")
+          ) {
+            toast.warning("Você já utilizou todos os seus sparks diários.");
+          } else {
+            toast.warning(errorMessage);
+          }
         } else {
           toast.error("Erro inesperado. Tente novamente.");
         }
-        // Não relança o erro para evitar exibição no console
       }
     },
     [user.userId, fetchRemainingLikes],
