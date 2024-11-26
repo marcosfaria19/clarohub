@@ -55,6 +55,7 @@ function ManagerTable() {
 
   const columns = useMemo(() => {
     const statusDisplayMap = {
+      Analisar: "Em Análise",
       Aprovar: "Aprovada",
       Arquivar: "Arquivada",
     };
@@ -106,7 +107,7 @@ function ManagerTable() {
 
           return (
             <DropdownMenu modal={false}>
-              <DropdownMenuTrigger disabled={status !== "Em Análise"}>
+              <DropdownMenuTrigger disabled={status === "Aprovada"}>
                 <Badge
                   variant="outline"
                   className={`${color} min-w-20 border-0`}
@@ -117,19 +118,23 @@ function ManagerTable() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Alterar Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {Object.keys(statusDisplayMap).map((displayText) => (
-                  <DropdownMenuItem
-                    key={displayText}
-                    onClick={() =>
-                      handleStatusChange(
-                        row.original,
-                        statusDisplayMap[displayText],
-                      )
-                    }
-                  >
-                    {displayText}
-                  </DropdownMenuItem>
-                ))}
+                {Object.keys(statusDisplayMap)
+                  .filter(
+                    (displayText) => statusDisplayMap[displayText] !== status,
+                  )
+                  .map((displayText) => (
+                    <DropdownMenuItem
+                      key={displayText}
+                      onClick={() =>
+                        handleStatusChange(
+                          row.original,
+                          statusDisplayMap[displayText],
+                        )
+                      }
+                    >
+                      {displayText}
+                    </DropdownMenuItem>
+                  ))}
                 <DropdownMenuSeparator />
               </DropdownMenuContent>
             </DropdownMenu>

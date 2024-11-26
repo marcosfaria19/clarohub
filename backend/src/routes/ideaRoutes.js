@@ -114,10 +114,10 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
         likesCount: idea.likesCount + 1,
       });
     } catch (error) {
-      console.error("Error liking/unliking:", error);
+      console.error("Error liking:", error);
       res
         .status(500)
-        .json({ message: "Erro ao processar curtida/remoção de curtida." });
+        .json({ message: "Erro ao processar curtida." });
     }
   });
   

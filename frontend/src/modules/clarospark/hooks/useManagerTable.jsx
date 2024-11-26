@@ -29,7 +29,7 @@ const useManagerTable = () => {
       await createUserNotification(
         selectedItem.creator._id,
         "idea_status",
-        `Uma ideia sua foi ${newStatus}.`,
+        `Uma ideia sua foi atualizada para "${newStatus}"`,
       );
 
       setDados((prevDados) =>
