@@ -186,7 +186,7 @@ export default function NetSMSFacil({ userName, gestor }) {
           className="mx-auto mb-6 h-20 w-20 text-primary"
         />
         <h1 className="relative text-4xl font-bold tracking-tight text-foreground">
-          Net SMS Fácil
+          Net Fácil
         </h1>
         <p className="mt-2 text-lg text-muted-foreground">
           Gerador de texto padrão para o NetSMS

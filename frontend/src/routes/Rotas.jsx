@@ -11,6 +11,7 @@ import OCFacilAdmin from "modules/clarohub/pages/OCFacilAdmin";
 import AppAdmin from "modules/clarohub/pages/AppAdmin";
 import Clarospark from "modules/clarospark/pages/Home";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
+import PageTitle from "modules/shared/components/PageTitle";
 
 const isTokenExpired = (token) => {
   if (!token) return true;
@@ -89,29 +90,38 @@ const Rotas = () => {
       <Route
         path="/ocfacil"
         element={
-          <ProtectedRoute
-            allowedRoles={["basic", "manager", "admin"]}
-            element={<OCQualinet />}
-          />
+          <>
+            <PageTitle title="OC Fácil" />
+            <ProtectedRoute
+              allowedRoles={["basic", "manager", "admin"]}
+              element={<OCQualinet />}
+            />
+          </>
         }
       />
       <Route
         path="/netfacil"
         element={
-          <ProtectedRoute
-            allowedRoles={["guest", "basic", "manager", "admin"]}
-            element={<NetSMSFacil />}
-          />
+          <>
+            <PageTitle title="Net Fácil" />
+            <ProtectedRoute
+              allowedRoles={["guest", "basic", "manager", "admin"]}
+              element={<NetSMSFacil />}
+            />
+          </>
         }
       />
 
       <Route
         path="/spark"
         element={
-          <ProtectedRoute
-            allowedRoles={["guest", "basic", "manager", "admin"]}
-            element={<Clarospark />}
-          />
+          <>
+            <PageTitle title="Claro Spark" />
+            <ProtectedRoute
+              allowedRoles={["guest", "basic", "manager", "admin"]}
+              element={<Clarospark />}
+            />
+          </>
         }
       />
 
