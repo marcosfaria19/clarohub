@@ -72,10 +72,13 @@ const Rotas = () => {
       <Route
         path="/home"
         element={
-          <ProtectedRoute
-            allowedRoles={["guest", "basic", "manager", "admin"]}
-            element={<Home />}
-          />
+          <>
+            <PageTitle title="Claro Hub" />
+            <ProtectedRoute
+              allowedRoles={["guest", "basic", "manager", "admin"]}
+              element={<Home />}
+            />
+          </>
         }
       />
       <Route
