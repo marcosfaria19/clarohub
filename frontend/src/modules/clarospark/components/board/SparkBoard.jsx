@@ -140,7 +140,7 @@ export default function SparkBoard({ subjects, cards, currentFilter }) {
   );
 
   return (
-    <div className="select-none sm:mx-0 lg:mx-10">
+    <div className="tour-sparkboard select-none sm:mx-0 lg:mx-10">
       {isMobile
         ? renderMobileView()
         : isTablet

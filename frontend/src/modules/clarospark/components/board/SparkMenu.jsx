@@ -66,7 +66,7 @@ export default function SparkMenu({
 
   return (
     <>
-      <div className="relative bottom-0 top-[4px] z-20 flex w-1/2 justify-end space-x-2 justify-self-end sm:mr-10 sm:mt-24 lg:mr-10 lg:mt-0">
+      <div className="tour-sparkmenu relative bottom-0 top-[4px] z-20 flex w-auto justify-end space-x-2 justify-self-end sm:mr-10 sm:mt-24 lg:mr-10 lg:mt-0">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
