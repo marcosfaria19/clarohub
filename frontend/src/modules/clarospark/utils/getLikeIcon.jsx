@@ -7,8 +7,8 @@ import f3 from "modules/clarospark/assets/f3.png";
 const iconMap = [
   { threshold: 0, iconDark: f0, iconLight: f0w },
   { threshold: 1, icon: f1 },
-  { threshold: 15, icon: f2 },
-  { threshold: 22, icon: f3 },
+  { threshold: 30, icon: f2 },
+  { threshold: 99, icon: f3 },
 ];
 
 export function getLikeIcon(likes, theme) {
