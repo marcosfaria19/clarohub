@@ -11,6 +11,11 @@ export function useLikes() {
 
   const handleLike = useCallback(
     async (ideaId) => {
+      if (remainingLikes <= 0) {
+        toast.warning("Você já utilizou todos os seus sparks diários.");
+        return;
+      }
+
       try {
         const response = await axiosInstance.post("/spark/like-idea", {
           ideaId,
@@ -22,17 +27,17 @@ export function useLikes() {
             ...prev,
             [ideaId]: response.data.likesCount,
           }));
-          fetchRemainingLikes();
+          fetchRemainingLikes(); // Atualiza o contador de sparks restantes
+          toast.success("Ideia apoiada!");
           return response.data.likesCount;
         }
       } catch (error) {
         if (error.response?.status === 403) {
           const errorMessage =
-            error.response?.data?.message || "Erro ao curtir.";
+            error.response?.data?.message || "Erro ao adicionar spark.";
 
-          // Verifica qual é a mensagem específica do erro
-          if (errorMessage.includes("Você não pode curtir sua própria ideia")) {
-            toast.warning("Você não pode curtir sua própria ideia.");
+          if (errorMessage.includes("Você não pode apoiar sua própria ideia")) {
+            toast.warning("Você não pode apoiar sua própria ideia.");
           } else if (
             errorMessage.includes("Você já usou todos os seus sparks diários")
           ) {
@@ -45,7 +50,7 @@ export function useLikes() {
         }
       }
     },
-    [user.userId, fetchRemainingLikes],
+    [user.userId, remainingLikes, fetchRemainingLikes],
   );
 
   const updateLikeCount = useCallback((ideaId, newCount) => {

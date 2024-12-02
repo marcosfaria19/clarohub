@@ -75,7 +75,7 @@ module.exports = (rankingCollection, ideasCollection, usersCollection) => {
         ])
         .toArray();
 
-      /* Ranking de usuarios que mais deram like */
+      /* Ranking de usuários que mais apoiaram (considerando os sparks usados) */
       const apoiadoresRanking = await usersCollection
         .aggregate([
           {
@@ -86,12 +86,25 @@ module.exports = (rankingCollection, ideasCollection, usersCollection) => {
                 {
                   $match: {
                     $expr: {
-                      $in: ["$$userId", "$likedBy"], // Verifica se o userId está em likedBy
+                      $in: ["$$userId", "$likedBy.userId"], // Verifica se o userId está no campo likedBy
                     },
                   },
                 },
                 {
-                  $count: "likesCount", // Conta os likes dados pelo usuário
+                  $unwind: "$likedBy", // Desfaz o array likedBy em documentos individuais
+                },
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ["$likedBy.userId", "$$userId"], // Filtra para considerar apenas os likes do usuário específico
+                    },
+                  },
+                },
+                {
+                  $group: {
+                    _id: "$_id", // Agrupar por ideia
+                    totalSparksUsed: { $sum: "$likedBy.sparksUsed" }, // Soma todos os sparks usados pelo usuário nessa ideia
+                  },
                 },
               ],
               as: "userLikes", // Nome do array resultante
@@ -104,12 +117,12 @@ module.exports = (rankingCollection, ideasCollection, usersCollection) => {
               name: "$NOME",
               avatar: "$avatar",
               score: {
-                $ifNull: [{ $arrayElemAt: ["$userLikes.likesCount", 0] }, 0],
-              }, // Pega a contagem ou retorna 0
+                $sum: "$userLikes.totalSparksUsed", // Soma o total de sparks usados pelo usuário em todas as ideias
+              },
             },
           },
-          { $sort: { score: -1 } }, // Ordena por contagem de likes
-          /* { $limit: 30 }, // Limita a 30 usuários */
+          { $sort: { score: -1 } }, // Ordena por contagem de sparks usados
+          // { $limit: 30 }, // Limita a 30 usuários
         ])
         .toArray();
 

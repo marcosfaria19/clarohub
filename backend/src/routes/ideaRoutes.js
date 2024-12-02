@@ -51,76 +51,78 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
     }
   });
 
-  // Rota para curtir uma ideia
-  router.post("/like-idea", authenticateToken, async (req, res) => {
-    const { userId, ideaId } = req.body;
-  
-    await resetDailyCountersIfNeeded(userId, usersCollection);
-  
-    try {
-      const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-      const idea = await ideasCollection.findOne({ _id: new ObjectId(ideaId) });
+  /* Rota POST para:
+    - Apoiar uma ideia, adicionando o ID do usuario e aumentando a contagem de todos os sparks usados nela
+    - Adicionar a contagem ao serviço de websockets do Pusher 
+    - Incrementar a contagem de sparks diários usados */
 
-      if (!idea) {
-        return res.status(404).json({ message: "Ideia não encontrada." });
-      }
-  
-      if (!user) {
-        return res.status(404).json({ message: "Usuário não encontrado." });
-      }
-  
-      // Verificar se a ideia possui um creatorId válido
-      if (!idea.creator._id) {
-        return res.status(500).json({ message: "A ideia não possui um criador associado." });
-      }
-  
-      // Verificar se o usuário está tentando curtir sua própria ideia
-      if (idea.creator._id.equals(new ObjectId(userId))) {
-        return res
-          .status(403)
-          .json({ message: "Você não pode curtir sua própria ideia." });
-      }
-  
-      // Verificar likes diários
-      if (user.dailyLikesUsed >= 3) {
-        return res
-          .status(403)
-          .json({ message: "Você já usou todos os seus sparks diários." });
-      }
-  
-      // Atualizar a ideia com o like
-      await ideasCollection.updateOne(
-        { _id: new ObjectId(ideaId) },
-        {
-          $addToSet: { likedBy: new ObjectId(userId) },
-          $inc: { likesCount: 1 },
+    router.post("/like-idea", authenticateToken, async (req, res) => {
+      const { userId, ideaId } = req.body;
+      
+      try {
+        // Convertendo para ObjectId
+        const userObjectId = new ObjectId(userId);
+        const ideaObjectId = new ObjectId(ideaId);
+    
+        const user = await usersCollection.findOne({ _id: userObjectId });
+        const idea = await ideasCollection.findOne({ _id: ideaObjectId });
+    
+        if (!user || !idea) {
+          return res.status(404).json({ message: "Usuário ou ideia não encontrada." });
         }
-      );
-  
-      // Incrementar contagem de likes diários do usuário
-      await usersCollection.updateOne(
-        { _id: new ObjectId(userId) },
-        { $inc: { dailyLikesUsed: 1 } }
-      );
-  
-      // Atualizar contagem de likes em tempo real
-      pusher.trigger("claro-spark", "update-likes", {
-        ideaId: ideaId,
-        likesCount: idea.likesCount + 1,
-      });
-  
-      return res.status(200).json({
-        message: "Curtida adicionada com sucesso!",
-        likesCount: idea.likesCount + 1,
-      });
-    } catch (error) {
-      console.error("Error liking:", error);
-      res
-        .status(500)
-        .json({ message: "Erro ao processar curtida." });
-    }
-  });
-  
+    
+        if (idea.creator._id.equals(userObjectId)) {
+          return res.status(403).json({ message: "Você não pode apoiar sua própria ideia." });
+        }
+    
+        if (user.dailyLikesUsed >= 3) {
+          return res.status(403).json({ message: "Você já usou todos os seus sparks diários." });
+        }
+    
+        const spark = 1; // Cada clique consome 1 spark
+    
+        // Atualizar `likedBy` com sparks
+        const likedByEntry = idea.likedBy.find((entry) => entry.userId.equals(userObjectId));
+    
+        if (likedByEntry) {
+          // Incrementar sparks existentes
+          likedByEntry.sparksUsed += spark;
+        } else {
+          // Adicionar novo registro de sparks
+          idea.likedBy.push({ userId: userObjectId, sparksUsed: spark });
+        }
+    
+        // Persistir alterações na ideia
+        await ideasCollection.updateOne(
+          { _id: ideaObjectId },
+          {
+            $set: { likedBy: idea.likedBy },
+            $inc: { likesCount: spark },
+          }
+        );
+    
+        // Incrementar o contador diário de sparks do usuário
+        await usersCollection.updateOne(
+          { _id: userObjectId },
+          { $inc: { dailyLikesUsed: spark } }
+        );
+    
+        // Atualizar contagem de likes em tempo real
+        pusher.trigger("claro-spark", "update-likes", {
+          ideaId: ideaId,
+          likesCount: idea.likesCount + spark,
+        });
+    
+        return res.status(200).json({
+          message: "Spark adicionado com sucesso!",
+          likesCount: idea.likesCount + spark,
+        });
+      } catch (error) {
+        console.error("Erro ao processar sparks:", error);
+        res.status(500).json({ message: "Erro ao processar sparks." });
+      }
+    });
+    
 
   // Rota para alterar o status da ideia
   router.patch("/ideas/:id", authenticateToken, async (req, res) => {
