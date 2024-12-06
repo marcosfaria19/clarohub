@@ -78,8 +78,8 @@ export default function IdeaCard({
   return (
     <TooltipProvider>
       <div
-        className={`bg-card-spark relative h-36 w-full max-w-md cursor-pointer rounded-lg p-4 ${
-          currentLikes > 19 ? "animate-shadow-pulse" : "border-0"
+        className={`relative h-36 w-full max-w-md cursor-pointer rounded-lg bg-card-spark p-4 ${
+          currentLikes > 99 ? "animate-shadow-pulse" : "border-0"
         } `}
         onClick={handleCardClick}
       >
