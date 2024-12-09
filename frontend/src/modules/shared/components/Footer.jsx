@@ -9,9 +9,12 @@ import { toast } from "sonner";
 
 const Footer = () => {
   const developers = [
-    { name: "Marcos Faria", email: "m.faria1@procisa.com.br" },
+    { name: "Marcos Faria", email: "marcos.faria.terceiros@claro.com.br" },
     { name: "Fares Nunes", email: "fares.nunes@claro.com.br" },
-    { name: "Jessica Pires", email: "j.felisberto@procisa.com.br" },
+    {
+      name: "Jessica Pires",
+      email: "jessica.felisberto.terceiros@claro.com.br",
+    },
   ];
 
   const copyToClipboard = (email) => {
