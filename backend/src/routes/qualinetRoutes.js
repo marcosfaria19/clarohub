@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const xlsx = require("xlsx");
 const { ObjectId } = require("mongodb");
-const cidadeParaUF = require("../utils/cidadeParaUF")
+const cidadeParaUF = require("../utils/cidadeParaUF");
 const formatarData = require("../utils/formatarData");
 const authenticateToken = require("../middleware/authMiddleware");
 const router = express.Router();
@@ -72,7 +72,8 @@ module.exports = (qualinetCollection) => {
             )
         );
 
-        const filteredDataAllUFs = filteredData.map((item) => ({
+        // Condição para manter todos os casos indiferente de UF
+        /*  const filteredDataAllUFs = filteredData.map((item) => ({
           CI_NOME: item.CI_NOME,
           NUM_CONTRATO: item.NUM_CONTRATO,
           DT_CADASTRO: item.DT_CADASTRO,
@@ -83,9 +84,28 @@ module.exports = (qualinetCollection) => {
         
         if (filteredDataAllUFs.length === 0) {
           return res.status(400).send("Nenhum dado novo a ser inserido.");
+          
+          const result = await qualinetCollection.insertMany(filteredDataAllUFs);
+        } */
+
+        // Condição para remover casos de RS
+        const filteredDataWithoutRS = filteredData
+          .filter((item) => cidadeParaUF[item.CI_NOME] !== "RS")
+          .map((item) => ({
+            CI_NOME: item.CI_NOME,
+            NUM_CONTRATO: item.NUM_CONTRATO,
+            DT_CADASTRO: item.DT_CADASTRO,
+            END_COMPLETO: item.END_COMPLETO,
+            COD_NODE: item.COD_NODE,
+            UF: item.UF,
+          }));
+        if (filteredDataWithoutRS.length === 0) {
+          return res.status(400).send("Nenhum dado novo a ser inserido.");
         }
-        
-        const result = await qualinetCollection.insertMany(filteredDataAllUFs);
+
+        const result = await qualinetCollection.insertMany(
+          filteredDataWithoutRS
+        );
 
         if (!result || !result.insertedIds) {
           return res
