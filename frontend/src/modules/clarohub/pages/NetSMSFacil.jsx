@@ -177,7 +177,7 @@ export default function NetSMSFacil({ userName, gestor }) {
   };
 
   return (
-    <Container>
+    <Container className="select-none">
       <div className="relative mb-11 text-center">
         <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-primary/30 blur-3xl"></div>
         <img
@@ -207,7 +207,7 @@ export default function NetSMSFacil({ userName, gestor }) {
                 key={step}
                 className={`flex flex-1 transform flex-col transition-all duration-500 ${
                   currentStep === step ? "opacity-100" : "opacity-50"
-                }`}
+                } ${currentStep === 2 && step !== 2 ? "pointer-events-none" : ""}`}
               >
                 <div className="relative flex h-full flex-col rounded-xl border-2 border-primary/40 bg-card/70 p-6 backdrop-blur-sm">
                   <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary),0.1),rgba(255,255,255,0))]"></div>
