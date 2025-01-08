@@ -56,7 +56,7 @@ function ManagerTable() {
   const columns = useMemo(() => {
     const statusDisplayMap = {
       "Em Análise": "Em Análise",
-      "Em Tratamento": "Em Andamento",
+      "Em Andamento": "Em Andamento",
       Aprovada: "Aprovada",
       Arquivada: "Arquivada",
     };

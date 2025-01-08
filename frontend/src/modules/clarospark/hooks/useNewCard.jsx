@@ -1,7 +1,9 @@
+import useNotifications from "modules/shared/hooks/useNotifications";
 import { useState } from "react";
 import axiosInstance from "services/axios";
 
 export function useNewCard(subjects, userId) {
+  const { createGlobalNotification } = useNotifications();
   const [newCard, setNewCard] = useState({
     title: "",
     description: "",
@@ -28,6 +30,12 @@ export function useNewCard(subjects, userId) {
           likedBy: [],
           anonymous: 0,
         });
+
+        await createGlobalNotification(
+          "spark",
+          "💡 Uma nova ideia foi criada no Spark! Venha conferir.",
+        );
+
         return true;
       }
     } catch (error) {
