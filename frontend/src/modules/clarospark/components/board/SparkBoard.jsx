@@ -21,7 +21,9 @@ export default function SparkBoard({ subjects, cards, currentFilter }) {
         .filter((card) => {
           if (currentFilter === "all") return true;
           if (currentFilter === "emAnalise")
-            return card.status === "Em Análise";
+            return (
+              card.status === "Em Análise" || card.status === "Em Andamento"
+            );
           if (currentFilter === "aprovados") return card.status === "Aprovada";
           if (currentFilter === "arquivados")
             return card.status === "Arquivada";

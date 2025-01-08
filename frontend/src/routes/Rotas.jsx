@@ -12,6 +12,7 @@ import AppAdmin from "modules/clarohub/pages/AppAdmin";
 import Clarospark from "modules/clarospark/pages/Home";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import PageTitle from "modules/shared/components/PageTitle";
+import Claroflow from "modules/claroflow/pages/Home";
 
 const isTokenExpired = (token) => {
   if (!token) return true;
@@ -123,6 +124,18 @@ const Rotas = () => {
             <ProtectedRoute
               allowedRoles={["guest", "basic", "manager", "admin"]}
               element={<Clarospark />}
+            />
+          </>
+        }
+      />
+      <Route
+        path="/flow"
+        element={
+          <>
+            <PageTitle title="Claro Flow" />
+            <ProtectedRoute
+              allowedRoles={["guest", "basic", "manager", "admin"]}
+              element={<Claroflow />}
             />
           </>
         }
