@@ -55,9 +55,10 @@ function ManagerTable() {
 
   const columns = useMemo(() => {
     const statusDisplayMap = {
-      Analisar: "Em Análise",
-      Aprovar: "Aprovada",
-      Arquivar: "Arquivada",
+      "Em Análise": "Em Análise",
+      "Em Tratamento": "Em Andamento",
+      Aprovada: "Aprovada",
+      Arquivada: "Arquivada",
     };
     return [
       {
@@ -135,7 +136,6 @@ function ManagerTable() {
                       {displayText}
                     </DropdownMenuItem>
                   ))}
-                <DropdownMenuSeparator />
               </DropdownMenuContent>
             </DropdownMenu>
           );
