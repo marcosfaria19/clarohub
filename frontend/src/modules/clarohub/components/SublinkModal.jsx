@@ -16,7 +16,7 @@ import {
 } from "modules/shared/components/ui/select";
 import { Label } from "modules/shared/components/ui/label";
 import cidadesAtlas from "modules/clarohub/utils/cidadesAtlas";
-import ufVisium from "modules/clarohub/utils/ufVisium";
+import typeVisium from "modules/clarohub/utils/typeVisium";
 import ufNuvem from "modules/clarohub/utils/ufNuvem";
 import { toast } from "sonner";
 
@@ -34,8 +34,8 @@ export default function SublinkModal({ show, handleClose, selectedApp }) {
         };
       case "Visium":
         return {
-          options: Object.values(ufVisium).flat(),
-          locationType: "UF",
+          options: Object.values(typeVisium).flat(),
+          locationType: "Tecnologia",
         };
       case "Nuvem":
         return {
@@ -53,7 +53,7 @@ export default function SublinkModal({ show, handleClose, selectedApp }) {
 
   const handleLocationSelect = () => {
     if (!selectedApp || !selectedLocation) {
-      toast.error("Por favor, selecione uma localização.");
+      toast.error("Por favor, selecione uma opção.");
       return;
     }
 
@@ -66,7 +66,7 @@ export default function SublinkModal({ show, handleClose, selectedApp }) {
         locationData = cidadesAtlas;
         break;
       case "Visium":
-        locationData = ufVisium;
+        locationData = typeVisium;
         break;
       case "Nuvem":
         locationData = ufNuvem;

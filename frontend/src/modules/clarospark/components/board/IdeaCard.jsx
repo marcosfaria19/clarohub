@@ -29,6 +29,7 @@ import statusConfig from "modules/clarospark/utils/statusConfig";
 import { getLikeIcon } from "modules/clarospark/utils/getLikeIcon";
 import spark from "modules/clarospark/assets/f0.png";
 import { useTheme } from "modules/shared/contexts/ThemeContext";
+import { format } from "date-fns";
 
 export default function IdeaCard({
   title,
@@ -38,6 +39,7 @@ export default function IdeaCard({
   status,
   anonymous,
   ideaId,
+  createdAt,
 }) {
   const { user } = useContext(AuthContext);
   const { likesCount, handleLike, updateLikeCount } = useLikes();
@@ -47,6 +49,8 @@ export default function IdeaCard({
 
   const handleCardClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
+
+  const formattedCreatedAt = format(new Date(createdAt), "dd/MM/yyyy");
 
   const isLongDescription = description.length > 90;
   const truncatedDescription = isLongDescription
@@ -142,7 +146,7 @@ export default function IdeaCard({
               {icon} {status}
             </Badge>
           </DialogHeader>
-          <ScrollArea className="max-h-[60vh] pr-4">
+          <ScrollArea className="max-h-[40dvh] pr-4">
             <div className="space-y-4">
               <p className="select-text text-sm text-foreground">
                 {description}
@@ -162,7 +166,7 @@ export default function IdeaCard({
                   {displayedCreator}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Criador(a) da ideia
+                  Tive essa ideia dia {formattedCreatedAt}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {currentLikes} sparks

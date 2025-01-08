@@ -59,7 +59,7 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
         <Textarea
           placeholder="Descrição"
           value={newCard.description}
-          maxLength={200}
+          maxLength={1500}
           onChange={(e) =>
             setNewCard({ ...newCard, description: e.target.value })
           }

@@ -61,7 +61,7 @@ const Input = React.forwardRef(
           translate="no"
         />
         {floating && <label className={floatingLabelClasses}>{label}</label>}
-        <style jsx>{`
+        <style>{`
           @keyframes onAutoFillStart {
             from {
               /**/
