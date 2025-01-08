@@ -94,7 +94,7 @@ const Home = () => {
   };
 
   const handleCardClick = (app) => {
-    if (["Atlas", "Visium", "Nuvem"].includes(app.nome)) {
+    if (["Atlas", "Nuvem"].includes(app.nome)) {
       setSelectedApp(app);
       setShowModal(true);
     } else {
