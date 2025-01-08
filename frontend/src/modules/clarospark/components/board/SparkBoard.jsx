@@ -15,23 +15,31 @@ export default function SparkBoard({ subjects, cards, currentFilter }) {
   const isTablet = useMediaQuery("(max-width: 1024px)");
 
   const filteredAndSortedCards = useMemo(() => {
-    const filtered = {};
-    for (const subject in cards) {
-      filtered[subject] = cards[subject]
-        .filter((card) => {
-          if (currentFilter === "all") return true;
-          if (currentFilter === "emAnalise")
-            return (
-              card.status === "Em Análise" || card.status === "Em Andamento"
-            );
-          if (currentFilter === "aprovados") return card.status === "Aprovada";
-          if (currentFilter === "arquivados")
-            return card.status === "Arquivada";
+    const filterCardsByStatus = (card) => {
+      switch (currentFilter) {
+        case "all":
           return true;
-        })
+        case "emAnalise":
+          return card.status === "Em Análise" || card.status === "Em Andamento";
+        case "emAndamento":
+          return card.status === "Em Andamento";
+        case "aprovados":
+          return card.status === "Aprovada";
+        case "arquivados":
+          return card.status === "Arquivada";
+        default:
+          return true;
+      }
+    };
+
+    const filteredCards = {};
+    for (const subject in cards) {
+      filteredCards[subject] = cards[subject]
+        .filter(filterCardsByStatus)
         .sort((a, b) => (b.likedBy?.length || 0) - (a.likedBy?.length || 0));
     }
-    return filtered;
+
+    return filteredCards;
   }, [cards, currentFilter]);
 
   const renderSubjectTabs = () => (

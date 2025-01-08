@@ -126,6 +126,15 @@ export default function SparkMenu({
                     )}
                   </DropdownMenuItem>
                   <DropdownMenuItem
+                    onClick={() => handleFilterChange("emAndamento")}
+                    className={`flex justify-between ${currentFilter === "emAndamento" ? "bg-accent text-accent-foreground" : ""}`}
+                  >
+                    Em Andamento
+                    {currentFilter === "emAndamento" && (
+                      <Check className="h-4 w-4 text-primary-foreground" />
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
                     onClick={() => handleFilterChange("aprovados")}
                     className={`flex justify-between ${currentFilter === "aprovados" ? "bg-accent text-accent-foreground" : ""}`}
                   >
