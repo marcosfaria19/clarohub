@@ -132,17 +132,17 @@ export default function SublinkModal({ show, handleClose, selectedApp }) {
         <DialogFooter className="sm:justify-end">
           <div className="mt-4 flex gap-2">
             <Button
+              onClick={handleLocationSelect}
+              className="flex-1 sm:flex-none"
+            >
+              Selecionar
+            </Button>
+            <Button
               variant="secondary"
               onClick={handleClose}
               className="flex-1 sm:flex-none"
             >
               Cancelar
-            </Button>
-            <Button
-              onClick={handleLocationSelect}
-              className="flex-1 sm:flex-none"
-            >
-              Selecionar
             </Button>
           </div>
         </DialogFooter>
