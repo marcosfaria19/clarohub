@@ -36,7 +36,7 @@ export default function SparkBoard({ subjects, cards, currentFilter }) {
     for (const subject in cards) {
       filteredCards[subject] = cards[subject]
         .filter(filterCardsByStatus)
-        .sort((a, b) => (b.likedBy?.length || 0) - (a.likedBy?.length || 0));
+        .sort((a, b) => b.likesCount - a.likesCount);
     }
 
     return filteredCards;
