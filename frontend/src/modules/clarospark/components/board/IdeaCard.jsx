@@ -30,6 +30,8 @@ import { getLikeIcon } from "modules/clarospark/utils/getLikeIcon";
 import spark from "modules/clarospark/assets/f0.png";
 import { useTheme } from "modules/shared/contexts/ThemeContext";
 import { format } from "date-fns";
+import { useIdeaIsNew } from "modules/clarospark/hooks/useIdeaIsNew";
+import NewIndicator from "./IdeaNewIndicator";
 
 export default function IdeaCard({
   title,
@@ -47,8 +49,16 @@ export default function IdeaCard({
   const { color, icon } = statusConfig[status] || statusConfig["Em análise"];
   const { theme } = useTheme();
 
-  const handleCardClick = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
+  // Hook para lógica de "Nova!"
+  const { isNew, markAsViewed } = useIdeaIsNew(ideaId, createdAt);
+
+  const handleCardClick = () => {
+    setIsModalOpen(true);
+    markAsViewed();
+  };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   const formattedCreatedAt = format(new Date(createdAt), "dd/MM/yyyy");
 
@@ -87,6 +97,9 @@ export default function IdeaCard({
         } `}
         onClick={handleCardClick}
       >
+        {/* Exibe o indicador "Nova!" se for uma ideia nova */}
+        <NewIndicator isNew={isNew} />
+
         <h4 className="max-w-[250px] truncate text-sm font-semibold">
           {title}
         </h4>
