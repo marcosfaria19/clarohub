@@ -15,6 +15,7 @@ import {
   CheckIcon,
   Hash,
   ClipboardPen,
+  ArrowLeft,
 } from "lucide-react";
 import axiosInstance from "services/axios";
 import { toast } from "sonner";
@@ -174,6 +175,13 @@ export default function NetSMSFacil({ userName, gestor }) {
 
   const handleViewSGDClosures = () => {
     setShowSGDTable(true);
+  };
+
+  const handleBackToStep1 = () => {
+    setIncidente("");
+    setObservacao("");
+    setCurrentStep(1);
+    setTextoPadraoConcatenado("");
   };
 
   return (
@@ -469,29 +477,39 @@ export default function NetSMSFacil({ userName, gestor }) {
                             className="h-40 w-full resize-none text-sm"
                             value={textoPadraoConcatenado}
                           />
-
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-2"
-                            onClick={() => {
-                              navigator.clipboard
-                                .writeText(textoPadraoConcatenado)
-                                .then(() => {
-                                  toast.success(
-                                    "Texto copiado para a área de transferência.",
-                                  );
-                                })
-                                .catch((error) => {
-                                  toast.error(
-                                    "Falha ao copiar o texto para a área de transferência.",
-                                  );
-                                });
-                            }}
-                          >
-                            <Copy className="h-4 w-4" />
-                            Copiar novamente
-                          </Button>
+                          <div className="flex justify-between">
+                            <Button
+                              onClick={handleBackToStep1}
+                              variant="outline"
+                              size="sm"
+                              className="mr-4"
+                            >
+                              <ArrowLeft className="mr-2 h-4 w-4" />
+                              Voltar
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-2"
+                              onClick={() => {
+                                navigator.clipboard
+                                  .writeText(textoPadraoConcatenado)
+                                  .then(() => {
+                                    toast.success(
+                                      "Texto copiado para a área de transferência.",
+                                    );
+                                  })
+                                  .catch((error) => {
+                                    toast.error(
+                                      "Falha ao copiar o texto para a área de transferência.",
+                                    );
+                                  });
+                              }}
+                            >
+                              <Copy className="h-4 w-4" />
+                              Copiar novamente
+                            </Button>
+                          </div>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center text-center">
