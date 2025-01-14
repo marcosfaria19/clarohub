@@ -19,6 +19,7 @@ import cidadesAtlas from "modules/clarohub/utils/cidadesAtlas";
 import typeVisium from "modules/clarohub/utils/typeVisium";
 import ufNuvem from "modules/clarohub/utils/ufNuvem";
 import { toast } from "sonner";
+import typeFiqueLigado from "../utils/typeFiqueLigado";
 
 export default function SublinkModal({ show, handleClose, selectedApp }) {
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -41,6 +42,11 @@ export default function SublinkModal({ show, handleClose, selectedApp }) {
         return {
           options: Object.values(ufNuvem).flat().sort(),
           locationType: "UF",
+        };
+      case "Fique Ligado":
+        return {
+          options: Object.values(typeFiqueLigado).flat().sort(),
+          locationType: "Diretório",
         };
       default:
         return { options: [], locationType: "" };
@@ -70,6 +76,9 @@ export default function SublinkModal({ show, handleClose, selectedApp }) {
         break;
       case "Nuvem":
         locationData = ufNuvem;
+        break;
+      case "Fique Ligado":
+        locationData = typeFiqueLigado;
         break;
       default:
         toast.error("Aplicativo não reconhecido.");
@@ -102,7 +111,7 @@ export default function SublinkModal({ show, handleClose, selectedApp }) {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
-            Selecione a {locationType}
+            Selecione qual {locationType}
           </DialogTitle>
         </DialogHeader>
 
