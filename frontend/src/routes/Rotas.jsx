@@ -12,7 +12,7 @@ import AppAdmin from "modules/clarohub/pages/AppAdmin";
 import Clarospark from "modules/clarospark/pages/Home";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import PageTitle from "modules/shared/components/PageTitle";
-import Claroflow from "modules/claroflow/pages/Home";
+import Claroflow from "modules/claroflow/pages/Flow";
 
 const isTokenExpired = (token) => {
   if (!token) return true;
