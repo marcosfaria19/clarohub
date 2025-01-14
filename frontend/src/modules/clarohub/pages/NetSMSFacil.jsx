@@ -85,6 +85,7 @@ export default function NetSMSFacil({ userName, gestor }) {
     setCodigoErro(false);
     setItem(null);
     setCurrentStep(0);
+    navigator.clipboard.writeText("");
   };
 
   const handleGenerateText = () => {
@@ -182,6 +183,7 @@ export default function NetSMSFacil({ userName, gestor }) {
     setObservacao("");
     setCurrentStep(1);
     setTextoPadraoConcatenado("");
+    navigator.clipboard.writeText("");
   };
 
   return (
