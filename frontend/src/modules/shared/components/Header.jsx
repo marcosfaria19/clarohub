@@ -51,7 +51,9 @@ const Header = () => {
           <img
             src={`${currentApp.icon}`}
             alt="Claro Hub"
-            className="mr-1 h-7 w-7"
+            width={`${currentApp.width}`}
+            height={`${currentApp.height}`}
+            className="mr-1"
             draggable={false}
           />
           <span className="pointer-events-none text-2xl font-semibold">
