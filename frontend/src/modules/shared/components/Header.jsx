@@ -39,6 +39,8 @@ const Header = () => {
   const currentApp = appHeaderInfo[location.pathname] || {
     name: "Claro Hub",
     icon: "icons/claro.png",
+    width: 28,
+    height: 28,
   };
 
   return (
