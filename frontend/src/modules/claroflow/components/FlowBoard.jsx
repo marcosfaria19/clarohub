@@ -1,22 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import UserCard from "./UserCard";
 import { useUsers } from "../hooks/useUsers";
+import { subjects } from "../utils/flowSubjects";
 
 export default function FlowBoard() {
+  const [activeSubject, setActiveSubject] = useState(subjects[0]);
   const { users, loading, error } = useUsers();
-  const [activeSubject, setActiveSubject] = useState("Todos");
-
-  const subjects = useMemo(() => {
-    const allSubjects = users.map((user) => user.GESTOR);
-    return ["Todos", ...new Set(allSubjects)];
-  }, [users]);
-
-  const filteredUsers = useMemo(() => {
-    if (activeSubject === "Todos") {
-      return users;
-    }
-    return users.filter((user) => user.GESTOR === activeSubject);
-  }, [users, activeSubject]);
 
   const renderSubjectTabs = () => (
     <div className="scrollbar-spark mb-4 flex overflow-x-auto rounded-lg">
@@ -36,13 +25,21 @@ export default function FlowBoard() {
     </div>
   );
 
-  if (loading) {
-    return <div>Carregando usuários...</div>;
-  }
-
-  if (error) {
-    return <div>Erro: {error}</div>;
-  }
+  const renderContent = (subject) => {
+    if (subject === "Equipe") {
+      if (loading) return <div>Carregando usuários...</div>;
+      if (error) return <div>Erro: {error}</div>;
+      return (
+        <div className="space-y-5">
+          {users.map((user) => (
+            <UserCard key={user.id} {...user} />
+          ))}
+        </div>
+      );
+    }
+    // Placeholder para outros subjects
+    return <div>Conteúdo para {subject}</div>;
+  };
 
   return (
     <div className="tour-FlowBoard select-none">
@@ -51,9 +48,7 @@ export default function FlowBoard() {
         {renderSubjectTabs()}
         <div className="max-h-[75vh] overflow-y-auto">
           <div className="mt-4 space-y-5 p-4">
-            {filteredUsers.map((user) => (
-              <UserCard key={user.id} {...user} />
-            ))}
+            {renderContent(activeSubject)}
           </div>
         </div>
       </div>
@@ -75,16 +70,8 @@ export default function FlowBoard() {
               )}
             </div>
             <div className="bg-board py-2" />
-            <div className="flex-1 overflow-y-auto">
-              <div className="space-y-5 p-5">
-                {filteredUsers
-                  .filter(
-                    (user) => subject === "Todos" || user.GESTOR === subject,
-                  )
-                  .map((user) => (
-                    <UserCard key={user.id} {...user} />
-                  ))}
-              </div>
+            <div className="flex-1 overflow-y-auto p-5">
+              {renderContent(subject)}
             </div>
           </div>
         ))}

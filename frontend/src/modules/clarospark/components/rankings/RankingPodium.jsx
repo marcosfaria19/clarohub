@@ -2,7 +2,7 @@ import React from "react";
 import ouro from "modules/clarospark/assets/ouro.png";
 import prata from "modules/clarospark/assets/prata.png";
 import bronze from "modules/clarospark/assets/bronze.png";
-import formatUserName from "modules/shared/utils/formatUsername";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 
 const RankingPodium = ({ rank, index, scoreLabel }) => {
   if (!rank) return null;

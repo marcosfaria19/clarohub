@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "modules/shared/components/ui/button";
 import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from "modules/shared/components/ui/tooltip";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -18,10 +12,28 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "modules/shared/components/ui/avatar";
-import formatUserName from "modules/shared/utils/formatUsername";
+import {
+  formatUserName,
+  capitalizeFirstLetters,
+} from "modules/shared/utils/formatUsername";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import { subjects } from "../utils/flowSubjects";
+import { Badge } from "modules/shared/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "modules/shared/components/ui/select";
+import { regionals } from "../utils/projectNames";
+import { Separator } from "modules/shared/components/ui/separator";
 
-export default function UserCard({ id, NOME, GESTOR, avatar }) {
+export default function UserCard({ id, NOME, GESTOR, avatar, onSave }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDemandas, setSelectedDemandas] = useState(subjects || []);
+  const [regionalPrimaria, setRegionalPrimaria] = useState("");
+  const [regionalSecundaria, setRegionalSecundaria] = useState("");
 
   const handleCardClick = () => {
     setIsModalOpen(true);
@@ -30,80 +42,178 @@ export default function UserCard({ id, NOME, GESTOR, avatar }) {
     setIsModalOpen(false);
   };
 
-  const displayedCreator = formatUserName(NOME);
+  const handleDemandaToggle = (demandaId) => {
+    setSelectedDemandas((prev) =>
+      prev.includes(demandaId)
+        ? prev.filter((id) => id !== demandaId)
+        : [...prev, demandaId],
+    );
+  };
+
+  const handleSave = () => {
+    onSave?.({
+      id,
+      NOME,
+      GESTOR,
+      avatar,
+      demandas: selectedDemandas,
+      regionalPrimaria,
+      regionalSecundaria,
+    });
+    handleCloseModal();
+  };
+
+  const name = formatUserName(NOME);
 
   return (
-    <TooltipProvider>
+    <>
       <div
-        className="relative h-36 w-full max-w-md cursor-pointer rounded-lg bg-card-spark p-4"
+        className="relative h-20 w-full max-w-md cursor-pointer rounded-lg bg-card-spark p-4"
         onClick={handleCardClick}
       >
-        <h4 className="max-w-[250px] truncate text-sm font-semibold">{NOME}</h4>
-
-        <div className="absolute bottom-3 left-4 flex items-center">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={avatar} alt={displayedCreator} />
-            <AvatarFallback>{displayedCreator[0]}</AvatarFallback>
+        <div className="absolute bottom-5 flex items-center">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={avatar} alt={name} />
+            <AvatarFallback>{name[0]}</AvatarFallback>
           </Avatar>
-          <div className="ml-2 flex max-w-[120px] flex-col">
-            <span className="text-xs text-muted-foreground">
-              Gestor: {GESTOR}
-            </span>
-          </div>
+          <h4 className="ml-3 text-sm font-semibold">{name}</h4>
         </div>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              className="absolute bottom-3 right-3 h-8 w-8 rounded-full p-0"
-            >
-              <span className="sr-only">Mais informações</span>
-              {/* Você pode adicionar um ícone de informação aqui */}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Clique para mais detalhes</p>
-          </TooltipContent>
-        </Tooltip>
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="bg-card-spark sm:max-w-[550px]">
-          <DialogHeader className="mb-2 p-0">
-            <h3 className="text-lg font-semibold">Detalhes do Usuário</h3>
+        <DialogContent className="max-h-[90vh] bg-card-spark sm:max-w-[600px]">
+          <DialogHeader className="space-y-4">
+            <DialogTitle className="text-xl font-semibold">
+              Detalhes do Colaborador
+            </DialogTitle>
           </DialogHeader>
-          <ScrollArea className="max-h-[40dvh] pr-4">
-            <p>
-              <strong>Nome:</strong> {NOME}
-            </p>
-            <p>
-              <strong>Gestor:</strong> {GESTOR}
-            </p>
-            {/* Adicione mais detalhes do usuário aqui */}
+
+          <ScrollArea className="max-h-[60vh] pr-4 text-foreground">
+            <div className="space-y-6">
+              {/* Demandas Section */}
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium">Demandas Associadas</h4>
+                <div className="flex flex-wrap gap-2">
+                  {subjects.map((demanda) => (
+                    <Badge
+                      key={demanda} // Usar a string como chave
+                      className={`cursor-pointer transition-all hover:opacity-80 ${
+                        selectedDemandas.includes(demanda)
+                          ? "opacity-100"
+                          : "opacity-50"
+                      }`}
+                      onClick={() => handleDemandaToggle(demanda)}
+                    >
+                      {demanda}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Regionais Section */}
+              <div className="m-1 grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    Regional Primária
+                  </label>
+                  <Select
+                    value={regionalPrimaria}
+                    onValueChange={setRegionalPrimaria}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a regional" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {regionals.map((regional) => (
+                        <SelectItem key={regional} value={regional}>
+                          {regional}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    Regional Secundária
+                  </label>
+                  <Select
+                    value={regionalSecundaria}
+                    onValueChange={setRegionalSecundaria}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a regional" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {regionals.map((regional) => (
+                        <SelectItem key={regional} value={regional}>
+                          {regional}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Treatment Information */}
+              <div className="rounded-lg border p-4">
+                <h4 className="mb-4 text-sm font-medium">Em Tratamento</h4>
+                <div className="grid gap-4 text-sm sm:grid-cols-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground">ID</p>
+                    <p className="font-medium">{id}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">NODE</p>
+                    <p className="font-medium">{"TGAADB"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">VISIUM</p>
+                    <p className="font-medium">{"BRASILIA - DF"}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </ScrollArea>
-          <DialogFooter className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={avatar} alt={displayedCreator} />
-                <AvatarFallback>{displayedCreator[0]}</AvatarFallback>
+
+          <Separator />
+          <DialogFooter className="flex flex-col items-center space-y-4 sm:flex-row sm:justify-between sm:space-y-0">
+            {/* Avatar Section */}
+            <div className="flex items-center space-x-4 sm:space-x-4">
+              <Avatar className="h-12 w-12 flex-shrink-0">
+                <AvatarImage src={avatar} alt={name} />
+                <AvatarFallback>{name[0]}</AvatarFallback>
               </Avatar>
-              <div>
-                <p className="text-sm font-medium">{NOME}</p>
-                <p className="text-xs text-muted-foreground">ID: {id}</p>
+              <div className="text-center sm:text-left">
+                <p className="truncate text-sm font-semibold text-muted-foreground">
+                  {capitalizeFirstLetters(NOME)}
+                </p>
+                <p className="truncate text-xs text-muted-foreground">
+                  Gestor: {capitalizeFirstLetters(GESTOR)}
+                </p>
               </div>
             </div>
 
-            <div className="flex-grow" />
-
-            <div className="flex space-x-2">
-              <Button variant="secondary" onClick={handleCloseModal}>
+            {/* Botões de Ação */}
+            <div className="flex w-full flex-col space-y-2 sm:w-auto sm:flex-row sm:space-x-2 sm:space-y-0">
+              <Button
+                variant="primary"
+                className="w-full sm:w-auto"
+                onClick={handleSave}
+              >
+                Salvar
+              </Button>
+              <Button
+                variant="secondary"
+                className="w-full sm:w-auto"
+                onClick={handleCloseModal}
+              >
                 Fechar
               </Button>
             </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </TooltipProvider>
+    </>
   );
 }

@@ -1,4 +1,4 @@
-export const boards = [
+export const projects = [
   {
     title: "TAP",
     image: "bgs/tap.jpg",
@@ -14,4 +14,15 @@ export const boards = [
     image: "bgs/nap.jpg",
     path: "/board/nap",
   },
+];
+
+export const regionals = [
+  "RMG",
+  "RSI",
+  "RSC",
+  "RNE",
+  "RNO",
+  "RPS",
+  "RBS",
+  "RRS",
 ];

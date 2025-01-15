@@ -22,7 +22,7 @@ import {
 } from "modules/shared/components/ui/avatar";
 import AvatarDropdown from "modules/shared/components/AvatarDropdown";
 import NotificationsPopover from "modules/shared/components/NotificationsPopover";
-import formatUserName from "modules/shared/utils/formatUsername";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useTheme } from "modules/shared/contexts/ThemeContext";
 import appHeaderInfo from "../utils/appHeaderInfo";

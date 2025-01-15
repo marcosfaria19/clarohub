@@ -30,7 +30,7 @@ import {
 } from "modules/shared/components/ui/avatar";
 import { Separator } from "modules/shared/components/ui/separator";
 import { cn } from "modules/shared/lib/utils";
-import formatUserName from "modules/shared/utils/formatUsername";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useLikes } from "modules/clarospark/hooks/useLikes";
 import statusConfig from "modules/clarospark/utils/statusConfig";
