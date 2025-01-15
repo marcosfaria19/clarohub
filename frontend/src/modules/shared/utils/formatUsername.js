@@ -1,4 +1,5 @@
-const formatUserName = (name) => {
+// Função para formatar o nome (como você já tem)
+export const formatUserName = (name) => {
   if (!name) return ""; // Retorna vazio se não existir nome
 
   const namesArray = name.split(" ");
@@ -18,4 +19,15 @@ const formatUserName = (name) => {
   }
 };
 
-export default formatUserName;
+// Função para capitalizar a primeira letra de todas as palavras
+export const capitalizeFirstLetters = (name) => {
+  if (!name) return ""; // Retorna vazio se o nome for inválido
+
+  return name
+    .toLowerCase() // Garante que todas as letras fiquem minúsculas
+    .split(" ") // Divide a string em um array de palavras
+    .map(
+      (word) => word.charAt(0).toUpperCase() + word.slice(1), // Capitaliza a primeira letra de cada palavra
+    )
+    .join(" "); // Junta as palavras de volta em uma string
+};

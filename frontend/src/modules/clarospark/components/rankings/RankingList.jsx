@@ -1,4 +1,4 @@
-import formatUserName from "modules/shared/utils/formatUsername";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 import React from "react";
 
 export default function RankingList({ rankings, scoreLabel, userId }) {
