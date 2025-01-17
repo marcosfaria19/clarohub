@@ -7,9 +7,10 @@ const path = require("path");
 
 const app = express();
 const port = process.env.PORT || 3001;
-const uri = process.env.NODE_ENV === "production"
-  ? process.env.MONGODB_URI_PROD
-  : process.env.MONGODB_URI_DEV;
+const uri =
+  process.env.NODE_ENV === "production"
+    ? process.env.MONGODB_URI_PROD
+    : process.env.MONGODB_URI_DEV;
 
 const client = new MongoClient(uri, {
   tls: true,
@@ -34,7 +35,7 @@ async function startServer() {
     app.use(cors());
     app.use(express.json());
 
-    // Importar rotas aqui para garantir que a coleção correta foi definida
+    // Rotas Hub
     const qualinetRoutes = require("./src/routes/qualinetRoutes")(
       clarohub.collection("ocqualinet")
     );
@@ -44,6 +45,12 @@ async function startServer() {
     const netfacilsgdRoutes = require("./src/routes/netfacilsgdRoutes")(
       clarohub.collection("netfacilsgd")
     );
+
+    const appRoutes = require("./src/routes/appRoutes")(
+      clarohub.collection("apps")
+    );
+
+    // Rotas Spark
     const usersRoutes = require("./src/routes/usersRoutes")(
       clarohub.collection("users"),
       clarohub.collection("ideas")
@@ -61,13 +68,18 @@ async function startServer() {
       clarohub.collection("ideas"),
       clarohub.collection("users")
     );
-    const appRoutes = require("./src/routes/appRoutes")(
-      clarohub.collection("apps")
-    );
+
     const notificationRoutes = require("./src/routes/notificationRoutes")(
       clarohub.collection("notifications"),
       clarohub.collection("rankings"),
       clarohub.collection("ideas"),
+      clarohub.collection("users")
+    );
+
+    // Rotas Flow
+    const projectRoutes = require("./src/routes/claroflow/projectRoutes")(
+      clarohub.collection("flow.projects"),
+      clarohub.collection("flow.assignments"),
       clarohub.collection("users")
     );
 
@@ -81,6 +93,7 @@ async function startServer() {
     app.use("/spark/", ideaRoutes);
     app.use("/spark/", rankingRoutes);
     app.use("/notifications/", notificationRoutes);
+    app.use("/flow/", projectRoutes);
 
     // Middleware para servir imagens estáticas
     app.use(

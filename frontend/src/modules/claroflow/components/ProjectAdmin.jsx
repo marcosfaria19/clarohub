@@ -1,41 +1,31 @@
 import React, { useEffect, useMemo, useState } from "react";
-import AddApp from "modules/clarohub/components/AddApp";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import Container from "modules/shared/components/ui/container";
-import axiosInstance from "services/axios";
-import UserBadge from "../components/UserBadge";
-import DeleteConfirmationModal from "../../shared/components/DeleteConfirmationModal";
 import { Button } from "modules/shared/components/ui/button";
 import { CirclePlusIcon } from "lucide-react";
+import AddAssignment from "./AddAssignment";
+import { useProjects } from "../hooks/useProjects";
+import DeleteConfirmationModal from "modules/shared/components/DeleteConfirmationModal";
 
-function AppAdmin() {
-  const [dados, setDados] = useState([]);
+function ProjectAdmin() {
+  const {
+    assignments,
+    fetchAssignments,
+    addAssignmentToProject,
+    deleteAssignment,
+  } = useProjects();
+
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentItem, setCurrentItem] = useState({
-    nome: "",
-    info: "",
-    imagemUrl: "",
-    logoCard: "",
-    logoList: "",
-    rota: "",
-    familia: "",
-    acesso: "",
+    name: "",
+    project: "",
   });
   const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
-    fetchDados();
+    fetchAssignments();
   }, []);
-
-  const fetchDados = async () => {
-    try {
-      const response = await axiosInstance.get(`/apps`);
-      setDados(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar dados do backend:", error);
-    }
-  };
 
   const handleEditClick = (item) => {
     setCurrentItem({ ...item });
@@ -45,14 +35,8 @@ function AppAdmin() {
 
   const handleAddClick = () => {
     setCurrentItem({
-      nome: "",
-      info: "",
-      imagemUrl: "",
-      logoCard: "",
-      logoList: "",
-      rota: "",
-      familia: "",
-      acesso: "",
+      name: "",
+      project: "",
     });
     setIsEditMode(false);
     setShowEditModal(true);
@@ -77,65 +61,34 @@ function AppAdmin() {
 
   const handleSave = async () => {
     try {
-      const dataToSend = { ...currentItem };
-      delete dataToSend._id;
-
-      if (isEditMode) {
-        await axiosInstance.put(`/apps/${currentItem._id}`, dataToSend);
-      } else {
-        await axiosInstance.post(`/apps`, dataToSend);
-      }
+      await addAssignmentToProject(currentItem.project, {
+        name: currentItem.name,
+      });
       setShowEditModal(false);
-      fetchDados();
-    } catch (error) {
-      console.error("Erro ao salvar dados:", error);
+    } catch (err) {
+      console.error("Erro ao salvar demanda:", err);
     }
   };
 
   const handleDeleteConfirm = async () => {
     try {
-      await axiosInstance.delete(`/apps/${currentItem._id}`);
+      await deleteAssignment(currentItem._id);
       setShowDeleteModal(false);
-      fetchDados();
-    } catch (error) {
-      console.error("Erro ao deletar dados:", error);
+    } catch (err) {
+      console.error("Erro ao deletar demanda:", err);
     }
   };
 
   const columns = useMemo(
     () => [
       {
-        header: "LOGO LISTA",
-        accessorKey: "logoList",
-        cell: ({ getValue }) => {
-          const imageUrl = getValue();
-          return imageUrl ? (
-            <img
-              src={`${process.env.REACT_APP_BACKEND_URL}${imageUrl}`}
-              alt="logo"
-              style={{ height: "50px" }}
-            />
-          ) : (
-            <span>Sem logo</span>
-          );
-        },
-      },
-      {
-        header: "NOME",
-        accessorKey: "nome",
+        header: "Demanda",
+        accessorKey: "name",
         sorted: true,
       },
       {
-        header: "FAMILIA",
-        accessorKey: "familia",
-      },
-      {
-        header: "ACESSO",
-        accessorKey: "acesso",
-        cell: ({ getValue }) => {
-          const permission = getValue();
-          return <UserBadge permission={permission} />;
-        },
+        header: "Projeto",
+        accessorKey: "project",
       },
     ],
     [],
@@ -145,7 +98,7 @@ function AppAdmin() {
     <Container>
       <div className="flex justify-between">
         <h2 className="select-none text-3xl font-semibold text-foreground sm:mb-8 md:mb-10 lg:mb-12">
-          Apps Cadastrados
+          Demandas Cadastradas
         </h2>
 
         <Button variant="primary" onClick={handleAddClick}>
@@ -155,13 +108,13 @@ function AppAdmin() {
 
       <TabelaPadrao
         columns={columns}
-        data={dados}
+        data={assignments} // Use assignments carregados do hook
         actions
         onDelete={handleDeleteClick}
         onEdit={handleEditClick}
       />
 
-      <AddApp
+      <AddAssignment
         show={showEditModal}
         handleClose={handleCloseModal}
         handleSave={handleSave}
@@ -179,4 +132,4 @@ function AppAdmin() {
   );
 }
 
-export default AppAdmin;
+export default ProjectAdmin;

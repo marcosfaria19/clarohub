@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import axiosInstance from "services/axios";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import Container from "modules/shared/components/ui/container";
-import DeleteConfirmationModal from "modules/clarohub/components/DeleteConfirmationModal";
+import DeleteConfirmationModal from "modules/shared/components/DeleteConfirmationModal";
 import AddQualinet from "modules/clarohub/components/AddQualinet";
 
 const formatarData = (dataNumerica) => {

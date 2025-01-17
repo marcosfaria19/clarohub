@@ -4,7 +4,7 @@ import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import UserBadge from "modules/clarohub/components/UserBadge";
 import axiosInstance from "services/axios";
 import Container from "modules/shared/components/ui/container";
-import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
+import DeleteConfirmationModal from "../../shared/components/DeleteConfirmationModal";
 import { Button } from "modules/shared/components/ui/button";
 import { CirclePlusIcon } from "lucide-react";
 import { Avatar, AvatarImage } from "modules/shared/components/ui/avatar";

@@ -12,7 +12,6 @@ export function useUsers() {
         setLoading(true);
         const response = await axiosInstance.get("/users");
         setUsers(response.data);
-        console.log(response.data);
         setError(null);
       } catch (err) {
         setError("Erro ao carregar usuários");
