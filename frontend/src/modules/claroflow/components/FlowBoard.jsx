@@ -42,7 +42,7 @@ export default function FlowBoard() {
   };
 
   return (
-    <div className="tour-FlowBoard select-none">
+    <div className="select-none">
       {/* Mobile view */}
       <div className="lg:hidden">
         {renderSubjectTabs()}

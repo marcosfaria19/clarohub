@@ -82,7 +82,7 @@ export default function UserCard({ id, NOME, GESTOR, avatar, onSave }) {
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-h-[90vh] bg-card-spark sm:max-w-[600px]">
-          <DialogHeader className="space-y-4">
+          <DialogHeader className="pb-2">
             <DialogTitle className="text-xl font-semibold">
               Detalhes do Colaborador
             </DialogTitle>
@@ -99,8 +99,8 @@ export default function UserCard({ id, NOME, GESTOR, avatar, onSave }) {
                       key={demanda} // Usar a string como chave
                       className={`cursor-pointer transition-all hover:opacity-80 ${
                         selectedDemandas.includes(demanda)
-                          ? "opacity-100"
-                          : "opacity-50"
+                          ? "bg-accent opacity-100"
+                          : "opacity-40"
                       }`}
                       onClick={() => handleDemandaToggle(demanda)}
                     >
@@ -111,7 +111,7 @@ export default function UserCard({ id, NOME, GESTOR, avatar, onSave }) {
               </div>
 
               {/* Regionais Section */}
-              <div className="m-1 grid gap-4 sm:grid-cols-2">
+              <div className="m-1 grid gap-4 pb-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">
                     Regional Primária
@@ -152,25 +152,6 @@ export default function UserCard({ id, NOME, GESTOR, avatar, onSave }) {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-              </div>
-
-              {/* Treatment Information */}
-              <div className="rounded-lg border p-4">
-                <h4 className="mb-4 text-sm font-medium">Em Tratamento</h4>
-                <div className="grid gap-4 text-sm sm:grid-cols-3">
-                  <div>
-                    <p className="text-xs text-muted-foreground">ID</p>
-                    <p className="font-medium">{id}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">NODE</p>
-                    <p className="font-medium">{"TGAADB"}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">VISIUM</p>
-                    <p className="font-medium">{"BRASILIA - DF"}</p>
-                  </div>
                 </div>
               </div>
             </div>
