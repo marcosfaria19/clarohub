@@ -150,6 +150,11 @@ module.exports = (usersCollection, ideasCollection) => {
     delete newData._id;
 
     try {
+      // Converter o campo `project id` para ObjectId, se existir
+      if (newData.project?._id) {
+        newData.project._id = new ObjectId(newData.project._id);
+      }
+
       const result = await usersCollection.updateOne(
         { _id: new ObjectId(id) },
         { $set: newData }
@@ -172,6 +177,10 @@ module.exports = (usersCollection, ideasCollection) => {
   router.post("/users", authenticateToken, async (req, res) => {
     const newUser = req.body;
     try {
+      // Converter o campo `project id` para ObjectId, se existir
+      if (newUser.project?._id) {
+        newUser.project._id = new ObjectId(newUser.project._id);
+      }
       const result = await usersCollection.insertOne(newUser);
       if (result.insertedCount === 0) {
         return res

@@ -122,6 +122,11 @@ function Users() {
         enableHiding: true,
       },
       {
+        header: "PROJETO",
+        accessorKey: "project.name",
+        enableHiding: true,
+      },
+      {
         header: "ACESSO",
         accessorKey: "PERMISSOES",
         cell: ({ getValue }) => {

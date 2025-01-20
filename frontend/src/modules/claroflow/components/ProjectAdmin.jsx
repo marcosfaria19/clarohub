@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+/* import React, { useEffect, useMemo, useState } from "react";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import Container from "modules/shared/components/ui/container";
 import { Button } from "modules/shared/components/ui/button";
@@ -131,5 +131,14 @@ function ProjectAdmin() {
     </Container>
   );
 }
+
+export default ProjectAdmin;
+ */
+
+import Container from "modules/shared/components/ui/container";
+
+const ProjectAdmin = () => {
+  return <Container />;
+};
 
 export default ProjectAdmin;
