@@ -1,90 +1,83 @@
 import { useState, useEffect } from "react";
-import axiosInstance from "services/axios";
+import axiosInstance from "../services/axiosInstance";
 
-export function useProjects() {
+const useProjects = () => {
   const [projects, setProjects] = useState([]);
-  const [assignments, setAssignments] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get("/flow/projects");
-        setProjects(response.data);
-
-        // Mapeia as demandas e inclui o nome do projeto
-
-        const allAssignments = response.data.flatMap((project) =>
-          project.assignments.map((assignments) => ({
-            ...assignments,
-            project: project.name, // Adiciona o nome do projeto
-          })),
-        );
-        setAssignments(allAssignments);
-
-        setError(null);
-      } catch (err) {
-        setError("Erro ao carregar projetos");
-        console.error("Erro ao buscar projetos:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-
-  const fetchAssignments = async () => {
+  // Função para buscar todos os projetos
+  const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get("/flow/projects/assignments");
-      setAssignments(response.data);
-      setError(null);
+      const response = await axiosInstance.get("/flow/projects");
+      setProjects(response.data);
     } catch (err) {
-      setError("Erro ao carregar demandas");
-      console.error("Erro ao buscar demandas:", err);
+      console.error("Erro ao buscar projetos:", err);
+      setError(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const addAssignmentToProject = async (projectId, assignment) => {
+  // Função para buscar assignments de um projeto específico
+  const fetchAssignments = async (projectId) => {
     try {
+      setLoading(true);
+      const project = projects.find((p) => p._id === projectId);
+      if (!project) {
+        throw new Error("Projeto não encontrado.");
+      }
+      return project.assignments;
+    } catch (err) {
+      console.error("Erro ao buscar assignments:", err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Função para criar um novo assignment em um projeto
+  const createAssignment = async (projectId, assignmentName) => {
+    try {
+      setLoading(true);
       const response = await axiosInstance.post(
         `/flow/projects/${projectId}/assignments`,
-        assignment,
+        { name: assignmentName },
       );
 
-      // Atualiza o estado local com o novo assignment
-      setProjects((prevProjects) =>
-        prevProjects.map((project) =>
+      // Atualizar estado local com a nova demanda
+      setProjects((prev) =>
+        prev.map((project) =>
           project._id === projectId
             ? {
                 ...project,
-                assignments: [...(project.assignments || []), response.data],
+                assignments: [...project.assignments, response.data],
               }
             : project,
         ),
       );
-
-      // Atualiza assignments gerais
-      setAssignments((prevAssignments) => [...prevAssignments, response.data]);
-
-      return response.data;
     } catch (err) {
-      console.error("Erro ao adicionar demanda:", err);
-      throw err;
+      console.error("Erro ao criar assignment:", err);
+      setError(err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Hook para buscar projetos ao carregar
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
   return {
     projects,
-    assignments,
-    loading,
     error,
-    addAssignmentToProject,
+    loading,
+    fetchProjects,
     fetchAssignments,
+    createAssignment,
   };
-}
+};
+
+export default useProjects;

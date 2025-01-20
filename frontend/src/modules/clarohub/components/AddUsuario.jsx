@@ -28,6 +28,7 @@ const AddUsuario = ({
   handleChange,
   isEditMode,
 }) => {
+  const [projects, setProjects] = useState([]);
   const [gestores, setGestores] = useState([]);
   const [selectedPermission, setSelectedPermission] = useState(
     currentItem.PERMISSOES || "",
@@ -51,7 +52,6 @@ const AddUsuario = ({
     },
   ];
 
-  <div className="outline-"></div>;
   useEffect(() => {
     const fetchGestores = async () => {
       try {
@@ -63,6 +63,18 @@ const AddUsuario = ({
     };
 
     fetchGestores();
+  }, []);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await axiosInstance.get("/flow/projects");
+        setProjects(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar projetos:", error);
+      }
+    };
+    fetchProjects();
   }, []);
 
   useEffect(() => {
@@ -145,6 +157,38 @@ const AddUsuario = ({
                   {gestores.map((gestor, index) => (
                     <SelectItem key={index} value={gestor}>
                       {gestor}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="formProjeto" className="mb-3">
+                Tipo de Projeto
+              </Label>
+              <Select
+                name="project"
+                value={currentItem.project?._id || ""}
+                onValueChange={(_id) =>
+                  handleChange({
+                    target: {
+                      name: "project",
+                      value: {
+                        _id,
+                        name: projects.find((project) => project._id === _id)
+                          ?.name,
+                      },
+                    },
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o projeto que está alocado" />
+                </SelectTrigger>
+                <SelectContent>
+                  {projects.map((project) => (
+                    <SelectItem key={project._id} value={project._id}>
+                      {project.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
