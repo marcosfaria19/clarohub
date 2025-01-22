@@ -322,5 +322,36 @@ module.exports = (usersCollection, ideasCollection) => {
     }
   });
 
+  // Rota para alocar uma demanda ao usuário
+  router.patch(
+    "/users/:id/assignments",
+    authenticateToken,
+    async (req, res) => {
+      const { id } = req.params;
+      const { assignment } = req.body; // Esperamos um objeto `assignment` no corpo da requisição
+
+      if (!assignment || !assignment._id || !assignment.name) {
+        return res.status(400).json({ message: "Dados de alocação inválidos" });
+      }
+
+      try {
+        // Atualiza a lista de assignments do usuário, adicionando a nova demanda
+        const result = await usersCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $push: { assignments: assignment } }
+        );
+
+        if (result.matchedCount === 0) {
+          return res.status(404).json({ message: "Usuário não encontrado" });
+        }
+
+        res.json({ message: "Demanda alocada com sucesso", assignment });
+      } catch (err) {
+        console.error("Erro ao alocar demanda:", err);
+        res.status(500).json({ message: "Erro ao alocar demanda" });
+      }
+    }
+  );
+
   return router;
 };

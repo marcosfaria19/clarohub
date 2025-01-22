@@ -142,6 +142,43 @@ const useProjects = () => {
     }
   };
 
+  // Função para adicionar um usuário a uma demanda
+  const assignUserToAssignment = async (projectId, assignmentId, userId) => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.patch(
+        `/flow/projects/${projectId}/assignments/${assignmentId}/assign-user`,
+        { userId },
+      );
+
+      // Atualizar o estado local, adicionando o usuário à demanda
+      setProjects((prev) =>
+        prev.map((project) =>
+          project._id === projectId
+            ? {
+                ...project,
+                assignments: project.assignments.map((assignment) =>
+                  assignment._id === assignmentId
+                    ? {
+                        ...assignment,
+                        assignedUsers: [...assignment.assignedUsers, userId],
+                      }
+                    : assignment,
+                ),
+              }
+            : project,
+        ),
+      );
+
+      return response.data; // Retorna a resposta da API, se necessário
+    } catch (err) {
+      console.error("Erro ao adicionar usuário à demanda:", err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Hook para buscar projetos ao carregar
   useEffect(() => {
     fetchProjects();
@@ -156,6 +193,7 @@ const useProjects = () => {
     createAssignment,
     editAssignment,
     deleteAssignment,
+    assignUserToAssignment,
   };
 };
 
