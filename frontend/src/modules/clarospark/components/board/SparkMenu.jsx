@@ -54,7 +54,7 @@ export default function SparkMenu({
   const handleDownload = async () => {
     await downloadIdeas();
     if (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

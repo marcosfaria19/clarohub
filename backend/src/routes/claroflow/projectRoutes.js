@@ -23,7 +23,6 @@ module.exports = (projectsCollection) => {
       try {
         const { projectId } = req.params;
         const { name } = req.body;
-        console.log(req.body);
 
         if (!name) {
           return res.status(400).json({ error: "Assignment name is required" });
@@ -60,14 +59,11 @@ module.exports = (projectsCollection) => {
       try {
         const { projectId, assignmentId } = req.params;
         const { name } = req.body;
-        console.log("Params:", req.params);
-        console.log("Body:", req.body);
 
         const project = await projectsCollection.findOne({
           _id: new ObjectId(projectId),
           "assignments._id": new ObjectId(assignmentId),
         });
-        console.log("Documento encontrado:", project);
 
         if (!name) {
           return res.status(400).json({ error: "Assignment name is required" });
@@ -81,7 +77,6 @@ module.exports = (projectsCollection) => {
           },
           { $set: { "assignments.$.name": name } }
         );
-        console.log("Result:", result);
 
         if (result.modifiedCount === 0) {
           return res.status(404).json({ error: "Assignment not found" });

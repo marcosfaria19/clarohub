@@ -6,6 +6,7 @@ import { CirclePlusIcon } from "lucide-react";
 import AddAssignment from "./AddAssignment";
 import useProjects from "../hooks/useProjects";
 import DeleteConfirmationModal from "modules/shared/components/DeleteConfirmationModal";
+import { toast } from "sonner";
 
 function ProjectAdmin() {
   const {
@@ -79,11 +80,13 @@ function ProjectAdmin() {
           return;
         }
         await createAssignment(currentItem.projectId, currentItem.name);
+        toast.success("Demanda criada com sucesso!");
       }
       setShowEditModal(false);
       fetchProjects();
     } catch (err) {
       console.error("Erro ao salvar demanda:", err);
+      toast.error("Erro ao salvar demanda");
     }
   };
 
