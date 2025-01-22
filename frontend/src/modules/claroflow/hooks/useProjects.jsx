@@ -65,7 +65,6 @@ const useProjects = () => {
       );
     } catch (err) {
       console.error("Erro ao criar assignment:", err);
-      console.log(assignment);
       setError(err);
     } finally {
       setLoading(false);
@@ -74,7 +73,6 @@ const useProjects = () => {
 
   // Função para editar um assignment
   const editAssignment = async (projectId, assignmentId, newName) => {
-    console.log("Editando assignment:", { projectId, assignmentId, newName });
     if (!projectId || !assignmentId) {
       console.error("ID do projeto ou da demanda não fornecido");
       setError(new Error("ID do projeto ou da demanda não fornecido"));
@@ -82,13 +80,6 @@ const useProjects = () => {
     }
     try {
       setLoading(true);
-      const response = await axiosInstance.patch(
-        `/flow/projects/${projectId}/assignments/${assignmentId}`,
-        {
-          name: newName,
-        },
-      );
-      console.log("Resposta da edição:", response.data);
 
       // Atualizar o estado local com o novo nome
       setProjects((prev) =>
