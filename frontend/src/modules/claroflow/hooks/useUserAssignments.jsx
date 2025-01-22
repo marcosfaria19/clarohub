@@ -1,19 +1,27 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "services/axios";
 
-export const useUserAssignments = () => {
+export const useUserAssignments = (userId) => {
   const [project, setProject] = useState(null);
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!userId) {
+      setError("ID do usuário não fornecido");
+      setLoading(false);
+      return;
+    }
+
     const fetchUserAssignments = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const response = await axiosInstance.get("/user/assignments");
+        const response = await axiosInstance.get(
+          `/users/${userId}/assignments`,
+        );
         const { project, assignments } = response.data;
         setProject(project);
         setAssignments(assignments);
@@ -26,7 +34,7 @@ export const useUserAssignments = () => {
     };
 
     fetchUserAssignments();
-  }, []);
+  }, [userId]);
 
   return { project, assignments, loading, error };
 };
