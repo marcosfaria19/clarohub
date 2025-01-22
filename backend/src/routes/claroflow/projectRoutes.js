@@ -5,7 +5,7 @@ const router = express.Router();
 
 module.exports = (projectsCollection) => {
   // Rota para buscar todos os projetos
-  router.get("/projects", async (req, res) => {
+  router.get("/projects", authenticateToken, async (req, res) => {
     try {
       const projects = await projectsCollection.find({}).toArray();
       res.status(200).json(projects);

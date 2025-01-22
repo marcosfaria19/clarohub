@@ -298,5 +298,29 @@ module.exports = (usersCollection, ideasCollection) => {
     }
   });
 
+  // Rota para mostrar a demanda e projeto alocado ao usuário
+
+  router.get("/users/:id/assignments", authenticateToken, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      const { project, assignments } = user;
+
+      res.json({
+        project: project || null,
+        assignments: assignments || [],
+      });
+    } catch (err) {
+      console.error("Erro ao consultar o banco de dados:", err);
+      res.status(500).json({ message: "Erro ao consultar o banco de dados" });
+    }
+  });
+
   return router;
 };
