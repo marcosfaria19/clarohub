@@ -1,58 +1,58 @@
-/* import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import Container from "modules/shared/components/ui/container";
 import { Button } from "modules/shared/components/ui/button";
 import { CirclePlusIcon } from "lucide-react";
 import AddAssignment from "./AddAssignment";
-import { useProjects } from "../hooks/useProjects";
+import useProjects from "../hooks/useProjects";
 import DeleteConfirmationModal from "modules/shared/components/DeleteConfirmationModal";
 
 function ProjectAdmin() {
   const {
-    assignments,
-    fetchAssignments,
-    addAssignmentToProject,
+    projects,
+    loading,
+    error,
+    createAssignment,
+    fetchProjects,
+    editAssignment,
     deleteAssignment,
   } = useProjects();
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentItem, setCurrentItem] = useState({
-    name: "",
     project: "",
+    name: "",
+    projectId: "",
+    assignmentId: "",
   });
   const [isEditMode, setIsEditMode] = useState(false);
 
-  useEffect(() => {
-    fetchAssignments();
-  }, []);
-
-  const handleEditClick = (item) => {
-    setCurrentItem({ ...item });
-    setIsEditMode(true);
-    setShowEditModal(true);
-  };
-
   const handleAddClick = () => {
     setCurrentItem({
-      name: "",
       project: "",
+      name: "",
+      projectId: "",
+      assignmentId: "",
     });
     setIsEditMode(false);
     setShowEditModal(true);
-  };
-
-  const handleDeleteClick = (item) => {
-    setCurrentItem({ ...item });
-    setShowDeleteModal(true);
   };
 
   const handleCloseModal = () => {
     setShowEditModal(false);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target ? e.target : { name: e, value: e };
+  const handleEditClick = (item) => {
+    setIsEditMode(true);
+    setShowEditModal(true);
+    setCurrentItem({
+      ...item,
+      name: item.assignment,
+    });
+  };
+
+  const handleChange = ({ name, value }) => {
     setCurrentItem((prevItem) => ({
       ...prevItem,
       [name]: value,
@@ -61,38 +61,76 @@ function ProjectAdmin() {
 
   const handleSave = async () => {
     try {
-      await addAssignmentToProject(currentItem.project, {
-        name: currentItem.name,
-      });
+      if (isEditMode) {
+        if (!currentItem.projectId || !currentItem.assignmentId) {
+          console.error(
+            "ID do projeto ou da demanda não fornecido para edição",
+          );
+          return;
+        }
+        await editAssignment(
+          currentItem.projectId,
+          currentItem.assignmentId,
+          currentItem.name,
+        );
+      } else {
+        if (!currentItem.projectId) {
+          console.error("ID do projeto não fornecido para criação");
+          return;
+        }
+        await createAssignment(currentItem.projectId, currentItem.name);
+      }
       setShowEditModal(false);
+      fetchProjects();
     } catch (err) {
       console.error("Erro ao salvar demanda:", err);
     }
   };
 
+  const handleDeleteClick = (item) => {
+    setCurrentItem(item);
+    setShowDeleteModal(true);
+  };
+
   const handleDeleteConfirm = async () => {
     try {
-      await deleteAssignment(currentItem._id);
+      await deleteAssignment(currentItem.projectId, currentItem.assignmentId);
       setShowDeleteModal(false);
+      fetchProjects();
     } catch (err) {
-      console.error("Erro ao deletar demanda:", err);
+      console.error("Erro ao excluir demanda:", err);
     }
   };
 
   const columns = useMemo(
     () => [
       {
-        header: "Demanda",
-        accessorKey: "name",
-        sorted: true,
-      },
-      {
         header: "Projeto",
         accessorKey: "project",
+      },
+      {
+        header: "Demanda",
+        accessorKey: "assignment",
       },
     ],
     [],
   );
+
+  const flatProjects = useMemo(() => {
+    return projects.reduce((acc, project) => {
+      if (project.assignments && project.assignments.length > 0) {
+        project.assignments.forEach((assignment) => {
+          acc.push({
+            project: project.name,
+            projectId: project._id,
+            assignment: assignment.name,
+            assignmentId: assignment._id,
+          });
+        });
+      }
+      return acc;
+    }, []);
+  }, [projects]);
 
   return (
     <Container>
@@ -106,13 +144,19 @@ function ProjectAdmin() {
         </Button>
       </div>
 
-      <TabelaPadrao
-        columns={columns}
-        data={assignments} // Use assignments carregados do hook
-        actions
-        onDelete={handleDeleteClick}
-        onEdit={handleEditClick}
-      />
+      {error ? (
+        <p className="text-destructive">Erro ao carregar projetos.</p>
+      ) : (
+        <TabelaPadrao
+          columns={columns}
+          data={flatProjects}
+          actions
+          onEdit={handleEditClick}
+          onDelete={handleDeleteClick}
+          loading={loading}
+          columnFilter={false}
+        />
+      )}
 
       <AddAssignment
         show={showEditModal}
@@ -121,6 +165,7 @@ function ProjectAdmin() {
         currentItem={currentItem}
         handleChange={handleChange}
         isEditMode={isEditMode}
+        projects={projects}
       />
 
       <DeleteConfirmationModal
@@ -131,14 +176,5 @@ function ProjectAdmin() {
     </Container>
   );
 }
-
-export default ProjectAdmin;
- */
-
-import Container from "modules/shared/components/ui/container";
-
-const ProjectAdmin = () => {
-  return <Container />;
-};
 
 export default ProjectAdmin;

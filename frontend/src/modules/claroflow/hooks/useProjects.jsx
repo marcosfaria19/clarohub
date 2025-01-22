@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axiosInstance from "../services/axiosInstance";
+import axiosInstance from "services/axios";
 
 const useProjects = () => {
   const [projects, setProjects] = useState([]);
@@ -28,6 +28,7 @@ const useProjects = () => {
       if (!project) {
         throw new Error("Projeto não encontrado.");
       }
+
       return project.assignments;
     } catch (err) {
       console.error("Erro ao buscar assignments:", err);
@@ -38,12 +39,17 @@ const useProjects = () => {
   };
 
   // Função para criar um novo assignment em um projeto
-  const createAssignment = async (projectId, assignmentName) => {
+  const createAssignment = async (projectId, assignment) => {
+    if (!projectId) {
+      console.error("ID do projeto não fornecido");
+      setError(new Error("ID do projeto não fornecido"));
+      return;
+    }
     try {
       setLoading(true);
       const response = await axiosInstance.post(
         `/flow/projects/${projectId}/assignments`,
-        { name: assignmentName },
+        { name: assignment },
       );
 
       // Atualizar estado local com a nova demanda
@@ -59,6 +65,80 @@ const useProjects = () => {
       );
     } catch (err) {
       console.error("Erro ao criar assignment:", err);
+      console.log(assignment);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Função para editar um assignment
+  const editAssignment = async (projectId, assignmentId, newName) => {
+    console.log("Editando assignment:", { projectId, assignmentId, newName });
+    if (!projectId || !assignmentId) {
+      console.error("ID do projeto ou da demanda não fornecido");
+      setError(new Error("ID do projeto ou da demanda não fornecido"));
+      return;
+    }
+    try {
+      setLoading(true);
+      const response = await axiosInstance.patch(
+        `/flow/projects/${projectId}/assignments/${assignmentId}`,
+        {
+          name: newName,
+        },
+      );
+      console.log("Resposta da edição:", response.data);
+
+      // Atualizar o estado local com o novo nome
+      setProjects((prev) =>
+        prev.map((project) =>
+          project._id === projectId
+            ? {
+                ...project,
+                assignments: project.assignments.map((assignment) =>
+                  assignment._id === assignmentId
+                    ? { ...assignment, name: newName }
+                    : assignment,
+                ),
+              }
+            : project,
+        ),
+      );
+    } catch (err) {
+      console.error(
+        "Erro ao editar assignment:",
+        err.response?.data || err.message,
+      );
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Função para excluir um assignment
+  const deleteAssignment = async (projectId, assignmentId) => {
+    try {
+      setLoading(true);
+      await axiosInstance.delete(
+        `/flow/projects/${projectId}/assignments/${assignmentId}`,
+      );
+
+      // Atualizar o estado local para remover o assignment
+      setProjects((prev) =>
+        prev.map((project) =>
+          project._id === projectId
+            ? {
+                ...project,
+                assignments: project.assignments.filter(
+                  (assignment) => assignment._id !== assignmentId,
+                ),
+              }
+            : project,
+        ),
+      );
+    } catch (err) {
+      console.error("Erro ao excluir assignment:", err);
       setError(err);
     } finally {
       setLoading(false);
@@ -77,6 +157,8 @@ const useProjects = () => {
     fetchProjects,
     fetchAssignments,
     createAssignment,
+    editAssignment,
+    deleteAssignment,
   };
 };
 

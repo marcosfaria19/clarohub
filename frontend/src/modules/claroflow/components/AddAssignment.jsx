@@ -1,52 +1,31 @@
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "modules/shared/components/ui/dialog";
 import { Input } from "modules/shared/components/ui/input";
 import { Button } from "modules/shared/components/ui/button";
 import {
   Select,
-  SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectItem,
 } from "modules/shared/components/ui/select";
 import { Label } from "modules/shared/components/ui/label";
-import { useProjects } from "../hooks/useProjects";
+import useProjects from "../hooks/useProjects";
 
 const AddAssignment = ({
   show,
   handleClose,
+  handleSave,
   currentItem,
   handleChange,
   isEditMode,
 }) => {
-  const { projects, loading, error, addAssignmentToProject } = useProjects();
-  const [selectedProject, setSelectedProject] = useState("");
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const newAssignment = { name: currentItem.name };
-      await addAssignmentToProject(selectedProject, newAssignment);
-      handleClose(); // Fecha o modal após salvar
-    } catch (err) {
-      console.error("Erro ao adicionar demanda:", err);
-    }
-  };
-
-  const handleSelectChange = (name) => (value) => {
-    handleChange({ target: { name, value } });
-    if (name === "project") {
-      setSelectedProject(value);
-    }
-  };
+  const { projects, loading, error } = useProjects();
 
   return (
     <Dialog open={show} onOpenChange={handleClose}>
@@ -55,19 +34,17 @@ const AddAssignment = ({
           <DialogTitle>
             {isEditMode ? "Editar Demanda" : "Adicionar Demanda"}
           </DialogTitle>
-          <DialogDescription>
-            Preencha os campos abaixo e clique em{" "}
-            {isEditMode ? "Salvar" : "Adicionar"}.
-          </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">Nome</Label>
             <Input
               id="name"
               name="name"
-              value={currentItem.name}
-              onChange={handleChange}
+              value={currentItem.name || ""}
+              onChange={(e) =>
+                handleChange({ name: "name", value: e.target.value })
+              }
               className="h-9 bg-menu text-foreground/90"
             />
           </div>
@@ -75,14 +52,17 @@ const AddAssignment = ({
           <div className="flex flex-col gap-2">
             <Label htmlFor="project">Projeto</Label>
             {loading ? (
-              <p>Carregando projetos...</p>
+              <p>Carregando...</p>
             ) : error ? (
-              <p className="text-red-500">{error}</p>
+              <p className="text-destructive">{error.message}</p>
             ) : (
               <Select
                 name="project"
-                value={selectedProject}
-                onValueChange={handleSelectChange("project")}
+                disabled={isEditMode}
+                value={currentItem.projectId || ""}
+                onValueChange={(value) =>
+                  handleChange({ name: "projectId", value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um projeto" />
@@ -99,7 +79,12 @@ const AddAssignment = ({
           </div>
 
           <DialogFooter>
-            <Button type="submit" variant="primary" disabled={!selectedProject}>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={handleSave}
+              disabled={!currentItem.projectId || !currentItem.name}
+            >
               {isEditMode ? "Salvar" : "Adicionar"}
             </Button>
             <Button variant="secondary" onClick={handleClose}>

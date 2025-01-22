@@ -15,29 +15,6 @@ module.exports = (projectsCollection) => {
     }
   });
 
-  // Rota para buscar todas as demandas de um projeto
-  router.get(
-    "/projects/:projectId/assignments",
-    authenticateToken,
-    async (req, res) => {
-      try {
-        const { projectId } = req.params;
-        const project = await projectsCollection.findOne({
-          _id: new ObjectId(projectId),
-        });
-
-        if (!project) {
-          return res.status(404).json({ error: "Project not found" });
-        }
-
-        res.status(200).json(project.assignments || []);
-      } catch (error) {
-        console.error("Erro ao buscar demandas:", error);
-        res.status(500).json({ error: "Error fetching assignments" });
-      }
-    }
-  );
-
   // Rota para adicionar uma nova demanda a um projeto específico
   router.post(
     "/projects/:projectId/assignments",
@@ -46,6 +23,7 @@ module.exports = (projectsCollection) => {
       try {
         const { projectId } = req.params;
         const { name } = req.body;
+        console.log(req.body);
 
         if (!name) {
           return res.status(400).json({ error: "Assignment name is required" });
@@ -74,58 +52,70 @@ module.exports = (projectsCollection) => {
     }
   );
 
-  // Rota para buscar usuários de um projeto específico
-  router.get(
-    "/projects/:projectId/users",
-    authenticateToken,
-    async (req, res) => {
-      try {
-        const { projectId } = req.params;
-        const project = await projectsCollection.findOne({
-          _id: new ObjectId(projectId),
-        });
-
-        if (!project) {
-          return res.status(404).json({ error: "Project not found" });
-        }
-
-        res.status(200).json(project.team || []);
-      } catch (error) {
-        console.error("Erro ao buscar usuários do projeto:", error);
-        res.status(500).json({ error: "Error fetching users for the project" });
-      }
-    }
-  );
-
-  // Rota para buscar usuários de uma demanda de um projeto específico
-  router.get(
-    "/projects/:projectId/assignments/:assignmentId/users",
+  // Rota para editar uma demanda (assignment)
+  router.patch(
+    "/projects/:projectId/assignments/:assignmentId",
     authenticateToken,
     async (req, res) => {
       try {
         const { projectId, assignmentId } = req.params;
+        const { name } = req.body;
+        console.log("Params:", req.params);
+        console.log("Body:", req.body);
+
         const project = await projectsCollection.findOne({
           _id: new ObjectId(projectId),
+          "assignments._id": new ObjectId(assignmentId),
         });
+        console.log("Documento encontrado:", project);
 
-        if (!project) {
-          return res.status(404).json({ error: "Project not found" });
+        if (!name) {
+          return res.status(400).json({ error: "Assignment name is required" });
         }
 
-        const assignment = project.assignments.find(
-          (a) => a._id.toString() === assignmentId
+        // Atualiza o assignment com o novo nome
+        const result = await projectsCollection.updateOne(
+          {
+            _id: new ObjectId(projectId),
+            "assignments._id": new ObjectId(assignmentId),
+          },
+          { $set: { "assignments.$.name": name } }
         );
+        console.log("Result:", result);
 
-        if (!assignment) {
+        if (result.modifiedCount === 0) {
           return res.status(404).json({ error: "Assignment not found" });
         }
 
-        res.status(200).json(assignment.assignedUsers || []);
+        res.status(200).json({ message: "Assignment updated successfully" });
       } catch (error) {
-        console.error("Erro ao buscar usuários da demanda:", error);
-        res
-          .status(500)
-          .json({ error: "Error fetching users for the assignment" });
+        console.error("Erro ao editar demanda:", error);
+        res.status(500).json({ error: "Error editing assignment" });
+      }
+    }
+  );
+
+  // Rota para excluir uma demanda (assignment)
+  router.delete(
+    "/projects/:projectId/assignments/:assignmentId",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        const { projectId, assignmentId } = req.params;
+
+        const result = await projectsCollection.updateOne(
+          { _id: new ObjectId(projectId) },
+          { $pull: { assignments: { _id: new ObjectId(assignmentId) } } }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ error: "Assignment not found" });
+        }
+
+        res.status(200).json({ message: "Assignment deleted successfully" });
+      } catch (error) {
+        console.error("Erro ao excluir demanda:", error);
+        res.status(500).json({ error: "Error deleting assignment" });
       }
     }
   );
