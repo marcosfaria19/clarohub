@@ -115,5 +115,47 @@ module.exports = (projectsCollection) => {
     }
   );
 
+  // Rota para adicionar um usuário a uma demanda de projeto
+  router.patch(
+    "/projects/:projectId/assignments/:assignmentId/assign-user",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        const { projectId, assignmentId } = req.params;
+        const { userId } = req.body; // Espera-se o _id do usuário a ser alocado
+
+        if (!userId) {
+          return res.status(400).json({ error: "User ID is required" });
+        }
+
+        // Atualiza a demanda no projeto, adicionando o _id do usuário ao array `assignedUsers`
+        const result = await projectsCollection.updateOne(
+          {
+            _id: new ObjectId(projectId),
+            "assignments._id": new ObjectId(assignmentId),
+          },
+          { $push: { "assignments.$.assignedUsers": new ObjectId(userId) } }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res
+            .status(404)
+            .json({ error: "Project or assignment not found" });
+        }
+
+        res
+          .status(200)
+          .json({
+            message: "User assigned to project assignment successfully",
+          });
+      } catch (error) {
+        console.error("Erro ao adicionar usuário à demanda:", error);
+        res
+          .status(500)
+          .json({ error: "Error adding user to project assignment" });
+      }
+    }
+  );
+
   return router;
 };

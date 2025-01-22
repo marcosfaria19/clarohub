@@ -36,5 +36,35 @@ export const useUserAssignments = (userId) => {
     fetchUserAssignments();
   }, [userId]);
 
-  return { project, assignments, loading, error };
+  // Função para adicionar o usuário à demanda
+  const assignUserToAssignment = async (projectId, assignmentId) => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.patch(
+        `/flow/projects/${projectId}/assignments/${assignmentId}/assign-user`,
+        { userId },
+      );
+
+      // Atualizar o estado local, adicionando o usuário à demanda
+      setAssignments((prevAssignments) =>
+        prevAssignments.map((assignment) =>
+          assignment._id === assignmentId
+            ? {
+                ...assignment,
+                assignedUsers: [...assignment.assignedUsers, userId],
+              }
+            : assignment,
+        ),
+      );
+
+      return response.data;
+    } catch (err) {
+      console.error("Erro ao adicionar usuário à demanda:", err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { project, assignments, loading, error, assignUserToAssignment };
 };
