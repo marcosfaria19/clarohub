@@ -80,6 +80,12 @@ const useProjects = () => {
     }
     try {
       setLoading(true);
+      await axiosInstance.patch(
+        `/flow/projects/${projectId}/assignments/${assignmentId}`,
+        {
+          name: newName,
+        },
+      );
 
       // Atualizar o estado local com o novo nome
       setProjects((prev) =>
