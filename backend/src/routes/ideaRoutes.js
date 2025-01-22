@@ -180,7 +180,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
   });
 
   // Rota para download da tabela gerencial em CSV
-  router.get("/ideas/download", async (req, res) => {
+  router.get("/ideas/download", authenticateToken, async (req, res) => {
     try {
       let data = await ideasCollection.find({}).toArray();
 
