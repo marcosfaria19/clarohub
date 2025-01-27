@@ -87,7 +87,7 @@ export default function FlowBoard() {
               GESTOR={user.GESTOR}
               avatar={user.avatar}
               assignments={assignments.filter(
-                (assignment) => assignment.userId === user.id, // Relacione as demandas ao usuário
+                (assignment) => assignment.userId === user.id,
               )}
             />
           ))}
@@ -99,8 +99,12 @@ export default function FlowBoard() {
     const assignment = assignments.find((a) => a.name === subject);
 
     if (assignment) {
-      const assignedUsers = users.filter((user) =>
-        assignment.assignedUsers.includes(user._id),
+      const assignedUsers = filteredUsers.filter(
+        (user) =>
+          Array.isArray(user.assignments) &&
+          user.assignments.some(
+            (userAssignment) => userAssignment._id === assignment._id,
+          ),
       );
 
       if (assignedUsers.length === 0) {
@@ -109,12 +113,15 @@ export default function FlowBoard() {
 
       return (
         <div className="space-y-5">
-          {filteredUsers.map((user) => (
+          {assignedUsers.map((user) => (
             <UserCard
               key={user._id}
-              {...user}
+              id={user._id}
+              NOME={user.NOME}
+              GESTOR={user.GESTOR}
+              avatar={user.avatar}
               assignments={assignments.filter(
-                (assignment) => assignment.userId === user.id, // Relacione as demandas ao usuário
+                (assignment) => assignment.userId === user.id,
               )}
             />
           ))}
