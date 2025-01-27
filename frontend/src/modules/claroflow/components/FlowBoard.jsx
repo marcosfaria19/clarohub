@@ -87,7 +87,7 @@ export default function FlowBoard() {
               GESTOR={user.GESTOR}
               avatar={user.avatar}
               assignments={assignments.filter(
-                (assignment) => assignment.userId === user.id,
+                (assignment) => assignment.userId === user.id, // Relacione as demandas ao usuário
               )}
             />
           ))}
@@ -110,7 +110,13 @@ export default function FlowBoard() {
       return (
         <div className="space-y-5">
           {filteredUsers.map((user) => (
-            <UserCard key={user._id} {...user} assignments={assignments} />
+            <UserCard
+              key={user._id}
+              {...user}
+              assignments={assignments.filter(
+                (assignment) => assignment.userId === user.id, // Relacione as demandas ao usuário
+              )}
+            />
           ))}
         </div>
       );
