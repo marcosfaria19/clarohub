@@ -26,7 +26,6 @@ export default function FlowBoard() {
   useEffect(() => {
     const loadAssignments = async () => {
       if (project?._id) {
-        console.log(project._id);
         try {
           const fetchedAssignments = await fetchAssignments(project._id);
           setAssignments(fetchedAssignments);
@@ -81,7 +80,16 @@ export default function FlowBoard() {
       return (
         <div className="space-y-5">
           {filteredUsers.map((user) => (
-            <UserCard key={user._id} {...user} />
+            <UserCard
+              key={user._id}
+              id={user._id}
+              NOME={user.NOME}
+              GESTOR={user.GESTOR}
+              avatar={user.avatar}
+              assignments={assignments.filter(
+                (assignment) => assignment.userId === user.id,
+              )}
+            />
           ))}
         </div>
       );
@@ -101,8 +109,8 @@ export default function FlowBoard() {
 
       return (
         <div className="space-y-5">
-          {assignedUsers.map((user) => (
-            <UserCard key={user._id} {...user} />
+          {filteredUsers.map((user) => (
+            <UserCard key={user._id} {...user} assignments={assignments} />
           ))}
         </div>
       );

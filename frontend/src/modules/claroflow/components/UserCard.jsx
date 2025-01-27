@@ -17,7 +17,6 @@ import {
   capitalizeFirstLetters,
 } from "modules/shared/utils/formatUsername";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { subjects } from "../utils/flowSubjects";
 import { Badge } from "modules/shared/components/ui/badge";
 import {
   Select,
@@ -28,16 +27,19 @@ import {
 } from "modules/shared/components/ui/select";
 import { regionals } from "../utils/projectNames";
 import { Separator } from "modules/shared/components/ui/separator";
+import { useUserAssignments } from "../hooks/useUserAssignments";
 
 export default function UserCard({ id, NOME, GESTOR, avatar, onSave }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDemandas, setSelectedDemandas] = useState(subjects || []);
+  const [selectedDemandas, setSelectedDemandas] = useState([]);
   const [regionalPrimaria, setRegionalPrimaria] = useState("");
   const [regionalSecundaria, setRegionalSecundaria] = useState("");
+  const { assignments, updateAssignments } = useUserAssignments(id);
 
   const handleCardClick = () => {
     setIsModalOpen(true);
   };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -50,7 +52,21 @@ export default function UserCard({ id, NOME, GESTOR, avatar, onSave }) {
     );
   };
 
-  const handleSave = () => {
+  // Função para alocar a demanda
+  const handleSave = async () => {
+    // Prepare the assignments data with only necessary fields
+    const assignmentsData = selectedDemandas.map((demandaId) => {
+      const demanda = assignments.find((a) => a._id === demandaId); // Find the assignment by ID
+      return {
+        _id: demanda._id, // Only the _id
+        name: demanda.name, // Only the name
+      };
+    });
+
+    // Chama a função do hook para atualizar os assignments
+    await updateAssignments(assignmentsData);
+
+    // Chama a função onSave, caso fornecida
     onSave?.({
       id,
       NOME,
@@ -60,6 +76,7 @@ export default function UserCard({ id, NOME, GESTOR, avatar, onSave }) {
       regionalPrimaria,
       regionalSecundaria,
     });
+
     handleCloseModal();
   };
 
@@ -94,17 +111,17 @@ export default function UserCard({ id, NOME, GESTOR, avatar, onSave }) {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">Demandas Associadas</h4>
                 <div className="flex flex-wrap gap-2">
-                  {subjects.map((demanda) => (
+                  {assignments.map((demanda) => (
                     <Badge
-                      key={demanda} // Usar a string como chave
+                      key={demanda._id}
                       className={`cursor-pointer transition-all hover:opacity-80 ${
-                        selectedDemandas.includes(demanda)
+                        selectedDemandas.includes(demanda._id)
                           ? "bg-accent opacity-100"
                           : "opacity-40"
                       }`}
-                      onClick={() => handleDemandaToggle(demanda)}
+                      onClick={() => handleDemandaToggle(demanda._id)}
                     >
-                      {demanda}
+                      {demanda.name}
                     </Badge>
                   ))}
                 </div>

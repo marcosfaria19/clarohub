@@ -36,35 +36,26 @@ export const useUserAssignments = (userId) => {
     fetchUserAssignments();
   }, [userId]);
 
-  // Função para adicionar o usuário à demanda
-  const assignUserToAssignment = async (projectId, assignmentId) => {
+  // Função para atualizar as demandas
+  const updateAssignments = async (assignmentsData) => {
     try {
-      setLoading(true);
       const response = await axiosInstance.patch(
-        `/flow/projects/${projectId}/assignments/${assignmentId}/assign-user`,
-        { userId },
+        `/users/${userId}/assignments`,
+        {
+          assignments: assignmentsData,
+        },
       );
 
-      // Atualizar o estado local, adicionando o usuário à demanda
-      setAssignments((prevAssignments) =>
-        prevAssignments.map((assignment) =>
-          assignment._id === assignmentId
-            ? {
-                ...assignment,
-                assignedUsers: [...assignment.assignedUsers, userId],
-              }
-            : assignment,
-        ),
-      );
-
-      return response.data;
-    } catch (err) {
-      console.error("Erro ao adicionar usuário à demanda:", err);
-      setError(err);
-    } finally {
-      setLoading(false);
+      if (response.data.message === "Demanda alocada com sucesso") {
+        setAssignments(assignmentsData); // Atualiza o estado com os novos assignments
+      } else {
+        setError("Erro ao alocar demanda");
+      }
+    } catch (error) {
+      setError("Erro ao alocar demanda");
+      console.error("Erro ao alocar demanda:", error);
     }
   };
 
-  return { project, assignments, loading, error, assignUserToAssignment };
+  return { project, assignments, loading, error, updateAssignments };
 };

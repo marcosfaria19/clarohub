@@ -322,30 +322,38 @@ module.exports = (usersCollection, ideasCollection) => {
     }
   });
 
-  // Rota para alocar uma demanda ao usuário
   router.patch(
     "/users/:id/assignments",
     authenticateToken,
     async (req, res) => {
       const { id } = req.params;
-      const { assignment } = req.body; // Esperamos um objeto `assignment` no corpo da requisição
+      const { assignments } = req.body;
 
-      if (!assignment || !assignment._id || !assignment.name) {
+      if (!assignments || !Array.isArray(assignments)) {
         return res.status(400).json({ message: "Dados de alocação inválidos" });
       }
 
       try {
-        // Atualiza a lista de assignments do usuário, adicionando a nova demanda
+        // Prepare the assignments array to replace the current one
+        const updatedAssignments = assignments.map((assignment) => ({
+          _id: new ObjectId(assignment._id), // Ensure _id is an ObjectId
+          name: assignment.name,
+        }));
+
+        // Replace the assignments array in the user's document
         const result = await usersCollection.updateOne(
           { _id: new ObjectId(id) },
-          { $push: { assignments: assignment } }
+          { $set: { assignments: updatedAssignments } } // Use $set to replace the whole assignments array
         );
 
         if (result.matchedCount === 0) {
           return res.status(404).json({ message: "Usuário não encontrado" });
         }
 
-        res.json({ message: "Demanda alocada com sucesso", assignment });
+        res.json({
+          message: "Demanda(s) alocada(s) com sucesso",
+          assignments: updatedAssignments,
+        });
       } catch (err) {
         console.error("Erro ao alocar demanda:", err);
         res.status(500).json({ message: "Erro ao alocar demanda" });
