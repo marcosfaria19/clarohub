@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "modules/shared/components/ui/button";
 import {
   Dialog,
@@ -41,7 +41,11 @@ export default function UserCard({
   const [selectedDemandas, setSelectedDemandas] = useState([]);
   const [regionalPrimaria, setRegionalPrimaria] = useState("");
   const [regionalSecundaria, setRegionalSecundaria] = useState("");
-  const { project, updateAssignments } = useUserAssignments(id);
+  const {
+    project,
+    assignments: userAssignments,
+    updateAssignments,
+  } = useUserAssignments(id);
 
   const handleCardClick = () => {
     setIsModalOpen(true);
@@ -58,6 +62,13 @@ export default function UserCard({
         : [...prev, demandaId],
     );
   };
+
+  // Inicializar as demandas associadas quando o modal abrir
+  useEffect(() => {
+    if (isModalOpen) {
+      setSelectedDemandas(userAssignments.map((assignment) => assignment._id));
+    }
+  }, [isModalOpen, userAssignments]);
 
   // Função para alocar a demanda
   const handleSave = async () => {
@@ -128,7 +139,7 @@ export default function UserCard({
                       }`}
                       onClick={() => handleDemandaToggle(assignment._id)}
                     >
-                      {assignment.name} {/* Mostre o nome da demanda */}
+                      {assignment.name}
                     </Badge>
                   ))}
                 </div>
