@@ -29,12 +29,19 @@ import { regionals } from "../utils/projectNames";
 import { Separator } from "modules/shared/components/ui/separator";
 import { useUserAssignments } from "../hooks/useUserAssignments";
 
-export default function UserCard({ id, NOME, GESTOR, avatar, onSave }) {
+export default function UserCard({
+  id,
+  NOME,
+  GESTOR,
+  avatar,
+  onSave,
+  assignments,
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDemandas, setSelectedDemandas] = useState([]);
   const [regionalPrimaria, setRegionalPrimaria] = useState("");
   const [regionalSecundaria, setRegionalSecundaria] = useState("");
-  const { assignments, updateAssignments } = useUserAssignments(id);
+  const { project, updateAssignments } = useUserAssignments(id);
 
   const handleCardClick = () => {
     setIsModalOpen(true);
@@ -111,17 +118,17 @@ export default function UserCard({ id, NOME, GESTOR, avatar, onSave }) {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">Demandas Associadas</h4>
                 <div className="flex flex-wrap gap-2">
-                  {assignments.map((demanda) => (
+                  {assignments.map((assignment) => (
                     <Badge
-                      key={demanda._id}
+                      key={assignment._id}
                       className={`cursor-pointer transition-all hover:opacity-80 ${
-                        selectedDemandas.includes(demanda._id)
+                        selectedDemandas.includes(assignment._id)
                           ? "bg-accent opacity-100"
                           : "opacity-40"
                       }`}
-                      onClick={() => handleDemandaToggle(demanda._id)}
+                      onClick={() => handleDemandaToggle(assignment._id)}
                     >
-                      {demanda.name}
+                      {assignment.name} {/* Mostre o nome da demanda */}
                     </Badge>
                   ))}
                 </div>
