@@ -17,11 +17,16 @@ export default function FlowBoard() {
     loading: projectsLoading,
     error: projectsError,
     fetchAssignments,
+    fetchProjects,
   } = useProjects();
 
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
 
   useEffect(() => {
     const loadAssignments = async () => {
@@ -39,6 +44,10 @@ export default function FlowBoard() {
 
     loadAssignments();
   }, [project, fetchAssignments]);
+
+  const handleAssignmentChange = async () => {
+    await fetchProjects();
+  };
 
   if (loading || usersLoading || assignmentsLoading || projectsLoading) {
     return <LoadingSpinner />;
@@ -86,9 +95,8 @@ export default function FlowBoard() {
               NOME={user.NOME}
               GESTOR={user.GESTOR}
               avatar={user.avatar}
-              assignments={assignments.filter(
-                (assignment) => assignment.userId === user.id,
-              )}
+              assignments={assignments}
+              onAssignmentChange={handleAssignmentChange}
             />
           ))}
         </div>
@@ -99,13 +107,16 @@ export default function FlowBoard() {
     const assignment = assignments.find((a) => a.name === subject);
 
     if (assignment) {
-      const assignedUsers = filteredUsers.filter(
-        (user) =>
-          Array.isArray(user.assignments) &&
-          user.assignments.some(
-            (userAssignment) => userAssignment._id === assignment._id,
-          ),
-      );
+      const assignedUsers = filteredUsers.filter((user) => {
+        // Garantir que assignedUsers seja um array, mesmo que esteja undefined
+        const assignedUsers = assignment.assignedUsers || [];
+
+        // Verificando se o usuário está alocado
+        const isAllocated =
+          Array.isArray(assignedUsers) && assignedUsers.includes(user._id);
+
+        return isAllocated;
+      });
 
       if (assignedUsers.length === 0) {
         return <div>Nenhum usuário atribuído a esta tarefa.</div>;
@@ -120,9 +131,8 @@ export default function FlowBoard() {
               NOME={user.NOME}
               GESTOR={user.GESTOR}
               avatar={user.avatar}
-              assignments={assignments.filter(
-                (assignment) => assignment.userId === user.id,
-              )}
+              assignments={assignments}
+              onAssignmentChange={handleAssignmentChange}
             />
           ))}
         </div>
