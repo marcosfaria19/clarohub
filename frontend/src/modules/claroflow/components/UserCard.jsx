@@ -37,6 +37,7 @@ export default function UserCard({
   avatar,
   onSave,
   assignments,
+  onAssignmentChange,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDemandas, setSelectedDemandas] = useState([]);
@@ -99,7 +100,7 @@ export default function UserCard({
       regionalPrimaria,
       regionalSecundaria,
     });
-
+    onAssignmentChange();
     handleCloseModal();
   };
 
