@@ -28,6 +28,7 @@ import {
 import { regionals } from "../utils/projectNames";
 import { Separator } from "modules/shared/components/ui/separator";
 import { useUserAssignments } from "../hooks/useUserAssignments";
+import useProjects from "../hooks/useProjects";
 
 export default function UserCard({
   id,
@@ -46,6 +47,7 @@ export default function UserCard({
     assignments: userAssignments,
     updateAssignments,
   } = useUserAssignments(id);
+  const { assignUserToAssignments } = useProjects();
 
   const handleCardClick = () => {
     setIsModalOpen(true);
@@ -83,6 +85,9 @@ export default function UserCard({
 
     // Chama a função do hook para atualizar os assignments
     await updateAssignments(assignmentsData);
+
+    // Chamar assignUserToAssignment para cada demanda selecionada
+    await assignUserToAssignments(project._id, id, selectedDemandas);
 
     // Chama a função onSave, caso fornecida
     onSave?.({
