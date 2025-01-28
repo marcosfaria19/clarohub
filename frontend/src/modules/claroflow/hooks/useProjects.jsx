@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "services/axios";
 
 const useProjects = () => {
@@ -6,8 +6,8 @@ const useProjects = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Função para buscar todos os projetos
-  const fetchProjects = async () => {
+  // Usar useCallback para memoizar a função fetchProjects
+  const fetchProjects = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/flow/projects");
@@ -18,7 +18,7 @@ const useProjects = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Função para buscar assignments de um projeto específico
   const fetchAssignments = async (projectId) => {

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import UserCard from "./UserCard";
 import { useUsers } from "../hooks/useUsers";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
@@ -23,10 +23,17 @@ export default function FlowBoard() {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const fetchProjectsRef = useRef(fetchProjects);
 
+  // Atualizar a ref sempre que fetchProjects mudar
   useEffect(() => {
-    fetchProjects();
+    fetchProjectsRef.current = fetchProjects;
   }, [fetchProjects]);
+
+  // Usar a ref para chamar fetchProjects
+  useEffect(() => {
+    fetchProjectsRef.current();
+  }, []);
 
   useEffect(() => {
     const loadAssignments = async () => {
@@ -46,7 +53,7 @@ export default function FlowBoard() {
   }, [project, fetchAssignments]);
 
   const handleAssignmentChange = async () => {
-    await fetchProjects();
+    await fetchProjectsRef.current();
   };
 
   if (loading || usersLoading || assignmentsLoading || projectsLoading) {
