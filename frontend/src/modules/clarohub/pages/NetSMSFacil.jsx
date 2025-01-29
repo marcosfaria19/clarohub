@@ -272,7 +272,13 @@ export default function NetSMSFacil({ userName, gestor }) {
 
                   {step === 1 && (
                     <div className="flex flex-1 flex-col space-y-4">
-                      <Select value={tratativa} onValueChange={setTratativa}>
+                      <Select
+                        value={tratativa}
+                        onValueChange={(value) => {
+                          setTratativa(value);
+                          setCurrentStep(1);
+                        }}
+                      >
                         <SelectTrigger id="tratativa">
                           <SelectValue placeholder="Selecione a Tratativa" />
                         </SelectTrigger>
