@@ -1,16 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import Container from "modules/shared/components/ui/container";
 import FlowMenu from "../components/FlowMenu";
 import FlowBoard from "../components/FlowBoard";
 import { FlowHome } from "../components/FlowHome";
-import { subjects } from "../utils/flowSubjects";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
+import { useUsers } from "../hooks/useUsers";
 
-export default function Claroflow({ userName, userId }) {
+export default function Claroflow() {
+  const { user } = useContext(AuthContext);
+  const userId = user.userId;
+  const gestor = user.gestor;
+
+  const { getUserProjectId } = useUsers();
+  const projectId = getUserProjectId(userId);
+
   return (
-    <Container innerClassName="lg:px-7 lg:mt-2 max-w-[1920px] bg-container">
+    <Container innerClassName="max-w-[95vw]">
       <FlowMenu />
-      {/* <FlowHome /> */}
-      <FlowBoard subjects={subjects} />
+      <FlowHome userId={userId} projectId={projectId} gestor={gestor} />
+      {/* <FlowBoard /> */}
     </Container>
   );
 }
