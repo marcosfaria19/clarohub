@@ -162,25 +162,36 @@ export default function FlowBoard() {
       </div>
 
       {/* Desktop view */}
-      <div className="hidden h-[75vh] lg:flex">
+      <div className="hidden h-[75vh] drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] lg:flex">
         {allSubjects.map((subject, index) => {
           return (
             <div
               key={subject}
-              className="flex flex-col bg-board"
+              className={`flex flex-col bg-board ${
+                index === 0 ? "rounded-l-lg" : ""
+              } ${index === allSubjects.length - 1 ? "rounded-r-lg" : ""}`}
               style={{ flex: `1 1 ${100 / allSubjects.length}%` }}
             >
-              <div className="relative flex h-20 items-center justify-center bg-board-title text-menu-foreground">
+              <div className="relative flex h-20 items-center justify-center bg-board-title text-menu-foreground drop-shadow-[0_3px_3px_rgba(0,0,0,0.25)]">
                 <h2 className="text-center text-xl font-medium antialiased">
                   {subject}
                 </h2>
                 {index !== 0 && (
-                  <div className="absolute bottom-0 left-0 top-0 w-[1px] bg-white/50"></div>
+                  <div className="absolute bottom-4 left-[-2px] top-4 w-[1px] bg-white/50"></div>
                 )}
               </div>
+              {index !== allSubjects.length - 1 && (
+                <div className="absolute bottom-5 right-[1px] top-32 w-[1px] bg-foreground/30"></div>
+              )}
               <div className="bg-board py-2" />
-              <div className="flex-1 overflow-y-auto p-5">
-                {renderContent(subject)}
+              <div
+                className={`scrollbar-spark flex-1 overflow-y-auto bg-board ${
+                  index === 0 ? "rounded-bl-lg" : ""
+                } ${index === allSubjects.length - 1 ? "rounded-br-lg" : ""}`}
+              >
+                <div className="flex-1 overflow-y-auto p-5">
+                  {renderContent(subject)}
+                </div>
               </div>
             </div>
           );
