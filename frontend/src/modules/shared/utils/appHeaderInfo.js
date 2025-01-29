@@ -20,8 +20,8 @@ const appHeaderInfo = {
   "/flow": {
     name: "Claro Flow",
     icon: "icons/flow.png",
-    width: 40,
-    height: 40,
+    width: 28,
+    height: 28,
   },
 };
 
