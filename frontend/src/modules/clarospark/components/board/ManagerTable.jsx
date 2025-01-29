@@ -22,6 +22,7 @@ import {
 } from "modules/shared/components/ui/dialog";
 import { Button } from "modules/shared/components/ui/button";
 import useManagerTable from "modules/clarospark/hooks/useManagerTable";
+import formatUserName from "modules/shared/utils/formatUsername";
 
 function ManagerTable() {
   const {
@@ -65,6 +66,14 @@ function ManagerTable() {
         header: "Colaborador",
         accessorKey: "creator.name",
         sorted: true,
+        cell: ({ row }) => (
+          <div
+            className="max-w-[200px] truncate"
+            title={row.original.creator.name}
+          >
+            {formatUserName(row.original.creator.name)}
+          </div>
+        ),
       },
       {
         header: "Título",
@@ -99,6 +108,23 @@ function ManagerTable() {
         },
       },
       {
+        header: "Tratada Por",
+        accessorKey: "lastChangedBy",
+        sorted: true,
+        cell: ({ row }) => {
+          const lastChange = row.original.history?.length
+            ? row.original.history[row.original.history.length - 1]
+            : null;
+
+          return (
+            <div className="max-w-lg truncate">
+              {lastChange ? formatUserName(lastChange.changedBy) : ""}{" "}
+            </div>
+          );
+        },
+      },
+
+      {
         header: "Status",
         accessorKey: "status",
         sorted: true,
@@ -111,7 +137,7 @@ function ManagerTable() {
               <DropdownMenuTrigger disabled={status === "Aprovada"}>
                 <Badge
                   variant="outline"
-                  className={`${color} min-w-20 border-0`}
+                  className={`${color} min-w-24 border-0`}
                 >
                   {status}
                 </Badge>

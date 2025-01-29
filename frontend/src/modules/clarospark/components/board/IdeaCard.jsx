@@ -42,6 +42,7 @@ export default function IdeaCard({
   anonymous,
   ideaId,
   createdAt,
+  history = [],
 }) {
   const { user } = useContext(AuthContext);
   const { likesCount, handleLike, updateLikeCount } = useLikes();
@@ -88,6 +89,9 @@ export default function IdeaCard({
 
   const currentLikes = likesCount[ideaId] || initialLikesCount;
   const likeIcon = getLikeIcon(currentLikes, theme);
+
+  const lastChange = history.length > 0 ? history[history.length - 1] : null;
+  const lastChangedBy = lastChange ? lastChange.changedBy : "";
 
   return (
     <TooltipProvider>
@@ -155,10 +159,18 @@ export default function IdeaCard({
         <DialogContent className="bg-card-spark sm:max-w-[550px]">
           <DialogHeader className="mb-2 p-0">
             <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
-            <Badge className={cn("mt-2 w-fit text-sm", color)}>
-              {icon} {status}
-            </Badge>
+            <div className="mt-2 flex items-center space-x-2">
+              <Badge className={cn("w-fit text-sm", color)}>
+                {icon} {status}
+              </Badge>
+            </div>
+            {lastChangedBy && (
+              <span className="text-sm text-muted-foreground">
+                Tratada por: {formatUserName(lastChangedBy)}
+              </span>
+            )}
           </DialogHeader>
+
           <ScrollArea className="max-h-[40dvh] pr-4">
             <div className="space-y-4">
               <p className="select-text text-sm text-foreground">
