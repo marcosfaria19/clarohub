@@ -9,7 +9,7 @@ export function FlowHome({ projectId, gestor }) {
   const projectUsers = getUsersByProjectId(projectId);
 
   return (
-    <div className="relative flex min-h-[75vh] w-full flex-col justify-between rounded-lg rounded-tr-none bg-board bg-cover bg-center">
+    <div className="relative flex min-h-[75vh] w-full flex-col justify-center rounded-lg rounded-tr-none bg-board bg-cover bg-center">
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -19,8 +19,8 @@ export function FlowHome({ projectId, gestor }) {
         }}
       />
 
-      {/* Header with team manager and avatars */}
-      <div className="relative z-10 m-6 flex flex-col items-end">
+      {/* Header com gestor e avatares - posicionado de forma absoluta */}
+      <div className="absolute right-6 top-6 flex flex-col items-end">
         <span className="text-md mb-2 font-medium text-muted-foreground">
           Equipe: {formatUserName(gestor)}
         </span>
@@ -49,33 +49,21 @@ export function FlowHome({ projectId, gestor }) {
         </div>
       </div>
 
-      {/* Page content */}
-      <div className="relative flex flex-1 flex-col items-center justify-center">
+      {/* Conteúdo da página centralizado */}
+      <div className="relative flex flex-col items-center justify-center px-4 text-center">
         <div className="absolute z-50 h-60 w-60 animate-pulse rounded-full bg-primary/40 blur-3xl"></div>
 
         <img
           src="icons/flow.png"
           alt="Net Fácil Icon"
-          className="relative z-10 mb-2 h-40 w-40 text-primary"
+          className="relative mb-2 h-32 w-32 text-primary sm:h-40 sm:w-40"
         />
-        <h1 className="text-5xl font-bold tracking-tight text-foreground">
+        <h1 className="relative text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
           Flow
         </h1>
-        <p className="mt-2 text-xl text-muted-foreground">
+        <p className="relative mt-2 text-base text-muted-foreground sm:text-lg md:text-xl">
           Acompanhamento de demandas da equipe de Engenharia
         </p>
-      </div>
-
-      {/* Bottom buttons */}
-      <div className="relative z-10 p-4">
-        <div className="flex gap-4">
-          <button className="rounded-lg bg-gray-800 px-6 py-3 font-medium text-white hover:bg-gray-700">
-            Gestão TAP
-          </button>
-          <button className="rounded-lg bg-gray-800 px-6 py-3 font-medium text-white hover:bg-gray-700">
-            Gestão NAP
-          </button>
-        </div>
       </div>
     </div>
   );

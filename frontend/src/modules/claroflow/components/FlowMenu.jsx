@@ -12,7 +12,7 @@ export default function FlowMenu({ assignments = [] }) {
   const [activeTab, setActiveTab] = useState("home");
 
   return (
-    <div className="relative bottom-0 z-20 flex w-auto items-center justify-start rounded-none sm:mt-12 lg:mt-0">
+    <div className="relative bottom-0 z-20 flex w-auto items-center justify-start overflow-x-auto rounded-none sm:mt-12 lg:mt-0">
       <TooltipProvider>
         {/* Aba Home permanente */}
         <Tooltip>
