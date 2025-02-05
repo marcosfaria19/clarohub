@@ -40,6 +40,19 @@ export function useUsers() {
     [users],
   );
 
+  const getUsersByProjectAndAssignment = useCallback(
+    (projectId, assignmentId) => {
+      return users.filter(
+        (user) =>
+          user.project?._id === projectId &&
+          user.assignments?.some(
+            (assignment) => assignment._id === assignmentId,
+          ),
+      );
+    },
+    [users],
+  );
+
   const fetchUserAssignments = useCallback(async (userId) => {
     try {
       const response = await axiosInstance.get(`/users/${userId}/assignments`);
@@ -57,5 +70,6 @@ export function useUsers() {
     getUsersByProjectId,
     getUserProjectId,
     fetchUserAssignments,
+    getUsersByProjectAndAssignment,
   };
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { HouseIcon } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import {
@@ -8,9 +8,7 @@ import {
   TooltipTrigger,
 } from "modules/shared/components/ui/tooltip";
 
-export default function FlowMenu({ assignments = [] }) {
-  const [activeTab, setActiveTab] = useState("home");
-
+export default function FlowMenu({ assignments = [], activeTab, onTabChange }) {
   return (
     <div className="relative bottom-0 z-20 flex w-auto items-center justify-start overflow-x-auto rounded-none sm:mt-12 lg:mt-0">
       <TooltipProvider>
@@ -20,10 +18,10 @@ export default function FlowMenu({ assignments = [] }) {
             <Button
               variant="ghost"
               size="icon"
-              className={`relative w-14 rounded-none rounded-t-[20px] bg-board text-accent-foreground/80 ${
+              className={`text-board-foreground/80 relative w-14 min-w-[50px] rounded-none rounded-t-[20px] bg-board ${
                 activeTab === "home" ? "bg-primary text-accent-foreground" : ""
               }`}
-              onClick={() => setActiveTab("home")}
+              onClick={() => onTabChange("home")}
             >
               <HouseIcon className="h-5 w-5" />
             </Button>
@@ -36,12 +34,12 @@ export default function FlowMenu({ assignments = [] }) {
           <Button
             key={assignment._id}
             variant="ghost"
-            className={`h-10 w-[100px] rounded-none rounded-t-[20px] py-2 text-sm font-medium transition-colors ${
+            className={`text-board-foreground/80 h-10 w-[100px] rounded-none rounded-t-[20px] bg-board py-2 text-sm font-medium transition-colors ${
               activeTab === assignment._id
                 ? "bg-primary text-accent-foreground"
-                : "bg-board text-accent-foreground/80"
+                : ""
             }`}
-            onClick={() => setActiveTab(assignment._id)}
+            onClick={() => onTabChange(assignment._id)}
           >
             {assignment.name}
           </Button>
