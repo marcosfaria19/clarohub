@@ -3,19 +3,21 @@ import { useUsers } from "../hooks/useUsers";
 import bg from "../assets/bg-curves.png";
 import { Avatar, AvatarImage } from "modules/shared/components/ui/avatar";
 import { formatUserName } from "modules/shared/utils/formatUsername";
+import { useTheme } from "modules/shared/contexts/ThemeContext";
 
 export function FlowHome({ projectId, gestor }) {
   const { getUsersByProjectId, loading, error } = useUsers();
   const projectUsers = getUsersByProjectId(projectId);
+  const { theme } = useTheme();
 
   return (
-    <div className="relative flex min-h-[75vh] w-full flex-col justify-center rounded-lg rounded-tr-none bg-board bg-cover bg-center">
+    <div className="relative flex min-h-[75vh] w-full flex-col justify-center bg-cover bg-center">
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage: `url(${bg})`,
-          opacity: 0.05,
+          opacity: `${theme === "light" ? 1 : 0.05}`,
         }}
       />
 
