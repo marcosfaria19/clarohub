@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "services/axios";
 
 export function useUsers() {
@@ -6,34 +6,56 @@ export function useUsers() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get("/users");
-        setUsers(response.data);
-        setError(null);
-      } catch (err) {
-        setError("Erro ao carregar usuários");
-        console.error("Erro ao buscar usuários:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
+  const fetchUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/users");
+      setUsers(response.data);
+    } catch (err) {
+      setError("Erro ao carregar usuários");
+      console.error("Erro ao buscar usuários:", err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const getUsersByProjectId = (projectId) => {
-    return users.filter(
-      (user) => user.project && user.project._id === projectId,
-    );
-  };
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
-  const getUserProjectId = (userId) => {
-    const user = users.find((user) => user._id === userId);
-    return user?.project?._id || null; // Retorna o ID ou null se não existir
-  };
+  const getUsersByProjectId = useCallback(
+    (projectId) => {
+      return users.filter(
+        (user) => user.project && user.project._id === projectId,
+      );
+    },
+    [users],
+  );
 
-  return { users, loading, error, getUsersByProjectId, getUserProjectId };
+  const getUserProjectId = useCallback(
+    (userId) => {
+      const user = users.find((user) => user._id === userId);
+      return user?.project?._id || null;
+    },
+    [users],
+  );
+
+  const fetchUserAssignments = useCallback(async (userId) => {
+    try {
+      const response = await axiosInstance.get(`/users/${userId}/assignments`);
+      return response.data.assignments || [];
+    } catch (err) {
+      setError("Erro ao carregar demandas");
+      return [];
+    }
+  }, []);
+
+  return {
+    users,
+    loading,
+    error,
+    getUsersByProjectId,
+    getUserProjectId,
+    fetchUserAssignments,
+  };
 }

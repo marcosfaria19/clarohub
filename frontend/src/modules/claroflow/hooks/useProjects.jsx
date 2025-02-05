@@ -191,7 +191,7 @@ const useProjects = () => {
   // Hook para buscar projetos ao carregar
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [fetchProjects]);
 
   return {
     projects,
