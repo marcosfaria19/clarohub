@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Container from "modules/shared/components/ui/container";
 import FlowMenu from "../components/FlowMenu";
 import FlowBoard from "../components/FlowBoard";
@@ -8,17 +8,33 @@ import { useUsers } from "../hooks/useUsers";
 
 export default function Claroflow() {
   const { user } = useContext(AuthContext);
+  const { fetchUserAssignments, getUserProjectId } = useUsers();
+
   const userId = user.userId;
   const gestor = user.gestor;
+  const [projectId, setProjectId] = useState(null);
+  const [assignments, setAssignments] = useState([]);
 
-  const { getUserProjectId } = useUsers();
-  const projectId = getUserProjectId(userId);
+  useEffect(() => {
+    const loadData = async () => {
+      const project = getUserProjectId(userId);
+      const assignments = await fetchUserAssignments(userId);
+      setProjectId(project);
+      setAssignments(assignments);
+    };
+
+    loadData();
+  }, [userId, getUserProjectId, fetchUserAssignments]);
 
   return (
     <Container innerClassName="max-w-[95vw]">
-      <FlowMenu />
-      <FlowHome userId={userId} projectId={projectId} gestor={gestor} />
-      {/* <FlowBoard /> */}
+      <FlowMenu assignments={assignments} />
+      <FlowHome
+        userId={userId}
+        projectId={projectId}
+        gestor={gestor}
+        assignments={assignments}
+      />
     </Container>
   );
 }
