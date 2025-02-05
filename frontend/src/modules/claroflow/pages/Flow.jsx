@@ -27,7 +27,7 @@ export default function Claroflow() {
   }, [userId, getUserProjectId, fetchUserAssignments]);
 
   return (
-    <Container innerClassName="max-w-[95vw]">
+    <Container innerClassName="max-w-[95vw] mb-4 select-none">
       <FlowMenu assignments={assignments} />
       <FlowHome
         userId={userId}
