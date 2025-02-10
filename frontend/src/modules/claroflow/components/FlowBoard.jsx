@@ -6,6 +6,7 @@ import { useUserAssignments } from "../hooks/useUserAssignments";
 
 import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
 import useProjects from "../hooks/useProjects";
+import Container from "modules/shared/components/ui/container";
 
 export default function FlowBoard() {
   const [activeSubject, setActiveSubject] = useState("Equipe");
@@ -150,7 +151,7 @@ export default function FlowBoard() {
   };
 
   return (
-    <div className="select-none">
+    <Container innerClassName="max-w-[95vw] mb-4 select-none">
       {/* Mobile view */}
       <div className="lg:hidden">
         {renderSubjectTabs()}
@@ -197,6 +198,6 @@ export default function FlowBoard() {
           );
         })}
       </div>
-    </div>
+    </Container>
   );
 }
