@@ -4,7 +4,7 @@ import FlowMenu from "../components/FlowMenu";
 import { FlowHome } from "../components/FlowHome";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useUsers } from "../hooks/useUsers";
-import ProjectsBoard from "../components/workflow-boards/ProjectsBoard";
+import { getBoardComponent } from "../utils/boardRegistry"; // Import modificado
 
 export default function Claroflow() {
   const { user } = useContext(AuthContext);
@@ -27,6 +27,10 @@ export default function Claroflow() {
     loadData();
   }, [userId, getUserProjectId, fetchUserAssignments]);
 
+  // Obter o componente correto baseado no assignmentId
+  const BoardComponent =
+    selectedTab !== "home" ? getBoardComponent(selectedTab) : null;
+
   return (
     <Container innerClassName="max-w-[95vw] mb-4 select-none">
       <FlowMenu
@@ -34,6 +38,7 @@ export default function Claroflow() {
         activeTab={selectedTab}
         onTabChange={setSelectedTab}
       />
+
       <div className="min-h-[75vh] w-full rounded-lg rounded-tr-none bg-board">
         {selectedTab === "home" ? (
           <FlowHome
@@ -43,7 +48,12 @@ export default function Claroflow() {
             assignments={assignments}
           />
         ) : (
-          <ProjectsBoard assignmentId={selectedTab} projectId={projectId} />
+          <BoardComponent
+            assignmentId={selectedTab}
+            projectId={projectId}
+            // Passar dados adicionais se necessário
+            assignment={assignments.find((a) => a._id === selectedTab)}
+          />
         )}
       </div>
     </Container>
