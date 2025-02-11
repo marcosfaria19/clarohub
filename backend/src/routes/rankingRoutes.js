@@ -27,7 +27,7 @@ module.exports = (rankingCollection, ideasCollection, usersCollection) => {
             },
           },
           { $sort: { score: -1 } }, // Ordena por número de ideias, do maior para o menor
-          /* { $limit: 30 }, // Limita qtd de usuarios procurados */
+          { $limit: 35 }, // Limita qtd de usuarios procurados
         ])
         .toArray();
 
@@ -71,7 +71,7 @@ module.exports = (rankingCollection, ideasCollection, usersCollection) => {
             },
           },
           { $sort: { score: -1 } }, // Ordena por contagem de ideias aprovadas
-          /* { $limit: 30 }, // Limita a 30 usuários */
+          { $limit: 35 }, // Limita a 30 usuários
         ])
         .toArray();
 
@@ -122,7 +122,7 @@ module.exports = (rankingCollection, ideasCollection, usersCollection) => {
             },
           },
           { $sort: { score: -1 } }, // Ordena por contagem de sparks usados
-          // { $limit: 30 }, // Limita a 30 usuários
+          { $limit: 35 }, // Limita a 30 usuários
         ])
         .toArray();
 
