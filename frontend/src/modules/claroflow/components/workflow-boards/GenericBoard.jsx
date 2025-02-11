@@ -16,20 +16,21 @@ import { SearchIcon } from "lucide-react";
 
 import { formatUserName } from "modules/shared/utils/formatUsername";
 import { useUsers } from "modules/claroflow/hooks/useUsers";
+import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 
 export default function GenericBoard({ assignmentId, projectId }) {
   const { getUsersByProjectAndAssignment, loading, error } = useUsers();
   const teamMembers = getUsersByProjectAndAssignment(projectId, assignmentId);
 
   return (
-    <div className="flex h-full flex-col gap-4 p-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] md:flex-row">
+    <div className="flex h-full flex-col gap-4 p-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] md:flex-row md:flex-wrap">
       {/* Primeira Coluna */}
       <div className="flex w-full flex-col gap-4 md:w-[300px]">
         {/* Card Fila */}
-        <Card className="flex h-48 flex-col justify-between border-border bg-secondary text-card-foreground">
+        <Card className="flex flex-col justify-between border border-border bg-secondary text-card-foreground">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">
-              Fila de GENERIC
+              Fila de{" "}
               {teamMembers[0]?.assignments?.find((a) => a._id === assignmentId)
                 ?.name || "Carregando..."}
             </CardTitle>
@@ -43,7 +44,7 @@ export default function GenericBoard({ assignmentId, projectId }) {
         </Card>
 
         {/* Card Meu Time */}
-        <Card className="h-full border-border bg-secondary text-card-foreground">
+        <Card className="h-full border border-border bg-secondary text-card-foreground">
           <CardHeader className="pb-2">
             <CardTitle className="mb-4 text-lg">Meu Time</CardTitle>
           </CardHeader>
@@ -53,12 +54,11 @@ export default function GenericBoard({ assignmentId, projectId }) {
             ) : error ? (
               <div>Erro ao carregar usuários</div>
             ) : (
-              <div className="flex flex-col gap-3">
-                {/* Lista de membros com avatares e nomes */}
+              <div className="flex flex-col gap-3 drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
                 {teamMembers.slice(0, 5).map((user) => (
                   <Card
                     key={user._id}
-                    className="flex items-center gap-3 p-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+                    className="flex items-center gap-3 p-2 shadow-md"
                   >
                     <Avatar className="h-8 w-8 border-2 border-background">
                       <AvatarImage src={user.avatar} alt={user.NOME} />
@@ -72,10 +72,9 @@ export default function GenericBoard({ assignmentId, projectId }) {
                   </Card>
                 ))}
 
-                {/* Indicador de overflow */}
                 {teamMembers.length > 5 && (
-                  <Card className="flex items-center gap-3 p-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
-                    <div className="text-md flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-[#edd0af] font-medium text-board-title">
+                  <Card className="flex items-center gap-3 p-2 shadow-md">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-[#edd0af] font-medium text-board-title">
                       +{teamMembers.length - 5}
                     </div>
                     <span className="text-sm text-muted-foreground">
@@ -89,42 +88,53 @@ export default function GenericBoard({ assignmentId, projectId }) {
         </Card>
       </div>
 
-      {/* Segunda Coluna - Em Tratamento */}
-      <Card className="flex-1 border-border bg-secondary text-card-foreground">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Em Tratamento</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[550px] space-y-4 rounded-lg border-2 border-dashed border-border p-4 text-center text-muted-foreground">
-            <Card className="min-h-28 rounded-lg bg-board"></Card>
-            <Card className="min-h-28 rounded-lg bg-board"></Card>
-            <Card className="min-h-28 rounded-lg bg-board"></Card>
-            <Card className="min-h-28 rounded-lg bg-board"></Card>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Second Column - Em Tratamento */}
+      <div className="flex min-w-0 flex-1 flex-col space-y-4">
+        <Card className="border border-border bg-secondary text-card-foreground">
+          <CardHeader className="h-12 p-3">
+            <CardTitle className="text-lg">Em Tratamento</CardTitle>
+          </CardHeader>
+        </Card>
 
-      {/* Terceira Coluna - Finalizadas */}
-      <Card className="flex-1 border-border bg-secondary text-card-foreground">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Finalizadas</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="relative">
-            <Input
-              placeholder="Buscar finalizadas..."
-              className="bg-card pl-4 pr-10"
-            />
-            <SearchIcon className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="h-[550px] space-y-4 rounded-lg border-2 border-dashed border-border p-4 text-center text-muted-foreground">
-            <Card className="min-h-28 rounded-lg bg-board"></Card>
-            <Card className="min-h-28 rounded-lg bg-board"></Card>
-            <Card className="min-h-28 rounded-lg bg-board"></Card>
-            <Card className="min-h-28 rounded-lg bg-board"></Card>
-          </div>
-        </CardContent>
-      </Card>
+        <Card className="flex-1 border border-border bg-secondary text-card-foreground">
+          <CardContent className="h-full p-4">
+            <div className="h-full space-y-4 rounded-lg p-2 text-center text-muted-foreground drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i} className="min-h-28 rounded-lg bg-board" />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Third Column - Finalizadas */}
+      <div className="flex min-w-0 flex-1 flex-col space-y-4">
+        <Card className="border border-border bg-secondary text-card-foreground">
+          <CardHeader className="h-12 p-3">
+            <CardTitle className="flex h-8 items-start justify-between text-lg">
+              Finalizadas
+              <div className="relative bottom-[5px] w-3/5">
+                <Input
+                  placeholder="Buscar finalizadas..."
+                  className="w-full bg-card pl-4 pr-10"
+                />
+                <SearchIcon className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+              </div>
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <ScrollArea className="max-h-[550px]">
+          <Card className="flex-1 border bg-secondary text-card-foreground">
+            <CardContent className="h-full p-4">
+              <div className="h-full space-y-4 rounded-lg p-2 text-center text-muted-foreground drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
+                {[...Array(5)].map((_, i) => (
+                  <Card key={i} className="min-h-28 rounded-lg bg-board" />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </ScrollArea>
+      </div>
     </div>
   );
 }
