@@ -10,7 +10,7 @@ import {
 
 export default function FlowMenu({ assignments = [], activeTab, onTabChange }) {
   return (
-    <div className="relative bottom-0 z-20 flex w-auto items-center justify-start overflow-x-auto rounded-none sm:mt-12 lg:mt-0">
+    <div className="relative bottom-0 z-20 flex w-auto items-center justify-start overflow-x-auto rounded-none drop-shadow-[0_0px_5px_rgba(0,0,0,0.25)] sm:mt-12 lg:mt-0">
       <TooltipProvider>
         {/* Aba Home permanente */}
         <Tooltip>
@@ -18,7 +18,7 @@ export default function FlowMenu({ assignments = [], activeTab, onTabChange }) {
             <Button
               variant="ghost"
               size="icon"
-              className={`text-board-foreground/80 relative w-14 min-w-[50px] rounded-none rounded-t-[20px] bg-board ${
+              className={`relative w-14 min-w-[50px] rounded-none rounded-t-[20px] bg-secondary text-secondary-foreground/80 ${
                 activeTab === "home" ? "bg-primary text-accent-foreground" : ""
               }`}
               onClick={() => onTabChange("home")}
@@ -34,7 +34,7 @@ export default function FlowMenu({ assignments = [], activeTab, onTabChange }) {
           <Button
             key={assignment._id}
             variant="ghost"
-            className={`text-board-foreground/80 h-10 w-[100px] rounded-none rounded-t-[20px] bg-board py-2 text-sm font-medium transition-colors ${
+            className={`h-10 w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors ${
               activeTab === assignment._id
                 ? "bg-primary text-accent-foreground"
                 : ""

@@ -39,7 +39,7 @@ export default function Claroflow() {
         onTabChange={setSelectedTab}
       />
 
-      <div className="min-h-[75vh] w-full rounded-lg rounded-tr-none bg-board">
+      <div className="min-h-[75vh] w-full rounded-lg rounded-tl-none bg-board drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
         {selectedTab === "home" ? (
           <FlowHome
             userId={userId}
