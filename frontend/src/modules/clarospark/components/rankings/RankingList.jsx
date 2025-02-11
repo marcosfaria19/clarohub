@@ -26,8 +26,10 @@ export default function RankingList({ rankings, scoreLabel, userId }) {
         return (
           <div
             key={rank.userId}
-            className={`flex items-center justify-between rounded-full bg-secondary p-3 text-foreground transition-colors hover:bg-podium ${
-              userIndex > 3 ? "bg-primary text-primary-foreground" : ""
+            className={`flex items-center justify-between rounded-full p-3 text-foreground transition-colors hover:bg-podium hover:text-primary-foreground ${
+              rank.userId === userId
+                ? "bg-podium text-primary-foreground"
+                : "bg-secondary"
             }`}
           >
             <div className="flex items-center">
