@@ -2,13 +2,21 @@ import React from "react";
 import { useUsers } from "../hooks/useUsers";
 import bg from "../assets/bg-curves.png";
 import { Avatar, AvatarImage } from "modules/shared/components/ui/avatar";
-import { formatUserName } from "modules/shared/utils/formatUsername";
 import { useTheme } from "modules/shared/contexts/ThemeContext";
+import { useUserAssignments } from "../hooks/useUserAssignments";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "modules/shared/components/ui/tooltip";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 
-export function FlowHome({ projectId, gestor }) {
+export function FlowHome({ projectId, userId }) {
   const { getUsersByProjectId, loading, error } = useUsers();
   const projectUsers = getUsersByProjectId(projectId);
   const { theme } = useTheme();
+  const { project } = useUserAssignments(userId);
 
   return (
     <div className="relative flex min-h-[75vh] w-full flex-col justify-center bg-cover bg-center">
@@ -24,7 +32,7 @@ export function FlowHome({ projectId, gestor }) {
       {/* Header com gestor e avatares - posicionado de forma absoluta */}
       <div className="absolute right-6 top-6 flex flex-col items-end">
         <span className="text-md mb-2 font-medium text-muted-foreground">
-          Equipe: {formatUserName(gestor)}
+          Equipe: {project?.name}
         </span>
         <div className="flex -space-x-2">
           {loading ? (
@@ -34,13 +42,18 @@ export function FlowHome({ projectId, gestor }) {
           ) : (
             <>
               {projectUsers.slice(0, 5).map((user) => (
-                <Avatar
-                  key={user._id}
-                  className="h-12 w-12 border-2 border-background"
-                >
-                  <AvatarImage src={user.avatar} alt={user.NOME} />
-                </Avatar>
+                <TooltipProvider key={user._id}>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Avatar className="h-12 w-12 border-2 border-background">
+                        <AvatarImage src={user.avatar} alt={user.NOME} />
+                      </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent>{formatUserName(user.NOME)}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ))}
+
               {projectUsers.length > 5 && (
                 <div className="text-md flex h-12 w-12 items-center justify-center rounded-full border-2 border-background bg-[#edd0af] font-medium text-board-title">
                   +{projectUsers.length - 5}
