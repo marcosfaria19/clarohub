@@ -75,7 +75,7 @@ export function FlowHome({ projectId, userId }) {
 
         <img
           src="icons/flow.png"
-          alt="Net Fácil Icon"
+          alt="Claro Flow"
           className="relative mb-2 h-32 w-32 text-primary sm:h-40 sm:w-40"
         />
         <h1 className="relative text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
