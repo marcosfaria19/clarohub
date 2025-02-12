@@ -23,12 +23,12 @@ export default function GenericBoard({ assignmentId, projectId }) {
   const teamMembers = getUsersByProjectAndAssignment(projectId, assignmentId);
 
   return (
-    <div className="flex h-full flex-col gap-4 p-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] md:flex-row md:flex-wrap">
+    <div className="mx-6 flex h-full flex-col gap-12 pt-6 drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] md:flex-row md:flex-wrap">
       {/* Primeira Coluna */}
-      <div className="flex w-full flex-col gap-4 md:w-[300px]">
+      <div className="flex w-full flex-col gap-8 md:w-[300px]">
         {/* Card Fila */}
         <Card className="flex flex-col justify-between border border-border bg-secondary text-card-foreground">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 pt-4">
             <CardTitle className="text-lg">
               Fila de{" "}
               {teamMembers[0]?.assignments?.find((a) => a._id === assignmentId)
@@ -90,7 +90,7 @@ export default function GenericBoard({ assignmentId, projectId }) {
 
       {/* Second Column - Em Tratamento */}
       <div className="flex min-w-0 flex-1 flex-col space-y-4">
-        <Card className="border border-border bg-secondary text-card-foreground">
+        <Card className="rounded-lg border border-border bg-secondary text-card-foreground">
           <CardHeader className="h-12 p-3">
             <CardTitle className="text-lg">Em Tratamento</CardTitle>
           </CardHeader>
@@ -113,7 +113,7 @@ export default function GenericBoard({ assignmentId, projectId }) {
           <CardHeader className="h-12 p-3">
             <CardTitle className="flex h-8 items-start justify-between text-lg">
               Finalizadas
-              <div className="relative bottom-[5px] w-3/5">
+              <div className="relative bottom-[7px] w-3/5">
                 <Input
                   placeholder="Buscar finalizadas..."
                   className="w-full bg-card pl-4 pr-10"
