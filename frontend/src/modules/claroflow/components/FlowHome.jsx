@@ -41,18 +41,23 @@ export function FlowHome({ projectId, userId }) {
             <div>Erro ao carregar usuários</div>
           ) : (
             <>
-              {projectUsers.slice(0, 5).map((user) => (
-                <TooltipProvider key={user._id}>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Avatar className="h-12 w-12 border-2 border-background">
-                        <AvatarImage src={user.avatar} alt={user.NOME} />
-                      </Avatar>
-                    </TooltipTrigger>
-                    <TooltipContent>{formatUserName(user.NOME)}</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ))}
+              {[...projectUsers]
+                .sort(() => Math.random() - 0.5) // Embaralha o array
+                .slice(0, 5) // Pega os primeiros 5 elementos aleatórios
+                .map((user) => (
+                  <TooltipProvider key={user._id}>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Avatar className="h-12 w-12 border-2 border-background">
+                          <AvatarImage src={user.avatar} alt={user.NOME} />
+                        </Avatar>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {formatUserName(user.NOME)}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
 
               {projectUsers.length > 5 && (
                 <div className="text-md flex h-12 w-12 items-center justify-center rounded-full border-2 border-background bg-[#edd0af] font-medium text-board-title">
