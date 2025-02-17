@@ -54,7 +54,7 @@ export default function Claroflow() {
         }
       />
 
-      <div className="min-h-[75vh] w-full rounded-lg rounded-tl-none bg-board shadow-xl">
+      <div className="min-h-[75vh] w-full rounded-lg rounded-tl-none bg-board drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
         {state.selectedTab === "home" ? (
           <FlowHome
             userId={user.userId}
@@ -75,7 +75,7 @@ export default function Claroflow() {
 
       {/* Floating Action Button */}
       {state.selectedTab === "home" && (
-        <div className="animate-fade-in-up fixed bottom-8 right-8 z-50">
+        <div className="animate-fade-in-up fixed bottom-24 right-28 z-50">
           <Button
             variant="default"
             size="lg"
