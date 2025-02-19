@@ -20,14 +20,15 @@ const SurveyDialog = ({ show, onClose, onDismiss }) => {
   return (
     <Dialog open={show} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
+        <DialogTitle />
         <DialogHeader>
-          <div class="flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <img
               src="icons/flow.png"
               alt="Claro Flow Logo"
-              class="h-auto w-9"
+              className="h-auto w-9"
             />
-            <span class="text-lg font-semibold">
+            <span className="text-lg font-semibold">
               Ajude a construir o Claro Flow!
             </span>
           </div>
