@@ -13,6 +13,7 @@ import {
 } from "modules/shared/components/ui/carousel";
 import { useMediaQuery } from "modules/shared/hooks/use-media-query";
 import { Skeleton } from "modules/shared/components/ui/skeleton";
+import SurveyDialog from "../components/SurveyDialog";
 
 const Home = () => {
   const [groupedApps, setGroupedApps] = useState({});
@@ -22,6 +23,7 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useMediaQuery("(max-width: 640px)");
   const isTablet = useMediaQuery("(max-width: 1024px)");
+  const [showSurveyDialog, setShowSurveyDialog] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -38,8 +40,23 @@ const Home = () => {
         setFavorites(savedFavorites);
       })
       .catch((error) => console.error("Erro ao buscar aplicativos:", error))
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        setIsLoading(false);
+
+        // Mostrar o diálogo após 5 segundos se não tiver sido dispensado
+        const surveyDismissed = localStorage.getItem("surveyDismissed");
+        if (!surveyDismissed) {
+          setTimeout(() => {
+            setShowSurveyDialog(true);
+          }, 1000);
+        }
+      });
   }, []);
+
+  // Adicione esta função para lidar com a dispensação permanente
+  const handleSurveyDismiss = () => {
+    localStorage.setItem("surveyDismissed", "true");
+  };
 
   const handleFavoriteClick = (app) => {
     const updatedFavorites = [...favorites];
@@ -227,6 +244,12 @@ const Home = () => {
       </h1>
 
       {renderContent()}
+
+      <SurveyDialog
+        show={showSurveyDialog}
+        onClose={() => setShowSurveyDialog(false)}
+        onDismiss={handleSurveyDismiss}
+      />
 
       <SublinkModal
         show={showModal}
