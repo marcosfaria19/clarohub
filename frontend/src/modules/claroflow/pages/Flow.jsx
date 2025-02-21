@@ -7,12 +7,7 @@ import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useUsers } from "../hooks/useUsers";
 import { getBoardComponent } from "../utils/boardRegistry";
 
-import {
-  CloudIcon,
-  RocketIcon,
-  UploadCloudIcon,
-  UploadIcon,
-} from "lucide-react";
+import { UploadCloudIcon, UploadIcon } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import {
   Dialog,
