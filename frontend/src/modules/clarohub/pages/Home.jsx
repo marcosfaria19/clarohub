@@ -111,7 +111,7 @@ const Home = () => {
   };
 
   const handleCardClick = (app) => {
-    if (["Atlas", "Visium", "Nuvem", "Fique Ligado"].includes(app.nome)) {
+    if (["Atlas", "Visium", "Nuvem", "Consultar SLA"].includes(app.nome)) {
       setSelectedApp(app);
       setShowModal(true);
     } else {
