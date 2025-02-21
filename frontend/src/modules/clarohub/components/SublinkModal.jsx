@@ -51,7 +51,7 @@ const appConfig = {
       );
     },
   },
-  "Fique Ligado": {
+  "Consultar SLA": {
     dictionary: null,
     locationType: "Diretório",
     sort: false,
