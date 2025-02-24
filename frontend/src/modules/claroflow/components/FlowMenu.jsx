@@ -30,20 +30,22 @@ export default function FlowMenu({ assignments = [], activeTab, onTabChange }) {
         </Tooltip>
 
         {/* Abas de demandas */}
-        {assignments.map((assignment) => (
-          <Button
-            key={assignment._id}
-            variant="ghost"
-            className={`h-10 w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors ${
-              activeTab === assignment._id
-                ? "bg-primary text-accent-foreground"
-                : ""
-            }`}
-            onClick={() => onTabChange(assignment._id)}
-          >
-            {assignment.name}
-          </Button>
-        ))}
+        {assignments
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((assignment) => (
+            <Button
+              key={assignment._id}
+              variant="ghost"
+              className={`h-10 w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors ${
+                activeTab === assignment._id
+                  ? "bg-primary text-accent-foreground"
+                  : ""
+              }`}
+              onClick={() => onTabChange(assignment._id)}
+            >
+              {assignment.name}
+            </Button>
+          ))}
       </TooltipProvider>
     </div>
   );
