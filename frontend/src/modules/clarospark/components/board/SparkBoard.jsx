@@ -44,7 +44,7 @@ export default function SparkBoard({ subjects, cards, currentFilter }) {
 
   const renderSubjectTabs = () => (
     <div className="scrollbar-spark mb-4 flex overflow-x-auto rounded-lg">
-      {subjects.map((subject) => (
+      {[...subjects].sort().map((subject) => (
         <button
           key={subject}
           className={`whitespace-nowrap px-4 py-2 ${
@@ -83,7 +83,7 @@ export default function SparkBoard({ subjects, cards, currentFilter }) {
       className="w-full"
     >
       <CarouselContent>
-        {subjects.map((subject) => (
+        {[...subjects].sort().map((subject) => (
           <CarouselItem
             key={subject}
             className="basis-full sm:basis-1/2 lg:basis-1/3"
@@ -110,17 +110,17 @@ export default function SparkBoard({ subjects, cards, currentFilter }) {
 
   const renderDesktopView = () => (
     <div className="flex max-h-[75vh] min-h-[75vh] drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
-      {subjects.map((subject, index) => (
+      {[...subjects].sort().map((subject, index, sortedSubjects) => (
         <div
           key={subject}
           className={`relative flex w-[300px] flex-shrink-0 flex-col bg-board ${
             index === 0 ? "rounded-l-lg" : ""
-          } ${index === subjects.length - 1 ? "rounded-r-lg" : ""}`}
+          } ${index === sortedSubjects.length - 1 ? "rounded-r-lg" : ""}`}
         >
           <div
             className={`relative top-0 flex h-20 items-center justify-center bg-board-title text-menu-foreground drop-shadow-[0_3px_3px_rgba(0,0,0,0.25)] ${
               index === 0 ? "rounded-tl-lg" : ""
-            } ${index === subjects.length - 1 ? "rounded-tr-lg" : ""}`}
+            } ${index === sortedSubjects.length - 1 ? "rounded-tr-lg" : ""}`}
           >
             <h2 className="text-center text-xl font-medium antialiased">
               {subject}
@@ -129,14 +129,14 @@ export default function SparkBoard({ subjects, cards, currentFilter }) {
               <div className="absolute bottom-4 left-[-2px] top-4 w-[1px] bg-white/50"></div>
             )}
           </div>
-          {index !== subjects.length - 1 && (
+          {index !== sortedSubjects.length - 1 && (
             <div className="absolute bottom-5 right-[1px] top-32 w-[1px] bg-foreground/30"></div>
           )}
           <div className="bg-board py-2" />
           <div
             className={`scrollbar-spark flex-1 overflow-y-auto bg-board ${
               index === 0 ? "rounded-bl-lg" : ""
-            } ${index === subjects.length - 1 ? "rounded-br-lg" : ""}`}
+            } ${index === sortedSubjects.length - 1 ? "rounded-br-lg" : ""}`}
           >
             <div className="space-y-5 px-5 py-5">
               {filteredAndSortedCards[subject]?.map((card) => (
