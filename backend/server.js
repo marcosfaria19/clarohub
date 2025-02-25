@@ -84,7 +84,9 @@ async function startServer() {
     );
 
     const mduRoutes = require("./src/routes/claroflow/mduRoutes")(
-      clarohub.collection("flow.mdu")
+      clarohub.collection("flow.mdu"),
+      clarohub.collection("users"),
+      clarohub.collection("flow.projects")
     );
 
     // Rotas protegidas
