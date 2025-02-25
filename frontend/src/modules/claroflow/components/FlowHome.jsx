@@ -3,7 +3,6 @@ import { useUsers } from "../hooks/useUsers";
 import bg from "../assets/bg-curves.png";
 import { Avatar, AvatarImage } from "modules/shared/components/ui/avatar";
 import { useTheme } from "modules/shared/contexts/ThemeContext";
-import { useUserAssignments } from "../hooks/useUserAssignments";
 import {
   Tooltip,
   TooltipContent,
@@ -12,11 +11,11 @@ import {
 } from "modules/shared/components/ui/tooltip";
 import { formatUserName } from "modules/shared/utils/formatUsername";
 
-export function FlowHome({ projectId, userId }) {
+export function FlowHome({ project }) {
   const { getUsersByProjectId, loading, error } = useUsers();
-  const projectUsers = getUsersByProjectId(projectId);
+  const projectUsers = project ? getUsersByProjectId(project._id) : [];
+
   const { theme } = useTheme();
-  const { project } = useUserAssignments(userId);
 
   return (
     <div className="relative flex min-h-[75vh] w-full flex-col justify-center bg-cover bg-center">
@@ -42,14 +41,17 @@ export function FlowHome({ projectId, userId }) {
           ) : (
             <>
               {[...projectUsers]
-                .sort(() => Math.random() - 0.5) // Embaralha o array
-                .slice(0, 5) // Pega os primeiros 5 elementos aleatórios
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 5)
                 .map((user) => (
                   <TooltipProvider key={user._id}>
                     <Tooltip>
                       <TooltipTrigger>
                         <Avatar className="h-12 w-12 border-2 border-background">
-                          <AvatarImage src={user.avatar} alt={user.NOME} />
+                          <AvatarImage
+                            src={user.avatar || "/placeholder-avatar.png"}
+                            alt={user.NOME}
+                          />
                         </Avatar>
                       </TooltipTrigger>
                       <TooltipContent>

@@ -11,6 +11,7 @@ export function useUsers() {
       setLoading(true);
       const response = await axiosInstance.get("/users");
       setUsers(response.data);
+      setError(null);
     } catch (err) {
       setError("Erro ao carregar usuários");
       console.error("Erro ao buscar usuários:", err);
@@ -19,37 +20,23 @@ export function useUsers() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
-
   const getUsersByProjectId = useCallback(
-    (projectId) => {
-      return users.filter(
-        (user) => user.project && user.project._id === projectId,
-      );
-    },
+    (projectId) => users.filter((user) => user.project?._id === projectId),
     [users],
   );
 
-  const getUserProjectId = useCallback(
-    (userId) => {
-      const user = users.find((user) => user._id === userId);
-      return user?.project?._id || null;
-    },
+  const getProjectDetails = useCallback(
+    (userId) => users.find((user) => user._id === userId)?.project || null,
     [users],
   );
 
   const getUsersByProjectAndAssignment = useCallback(
-    (projectId, assignmentId) => {
-      return users.filter(
+    (projectId, assignmentId) =>
+      users.filter(
         (user) =>
           user.project?._id === projectId &&
-          user.assignments?.some(
-            (assignment) => assignment._id === assignmentId,
-          ),
-      );
-    },
+          user.assignments?.some((a) => a._id === assignmentId),
+      ),
     [users],
   );
 
@@ -63,13 +50,18 @@ export function useUsers() {
     }
   }, []);
 
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
   return {
     users,
     loading,
     error,
+    fetchUsers,
     getUsersByProjectId,
-    getUserProjectId,
-    fetchUserAssignments,
+    getProjectDetails,
     getUsersByProjectAndAssignment,
+    fetchUserAssignments,
   };
 }

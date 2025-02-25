@@ -1,12 +1,10 @@
-// src/pages/Claroflow.jsx
 import React, { useContext, useEffect, useState } from "react";
 import Container from "modules/shared/components/ui/container";
 import FlowMenu from "../components/FlowMenu";
 import { FlowHome } from "../components/FlowHome";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useUsers } from "../hooks/useUsers";
-import { getBoardComponent } from "../utils/boardRegistry";
-
+import BoardLayout from "../components/boards/BoardLayout";
 import { UploadCloudIcon, UploadIcon } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import {
@@ -16,28 +14,50 @@ import {
   DialogHeader,
   DialogTitle,
 } from "modules/shared/components/ui/dialog";
-import MDUpload from "../components/upload-data/MDUUpload";
+import MDUpload from "../components/upload/MDUUpload";
+import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
 
 export default function Claroflow() {
   const { user } = useContext(AuthContext);
-  const { fetchUserAssignments, getUserProjectId } = useUsers();
+  const { getProjectDetails, fetchUserAssignments } = useUsers();
   const [state, setState] = useState({
-    projectId: null,
+    project: null,
     assignments: [],
     selectedTab: "home",
     showUpload: false,
+    loading: true,
+    error: null,
   });
 
   useEffect(() => {
     const loadData = async () => {
-      const project = await getUserProjectId(user.userId);
-      const assignments = await fetchUserAssignments(user.userId);
-      setState((prev) => ({ ...prev, projectId: project, assignments }));
-    };
-    loadData();
-  }, [user.userId, getUserProjectId, fetchUserAssignments]);
+      try {
+        const [project, assignments] = await Promise.all([
+          getProjectDetails(user.userId),
+          fetchUserAssignments(user.userId),
+        ]);
 
-  const BoardComponent = getBoardComponent(state.selectedTab);
+        setState((prev) => ({
+          ...prev,
+          project,
+          assignments,
+          loading: false,
+          error: null,
+        }));
+      } catch (error) {
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error: "Erro ao carregar dados do projeto",
+        }));
+      }
+    };
+
+    loadData();
+  }, [user.userId, getProjectDetails, fetchUserAssignments]);
+
+  if (state.loading) return <div>Carregando...</div>;
+  if (state.error) return <div>Erro: {state.error}</div>;
 
   return (
     <Container innerClassName="max-w-[95vw] mb-4">
@@ -51,16 +71,15 @@ export default function Claroflow() {
 
       <div className="min-h-[75vh] w-full rounded-lg rounded-tl-none bg-board drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
         {state.selectedTab === "home" ? (
-          <FlowHome
-            userId={user.userId}
-            projectId={state.projectId}
-            gestor={user.gestor}
-            assignments={state.assignments}
-          />
+          state.project ? (
+            <FlowHome project={state.project} />
+          ) : (
+            <LoadingSpinner />
+          )
         ) : (
-          <BoardComponent
+          <BoardLayout
             assignmentId={state.selectedTab}
-            projectId={state.projectId}
+            project={state.project}
             assignment={state.assignments.find(
               (a) => a._id === state.selectedTab,
             )}
@@ -68,7 +87,6 @@ export default function Claroflow() {
         )}
       </div>
 
-      {/* Floating Action Button */}
       {state.selectedTab === "home" && (
         <div className="animate-fade-in-up fixed bottom-24 right-28 z-50">
           <Button
@@ -83,7 +101,6 @@ export default function Claroflow() {
         </div>
       )}
 
-      {/* Upload Dialog */}
       <Dialog
         open={state.showUpload}
         onOpenChange={(open) =>

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import UserCard from "./UserCard";
+import UserCard from "../components/UserCard";
 import { useUsers } from "../hooks/useUsers";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useUserAssignments } from "../hooks/useUserAssignments";
@@ -8,7 +8,7 @@ import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
 import useProjects from "../hooks/useProjects";
 import Container from "modules/shared/components/ui/container";
 
-export default function FlowBoard() {
+export default function AssignmentBoard() {
   const [activeSubject, setActiveSubject] = useState("Equipe");
   const { users, loading: usersLoading, error: usersError } = useUsers();
   const { user } = useContext(AuthContext);
