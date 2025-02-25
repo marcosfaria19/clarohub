@@ -14,7 +14,7 @@ import { AuthContext } from "modules/shared/contexts/AuthContext";
 import PageTitle from "modules/shared/components/PageTitle";
 import Claroflow from "modules/claroflow/pages/Flow";
 import ProjectAdmin from "modules/claroflow/components/ProjectAdmin";
-import FlowBoard from "modules/claroflow/components/FlowBoard";
+import AssignmentBoard from "modules/claroflow/pages/AssignmentBoard";
 
 const isTokenExpired = (token) => {
   if (!token) return true;
@@ -187,7 +187,7 @@ const Rotas = () => {
           <ProtectedRoute
             token={token}
             allowedRoles={["admin"]}
-            element={<FlowBoard />}
+            element={<AssignmentBoard />}
           />
         }
       />
