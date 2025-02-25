@@ -6,7 +6,7 @@ const authenticateToken = require("../../middleware/authMiddleware");
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-module.exports = (mduCollection) => {
+module.exports = (mduCollection, usersCollection, projectsCollection) => {
   router.post(
     "/upload",
     authenticateToken,
@@ -15,129 +15,166 @@ module.exports = (mduCollection) => {
       if (!req.file) return res.status(400).send("Nenhum arquivo foi enviado.");
 
       try {
+        // Obter usuário e projeto
+        const user = await usersCollection.findOne({
+          _id: new ObjectId(req.user.id),
+        });
+        const project = await projectsCollection.findOne({ name: "MDU" });
+
+        if (!user || !project) {
+          return res.status(400).send("Usuário ou projeto não encontrado");
+        }
+
+        // Processar arquivo
         const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const data = xlsx.utils.sheet_to_json(sheet);
+        const rawData = xlsx.utils.sheet_to_json(sheet);
 
-        // Verificar colunas obrigatórias
-        const colunasEsperadas = [
+        // Validar colunas
+        const requiredColumns = [
           "IDDEMANDA",
           "COD_OPERADORA",
           "ENDERECO_VISTORIA",
         ];
-        const headers = Object.keys(data[0] || {});
-        const missingColumns = colunasEsperadas.filter(
-          (col) => !headers.includes(col)
+        const missing = requiredColumns.filter(
+          (col) => !rawData[0] || !(col in rawData[0])
         );
 
-        if (missingColumns.length > 0) {
-          return res.status(400).send("Extração Inválida");
-          /* .send(`Colunas faltantes: ${missingColumns.join(", ")}`); */
+        if (missing.length > 0) {
+          return res
+            .status(400)
+            .send(`Colunas faltantes: ${missing.join(", ")}`);
         }
 
-        // Filtrar colunas e linhas (mantendo apenas as colunas necessárias e removendo linhas com endereço vazio)
-        const processedData = data
-          .map((row) => {
-            const filteredRow = {};
-            colunasEsperadas.forEach((col) => {
-              filteredRow[col] = row[col];
-            });
-            return filteredRow;
-          })
-          .filter((row) => {
-            const endereco = row.ENDERECO_VISTORIA;
-            return endereco && endereco.toString().trim() !== "";
-          });
+        // Processar dados
+        const processedData = rawData
+          .filter((row) => row.ENDERECO_VISTORIA?.trim())
+          .map((row) => ({
+            IDDEMANDA: row.IDDEMANDA,
+            COD_OPERADORA: row.COD_OPERADORA,
+            ENDERECO_VISTORIA: row.ENDERECO_VISTORIA,
+            createdBy: {
+              _id: user._id,
+              name: user.NOME,
+            },
+            project: {
+              _id: project._id,
+              name: project.name,
+            },
+            status: {
+              _id: project.assignments[0]._id,
+              name: project.assignments[0].name,
+            },
+            insertedAt: new Date(),
+            history: [
+              {
+                newStatus: {
+                  _id: project.assignments[0]._id,
+                  name: project.assignments[0].name,
+                },
+                user: {
+                  _id: user._id,
+                  nome: user.nome,
+                },
+                changedAt: new Date(),
+                obs: "Importação inicial",
+              },
+            ],
+          }));
 
-        // Se houver dados processados, verifica duplicidade e insere apenas os novos
-        if (processedData.length > 0) {
-          // Obtém todos os IDDEMANDA dos registros processados
-          const ids = processedData.map((row) => row.IDDEMANDA);
-          // Busca no banco os registros que já possuem algum desses IDs
-          const existingDocs = await mduCollection
-            .find({ IDDEMANDA: { $in: ids } })
-            .toArray();
-          const existingIDs = existingDocs.map((doc) => doc.IDDEMANDA);
-          // Filtra para manter apenas os registros cujo IDDEMANDA ainda não existe no banco
-          const newData = processedData.filter(
-            (row) => !existingIDs.includes(row.IDDEMANDA)
-          );
+        // Inserir no banco
+        const ids = processedData.map((d) => d.IDDEMANDA);
+        const existing = await mduCollection
+          .find({ IDDEMANDA: { $in: ids } })
+          .toArray();
+        const existingIds = existing.map((d) => d.IDDEMANDA);
+        const newData = processedData.filter(
+          (d) => !existingIds.includes(d.IDDEMANDA)
+        );
 
-          // Realiza a inserção somente se houver registros novos
-          if (newData.length > 0) {
-            await mduCollection.insertMany(newData, { ordered: false });
-          }
-
-          return res.status(200).json({
-            message: "Arquivo processado com sucesso",
-            originalRows: data.length,
-            insertedRows: newData.length,
-          });
-        } else {
-          return res.status(200).json({
-            message: "Nenhuma linha para processar",
-            originalRows: data.length,
-            insertedRows: 0,
-          });
+        if (newData.length > 0) {
+          await mduCollection.insertMany(newData);
         }
+
+        res.status(200).json({
+          message: "Arquivo processado",
+          total: rawData.length,
+          inserted: newData.length,
+          duplicates: processedData.length - newData.length,
+        });
       } catch (err) {
-        console.error("Erro no processamento:", err);
-        res.status(500).send("Erro durante o processamento do arquivo");
+        console.error("Erro no upload:", err);
+        res.status(500).send("Erro interno no servidor");
       }
     }
   );
 
+  // GET todas tasks
   router.get("/", authenticateToken, async (req, res) => {
     try {
-      const docs = await mduCollection.find({}).toArray();
-      res.json(docs);
+      const tasks = await mduCollection.find({}).toArray();
+      res.status(200).json(tasks);
     } catch (err) {
-      console.error("Erro ao consultar o banco de dados:", err);
-      res.status(500).send("Erro ao consultar o banco de dados.");
+      console.error("Erro ao buscar tasks:", err);
+      res.status(500).send("Erro interno");
     }
   });
 
-  router.delete("/:id", authenticateToken, async (req, res) => {
-    const { id } = req.params;
+  // Atualizar status
+  router.patch("/:id/status", authenticateToken, async (req, res) => {
     try {
-      const result = await mduCollection.deleteOne({
-        _id: new ObjectId(id),
+      const taskId = new ObjectId(req.params.id);
+      const { newStatusId, obs } = req.body;
+      const user = await usersCollection.findOne({
+        _id: new ObjectId(req.user.id),
       });
-      if (result.deletedCount === 0) {
-        return res
-          .status(404)
-          .send("Nenhum dado foi deletado. ID não encontrado.");
+
+      // Buscar novo status
+      const project = await projectsCollection.findOne({
+        "assignments._id": new ObjectId(newStatusId),
+      });
+
+      if (!project) {
+        return res.status(404).send("Status não encontrado");
       }
-      res.send("Dado deletado com sucesso.");
-    } catch (err) {
-      console.error("Erro ao deletar o dado do banco de dados:", err);
-      res.status(500).send("Erro ao deletar o dado do banco de dados.");
-    }
-  });
 
-  // Rota para editar dados existente
-  router.put("/:id", authenticateToken, async (req, res) => {
-    const { id } = req.params;
-    const newData = req.body;
-    delete newData._id;
-
-    try {
-      const result = await mduCollection.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: newData }
+      const newStatus = project.assignments.find((a) =>
+        a._id.equals(newStatusId)
       );
-      if (result.matchedCount === 0) {
-        return res
-          .status(404)
-          .json({ message: "Nenhum documento foi atualizado" });
+
+      // Atualizar task
+      const update = {
+        $set: {
+          "status._id": newStatus._id,
+          "status.name": newStatus.name,
+        },
+        $push: {
+          history: {
+            newStatus: {
+              _id: newStatus._id,
+              name: newStatus.name,
+            },
+            user: {
+              _id: user._id,
+              nome: user.nome,
+            },
+            changedAt: new Date(),
+            obs: obs || "Status atualizado",
+          },
+        },
+      };
+
+      const result = await mduCollection.updateOne({ _id: taskId }, update);
+
+      if (result.modifiedCount === 0) {
+        return res.status(404).send("Task não encontrada");
       }
-      res.send("Dados atualizados com sucesso");
+
+      res.status(200).json({ message: "Status atualizado" });
     } catch (err) {
-      console.error("Erro ao atualizar dados no banco de dados:", err);
-      res
-        .status(500)
-        .json({ message: "Erro ao atualizar dados no banco de dados" });
+      console.error("Erro ao atualizar status:", err);
+      res.status(500).send("Erro interno");
     }
   });
 

@@ -8,8 +8,8 @@ export const DemandService = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching tasks:", error);
-      return [];
+      console.error("Erro ao buscar tasks:", error);
+      throw error;
     }
   },
 
@@ -20,19 +20,32 @@ export const DemandService = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching finished tasks:", error);
-      return [];
+      console.error("Erro ao buscar tasks finalizadas:", error);
+      throw error;
     }
   },
 
   async handleTreat(projectId, assignmentId) {
     try {
       const response = await axiosInstance.post(
-        `/projects/${projectId}/assignments/${assignmentId}/handle-task`,
+        `/projects/${projectId}/assignments/${assignmentId}/next-task`,
       );
       return response.data;
     } catch (error) {
-      console.error("Error handling task:", error);
+      console.error("Erro ao tratar task:", error);
+      throw error;
+    }
+  },
+
+  async updateTaskStatus(taskId, newStatusId, obs) {
+    try {
+      const response = await axiosInstance.patch(`/mdu/${taskId}/status`, {
+        newStatusId,
+        obs,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
       throw error;
     }
   },
