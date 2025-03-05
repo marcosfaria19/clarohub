@@ -411,7 +411,7 @@ export default function NetSMSFacil({ userName, gestor }) {
                               ? "ring-2 ring-primary"
                               : ""
                           }
-                          placeholder="Insira o número do incidente"
+                          placeholder="Insira o número do ID/incidente"
                         />
                       )}
 
