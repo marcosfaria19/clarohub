@@ -13,7 +13,6 @@ import {
 import { motion } from "framer-motion";
 import { Users, X } from "lucide-react";
 
-// Componentes
 import {
   Avatar,
   AvatarFallback,
@@ -25,14 +24,7 @@ import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import { Card } from "modules/shared/components/ui/card";
 import { useUsers } from "../hooks/useUsers";
 import { formatUserName } from "modules/shared/utils/formatUsername";
-import Container from "modules/shared/components/ui/container";
-
-const initialDemands = [
-  { id: "viabilidade", name: "Viabilidade", assigned: [] },
-  { id: "Análise", name: "Análise", assigned: [] },
-  { id: "Projetos", name: "Projeto", assigned: [] },
-  { id: "Estruturado", name: "Estruturado", assigned: [] },
-];
+import useProjects from "../hooks/useProjects";
 
 const DraggableMember = ({ member, assignedCount }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -87,7 +79,7 @@ const DemandColumn = ({ demand, members, onUnassign }) => {
   const { setNodeRef, isOver } = useDroppable({ id: demand.id });
 
   return (
-    <Card className="flex h-[calc(100vh-180px)] min-w-72 flex-1 flex-col border-none bg-secondary">
+    <Card className="flex h-[calc(100vh-250px)] min-w-72 flex-1 flex-col border-none bg-secondary">
       <div className="rounded-t-lg bg-card p-4">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-card-foreground">{demand.name}</h3>
@@ -109,13 +101,13 @@ const DemandColumn = ({ demand, members, onUnassign }) => {
               <Card key={memberId} className="bg-background p-2">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={member.avatar} alt={member.name} />
+                    <AvatarImage src={member?.avatar} alt={member?.name} />
                     <AvatarFallback className="bg-card text-accent">
-                      {member.name[0]}
+                      {member?.name[0]}
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-sm text-card-foreground">
-                    {member.name}
+                    {member?.name}
                   </span>
                   <Button
                     variant="ghost"
@@ -141,30 +133,53 @@ const DemandColumn = ({ demand, members, onUnassign }) => {
   );
 };
 
-const AssignmentBoard = () => {
-  const { users } = useUsers();
-  const [demands, setDemands] = useState(initialDemands);
+const AssignmentBoard = ({ project }) => {
+  const { getUsersByProjectId } = useUsers();
+  const { projects, fetchAssignments } = useProjects();
+  const [demands, setDemands] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobile, setIsMobile] = useState(false);
 
+  const projectUsers = useMemo(() => {
+    return project ? getUsersByProjectId(project._id) : [];
+  }, [project, getUsersByProjectId]);
+
   const members = useMemo(
     () =>
-      users.map((user) => ({
-        ...user,
-        id: user._id,
-        name: formatUserName(user.NOME),
-        avatar: user.avatar,
-      })),
-    [users],
+      projectUsers
+        .map((user) => ({
+          ...user,
+          id: user._id,
+          name: formatUserName(user.NOME),
+          avatar: user.avatar,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [projectUsers],
   );
 
+  // Carrega os assignments apenas se "demands" ainda estiver vazio,
+  // garantindo que alterações locais não sejam sobrescritas.
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+    let isMounted = true;
+    if (projects.length > 0 && demands.length === 0) {
+      const projectId = projects[0]._id;
+      fetchAssignments(projectId).then((assignments) => {
+        if (assignments && isMounted) {
+          setDemands(
+            assignments.map((assignment) => ({
+              id: assignment._id,
+              name: assignment.name,
+              assigned: assignment.assignedUsers,
+            })),
+          );
+        }
+      });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [projects, fetchAssignments, demands.length]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -186,6 +201,7 @@ const AssignmentBoard = () => {
           demand.id === over.id
             ? {
                 ...demand,
+                // Adiciona o usuário sem duplicá-lo
                 assigned: [...new Set([...demand.assigned, active.id])],
               }
             : demand,
@@ -221,89 +237,94 @@ const AssignmentBoard = () => {
     [members, activeId],
   );
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   return (
-    <Container innerClassName="mb-4 h-[calc(100vh-800px)] max-w-[95vw] bg-container">
-      <DndContext
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className={`flex h-full ${isMobile && "flex-col"}`}>
-          {/* Team Panel */}
-          <div
-            className={`flex w-80 flex-col rounded-t-lg bg-menu ${isMobile && "w-full"}`}
-          >
-            <div className="ml-2 space-y-4 p-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-card-foreground">Equipe</h3>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Users className="h-4 w-4" />
-                  <span>{filteredMembers.length}</span>
-                </div>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className={`flex h-full ${isMobile && "flex-col"}`}>
+        {/* Painel da Equipe */}
+        <div
+          className={`bg-menu-500 flex w-80 flex-col rounded-tr-lg ${isMobile && "w-full"}`}
+        >
+          <div className="ml-2 space-y-4 p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-card-foreground">Equipe</h3>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Users className="h-4 w-4" />
+                <span>{filteredMembers.length}</span>
               </div>
-
-              <Input
-                placeholder="Buscar colaborador..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-input text-foreground"
-              />
-
-              <ScrollArea className="h-[calc(100vh-300px)]">
-                <div className="space-y-2 pr-3">
-                  {filteredMembers.map((member) => (
-                    <DraggableMember
-                      key={member.id}
-                      member={member}
-                      assignedCount={demands.reduce(
-                        (count, demand) =>
-                          count +
-                          demand.assigned.filter((id) => id === member.id)
-                            .length,
-                        0,
-                      )}
-                    />
-                  ))}
-                </div>
-              </ScrollArea>
             </div>
-          </div>
 
-          {/* Demands Board */}
-          <div className="flex flex-1 flex-col overflow-hidden bg-background pl-4">
-            <div className={`flex gap-4 ${isMobile && "flex-col"}`}>
-              {demands.map((demand) => (
-                <DemandColumn
-                  key={demand.id}
-                  demand={demand}
-                  members={members}
-                  onUnassign={handleUnassign}
-                />
-              ))}
-            </div>
-          </div>
+            <Input
+              placeholder="Buscar colaborador..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-input text-foreground"
+              maxLength={30}
+            />
 
-          {/* Drag Overlay */}
-          <DragOverlay>
-            {activeMember && (
-              <Card className="cursor-grabbing bg-popover p-3 shadow-lg">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={activeMember.avatar} />
-                    <AvatarFallback className="bg-card text-accent">
-                      {activeMember.name[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <p className="font-medium text-popover-foreground">
-                    {activeMember.name}
-                  </p>
-                </div>
-              </Card>
-            )}
-          </DragOverlay>
+            <ScrollArea className="h-[calc(100vh-400px)]">
+              <div className="space-y-2 pr-3">
+                {filteredMembers.map((member) => (
+                  <DraggableMember
+                    key={member.id}
+                    member={member}
+                    assignedCount={demands.reduce(
+                      (count, demand) =>
+                        count +
+                        demand.assigned.filter((id) => id === member.id).length,
+                      0,
+                    )}
+                  />
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
         </div>
-      </DndContext>
-    </Container>
+
+        {/* Quadro de Demands */}
+        <div className="scrollbar-spark flex flex-1 flex-col overflow-auto bg-background pl-4">
+          <div className={`flex gap-4 ${isMobile && "flex-col"}`}>
+            {demands.map((demand) => (
+              <DemandColumn
+                key={demand.id}
+                demand={demand}
+                members={members}
+                onUnassign={handleUnassign}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Drag Overlay */}
+        <DragOverlay>
+          {activeMember && (
+            <Card className="cursor-grabbing bg-popover p-3 shadow-lg">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={activeMember.avatar} />
+                  <AvatarFallback className="bg-card text-accent">
+                    {activeMember.name[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <p className="font-medium text-popover-foreground">
+                  {activeMember.name}
+                </p>
+              </div>
+            </Card>
+          )}
+        </DragOverlay>
+      </div>
+    </DndContext>
   );
 };
 
