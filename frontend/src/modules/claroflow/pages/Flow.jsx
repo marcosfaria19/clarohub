@@ -16,9 +16,11 @@ import {
 } from "modules/shared/components/ui/dialog";
 import MDUpload from "../components/upload/MDUUpload";
 import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
+import AssignmentBoard from "./AssignmentBoard";
 
 export default function Claroflow() {
   const { user } = useContext(AuthContext);
+
   const { getProjectDetails, fetchUserAssignments } = useUsers();
   const [state, setState] = useState({
     project: null,
@@ -62,6 +64,7 @@ export default function Claroflow() {
   return (
     <Container innerClassName="max-w-[95vw] mb-4">
       <FlowMenu
+        role={user.permissoes}
         assignments={state.assignments}
         activeTab={state.selectedTab}
         onTabChange={(tab) =>
@@ -70,20 +73,22 @@ export default function Claroflow() {
       />
 
       <div className="min-h-[75vh] w-full rounded-lg rounded-tl-none bg-board drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
-        {state.selectedTab === "home" ? (
-          state.project ? (
+        {state.project ? (
+          state.selectedTab === "home" ? (
             <FlowHome project={state.project} />
+          ) : state.selectedTab === "equipe" ? (
+            <AssignmentBoard project={state.project} />
           ) : (
-            <LoadingSpinner />
+            <BoardLayout
+              assignmentId={state.selectedTab}
+              project={state.project}
+              assignment={state.assignments.find(
+                (a) => a._id === state.selectedTab,
+              )}
+            />
           )
         ) : (
-          <BoardLayout
-            assignmentId={state.selectedTab}
-            project={state.project}
-            assignment={state.assignments.find(
-              (a) => a._id === state.selectedTab,
-            )}
-          />
+          <LoadingSpinner />
         )}
       </div>
 

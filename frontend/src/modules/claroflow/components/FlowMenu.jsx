@@ -8,7 +8,12 @@ import {
   TooltipTrigger,
 } from "modules/shared/components/ui/tooltip";
 
-export default function FlowMenu({ assignments = [], activeTab, onTabChange }) {
+export default function FlowMenu({
+  assignments = [],
+  activeTab,
+  onTabChange,
+  role,
+}) {
   return (
     <div className="relative bottom-0 z-20 flex w-auto items-center justify-start overflow-x-auto rounded-none drop-shadow-[0_0px_5px_rgba(0,0,0,0.25)] sm:mt-12 lg:mt-0">
       <TooltipProvider>
@@ -28,6 +33,19 @@ export default function FlowMenu({ assignments = [], activeTab, onTabChange }) {
           </TooltipTrigger>
           <TooltipContent>Página Inicial</TooltipContent>
         </Tooltip>
+
+        {/* Aba Equipe */}
+        {(role === "manager" || role === "admin") && (
+          <Button
+            variant="ghost"
+            className={`h-10 w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors ${
+              activeTab === "equipe" ? "bg-primary text-accent-foreground" : ""
+            }`}
+            onClick={() => onTabChange("equipe")}
+          >
+            Equipe
+          </Button>
+        )}
 
         {/* Abas de demandas */}
         {assignments
