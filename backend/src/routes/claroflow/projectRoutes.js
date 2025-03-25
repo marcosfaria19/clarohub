@@ -115,50 +115,51 @@ module.exports = (projectsCollection) => {
     }
   );
 
-  // Rota para reatribuir um usuário a múltiplas demandas
+  // Rota para atualizar múltiplas assignments com usuários
   router.patch(
-    "/projects/:projectId/assign-user",
+    "/projects/:projectId/assign-users",
     authenticateToken,
     async (req, res) => {
       try {
         const { projectId } = req.params;
-        const { userId, assignmentIds } = req.body; // assignmentIds é um array
+        const { assignments } = req.body;
 
-        if (!userId || !Array.isArray(assignmentIds)) {
-          return res
-            .status(400)
-            .json({ error: "User ID and assignment IDs are required" });
+        // Busca o projeto existente
+        const project = await projectsCollection.findOne({
+          _id: new ObjectId(projectId),
+        });
+
+        if (!project) {
+          return res.status(404).json({ error: "Project not found" });
         }
 
-        const userIdObject = new ObjectId(userId);
-
-        // Remove o usuário de todas as demandas do projeto
-        await projectsCollection.updateOne(
-          { _id: new ObjectId(projectId) },
-          { $pull: { "assignments.$[].assignedUsers": userIdObject } }
-        );
-
-        // Adiciona o usuário às novas demandas especificadas
-        const updatePromises = assignmentIds.map((assignmentId) =>
-          projectsCollection.updateOne(
-            {
+        // Atualiza todas as assignments
+        const bulkOps = assignments.map((assignment) => ({
+          updateOne: {
+            filter: {
               _id: new ObjectId(projectId),
-              "assignments._id": new ObjectId(assignmentId),
+              "assignments._id": new ObjectId(assignment.id),
             },
-            { $addToSet: { "assignments.$.assignedUsers": userIdObject } } // $addToSet evita duplicatas
-          )
-        );
+            update: {
+              $set: {
+                "assignments.$.assignedUsers": assignment.assignedUsers.map(
+                  (id) => new ObjectId(id)
+                ),
+              },
+            },
+          },
+        }));
 
-        await Promise.all(updatePromises);
+        const result = await projectsCollection.bulkWrite(bulkOps);
 
-        res.status(200).json({
-          message: "User successfully reassigned to project assignments",
-        });
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ error: "No assignments updated" });
+        }
+
+        res.status(200).json({ message: "Assignments updated successfully" });
       } catch (error) {
-        console.error("Error reassigning user:", error);
-        res.status(500).json({
-          error: "Error reassigning user to assignments",
-        });
+        console.error("Erro ao atualizar assignments:", error);
+        res.status(500).json({ error: "Error updating assignments" });
       }
     }
   );

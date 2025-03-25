@@ -17,13 +17,16 @@ import TeamPanel from "../components/assignment-board/TeamPanel";
 import DemandsBoard from "../components/assignment-board/DemandsBoard";
 import AssignmentOverlay from "../components/assignment-board/AssignmentOverlay";
 import { useAssignmentBoard } from "../hooks/useAssignmentBoard";
+import ChangeNotification from "../components/assignment-board/ChangesNotification";
 
 const AssignmentBoard = ({ project }) => {
   const { getUsersByProjectId } = useUsers();
-  const { projects, fetchAssignments } = useProjects();
+  const { fetchAssignments, assignUsers } = useProjects();
   const {
     demands,
     setDemands,
+    initialDemands,
+    setInitialDemands,
     members,
     filteredMembers,
     activeMember,
@@ -31,6 +34,9 @@ const AssignmentBoard = ({ project }) => {
     setSearchQuery,
     isMobile,
     setActiveId,
+    hasChanges,
+    resetToInitialState,
+    updateTeamMembers,
   } = useAssignmentBoard({ project, getUsersByProjectId });
 
   const customOffsetModifier = ({ transform }) => {
@@ -44,24 +50,38 @@ const AssignmentBoard = ({ project }) => {
 
   useEffect(() => {
     let isMounted = true;
-    if (projects.length > 0 && demands.length === 0) {
-      const projectId = projects[0]._id;
-      fetchAssignments(projectId).then((assignments) => {
+
+    const loadAssignments = async () => {
+      if (project?._id && initialDemands.length === 0) {
+        const assignments = await fetchAssignments(project._id);
+
         if (assignments && isMounted) {
-          setDemands(
-            assignments.map((assignment) => ({
-              id: assignment._id,
-              name: assignment.name,
-              assigned: assignment.assignedUsers,
-            })),
-          );
+          const formattedAssignments = assignments.map((assignment) => ({
+            id: assignment._id,
+            name: assignment.name,
+            assigned: assignment.assignedUsers.map((user) =>
+              typeof user === "object" ? user.$oid : user,
+            ),
+          }));
+
+          setInitialDemands(formattedAssignments);
+          setDemands(formattedAssignments);
         }
-      });
-    }
+      }
+    };
+
+    loadAssignments();
+
     return () => {
       isMounted = false;
     };
-  }, [projects, fetchAssignments, demands.length, setDemands]);
+  }, [
+    project,
+    initialDemands.length,
+    setInitialDemands,
+    setDemands,
+    fetchAssignments,
+  ]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -116,39 +136,66 @@ const AssignmentBoard = ({ project }) => {
     [setDemands],
   );
 
+  const handleApplyChanges = async () => {
+    try {
+      // Formata os dados para o backend
+      const assignmentsToUpdate = await updateTeamMembers();
+
+      // Envia para o backend
+      await assignUsers(project._id, assignmentsToUpdate);
+
+      // Feedback visual opcional
+      console.log("Alocações atualizadas com sucesso!");
+    } catch (error) {
+      console.error("Falha ao aplicar mudanças:", error);
+    }
+  };
+
+  const handleDiscardChanges = () => {
+    resetToInitialState();
+  };
+
   return (
-    <DndContext
-      sensors={sensors}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      modifiers={[restrictToWindowEdges, customOffsetModifier]}
-      collisionDetection={closestCenter}
-    >
-      <div className={`flex h-full ${isMobile && "flex-col"}`}>
-        <TeamPanel
-          members={filteredMembers}
-          searchQuery={searchQuery}
-          onSearchChange={(e) => setSearchQuery(e.target.value)}
-          demands={demands}
-          isMobile={isMobile}
-        />
+    <>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        modifiers={[restrictToWindowEdges, customOffsetModifier]}
+        collisionDetection={closestCenter}
+      >
+        <div className={`flex h-full ${isMobile && "flex-col"}`}>
+          <TeamPanel
+            members={filteredMembers}
+            searchQuery={searchQuery}
+            onSearchChange={(e) => setSearchQuery(e.target.value)}
+            demands={demands}
+            isMobile={isMobile}
+          />
 
-        <DemandsBoard
-          demands={demands}
-          members={members}
-          onUnassign={handleUnassign}
-          isMobile={isMobile}
-        />
+          <DemandsBoard
+            demands={demands}
+            members={members}
+            onUnassign={handleUnassign}
+            isMobile={isMobile}
+          />
 
-        <DragOverlay
-          adjustScale={false}
-          dropAnimation={null}
-          modifiers={[restrictToWindowEdges]}
-        >
-          <AssignmentOverlay activeMember={activeMember} />
-        </DragOverlay>
-      </div>
-    </DndContext>
+          <DragOverlay
+            adjustScale={false}
+            dropAnimation={null}
+            modifiers={[restrictToWindowEdges]}
+          >
+            <AssignmentOverlay activeMember={activeMember} />
+          </DragOverlay>
+        </div>
+      </DndContext>
+
+      <ChangeNotification
+        hasChanges={hasChanges}
+        onApply={handleApplyChanges}
+        onDiscard={handleDiscardChanges}
+      />
+    </>
   );
 };
 

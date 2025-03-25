@@ -6,7 +6,7 @@ const useProjects = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Usar useCallback para memoizar a função fetchProjects
+  // Tipos de projetos
   const fetchProjects = useCallback(async () => {
     try {
       setLoading(true);
@@ -20,25 +20,28 @@ const useProjects = () => {
     }
   }, []);
 
-  // Função para buscar assignments de um projeto específico
-  const fetchAssignments = async (projectId) => {
-    try {
-      setLoading(true);
-      const project = projects.find((p) => p._id === projectId);
-      if (!project) {
-        throw new Error("Projeto não encontrado.");
+  // Demandas de um projeto específico
+  const fetchAssignments = useCallback(
+    async (projectId) => {
+      try {
+        setLoading(true);
+        const project = projects.find((p) => p._id === projectId);
+        if (!project) {
+          throw new Error("Projeto não encontrado.");
+        }
+
+        return project.assignments;
+      } catch (err) {
+        console.error("Erro ao buscar assignments:", err);
+        setError(err);
+      } finally {
+        setLoading(false);
       }
+    },
+    [projects],
+  );
 
-      return project.assignments;
-    } catch (err) {
-      console.error("Erro ao buscar assignments:", err);
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Função para criar um novo assignment em um projeto
+  // Criar nova demanda em um projeto
   const createAssignment = async (projectId, assignment) => {
     if (!projectId) {
       console.error("ID do projeto não fornecido");
@@ -71,7 +74,7 @@ const useProjects = () => {
     }
   };
 
-  // Função para editar um assignment
+  // Função para editar uma demanda
   const editAssignment = async (projectId, assignmentId, newName) => {
     if (!projectId || !assignmentId) {
       console.error("ID do projeto ou da demanda não fornecido");
@@ -113,7 +116,7 @@ const useProjects = () => {
     }
   };
 
-  // Função para excluir um assignment
+  // Função para excluir uma demanda
   const deleteAssignment = async (projectId, assignmentId) => {
     try {
       setLoading(true);
@@ -142,47 +145,36 @@ const useProjects = () => {
     }
   };
 
-  // Função para reatribuir um usuário a múltiplas demandas
-  const assignUserToAssignments = async (projectId, userId, assignmentIds) => {
+  const assignUsers = async (projectId, assignments) => {
     try {
       setLoading(true);
-
       const response = await axiosInstance.patch(
-        `/flow/projects/${projectId}/assign-user`,
-        { userId, assignmentIds }, // assignmentIds é um array
+        `/flow/projects/${projectId}/assign-users`,
+        { assignments },
       );
 
-      // Atualiza o estado local:
+      // Atualiza o estado local
       setProjects((prev) =>
-        prev.map((project) => {
-          if (project._id !== projectId) return project;
-
-          // Remove o usuário de todas as demandas
-          const updatedAssignments = project.assignments.map((assignment) => ({
-            ...assignment,
-            assignedUsers: assignment.assignedUsers.filter(
-              (id) => id !== userId,
-            ),
-          }));
-
-          // Adiciona o usuário às demandas especificadas
-          assignmentIds.forEach((assignmentId) => {
-            const assignment = updatedAssignments.find(
-              (a) => a._id === assignmentId,
-            );
-            if (assignment) {
-              assignment.assignedUsers.push(userId);
-            }
-          });
-
-          return { ...project, assignments: updatedAssignments };
-        }),
+        prev.map((p) =>
+          p._id === projectId
+            ? {
+                ...p,
+                assignments: p.assignments.map((a) => {
+                  const updated = assignments.find((u) => u.id === a._id);
+                  return updated
+                    ? { ...a, assignedUsers: updated.assignedUsers }
+                    : a;
+                }),
+              }
+            : p,
+        ),
       );
 
-      return response.data; // Retorna a resposta da API
+      return response.data;
     } catch (err) {
-      console.error("Erro ao reatribuir usuário:", err);
+      console.error("Erro ao atualizar assignments:", err);
       setError(err);
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -202,7 +194,7 @@ const useProjects = () => {
     createAssignment,
     editAssignment,
     deleteAssignment,
-    assignUserToAssignments,
+    assignUsers,
   };
 };
 
