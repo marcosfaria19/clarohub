@@ -20,8 +20,31 @@ export function useUsers() {
     }
   }, []);
 
+  const fetchUserAssignments = useCallback(async (userId) => {
+    if (!userId) return [];
+    try {
+      const response = await axiosInstance.get(
+        `/flow/user/${userId}/assignments`,
+      );
+      return response.data;
+    } catch (err) {
+      console.error("Erro ao buscar assignments do usuário:", err);
+      throw err;
+    }
+  }, []);
+
   const getUsersByProjectId = useCallback(
     (projectId) => users.filter((user) => user.project?._id === projectId),
+    [users],
+  );
+
+  const getUsersByProjectAndAssignment = useCallback(
+    (projectId, assignmentId) =>
+      users.filter(
+        (user) =>
+          user.project?._id === projectId &&
+          user.project?.assignment?._id === assignmentId,
+      ),
     [users],
   );
 
@@ -41,5 +64,7 @@ export function useUsers() {
     fetchUsers,
     getUsersByProjectId,
     getProjectDetails,
+    fetchUserAssignments,
+    getUsersByProjectAndAssignment,
   };
 }

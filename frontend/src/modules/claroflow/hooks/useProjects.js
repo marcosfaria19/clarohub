@@ -24,21 +24,34 @@ const useProjects = () => {
   const fetchAssignments = useCallback(
     async (projectId) => {
       try {
-        setLoading(true);
-        const project = projects.find((p) => p._id === projectId);
-        if (!project) {
-          throw new Error("Projeto não encontrado.");
+        if (!projectId) {
+          console.warn("ID do projeto não fornecido para buscar assignments");
+          return [];
         }
 
-        return project.assignments;
+        setLoading(true);
+
+        // Primeiro verifica se os projetos já foram carregados
+        if (projects.length === 0) {
+          await fetchProjects(); // Força o carregamento se necessário
+        }
+
+        const project = projects.find((p) => p._id === projectId);
+
+        if (!project) {
+          return [];
+        }
+
+        return project.assignments || [];
       } catch (err) {
         console.error("Erro ao buscar assignments:", err);
         setError(err);
+        return [];
       } finally {
         setLoading(false);
       }
     },
-    [projects],
+    [projects, fetchProjects],
   );
 
   // Criar nova demanda em um projeto

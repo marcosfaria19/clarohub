@@ -4,7 +4,7 @@ import FlowMenu from "../components/FlowMenu";
 import { FlowHome } from "../components/FlowHome";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useUsers } from "../hooks/useUsers";
-import BoardLayout from "../components/boards/BoardLayout";
+import BoardLayout from "../components/flow-boards/BoardLayout";
 import { UploadCloudIcon, UploadIcon } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import {
@@ -20,7 +20,6 @@ import AssignmentBoard from "./AssignmentBoard";
 
 export default function Claroflow() {
   const { user } = useContext(AuthContext);
-
   const { getProjectDetails, fetchUserAssignments } = useUsers();
   const [state, setState] = useState({
     project: null,
@@ -34,12 +33,15 @@ export default function Claroflow() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [project] = await Promise.all([getProjectDetails(user.userId)]);
+        const [project, assignments] = await Promise.all([
+          getProjectDetails(user.userId),
+          fetchUserAssignments(user.userId),
+        ]);
 
         setState((prev) => ({
           ...prev,
           project,
-
+          assignments,
           loading: false,
           error: null,
         }));
