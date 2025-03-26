@@ -4,7 +4,6 @@ import { jwtDecode } from "jwt-decode";
 import OCQualinet from "modules/clarohub/pages/OCQualinet";
 import NetFacil from "modules/clarohub/pages/NetFacil";
 import Login from "modules/clarohub/pages/Login";
-import Users from "modules/clarohub/pages/Users";
 import Home from "modules/clarohub/pages/Home";
 import NetFacilAdmin from "modules/clarohub/pages/NetFacilAdmin";
 import OCFacilAdmin from "modules/clarohub/pages/OCFacilAdmin";
@@ -15,6 +14,7 @@ import PageTitle from "modules/shared/components/PageTitle";
 import Claroflow from "modules/claroflow/pages/Flow";
 import ProjectAdmin from "modules/claroflow/components/ProjectAdmin";
 import AssignmentBoard from "modules/claroflow/pages/AssignmentBoard";
+import UsersAdmin from "modules/clarohub/pages/Users";
 
 const isTokenExpired = (token) => {
   if (!token) return true;
@@ -159,12 +159,12 @@ const Rotas = () => {
         }
       />
       <Route
-        path="/users"
+        path="/usersadmin"
         element={
           <ProtectedRoute
             token={token}
             allowedRoles={["admin"]}
-            element={<Users />}
+            element={<UsersAdmin />}
           />
         }
       />

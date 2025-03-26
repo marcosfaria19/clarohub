@@ -9,7 +9,7 @@ import { Button } from "modules/shared/components/ui/button";
 import { CirclePlusIcon } from "lucide-react";
 import { Avatar, AvatarImage } from "modules/shared/components/ui/avatar";
 
-function Users() {
+function UsersAdmin() {
   const [dados, setDados] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -176,4 +176,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default UsersAdmin;
