@@ -87,7 +87,6 @@ module.exports = (usersCollection, ideasCollection) => {
       const result = await usersCollection.updateOne(
         { LOGIN },
         { $set: { senha: hashedPassword } }
-        /* { $set: { senha: hashedPassword, PERMISSOES: "guest" } } */
       );
 
       if (result.matchedCount === 0) {
