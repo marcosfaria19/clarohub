@@ -165,38 +165,42 @@ module.exports = (projectsCollection) => {
   );
 
   // Rota para buscar assignments de um usuário
-  router.get("/user/:userId/assignments", async (req, res) => {
-    try {
-      const { userId } = req.params;
-      const userObjId = new ObjectId(userId);
+  router.get(
+    "/user/:userId/assignments",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        const { userId } = req.params;
+        const userObjId = new ObjectId(userId);
 
-      const assignments = await projectsCollection
-        .aggregate([
-          { $unwind: "$assignments" },
-          { $match: { "assignments.assignedUsers": userObjId } },
-          {
-            $project: {
-              _id: "$assignments._id",
-              name: "$assignments.name",
+        const assignments = await projectsCollection
+          .aggregate([
+            { $unwind: "$assignments" },
+            { $match: { "assignments.assignedUsers": userObjId } },
+            {
+              $project: {
+                _id: "$assignments._id",
+                name: "$assignments.name",
+              },
             },
-          },
-        ])
-        .toArray();
+          ])
+          .toArray();
 
-      if (assignments.length === 0) {
-        return res
-          .status(404)
-          .json({ error: "Nenhum assignment encontrado para esse usuário" });
+        if (assignments.length === 0) {
+          return res
+            .status(404)
+            .json({ error: "Nenhum assignment encontrado para esse usuário" });
+        }
+
+        res.status(200).json(assignments);
+      } catch (error) {
+        console.error("Erro ao buscar assignments para usuário:", error);
+        res
+          .status(500)
+          .json({ error: "Erro ao buscar assignments para usuário" });
       }
-
-      res.status(200).json(assignments);
-    } catch (error) {
-      console.error("Erro ao buscar assignments para usuário:", error);
-      res
-        .status(500)
-        .json({ error: "Erro ao buscar assignments para usuário" });
     }
-  });
+  );
 
   return router;
 };
