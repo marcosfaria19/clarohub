@@ -18,6 +18,8 @@ import DemandsBoard from "../components/assignment-board/DemandsBoard";
 import AssignmentOverlay from "../components/assignment-board/AssignmentOverlay";
 import { useAssignmentBoard } from "../hooks/useAssignmentBoard";
 import ChangeNotification from "../components/assignment-board/ChangesNotification";
+import { toast } from "sonner";
+import useNotifications from "modules/shared/hooks/useNotifications";
 
 const AssignmentBoard = ({ project }) => {
   const { getUsersByProjectId } = useUsers();
@@ -47,6 +49,8 @@ const AssignmentBoard = ({ project }) => {
       y: transform.y - 140,
     };
   };
+
+  const { createUserNotification } = useNotifications();
 
   useEffect(() => {
     let isMounted = true;
@@ -144,10 +148,31 @@ const AssignmentBoard = ({ project }) => {
       // Envia para o backend
       await assignUsers(project._id, assignmentsToUpdate);
 
-      // Feedback visual opcional
-      console.log("Alocações atualizadas com sucesso!");
+      // Verificar novas alocações e enviar notificações
+      demands.forEach((currentDemand) => {
+        const initialDemand = initialDemands.find(
+          (d) => d.id === currentDemand.id,
+        );
+
+        // Usuários recém-alocados
+        const newUsers = currentDemand.assigned.filter(
+          (userId) => !initialDemand?.assigned.includes(userId),
+        );
+
+        newUsers.forEach((userId) => {
+          createUserNotification(
+            userId,
+            "flow",
+            `Você foi alocado à demanda de ${currentDemand.name}`,
+          );
+        });
+      });
+
+      // Feedback visual
+      toast.success("Equipe atualizada com sucesso!");
     } catch (error) {
-      console.error("Falha ao aplicar mudanças:", error);
+      toast.error("Falha ao atualizar equipe:", error);
+      console.error("Erro ao aplicar mudanças:", error);
     }
   };
 
