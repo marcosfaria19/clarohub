@@ -34,15 +34,12 @@ export default function Claroflow() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [project, assignments] = await Promise.all([
-          getProjectDetails(user.userId),
-          fetchUserAssignments(user.userId),
-        ]);
+        const [project] = await Promise.all([getProjectDetails(user.userId)]);
 
         setState((prev) => ({
           ...prev,
           project,
-          assignments,
+
           loading: false,
           error: null,
         }));

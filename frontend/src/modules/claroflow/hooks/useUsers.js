@@ -30,16 +30,6 @@ export function useUsers() {
     [users],
   );
 
-  const fetchUserAssignments = useCallback(async (userId) => {
-    try {
-      const response = await axiosInstance.get(`/users/${userId}/assignments`);
-      return response.data.assignments || [];
-    } catch (err) {
-      setError("Erro ao carregar demandas");
-      return [];
-    }
-  }, []);
-
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
@@ -51,6 +41,5 @@ export function useUsers() {
     fetchUsers,
     getUsersByProjectId,
     getProjectDetails,
-    fetchUserAssignments,
   };
 }
