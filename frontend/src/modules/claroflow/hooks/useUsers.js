@@ -28,8 +28,7 @@ export function useUsers() {
       );
       return response.data;
     } catch (err) {
-      console.error("Erro ao buscar assignments do usuário:", err);
-      throw err;
+      return [];
     }
   }, []);
 
