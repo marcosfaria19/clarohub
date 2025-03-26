@@ -1,9 +1,17 @@
 import DemandColumn from "./DemandColumn";
 
-const DemandsBoard = ({ demands, members, onUnassign, isMobile }) => {
+const DemandsBoard = ({
+  demands,
+  members,
+  onUnassign,
+  isMobile,
+  className,
+}) => {
   return (
-    <div className="scrollbar-spark flex flex-1 flex-col overflow-auto bg-background pl-4">
-      <div className={`flex gap-4 ${isMobile && "flex-col"}`}>
+    <div className={`flex-1 bg-background ${className}`}>
+      <div
+        className={`flex h-full gap-4 py-4 pr-4 ${isMobile ? "flex-col pl-4" : "pl-0"}`}
+      >
         {demands.map((demand) => (
           <DemandColumn
             key={demand.id}

@@ -71,7 +71,7 @@ export default function Claroflow() {
         }
       />
 
-      <div className="min-h-[75vh] w-full rounded-lg rounded-tl-none bg-board drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
+      <div className="min-h-[75vh] w-full rounded-lg rounded-tl-none drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
         {state.project ? (
           state.selectedTab === "home" ? (
             <FlowHome project={state.project} />

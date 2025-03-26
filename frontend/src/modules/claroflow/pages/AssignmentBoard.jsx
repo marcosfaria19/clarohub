@@ -189,13 +189,16 @@ const AssignmentBoard = ({ project }) => {
         modifiers={[restrictToWindowEdges, customOffsetModifier]}
         collisionDetection={closestCenter}
       >
-        <div className={`flex h-full ${isMobile && "flex-col"}`}>
+        <div
+          className={`flex ${isMobile ? "h-full flex-col" : "h-[calc(100dvh-230px)] flex-row"}`}
+        >
           <TeamPanel
             members={filteredMembers}
             searchQuery={searchQuery}
             onSearchChange={(e) => setSearchQuery(e.target.value)}
             demands={demands}
             isMobile={isMobile}
+            className={isMobile ? "h-[400px]" : "h-full"}
           />
 
           <DemandsBoard
@@ -203,6 +206,7 @@ const AssignmentBoard = ({ project }) => {
             members={members}
             onUnassign={handleUnassign}
             isMobile={isMobile}
+            className="h-full"
           />
 
           <DragOverlay

@@ -18,7 +18,7 @@ export function FlowHome({ project }) {
   const { theme } = useTheme();
 
   return (
-    <div className="relative flex min-h-[75vh] w-full flex-col justify-center bg-cover bg-center">
+    <div className="relative flex min-h-[75vh] w-full flex-col justify-center bg-card bg-cover bg-center">
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center"

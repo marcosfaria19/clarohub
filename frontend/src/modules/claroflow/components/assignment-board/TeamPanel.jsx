@@ -3,13 +3,19 @@ import { Input } from "modules/shared/components/ui/input";
 import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import DraggableMember from "./DraggableMember";
 
-const TeamPanel = ({ members, searchQuery, onSearchChange, demands }) => {
+const TeamPanel = ({
+  members,
+  searchQuery,
+  onSearchChange,
+  demands,
+  className,
+}) => {
   return (
-    <div className="bg-menu-500 flex w-80 flex-col rounded-tr-lg">
-      <div className="ml-2 space-y-4 p-4">
+    <div className={`w-full bg-background p-4 md:w-[350px] ${className}`}>
+      <div className="flex h-full flex-col space-y-4 rounded-lg border border-border bg-menu p-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-card-foreground">Equipe</h3>
-          <div className="flex items-center gap-2 text-muted-foreground">
+          <h3 className="text-lg font-semibold text-card-foreground">Equipe</h3>
+          <div className="text-md flex items-center gap-2 text-muted-foreground">
             <Users className="h-4 w-4" />
             <span>{members.length}</span>
           </div>
@@ -19,12 +25,12 @@ const TeamPanel = ({ members, searchQuery, onSearchChange, demands }) => {
           placeholder="Buscar colaborador..."
           value={searchQuery}
           onChange={onSearchChange}
-          className="bg-input text-foreground"
+          className="bg-background"
           maxLength={30}
         />
 
-        <ScrollArea className="h-[calc(100vh-400px)]">
-          <div className="space-y-2 pr-3">
+        <ScrollArea className="flex-1 overflow-auto">
+          <div className="space-y-2 pr-2">
             {members.map((member) => (
               <DraggableMember
                 key={member.id}

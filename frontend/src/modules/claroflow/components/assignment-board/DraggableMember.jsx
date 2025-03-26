@@ -42,7 +42,7 @@ const DraggableMember = ({ member, assignedCount }) => {
           </Avatar>
 
           <div className="flex flex-1 flex-col">
-            <p className="font-medium text-card-foreground">
+            <p className="text-sm font-medium text-card-foreground">
               {formatUserName(member.name)}
             </p>
             <div className="flex gap-1.5">
