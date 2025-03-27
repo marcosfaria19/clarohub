@@ -4,7 +4,6 @@ const Pusher = require("pusher");
 require("dotenv").config();
 const cors = require("cors");
 const path = require("path");
-const mduRoutes = require("./src/routes/claroflow/mduRoutes");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -83,8 +82,8 @@ async function startServer() {
       clarohub.collection("users")
     );
 
-    const mduRoutes = require("./src/routes/claroflow/mduRoutes")(
-      clarohub.collection("flow.mdu"),
+    const tasksRoutes = require("./src/routes/claroflow/tasksRoutes")(
+      clarohub.collection("flow.tasks"),
       clarohub.collection("users"),
       clarohub.collection("flow.projects")
     );
@@ -100,7 +99,7 @@ async function startServer() {
     app.use("/spark/", rankingRoutes);
     app.use("/notifications/", notificationRoutes);
     app.use("/flow/", projectRoutes);
-    app.use("/mdu/", mduRoutes);
+    app.use("/flow/tasks/", tasksRoutes);
 
     // Middleware para servir imagens estáticas
     app.use(

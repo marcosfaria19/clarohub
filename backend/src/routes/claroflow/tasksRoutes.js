@@ -6,7 +6,7 @@ const authenticateToken = require("../../middleware/authMiddleware");
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-module.exports = (mduCollection, usersCollection, projectsCollection) => {
+module.exports = (tasksCollection, usersCollection, projectsCollection) => {
   router.post(
     "/upload",
     authenticateToken,
@@ -19,7 +19,7 @@ module.exports = (mduCollection, usersCollection, projectsCollection) => {
         const user = await usersCollection.findOne({
           _id: new ObjectId(req.user.id),
         });
-        const project = await projectsCollection.findOne({ name: "MDU" });
+        const project = await projectsCollection.findOne({ name: "MDU" }); // ALTERAR A LÓGICA PARA ENCONTRAR O TIPO DE PROJETO CORRETO
 
         if (!user || !project) {
           return res.status(400).send("Usuário ou projeto não encontrado");
@@ -75,7 +75,7 @@ module.exports = (mduCollection, usersCollection, projectsCollection) => {
                 },
                 user: {
                   _id: user._id,
-                  nome: user.nome,
+                  name: user.NOME,
                 },
                 changedAt: new Date(),
                 obs: "Importação inicial",
@@ -85,7 +85,7 @@ module.exports = (mduCollection, usersCollection, projectsCollection) => {
 
         // Inserir no banco
         const ids = processedData.map((d) => d.IDDEMANDA);
-        const existing = await mduCollection
+        const existing = await tasksCollection
           .find({ IDDEMANDA: { $in: ids } })
           .toArray();
         const existingIds = existing.map((d) => d.IDDEMANDA);
@@ -94,7 +94,7 @@ module.exports = (mduCollection, usersCollection, projectsCollection) => {
         );
 
         if (newData.length > 0) {
-          await mduCollection.insertMany(newData);
+          await tasksCollection.insertMany(newData);
         }
 
         res.status(200).json({
@@ -113,7 +113,7 @@ module.exports = (mduCollection, usersCollection, projectsCollection) => {
   // GET todas tasks
   router.get("/", authenticateToken, async (req, res) => {
     try {
-      const tasks = await mduCollection.find({}).toArray();
+      const tasks = await tasksCollection.find({}).toArray();
       res.status(200).json(tasks);
     } catch (err) {
       console.error("Erro ao buscar tasks:", err);
@@ -165,7 +165,7 @@ module.exports = (mduCollection, usersCollection, projectsCollection) => {
         },
       };
 
-      const result = await mduCollection.updateOne({ _id: taskId }, update);
+      const result = await tasksCollection.updateOne({ _id: taskId }, update);
 
       if (result.modifiedCount === 0) {
         return res.status(404).send("Task não encontrada");
