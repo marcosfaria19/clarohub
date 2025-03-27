@@ -14,9 +14,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "modules/shared/components/ui/dialog";
-import MDUpload from "../components/upload/MDUUpload";
 import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
 import AssignmentBoard from "./AssignmentBoard";
+import TasksUpload from "../components/upload/TasksUpload";
 
 export default function Claroflow() {
   const { user } = useContext(AuthContext);
@@ -35,6 +35,7 @@ export default function Claroflow() {
       try {
         const [project, assignments] = await Promise.all([
           getProjectDetails(user.userId),
+
           fetchUserAssignments(user.userId),
         ]);
 
@@ -121,7 +122,7 @@ export default function Claroflow() {
               Faça upload da extração de ocorrências do SGD.
             </DialogDescription>
           </DialogHeader>
-          <MDUpload
+          <TasksUpload
             onClose={() => setState((prev) => ({ ...prev, showUpload: false }))}
           />
         </DialogContent>

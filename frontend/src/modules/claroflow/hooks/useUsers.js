@@ -42,7 +42,7 @@ export function useUsers() {
       users.filter(
         (user) =>
           user.project?._id === projectId &&
-          user.project?.assignment?._id === assignmentId,
+          user.assignments?.some((a) => a._id === assignmentId),
       ),
     [users],
   );

@@ -17,7 +17,7 @@ import {
 import { Card } from "modules/shared/components/ui/card";
 import { Button } from "modules/shared/components/ui/button";
 
-export default function MDUpload({ onClose }) {
+export default function TasksUpload({ onClose }) {
   const [state, setState] = useState({
     selectedFile: null,
     isUploading: false,
@@ -55,7 +55,7 @@ export default function MDUpload({ onClose }) {
       const formData = new FormData();
       formData.append("file", state.selectedFile);
 
-      const response = await axiosInstance.post("/mdu/upload", formData, {
+      const response = await axiosInstance.post("flow/tasks/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

@@ -19,21 +19,22 @@ import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import { useMediaQuery } from "modules/shared/hooks/use-media-query";
 import { cn } from "modules/shared/lib/utils";
 
-export default function GenericBoard({ assignmentId, projectId }) {
+export default function GenericBoard({ assignment, project }) {
   const { getUsersByProjectAndAssignment, loading, error } = useUsers();
-  const teamMembers = getUsersByProjectAndAssignment(projectId, assignmentId);
-  const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // Altura principal calculada
-  const mainHeight = `calc(100dvh - 250px)`;
+  const teamMembers = getUsersByProjectAndAssignment(
+    project._id,
+    assignment._id,
+  );
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
     <div
       className={cn(
-        "flex h-full gap-4 overflow-hidden bg-background p-4",
+        "flex h-[calc(100dvh-250px)] gap-4 overflow-hidden bg-background p-4",
         isMobile ? "flex-col" : "flex-row",
       )}
-      style={{ height: mainHeight }}
     >
       {/* Coluna Esquerda */}
       <div
@@ -45,9 +46,7 @@ export default function GenericBoard({ assignmentId, projectId }) {
         <Card className="flex flex-col border-border bg-card">
           <CardHeader className="p-4 pb-2">
             <CardTitle className="text-lg font-semibold text-card-foreground">
-              Fila de{" "}
-              {teamMembers[0]?.assignments?.find((a) => a._id === assignmentId)
-                ?.name || "Carregando..."}
+              Fila de {assignment?.name || "Carregando..."}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-between p-4 pt-0">
@@ -61,12 +60,12 @@ export default function GenericBoard({ assignmentId, projectId }) {
         </Card>
 
         <Card className="flex-1 overflow-hidden border-border bg-card">
-          <CardHeader className="p-4 pb-2">
+          <CardHeader className="p-4 pb-4">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold text-card-foreground">
                 Meu Time
               </CardTitle>
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center gap-2 pr-2 text-muted-foreground">
                 <Users className="h-4 w-4" />
                 <span>{teamMembers.length}</span>
               </div>
