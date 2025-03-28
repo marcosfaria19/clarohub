@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button } from "modules/shared/components/ui/button";
 import {
   Card,
@@ -18,10 +18,21 @@ import { useUsers } from "modules/claroflow/hooks/useUsers";
 import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import { useMediaQuery } from "modules/shared/hooks/use-media-query";
 import { cn } from "modules/shared/lib/utils";
-import { useTasks } from "modules/claroflow/hooks/useTasks"; // ajuste o caminho conforme sua estrutura
-import { TaskCard } from "./TaskCard"; // ajuste o caminho conforme sua estrutura
+import {
+  useAvailableTasks,
+  useInProgressTasks,
+  useCompletedTasks,
+  useTakeTask,
+} from "modules/claroflow/hooks/useTasks";
+import { TaskCard } from "./TaskCard";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
 
 export default function GenericBoard({ assignment, project }) {
+  const { user } = useContext(AuthContext);
+  const userId = user.userId;
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  // Buscar membros do time
   const {
     getUsersByProjectAndAssignment,
     loading: usersLoading,
@@ -32,14 +43,35 @@ export default function GenericBoard({ assignment, project }) {
     assignment._id,
   );
 
-  // Utilize o hook useTasks passando o assignment._id
-  const {
-    tasks,
-    loading: tasksLoading,
-    error: tasksError,
-  } = useTasks(assignment?._id);
+  // Buscar tarefas
+  const { tasks: availableTasks, refetch: refetchAvailable } =
+    useAvailableTasks(assignment?._id);
 
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const {
+    tasks: inProgressTasks,
+    loading: inProgressLoading,
+    error: inProgressError,
+    refetch: refetchInProgress,
+  } = useInProgressTasks(assignment?._id, userId);
+
+  const {
+    tasks: completedTasks,
+    loading: completedLoading,
+    error: completedError,
+    refetch: refetchCompleted,
+  } = useCompletedTasks(assignment?._id, userId);
+
+  // Configurar ação de pegar tarefa
+  const { takeTask, loading: takeLoading } = useTakeTask();
+
+  const handleTakeTask = async () => {
+    try {
+      await takeTask(assignment._id);
+      await Promise.all([refetchAvailable(), refetchInProgress()]);
+    } catch (err) {
+      console.error("Falha ao assumir tarefa:", err);
+    }
+  };
 
   return (
     <div
@@ -48,13 +80,14 @@ export default function GenericBoard({ assignment, project }) {
         isMobile ? "flex-col" : "flex-row",
       )}
     >
-      {/* Coluna Esquerda */}
+      {/* Coluna Esquerda - Fila e Time */}
       <div
         className={cn(
           "flex flex-col gap-4",
           isMobile ? "h-[40vh] w-full" : "h-full w-[300px]",
         )}
       >
+        {/* Card Fila de Tarefas */}
         <Card className="flex flex-col border-border bg-card">
           <CardHeader className="p-4 pb-2">
             <CardTitle className="text-lg font-semibold text-card-foreground">
@@ -63,15 +96,20 @@ export default function GenericBoard({ assignment, project }) {
           </CardHeader>
           <CardContent className="flex items-center justify-between p-4 pt-0">
             <span className="text-2xl font-medium text-card-foreground">
-              {/* Aqui, você poderá futuramente calcular a contagem real */}
-              {tasks ? tasks.length : 0}
+              {availableTasks?.length || 0}
             </span>
-            <Button variant="default" size={isMobile ? "sm" : "default"}>
-              Tratar →
+            <Button
+              variant="default"
+              size={isMobile ? "sm" : "default"}
+              onClick={handleTakeTask}
+              disabled={takeLoading || availableTasks.length === 0}
+            >
+              {takeLoading ? "Processando..." : "Tratar →"}
             </Button>
           </CardContent>
         </Card>
 
+        {/* Card Meu Time */}
         <Card className="flex-1 overflow-hidden border-border bg-card">
           <CardHeader className="p-4 pb-4">
             <div className="flex items-center justify-between">
@@ -121,7 +159,7 @@ export default function GenericBoard({ assignment, project }) {
         </Card>
       </div>
 
-      {/* Colunas Direitas */}
+      {/* Colunas Direitas - Em Tratamento e Finalizadas */}
       <div
         className={cn(
           "flex flex-1 gap-4 overflow-hidden",
@@ -133,7 +171,7 @@ export default function GenericBoard({ assignment, project }) {
           <Card className="border-border bg-card">
             <CardHeader className="flex h-[70px] p-4">
               <CardTitle className="text-lg font-semibold text-card-foreground">
-                Em Tratamento
+                Em Tratamento ({inProgressTasks?.length || 0})
               </CardTitle>
             </CardHeader>
           </Card>
@@ -141,19 +179,24 @@ export default function GenericBoard({ assignment, project }) {
           <Card className="flex-1 overflow-hidden border-border bg-card">
             <ScrollArea className="h-full">
               <CardContent className="space-y-4 p-4">
-                {tasksLoading ? (
-                  <div className="text-muted-foreground">
-                    Carregando demandas...
-                  </div>
-                ) : tasksError ? (
-                  <div className="text-destructive">
-                    Erro ao carregar demandas
-                  </div>
-                ) : tasks.length > 0 ? (
-                  tasks.map((task) => <TaskCard key={task._id} task={task} />)
+                {inProgressLoading ? (
+                  <div className="text-muted-foreground">Carregando...</div>
+                ) : inProgressError ? (
+                  <div className="text-destructive">Erro ao carregar</div>
+                ) : inProgressTasks?.length > 0 ? (
+                  inProgressTasks.map((task) => (
+                    <TaskCard
+                      key={task._id}
+                      task={task}
+                      onTransition={() => {
+                        refetchInProgress();
+                        refetchCompleted();
+                      }}
+                    />
+                  ))
                 ) : (
                   <div className="text-muted-foreground">
-                    Nenhuma demanda encontrada.
+                    Nenhuma demanda em tratamento
                   </div>
                 )}
               </CardContent>
@@ -167,7 +210,7 @@ export default function GenericBoard({ assignment, project }) {
             <CardHeader className="flex h-[70px] items-center p-4">
               <div className="flex w-full items-center justify-between gap-2 max-md:flex-col">
                 <CardTitle className="text-lg font-semibold text-card-foreground">
-                  Finalizadas
+                  Finalizadas ({completedTasks?.length || 0})
                 </CardTitle>
                 <div className="relative w-full md:w-48">
                   <Input
@@ -184,13 +227,19 @@ export default function GenericBoard({ assignment, project }) {
           <Card className="flex-1 overflow-hidden border-border bg-card">
             <ScrollArea className="h-full">
               <CardContent className="space-y-4 p-4">
-                {/* Aqui você poderá implementar a renderização das tasks finalizadas */}
-                {[...Array(10)].map((_, i) => (
-                  <Card
-                    key={i}
-                    className="h-28 rounded-lg border-border bg-background shadow-sm"
-                  />
-                ))}
+                {completedLoading ? (
+                  <div className="text-muted-foreground">Carregando...</div>
+                ) : completedError ? (
+                  <div className="text-destructive">Erro ao carregar</div>
+                ) : completedTasks?.length > 0 ? (
+                  completedTasks.map((task) => (
+                    <TaskCard key={task._id} task={task} isCompleted />
+                  ))
+                ) : (
+                  <div className="text-muted-foreground">
+                    Nenhuma demanda finalizada
+                  </div>
+                )}
               </CardContent>
             </ScrollArea>
           </Card>
