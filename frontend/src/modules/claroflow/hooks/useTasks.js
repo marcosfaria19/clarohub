@@ -1,27 +1,32 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "services/axios";
 
-export function useTasks() {
+export const useTasks = (assignmentId) => {
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchTasks = useCallback(async () => {
+  const fetchTasks = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await axiosInstance.get("flow/tasks");
+      const response = await axiosInstance.get(
+        `/flow/tasks/assignment/${assignmentId}`,
+      );
       setTasks(response.data);
       setError(null);
     } catch (err) {
-      setError("Erro ao carregar usuários");
-      console.error("Erro ao buscar usuários:", err);
+      console.error("Erro ao buscar tasks:", err);
+      setError(err);
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  return {
-    loading,
-    error,
   };
-}
+
+  useEffect(() => {
+    if (assignmentId) {
+      fetchTasks();
+    }
+  }, [assignmentId]);
+
+  return { tasks, loading, error, refetch: fetchTasks };
+};
