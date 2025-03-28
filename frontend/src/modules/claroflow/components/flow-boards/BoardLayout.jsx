@@ -18,14 +18,26 @@ import { useUsers } from "modules/claroflow/hooks/useUsers";
 import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import { useMediaQuery } from "modules/shared/hooks/use-media-query";
 import { cn } from "modules/shared/lib/utils";
+import { useTasks } from "modules/claroflow/hooks/useTasks"; // ajuste o caminho conforme sua estrutura
+import { TaskCard } from "./TaskCard"; // ajuste o caminho conforme sua estrutura
 
 export default function GenericBoard({ assignment, project }) {
-  const { getUsersByProjectAndAssignment, loading, error } = useUsers();
-
+  const {
+    getUsersByProjectAndAssignment,
+    loading: usersLoading,
+    error: usersError,
+  } = useUsers();
   const teamMembers = getUsersByProjectAndAssignment(
     project._id,
     assignment._id,
   );
+
+  // Utilize o hook useTasks passando o assignment._id
+  const {
+    tasks,
+    loading: tasksLoading,
+    error: tasksError,
+  } = useTasks(assignment?._id);
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -51,7 +63,8 @@ export default function GenericBoard({ assignment, project }) {
           </CardHeader>
           <CardContent className="flex items-center justify-between p-4 pt-0">
             <span className="text-2xl font-medium text-card-foreground">
-              24
+              {/* Aqui, você poderá futuramente calcular a contagem real */}
+              {tasks ? tasks.length : 0}
             </span>
             <Button variant="default" size={isMobile ? "sm" : "default"}>
               Tratar →
@@ -74,9 +87,9 @@ export default function GenericBoard({ assignment, project }) {
           <CardContent className="h-full p-4 pt-0">
             <ScrollArea className="h-full">
               <div className="space-y-2 pr-2">
-                {loading ? (
+                {usersLoading ? (
                   <div className="text-muted-foreground">Carregando...</div>
-                ) : error ? (
+                ) : usersError ? (
                   <div className="text-destructive">
                     Erro ao carregar usuários
                   </div>
@@ -84,7 +97,7 @@ export default function GenericBoard({ assignment, project }) {
                   teamMembers.map((user) => (
                     <Card
                       key={user._id}
-                      className="bg-background p-2 shadow-sm transition-colors hover:bg-accent/10"
+                      className="bg-background p-2 shadow-sm transition-colors hover:bg-accent/30"
                     >
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8 border-2 border-background">
@@ -128,12 +141,21 @@ export default function GenericBoard({ assignment, project }) {
           <Card className="flex-1 overflow-hidden border-border bg-card">
             <ScrollArea className="h-full">
               <CardContent className="space-y-4 p-4">
-                {[...Array(10)].map((_, i) => (
-                  <Card
-                    key={i}
-                    className="h-28 rounded-lg border-border bg-background shadow-sm"
-                  />
-                ))}
+                {tasksLoading ? (
+                  <div className="text-muted-foreground">
+                    Carregando demandas...
+                  </div>
+                ) : tasksError ? (
+                  <div className="text-destructive">
+                    Erro ao carregar demandas
+                  </div>
+                ) : tasks.length > 0 ? (
+                  tasks.map((task) => <TaskCard key={task._id} task={task} />)
+                ) : (
+                  <div className="text-muted-foreground">
+                    Nenhuma demanda encontrada.
+                  </div>
+                )}
               </CardContent>
             </ScrollArea>
           </Card>
@@ -162,6 +184,7 @@ export default function GenericBoard({ assignment, project }) {
           <Card className="flex-1 overflow-hidden border-border bg-card">
             <ScrollArea className="h-full">
               <CardContent className="space-y-4 p-4">
+                {/* Aqui você poderá implementar a renderização das tasks finalizadas */}
                 {[...Array(10)].map((_, i) => (
                   <Card
                     key={i}
