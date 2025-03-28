@@ -9,6 +9,27 @@ const fs = require("fs").promises;
 const path = require("path");
 
 module.exports = (tasksCollection, usersCollection, projectsCollection) => {
+  // índices para melhor performance na operações do bd
+  const createIndexes = async () => {
+    try {
+      await tasksCollection.createIndex({
+        "status._id": 1,
+        "assignedTo._id": 1,
+      });
+      await tasksCollection.createIndex({ "assignedTo._id": 1, updatedAt: 1 });
+      await tasksCollection.createIndex({
+        "history.status._id": 1,
+        "history.user._id": 1,
+        "history.finishedAt": 1,
+      });
+      await tasksCollection.createIndex({ IDDEMANDA: 1 }, { unique: true });
+    } catch (err) {
+      console.error("Erro ao criar índices:", err);
+    }
+  };
+
+  createIndexes().catch(console.error);
+
   router.post(
     "/upload",
     authenticateToken,
@@ -81,6 +102,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
               createdBy: {
                 _id: user._id,
                 name: user.NOME,
+                date: new Date(),
               },
               project: {
                 _id: project._id,
@@ -90,21 +112,8 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
                 _id: project.assignments[0]._id,
                 name: project.assignments[0].name,
               },
-              insertedAt: new Date(),
-              history: [
-                {
-                  newStatus: {
-                    _id: project.assignments[0]._id,
-                    name: project.assignments[0].name,
-                  },
-                  user: {
-                    _id: user._id,
-                    name: user.NOME,
-                  },
-                  changedAt: new Date(),
-                  obs: "Importação inicial",
-                },
-              ],
+              updatedAt: new Date(),
+              history: [],
             };
           });
 
@@ -137,7 +146,169 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
     }
   );
 
-  // GET tasks por assignmentId
+  // Buscar tasks por demanda/usuario (Fila Em Tratamento)
+  router.get(
+    "/assignment/:assignmentId/user/:userId",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        const tasks = await tasksCollection
+          .find({
+            "status._id": new ObjectId(req.params.assignmentId),
+            "assignedTo._id": new ObjectId(req.params.userId),
+          })
+          .toArray();
+
+        res.status(200).json(tasks);
+      } catch (err) {
+        console.error("Erro:", err);
+        res.status(500).send("Erro interno");
+      }
+    }
+  );
+
+  // Buscar tasks do usuário concluídas (Finalizados)
+
+  router.get(
+    "/completed/:assignmentId/user/:userId",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        const result = await tasksCollection
+          .aggregate([
+            {
+              $match: {
+                history: {
+                  $elemMatch: {
+                    "status._id": new ObjectId(req.params.assignmentId),
+                    "user._id": new ObjectId(req.params.userId),
+                  },
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                IDDEMANDA: 1,
+                status: 1,
+                "history.$": 1,
+              },
+            },
+          ])
+          .toArray();
+
+        res.status(200).json(result);
+      } catch (err) {
+        console.error("Erro:", err);
+        res.status(500).send("Erro interno");
+      }
+    }
+  );
+
+  // Assumir demanda (prioridade = data)
+  router.patch("/take/:assignmentId", authenticateToken, async (req, res) => {
+    try {
+      const result = await tasksCollection.findOneAndUpdate(
+        {
+          "status._id": new ObjectId(req.params.assignmentId),
+          assignedTo: null,
+        },
+        {
+          $set: {
+            assignedTo: {
+              _id: new ObjectId(req.user.id),
+              name: req.user.NOME,
+            },
+            updatedAt: new Date(),
+          },
+          $push: {
+            history: {
+              status: {
+                _id: new ObjectId(req.params.assignmentId),
+              },
+              user: {
+                _id: new ObjectId(req.user.id),
+                name: req.user.NOME,
+              },
+              startedAt: new Date(),
+              sentTo: null,
+            },
+          },
+        },
+        {
+          sort: { updatedAt: 1 }, // Ordena pela mais antiga
+          returnDocument: "after",
+        }
+      );
+
+      if (!result.value) {
+        return res.status(404).send("Nenhuma demanda disponível");
+      }
+
+      res.status(200).json(result.value);
+    } catch (err) {
+      console.error("Erro:", err);
+      res.status(500).send("Erro interno");
+    }
+  });
+
+  // Trocar de fila
+  router.patch("/transition/:taskId", authenticateToken, async (req, res) => {
+    try {
+      const { newStatusId, obs } = req.body;
+
+      // 1. Verificar se o usuário é o responsável
+      const task = await tasksCollection.findOne({
+        _id: new ObjectId(req.params.taskId),
+        "assignedTo._id": new ObjectId(req.user.id),
+      });
+
+      if (!task) {
+        return res
+          .status(403)
+          .send("Você não é o responsável por esta demanda");
+      }
+
+      // 2. Obter novo status (simulado sem collection separada)
+      const newStatus = {
+        _id: new ObjectId(newStatusId),
+        name: "Nome do Status",
+      };
+
+      // 3. Atualizar task
+      const result = await tasksCollection.findOneAndUpdate(
+        { _id: task._id },
+        {
+          $set: {
+            status: newStatus,
+            assignedTo: null, // Libera a atribuição
+            updatedAt: new Date(),
+          },
+          $push: {
+            history: {
+              status: task.status,
+              user: {
+                _id: new ObjectId(req.user.id),
+                name: req.user.NOME,
+              },
+              startedAt: task.updatedAt, // Quando assumiu a tarefa
+              finishedAt: new Date(), // Quando finalizou
+              newStatus: newStatus,
+              obs: obs || "Status alterado",
+            },
+          },
+        },
+        { returnDocument: "after" }
+      );
+
+      res.status(200).json(result.value);
+    } catch (err) {
+      console.error("Erro:", err);
+      res.status(500).send("Erro interno");
+    }
+  });
+
+  // Busca todas as tasks por assignmentId
 
   router.get(
     "/assignment/:assignmentId",
@@ -156,62 +327,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
     }
   );
 
-  // Atualizar status
-  router.patch("/:id/status", authenticateToken, async (req, res) => {
-    try {
-      const taskId = new ObjectId(req.params.id);
-      const { newStatusId, obs } = req.body;
-      const user = await usersCollection.findOne({
-        _id: new ObjectId(req.user.id),
-      });
-
-      // Buscar novo status
-      const project = await projectsCollection.findOne({
-        "assignments._id": new ObjectId(newStatusId),
-      });
-
-      if (!project) {
-        return res.status(404).send("Status não encontrado");
-      }
-
-      const newStatus = project.assignments.find((a) =>
-        a._id.equals(newStatusId)
-      );
-
-      // Atualizar task
-      const update = {
-        $set: {
-          "status._id": newStatus._id,
-          "status.name": newStatus.name,
-        },
-        $push: {
-          history: {
-            newStatus: {
-              _id: newStatus._id,
-              name: newStatus.name,
-            },
-            user: {
-              _id: user._id,
-              nome: user.nome,
-            },
-            changedAt: new Date(),
-            obs: obs || "Status atualizado",
-          },
-        },
-      };
-
-      const result = await tasksCollection.updateOne({ _id: taskId }, update);
-
-      if (result.modifiedCount === 0) {
-        return res.status(404).send("Task não encontrada");
-      }
-
-      res.status(200).json({ message: "Status atualizado" });
-    } catch (err) {
-      console.error("Erro ao atualizar status:", err);
-      res.status(500).send("Erro interno");
-    }
-  });
+  createIndexes();
 
   return router;
 };
