@@ -1,0 +1,3736 @@
+[
+  {
+    "CIDADE": "ADAMANTINA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 323,
+    "BASE": "SOC",
+    "COD_NETSMS": 80322
+  },
+  {
+    "CIDADE": "AGUDOS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 411,
+    "BASE": "SOC",
+    "COD_NETSMS": 80411
+  },
+  {
+    "CIDADE": "ALAGOINHAS",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 802,
+    "BASE": "SOC",
+    "COD_NETSMS": 2801
+  },
+  {
+    "CIDADE": "ALEGRETE",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 390,
+    "BASE": "SOC",
+    "COD_NETSMS": 66389
+  },
+  {
+    "CIDADE": "ALMIRANTE TAMANDARE",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 294,
+    "BASE": "ISP",
+    "COD_NETSMS": 6294
+  },
+  {
+    "CIDADE": "ALUMINIO",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 535,
+    "BASE": "SOC",
+    "COD_NETSMS": 80535
+  },
+  {
+    "CIDADE": "ALVARES MACHADO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 551,
+    "BASE": "SOC",
+    "COD_NETSMS": 80551
+  },
+  {
+    "CIDADE": "AMERICO BRASILIENSE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 624,
+    "BASE": "ABC",
+    "COD_NETSMS": 80624
+  },
+  {
+    "CIDADE": "ALVORADA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 458,
+    "BASE": "SUL",
+    "COD_NETSMS": 7458
+  },
+  {
+    "CIDADE": "AMERICANA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 386,
+    "BASE": "ABC",
+    "COD_NETSMS": 5386
+  },
+  {
+    "CIDADE": "AMPARO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 538,
+    "BASE": "ABC",
+    "COD_NETSMS": 5389
+  },
+  {
+    "CIDADE": "ANDRADINA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 697,
+    "BASE": "ABC",
+    "COD_NETSMS": 80691
+  },
+  {
+    "CIDADE": "ANANINDEUA",
+    "UF": "PA",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 178,
+    "BASE": "SOC",
+    "COD_NETSMS": 178
+  },
+  {
+    "CIDADE": "ANAPOLIS",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 15,
+    "BASE": "BRA",
+    "COD_NETSMS": 18511
+  },
+  {
+    "CIDADE": "APUCARANA",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 322,
+    "BASE": "SUL",
+    "COD_NETSMS": 6322
+  },
+  {
+    "CIDADE": "APARECIDA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 399,
+    "BASE": "SOC",
+    "COD_NETSMS": 5399
+  },
+  {
+    "CIDADE": "APARECIDA DE GOIANIA",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 895,
+    "BASE": "ISP",
+    "COD_NETSMS": 8895
+  },
+  {
+    "CIDADE": "AQUIRAZ",
+    "UF": "CE",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 561,
+    "BASE": "SOC",
+    "COD_NETSMS": 10561
+  },
+  {
+    "CIDADE": "ARACRUZ",
+    "UF": "ES",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 167,
+    "BASE": "ISP",
+    "COD_NETSMS": 16160
+  },
+  {
+    "CIDADE": "ARACAJU",
+    "UF": "SE",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 550,
+    "BASE": "ISP",
+    "COD_NETSMS": 2550
+  },
+  {
+    "CIDADE": "ARACATUBA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 404,
+    "BASE": "ABC",
+    "COD_NETSMS": 5404
+  },
+  {
+    "CIDADE": "ARAGUAINA",
+    "UF": "TO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 679,
+    "BASE": "ISP",
+    "COD_NETSMS": 18678
+  },
+  {
+    "CIDADE": "ARAGUARI",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 455,
+    "BASE": "ISP",
+    "COD_NETSMS": 3455
+  },
+  {
+    "CIDADE": "ARAPIRACA",
+    "UF": "AL",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 214,
+    "BASE": "SOC",
+    "COD_NETSMS": 213
+  },
+  {
+    "CIDADE": "ARARANGUA",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 400,
+    "BASE": "SUL",
+    "COD_NETSMS": 75400
+  },
+  {
+    "CIDADE": "ARAPONGAS",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 93,
+    "BASE": "SUL",
+    "COD_NETSMS": 53902
+  },
+  {
+    "CIDADE": "ARAXA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 151,
+    "BASE": "ISP",
+    "COD_NETSMS": 25151
+  },
+  {
+    "CIDADE": "ARARAQUARA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 409,
+    "BASE": "ABC",
+    "COD_NETSMS": 5409
+  },
+  {
+    "CIDADE": "ARARAS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 413,
+    "BASE": "ABC",
+    "COD_NETSMS": 5413
+  },
+  {
+    "CIDADE": "ARAUCARIA",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 333,
+    "BASE": "ISP",
+    "COD_NETSMS": 6333
+  },
+  {
+    "CIDADE": "ARIQUEMES",
+    "UF": "RO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 870,
+    "BASE": "ISP",
+    "COD_NETSMS": 65870
+  },
+  {
+    "CIDADE": "ARMACAO DOS BUZIOS",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 116,
+    "BASE": "ABC",
+    "COD_NETSMS": 5116
+  },
+  {
+    "CIDADE": "ARROIO DO MEIO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 618,
+    "BASE": "SUL",
+    "COD_NETSMS": 66613
+  },
+  {
+    "CIDADE": "ARUJA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 420,
+    "BASE": "SUL",
+    "COD_NETSMS": 5420
+  },
+  {
+    "CIDADE": "ARTUR NOGUEIRA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 419,
+    "BASE": "ISP",
+    "COD_NETSMS": 5419
+  },
+  {
+    "CIDADE": "AVARE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 92,
+    "BASE": "SOC",
+    "COD_NETSMS": 81086
+  },
+  {
+    "CIDADE": "ATIBAIA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 423,
+    "BASE": "ABC",
+    "COD_NETSMS": 5423
+  },
+  {
+    "CIDADE": "BADY BASSITT",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 124,
+    "BASE": "ISP",
+    "COD_NETSMS": 81124
+  },
+  {
+    "CIDADE": "BAGE",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 690,
+    "BASE": "SUL",
+    "COD_NETSMS": 66770
+  },
+  {
+    "CIDADE": "BALNEARIO CAMBORIU",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 752,
+    "BASE": "ISP",
+    "COD_NETSMS": 7052
+  },
+  {
+    "CIDADE": "BARBACENA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 470,
+    "BASE": "ISP",
+    "COD_NETSMS": 25470
+  },
+  {
+    "CIDADE": "BARRA MANSA",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 100,
+    "BASE": "ABC",
+    "COD_NETSMS": 5100
+  },
+  {
+    "CIDADE": "BARREIRAS",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 353,
+    "BASE": "SOC",
+    "COD_NETSMS": 3352
+  },
+  {
+    "CIDADE": "BARRETOS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 302,
+    "BASE": "SOC",
+    "COD_NETSMS": 81302
+  },
+  {
+    "CIDADE": "BARRINHA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 442,
+    "BASE": "ABC",
+    "COD_NETSMS": 5442
+  },
+  {
+    "CIDADE": "BARUERI",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 443,
+    "BASE": "SOC",
+    "COD_NETSMS": 5443
+  },
+  {
+    "CIDADE": "BATATAIS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 448,
+    "BASE": "SUL",
+    "COD_NETSMS": 5448
+  },
+  {
+    "CIDADE": "BAURU",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 8,
+    "BASE": "ISP",
+    "COD_NETSMS": 5449
+  },
+  {
+    "CIDADE": "BEBEDOURO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 388,
+    "BASE": "ISP",
+    "COD_NETSMS": 81388
+  },
+  {
+    "CIDADE": "BELEM",
+    "UF": "PA",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 194,
+    "BASE": "SOC",
+    "COD_NETSMS": 194
+  },
+  {
+    "CIDADE": "BELFORD ROXO",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 105,
+    "BASE": "SOC",
+    "COD_NETSMS": 5105
+  },
+  {
+    "CIDADE": "BELO HORIZONTE",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 13,
+    "BASE": "BH",
+    "COD_NETSMS": 25666
+  },
+  {
+    "CIDADE": "BENTO GONCALVES",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 688,
+    "BASE": "SUL",
+    "COD_NETSMS": 67040
+  },
+  {
+    "CIDADE": "BERTIOGA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 456,
+    "BASE": "ABC",
+    "COD_NETSMS": 5456
+  },
+  {
+    "CIDADE": "BETIM",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 514,
+    "BASE": "ISP",
+    "COD_NETSMS": 3514
+  },
+  {
+    "CIDADE": "BIGUACU",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 58,
+    "BASE": "SUL",
+    "COD_NETSMS": 7058
+  },
+  {
+    "CIDADE": "BIRIGUI",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 450,
+    "BASE": "ABC",
+    "COD_NETSMS": 81450
+  },
+  {
+    "CIDADE": "BLUMENAU",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 700,
+    "BASE": "SUL",
+    "COD_NETSMS": 75680
+  },
+  {
+    "CIDADE": "BOITUVA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 464,
+    "BASE": "ABC",
+    "COD_NETSMS": 5464
+  },
+  {
+    "CIDADE": "BOTUCATU",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 471,
+    "BASE": "SOC",
+    "COD_NETSMS": 5471
+  },
+  {
+    "CIDADE": "BRAGANCA PAULISTA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 474,
+    "BASE": "ABC",
+    "COD_NETSMS": 5474
+  },
+  {
+    "CIDADE": "BRASILIA",
+    "UF": "DF",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 40,
+    "BASE": "BRA",
+    "COD_NETSMS": 15890
+  },
+  {
+    "CIDADE": "BRUSQUE",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 70,
+    "BASE": "ISP",
+    "COD_NETSMS": 7070
+  },
+  {
+    "CIDADE": "CABEDELO",
+    "UF": "PB",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 133,
+    "BASE": "ISP",
+    "COD_NETSMS": 1833
+  },
+  {
+    "CIDADE": "CABO FRIO",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 115,
+    "BASE": "SUL",
+    "COD_NETSMS": 5115
+  },
+  {
+    "CIDADE": "CABREUVA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 787,
+    "BASE": "ABC",
+    "COD_NETSMS": 81787
+  },
+  {
+    "CIDADE": "CACADOR",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 819,
+    "BASE": "SOC",
+    "COD_NETSMS": 75817
+  },
+  {
+    "CIDADE": "CACAPAVA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 487,
+    "BASE": "ABC",
+    "COD_NETSMS": 5487
+  },
+  {
+    "CIDADE": "CACHOEIRA DO SUL",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 394,
+    "BASE": "SUL",
+    "COD_NETSMS": 67393
+  },
+  {
+    "CIDADE": "CACHOEIRA PAULISTA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 488,
+    "BASE": "SOC",
+    "COD_NETSMS": 5488
+  },
+  {
+    "CIDADE": "CACHOEIRINHA",
+    "UF": "RS",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 560,
+    "BASE": "SUL",
+    "COD_NETSMS": 7560
+  },
+  {
+    "CIDADE": "CACHOEIRO DE ITAPEMIRIM",
+    "UF": "ES",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 911,
+    "BASE": "ISP",
+    "COD_NETSMS": 4911
+  },
+  {
+    "CIDADE": "CACOAL",
+    "UF": "RO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 898,
+    "BASE": "ISP",
+    "COD_NETSMS": 65897
+  },
+  {
+    "CIDADE": "CAIEIRAS",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 498,
+    "BASE": "SUL",
+    "COD_NETSMS": 5498
+  },
+  {
+    "CIDADE": "CAJAMAR",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 886,
+    "BASE": "ISP",
+    "COD_NETSMS": 81884
+  },
+  {
+    "CIDADE": "CALDAS NOVAS",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 73,
+    "BASE": "BRA",
+    "COD_NETSMS": 19070
+  },
+  {
+    "CIDADE": "CAMACARI",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 750,
+    "BASE": "ISP",
+    "COD_NETSMS": 2750
+  },
+  {
+    "CIDADE": "CAMAQUA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 466,
+    "BASE": "SUL",
+    "COD_NETSMS": 67466
+  },
+  {
+    "CIDADE": "CAMBE",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 379,
+    "BASE": "SUL",
+    "COD_NETSMS": 6379
+  },
+  {
+    "CIDADE": "CAMPINA GRANDE",
+    "UF": "PB",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 847,
+    "BASE": "ISP",
+    "COD_NETSMS": 1847
+  },
+  {
+    "CIDADE": "CAMPINAS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 52,
+    "BASE": "ISP",
+    "COD_NETSMS": 5509
+  },
+  {
+    "CIDADE": "CAMPO BOM",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 584,
+    "BASE": "ISP",
+    "COD_NETSMS": 7584
+  },
+  {
+    "CIDADE": "CAMPO GRANDE",
+    "UF": "MS",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 11,
+    "BASE": "ISP",
+    "COD_NETSMS": 8533
+  },
+  {
+    "CIDADE": "CAMPO LARGO",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 389,
+    "BASE": "ISP",
+    "COD_NETSMS": 6389
+  },
+  {
+    "CIDADE": "CAMPO LIMPO PAULISTA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 12,
+    "BASE": "SOC",
+    "COD_NETSMS": 82007
+  },
+  {
+    "CIDADE": "CAMBORIU",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 868,
+    "BASE": "SOC",
+    "COD_NETSMS": 75868
+  },
+  {
+    "CIDADE": "CAMPOS DOS GOYTACAZES",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 529,
+    "BASE": "ISP",
+    "COD_NETSMS": 5129
+  },
+  {
+    "CIDADE": "CAMPOS DO JORDAO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 28,
+    "BASE": "ABC",
+    "COD_NETSMS": 82023
+  },
+  {
+    "CIDADE": "CANOAS",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 603,
+    "BASE": "ISP",
+    "COD_NETSMS": 7603
+  },
+  {
+    "CIDADE": "CANELA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 601,
+    "BASE": "SUL",
+    "COD_NETSMS": 7601
+  },
+  {
+    "CIDADE": "CAPAO DA CANOA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 87,
+    "BASE": "SUL",
+    "COD_NETSMS": 67784
+  },
+  {
+    "CIDADE": "CAPIVARI",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 530,
+    "BASE": "SOC",
+    "COD_NETSMS": 5530
+  },
+  {
+    "CIDADE": "CARAGUATATUBA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 553,
+    "BASE": "ABC",
+    "COD_NETSMS": 5531
+  },
+  {
+    "CIDADE": "CARAPICUIBA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 533,
+    "BASE": "SOC",
+    "COD_NETSMS": 5533
+  },
+  {
+    "CIDADE": "CARAZINHO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 614,
+    "BASE": "SUL",
+    "COD_NETSMS": 7614
+  },
+  {
+    "CIDADE": "CARIACICA",
+    "UF": "ES",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 917,
+    "BASE": "ISP",
+    "COD_NETSMS": 4917
+  },
+  {
+    "CIDADE": "CARLOS BARBOSA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 920,
+    "BASE": "SUL",
+    "COD_NETSMS": 67920
+  },
+  {
+    "CIDADE": "CARUARU",
+    "UF": "PE",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 152,
+    "BASE": "ISP",
+    "COD_NETSMS": 2152
+  },
+  {
+    "CIDADE": "CASA BRANCA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 202,
+    "BASE": "SOC",
+    "COD_NETSMS": 82201
+  },
+  {
+    "CIDADE": "CASCAVEL",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 641,
+    "BASE": "SOC",
+    "COD_NETSMS": 6413
+  },
+  {
+    "CIDADE": "CASTANHAL",
+    "UF": "PA",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 23,
+    "BASE": "SUL",
+    "COD_NETSMS": 233
+  },
+  {
+    "CIDADE": "CATAGUASES",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 340,
+    "BASE": "ISP",
+    "COD_NETSMS": 27340
+  },
+  {
+    "CIDADE": "CATANDUVA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 543,
+    "BASE": "SUL",
+    "COD_NETSMS": 5543
+  },
+  {
+    "CIDADE": "CAXIAS DO SUL",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 687,
+    "BASE": "SUL",
+    "COD_NETSMS": 68020
+  },
+  {
+    "CIDADE": "CAXIAS",
+    "UF": "MA",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 713,
+    "BASE": "SOC",
+    "COD_NETSMS": 22713
+  },
+  {
+    "CIDADE": "CERQUILHO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 296,
+    "BASE": "SOC",
+    "COD_NETSMS": 82295
+  },
+  {
+    "CIDADE": "CHAPECO",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 68,
+    "BASE": "SOC",
+    "COD_NETSMS": 76066
+  },
+  {
+    "CIDADE": "CHARQUEADAS",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 217,
+    "BASE": "SUL",
+    "COD_NETSMS": 68217
+  },
+  {
+    "CIDADE": "CIANORTE",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 430,
+    "BASE": "SOC",
+    "COD_NETSMS": 6430
+  },
+  {
+    "CIDADE": "COLATINA",
+    "UF": "ES",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 489,
+    "BASE": "ISP",
+    "COD_NETSMS": 16489
+  },
+  {
+    "CIDADE": "COLOMBO",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 437,
+    "BASE": "ISP",
+    "COD_NETSMS": 6437
+  },
+  {
+    "CIDADE": "CONCORDIA",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 113,
+    "BASE": "SUL",
+    "COD_NETSMS": 76112
+  },
+  {
+    "CIDADE": "CONSELHEIRO LAFAIETE",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 741,
+    "BASE": "ISP",
+    "COD_NETSMS": 3741
+  },
+  {
+    "CIDADE": "CONTAGEM",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 753,
+    "BASE": "ISP",
+    "COD_NETSMS": 3753
+  },
+  {
+    "CIDADE": "CORDEIROPOLIS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 432,
+    "BASE": "ABC",
+    "COD_NETSMS": 82430
+  },
+  {
+    "CIDADE": "CORONEL FABRICIANO",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 778,
+    "BASE": "SUL",
+    "COD_NETSMS": 3778
+  },
+  {
+    "CIDADE": "COSMOPOLIS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 565,
+    "BASE": "ISP",
+    "COD_NETSMS": 5565
+  },
+  {
+    "CIDADE": "COTIA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 567,
+    "BASE": "SOC",
+    "COD_NETSMS": 5567
+  },
+  {
+    "CIDADE": "CRAVINHOS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 569,
+    "BASE": "ABC",
+    "COD_NETSMS": 5569
+  },
+  {
+    "CIDADE": "CRICIUMA",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 89,
+    "BASE": "SUL",
+    "COD_NETSMS": 76180
+  },
+  {
+    "CIDADE": "CRUZ ALTA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 685,
+    "BASE": "SUL",
+    "COD_NETSMS": 68659
+  },
+  {
+    "CIDADE": "CRUZEIRO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 572,
+    "BASE": "SOC",
+    "COD_NETSMS": 5572
+  },
+  {
+    "CIDADE": "CUBATAO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 573,
+    "BASE": "ABC",
+    "COD_NETSMS": 5573
+  },
+  {
+    "CIDADE": "CUIABA",
+    "UF": "MT",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 719,
+    "BASE": "SOC",
+    "COD_NETSMS": 8719
+  },
+  {
+    "CIDADE": "CURITIBA",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 884,
+    "BASE": "SUL",
+    "COD_NETSMS": 55298
+  },
+  {
+    "CIDADE": "DESCALVADO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 576,
+    "BASE": "ABC",
+    "COD_NETSMS": 5576
+  },
+  {
+    "CIDADE": "DIADEMA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 577,
+    "BASE": "ABC",
+    "COD_NETSMS": 5577
+  },
+  {
+    "CIDADE": "DIVINOPOLIS",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 832,
+    "BASE": "ISP",
+    "COD_NETSMS": 3832
+  },
+  {
+    "CIDADE": "DOIS IRMAOS",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 781,
+    "BASE": "SUL",
+    "COD_NETSMS": 68780
+  },
+  {
+    "CIDADE": "DOURADOS",
+    "UF": "MS",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 867,
+    "BASE": "ISP",
+    "COD_NETSMS": 8567
+  },
+  {
+    "CIDADE": "DRACENA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 586,
+    "BASE": "SUL",
+    "COD_NETSMS": 5586
+  },
+  {
+    "CIDADE": "DUQUE DE CAXIAS",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 161,
+    "BASE": "SOC",
+    "COD_NETSMS": 5161
+  },
+  {
+    "CIDADE": "ELDORADO DO SUL",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 918,
+    "BASE": "SUL",
+    "COD_NETSMS": 68918
+  },
+  {
+    "CIDADE": "ELIAS FAUSTO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 595,
+    "BASE": "SOC",
+    "COD_NETSMS": 5595
+  },
+  {
+    "CIDADE": "EMBU DAS ARTES",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 599,
+    "BASE": "SOC",
+    "COD_NETSMS": 5599
+  },
+  {
+    "CIDADE": "ENCANTADO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 934,
+    "BASE": "SUL",
+    "COD_NETSMS": 68934
+  },
+  {
+    "CIDADE": "ERECHIM",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 695,
+    "BASE": "SUL",
+    "COD_NETSMS": 69019
+  },
+  {
+    "CIDADE": "ESPIRITO SANTO DO PINHAL",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 970,
+    "BASE": "ABC",
+    "COD_NETSMS": 82970
+  },
+  {
+    "CIDADE": "ESTANCIA VELHA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 757,
+    "BASE": "ISP",
+    "COD_NETSMS": 7757
+  },
+  {
+    "CIDADE": "ESTEIO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 758,
+    "BASE": "ISP",
+    "COD_NETSMS": 7758
+  },
+  {
+    "CIDADE": "ESTRELA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 231,
+    "BASE": "SUL",
+    "COD_NETSMS": 69230
+  },
+  {
+    "CIDADE": "EUNAPOLIS",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 61,
+    "BASE": "ISP",
+    "COD_NETSMS": 5061
+  },
+  {
+    "CIDADE": "EUSEBIO",
+    "UF": "CE",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 44,
+    "BASE": "SOC",
+    "COD_NETSMS": 12041
+  },
+  {
+    "CIDADE": "FARROUPILHA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 83,
+    "BASE": "SUL",
+    "COD_NETSMS": 69337
+  },
+  {
+    "CIDADE": "FEIRA DE SANTANA",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 852,
+    "BASE": "ISP",
+    "COD_NETSMS": 2852
+  },
+  {
+    "CIDADE": "FERNANDOPOLIS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 98,
+    "BASE": "ISP",
+    "COD_NETSMS": 83097
+  },
+  {
+    "CIDADE": "FLORIANOPOLIS",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 88,
+    "BASE": "SUL",
+    "COD_NETSMS": 76414
+  },
+  {
+    "CIDADE": "FORMOSA",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 782,
+    "BASE": "BRA",
+    "COD_NETSMS": 19780
+  },
+  {
+    "CIDADE": "FORTALEZA",
+    "UF": "CE",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 97,
+    "BASE": "SOC",
+    "COD_NETSMS": 1097
+  },
+  {
+    "CIDADE": "FRAIBURGO",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 449,
+    "BASE": "SOC",
+    "COD_NETSMS": 76449
+  },
+  {
+    "CIDADE": "FRANCA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 56,
+    "BASE": "ISP",
+    "COD_NETSMS": 5623
+  },
+  {
+    "CIDADE": "FREDERICO WESTPHALEN",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 536,
+    "BASE": "SUL",
+    "COD_NETSMS": 69531
+  },
+  {
+    "CIDADE": "GARCA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 232,
+    "BASE": "SOC",
+    "COD_NETSMS": 83232
+  },
+  {
+    "CIDADE": "GARIBALDI",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 568,
+    "BASE": "SUL",
+    "COD_NETSMS": 69566
+  },
+  {
+    "CIDADE": "GASPAR",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 154,
+    "BASE": "ISP",
+    "COD_NETSMS": 7154
+  },
+  {
+    "CIDADE": "GOIANIA",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 10,
+    "BASE": "BRA",
+    "COD_NETSMS": 19887
+  },
+  {
+    "CIDADE": "GOVERNADOR VALADARES",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 930,
+    "BASE": "ISP",
+    "COD_NETSMS": 3930
+  },
+  {
+    "CIDADE": "GRAMADO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 817,
+    "BASE": "SUL",
+    "COD_NETSMS": 7817
+  },
+  {
+    "CIDADE": "GRAVATAI",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 720,
+    "BASE": "ISP",
+    "COD_NETSMS": 7820
+  },
+  {
+    "CIDADE": "GUAIBA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 728,
+    "BASE": "SOC",
+    "COD_NETSMS": 69728
+  },
+  {
+    "CIDADE": "GUAIRA",
+    "UF": "SP",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 364,
+    "BASE": "ISP",
+    "COD_NETSMS": 83364
+  },
+  {
+    "CIDADE": "GUAPIACU",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 381,
+    "BASE": "ISP",
+    "COD_NETSMS": 83380
+  },
+  {
+    "CIDADE": "GUARAMIRIM",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 163,
+    "BASE": "SUL",
+    "COD_NETSMS": 7163
+  },
+  {
+    "CIDADE": "GUARAPUAVA",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 531,
+    "BASE": "SOC",
+    "COD_NETSMS": 6531
+  },
+  {
+    "CIDADE": "GUARARAPES",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 496,
+    "BASE": "ISP",
+    "COD_NETSMS": 83496
+  },
+  {
+    "CIDADE": "GUARATINGUETA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 656,
+    "BASE": "SOC",
+    "COD_NETSMS": 5656
+  },
+  {
+    "CIDADE": "GUARUJA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 659,
+    "BASE": "ABC",
+    "COD_NETSMS": 5659
+  },
+  {
+    "CIDADE": "GUARULHOS",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 661,
+    "BASE": "SOC",
+    "COD_NETSMS": 5661
+  },
+  {
+    "CIDADE": "GURUPI",
+    "UF": "TO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 992,
+    "BASE": "ISP",
+    "COD_NETSMS": 19992
+  },
+  {
+    "CIDADE": "HERVAL D'OESTE",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 698,
+    "BASE": "SOC"
+  },
+  {
+    "CIDADE": "HORTOLANDIA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 668,
+    "BASE": "ABC",
+    "COD_NETSMS": 5668
+  },
+  {
+    "CIDADE": "IBATE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 674,
+    "BASE": "ISP",
+    "COD_NETSMS": 83674
+  },
+  {
+    "CIDADE": "IBIUNA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 755,
+    "BASE": "SUL",
+    "COD_NETSMS": 83755
+  },
+  {
+    "CIDADE": "ICARA",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 724,
+    "BASE": "SUL",
+    "COD_NETSMS": 76724
+  },
+  {
+    "CIDADE": "IGREJINHA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 885,
+    "BASE": "SUL",
+    "COD_NETSMS": 69884
+  },
+  {
+    "CIDADE": "ILHEUS",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 843,
+    "BASE": "ISP",
+    "COD_NETSMS": 5843
+  },
+  {
+    "CIDADE": "IMBE",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 835,
+    "BASE": "SUL",
+    "COD_NETSMS": 92835
+  },
+  {
+    "CIDADE": "IMPERATRIZ",
+    "UF": "MA",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 51,
+    "BASE": "SOC",
+    "COD_NETSMS": 23051
+  },
+  {
+    "CIDADE": "INDAIAL",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 775,
+    "BASE": "SOC",
+    "COD_NETSMS": 76775
+  },
+  {
+    "CIDADE": "INDAIATUBA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 54,
+    "BASE": "ISP",
+    "COD_NETSMS": 5693
+  },
+  {
+    "CIDADE": "IPATINGA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 405,
+    "BASE": "ISP",
+    "COD_NETSMS": 4005
+  },
+  {
+    "CIDADE": "IPERO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 951,
+    "BASE": "ABC",
+    "COD_NETSMS": 83950
+  },
+  {
+    "CIDADE": "ITABIRA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 813,
+    "BASE": "BRA",
+    "COD_NETSMS": 30813
+  },
+  {
+    "CIDADE": "ITABUNA",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 84,
+    "BASE": "ISP",
+    "COD_NETSMS": 6084
+  },
+  {
+    "CIDADE": "ITAGUAI",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 57,
+    "BASE": "SOC",
+    "COD_NETSMS": 62057
+  },
+  {
+    "CIDADE": "ITAJAI",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 193,
+    "BASE": "ISP",
+    "COD_NETSMS": 7193
+  },
+  {
+    "CIDADE": "ITAJUBA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 402,
+    "BASE": "SUL",
+    "COD_NETSMS": 4024
+  },
+  {
+    "CIDADE": "ITANHAEM",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 712,
+    "BASE": "ABC",
+    "COD_NETSMS": 5712
+  },
+  {
+    "CIDADE": "ITAPECERICA DA SERRA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 714,
+    "BASE": "SOC",
+    "COD_NETSMS": 5714
+  },
+  {
+    "CIDADE": "ITAPEMA",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 94,
+    "BASE": "ISP",
+    "COD_NETSMS": 7194
+  },
+  {
+    "CIDADE": "ITAPETININGA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 715,
+    "BASE": "ABC",
+    "COD_NETSMS": 5715
+  },
+  {
+    "CIDADE": "ITAPEVA",
+    "UF": "SP",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 166,
+    "BASE": "ABC",
+    "COD_NETSMS": 84166
+  },
+  {
+    "CIDADE": "ITAPEVI",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 722,
+    "BASE": "SOC",
+    "COD_NETSMS": 5722
+  },
+  {
+    "CIDADE": "ITAPIRA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 183,
+    "BASE": "ABC",
+    "COD_NETSMS": 84182
+  },
+  {
+    "CIDADE": "ITAQUAQUECETUBA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 733,
+    "BASE": "ISP",
+    "COD_NETSMS": 5733
+  },
+  {
+    "CIDADE": "ITAQUI",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 106,
+    "BASE": "SUL",
+    "COD_NETSMS": 70106
+  },
+  {
+    "CIDADE": "ITATIBA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 739,
+    "BASE": "SUL",
+    "COD_NETSMS": 5739
+  },
+  {
+    "CIDADE": "ITAUNA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 144,
+    "BASE": "ISP",
+    "COD_NETSMS": 31143
+  },
+  {
+    "CIDADE": "ITU",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 746,
+    "BASE": "ABC",
+    "COD_NETSMS": 5746
+  },
+  {
+    "CIDADE": "ITUIUTABA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 60,
+    "BASE": "ISP",
+    "COD_NETSMS": 4060
+  },
+  {
+    "CIDADE": "ITUMBIARA",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 257,
+    "BASE": "BRA",
+    "COD_NETSMS": 20257
+  },
+  {
+    "CIDADE": "ITUPEVA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 360,
+    "BASE": "SOC",
+    "COD_NETSMS": 84360
+  },
+  {
+    "CIDADE": "ITUVERAVA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 574,
+    "BASE": "ABC",
+    "COD_NETSMS": 5749
+  },
+  {
+    "CIDADE": "IVOTI",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 173,
+    "BASE": "SUL",
+    "COD_NETSMS": 70173
+  },
+  {
+    "CIDADE": "JABOATAO DOS GUARARAPES",
+    "UF": "PE",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 223,
+    "BASE": "ABC",
+    "COD_NETSMS": 2235
+  },
+  {
+    "CIDADE": "JABOTICABAL",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 410,
+    "BASE": "ISP",
+    "COD_NETSMS": 84409
+  },
+  {
+    "CIDADE": "JACAREI",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 756,
+    "BASE": "ABC",
+    "COD_NETSMS": 5756
+  },
+  {
+    "CIDADE": "JAGUARIUNA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 761,
+    "BASE": "ABC",
+    "COD_NETSMS": 5761
+  },
+  {
+    "CIDADE": "JALES",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 492,
+    "BASE": "ABC",
+    "COD_NETSMS": 84492
+  },
+  {
+    "CIDADE": "JANDIRA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 765,
+    "BASE": "SOC",
+    "COD_NETSMS": 5765
+  },
+  {
+    "CIDADE": "JARAGUA DO SUL",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 203,
+    "BASE": "SUL",
+    "COD_NETSMS": 7203
+  },
+  {
+    "CIDADE": "JARDINOPOLIS",
+    "UF": "SP",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 575,
+    "BASE": "ISP",
+    "COD_NETSMS": 84573
+  },
+  {
+    "CIDADE": "JARINU",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 581,
+    "BASE": "ABC",
+    "COD_NETSMS": 84581
+  },
+  {
+    "CIDADE": "JATAI",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 303,
+    "BASE": "BRA",
+    "COD_NETSMS": 20303
+  },
+  {
+    "CIDADE": "JAU",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 769,
+    "BASE": "SOC",
+    "COD_NETSMS": 5769
+  },
+  {
+    "CIDADE": "JEQUIE",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 718,
+    "BASE": "ISP",
+    "COD_NETSMS": 6718
+  },
+  {
+    "CIDADE": "JI-PARANA",
+    "UF": "RO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 994,
+    "BASE": "ISP",
+    "COD_NETSMS": 65994
+  },
+  {
+    "CIDADE": "JOACABA",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 119,
+    "BASE": "SUL",
+    "COD_NETSMS": 77119
+  },
+  {
+    "CIDADE": "JOAO PESSOA",
+    "UF": "PB",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 907,
+    "BASE": "SOC",
+    "COD_NETSMS": 1907
+  },
+  {
+    "CIDADE": "JOINVILLE",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 86,
+    "BASE": "SUL",
+    "COD_NETSMS": 77127
+  },
+  {
+    "CIDADE": "JOSE BONIFACIO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 662,
+    "BASE": "ISP",
+    "COD_NETSMS": 84662
+  },
+  {
+    "CIDADE": "JUAZEIRO",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 823,
+    "BASE": "SOC",
+    "COD_NETSMS": 6823
+  },
+  {
+    "CIDADE": "JUAZEIRO DO NORTE",
+    "UF": "CE",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 110,
+    "BASE": "SOC",
+    "COD_NETSMS": 13110
+  },
+  {
+    "CIDADE": "JUIZ DE FORA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 126,
+    "BASE": "ISP",
+    "COD_NETSMS": 4126
+  },
+  {
+    "CIDADE": "JUNDIAI",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 55,
+    "BASE": "ISP",
+    "COD_NETSMS": 5776
+  },
+  {
+    "CIDADE": "LAGES",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 213,
+    "BASE": "SUL",
+    "COD_NETSMS": 7213
+  },
+  {
+    "CIDADE": "LAGOA SANTA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 43,
+    "BASE": "ISP",
+    "COD_NETSMS": 4143
+  },
+  {
+    "CIDADE": "LAJEADO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 689,
+    "BASE": "SUL",
+    "COD_NETSMS": 70408
+  },
+  {
+    "CIDADE": "LARANJAL PAULISTA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 859,
+    "BASE": "SOC",
+    "COD_NETSMS": 84859
+  },
+  {
+    "CIDADE": "LAURO DE FREITAS",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 42,
+    "BASE": "SOC",
+    "COD_NETSMS": 3042
+  },
+  {
+    "CIDADE": "LAVRAS",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 909,
+    "BASE": "SUL",
+    "COD_NETSMS": 31909
+  },
+  {
+    "CIDADE": "LEME",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 905,
+    "BASE": "ABC",
+    "COD_NETSMS": 84905
+  },
+  {
+    "CIDADE": "LENCOIS PAULISTA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 913,
+    "BASE": "ISP",
+    "COD_NETSMS": 84913
+  },
+  {
+    "CIDADE": "LIMEIRA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 791,
+    "BASE": "ABC",
+    "COD_NETSMS": 5791
+  },
+  {
+    "CIDADE": "LINS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 948,
+    "BASE": "ABC",
+    "COD_NETSMS": 84948
+  },
+  {
+    "CIDADE": "LONDRINA",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 996,
+    "BASE": "SUL",
+    "COD_NETSMS": 56995
+  },
+  {
+    "CIDADE": "LORENA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 795,
+    "BASE": "SOC",
+    "COD_NETSMS": 5795
+  },
+  {
+    "CIDADE": "LOUVEIRA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 798,
+    "BASE": "SUL",
+    "COD_NETSMS": 5798
+  },
+  {
+    "CIDADE": "LUCAS DO RIO VERDE",
+    "UF": "MT",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 875,
+    "BASE": "ABC",
+    "COD_NETSMS": 8756
+  },
+  {
+    "CIDADE": "MACAE",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 197,
+    "BASE": "ISP",
+    "COD_NETSMS": 5197
+  },
+  {
+    "CIDADE": "MACAPA",
+    "UF": "AP",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 393,
+    "BASE": "SUL",
+    "COD_NETSMS": 393
+  },
+  {
+    "CIDADE": "MACEIO",
+    "UF": "AL",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 480,
+    "BASE": "SOC",
+    "COD_NETSMS": 2480
+  },
+  {
+    "CIDADE": "MAFRA",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 348,
+    "BASE": "SOC",
+    "COD_NETSMS": 77348
+  },
+  {
+    "CIDADE": "MAIRINQUE",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 810,
+    "BASE": "ABC",
+    "COD_NETSMS": 5810
+  },
+  {
+    "CIDADE": "MANAUS",
+    "UF": "AM",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 121,
+    "BASE": "ABC",
+    "COD_NETSMS": 121
+  },
+  {
+    "CIDADE": "MANHUACU",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 222,
+    "BASE": "ISP",
+    "COD_NETSMS": 32220
+  },
+  {
+    "CIDADE": "MARABA",
+    "UF": "PA",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 2,
+    "BASE": "SUL",
+    "COD_NETSMS": 272
+  },
+  {
+    "CIDADE": "MARAU",
+    "UF": "RS",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 638,
+    "BASE": "SUL",
+    "COD_NETSMS": 70637
+  },
+  {
+    "CIDADE": "MARILIA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 820,
+    "BASE": "SOC",
+    "COD_NETSMS": 5820
+  },
+  {
+    "CIDADE": "MARINGA",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 91,
+    "BASE": "SUL",
+    "COD_NETSMS": 57304
+  },
+  {
+    "CIDADE": "MATA DE SAO JOAO",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 481,
+    "BASE": "ISP",
+    "COD_NETSMS": 7480
+  },
+  {
+    "CIDADE": "MATAO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 297,
+    "BASE": "ABC",
+    "COD_NETSMS": 85294
+  },
+  {
+    "CIDADE": "MAUA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 833,
+    "BASE": "ABC",
+    "COD_NETSMS": 5833
+  },
+  {
+    "CIDADE": "MESQUITA",
+    "UF": "RJ",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 239,
+    "BASE": "SOC",
+    "COD_NETSMS": 5239
+  },
+  {
+    "CIDADE": "MIGUEL PEREIRA",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 391,
+    "BASE": "ISP",
+    "COD_NETSMS": 62391
+  },
+  {
+    "CIDADE": "MIRANDOPOLIS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 392,
+    "BASE": "ISP",
+    "COD_NETSMS": 85391
+  },
+  {
+    "CIDADE": "MIRASSOL",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 850,
+    "BASE": "ABC",
+    "COD_NETSMS": 5850
+  },
+  {
+    "CIDADE": "MOCOCA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 431,
+    "BASE": "SOC",
+    "COD_NETSMS": 85430
+  },
+  {
+    "CIDADE": "MOGI DAS CRUZES",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 856,
+    "BASE": "ABC",
+    "COD_NETSMS": 5856
+  },
+  {
+    "CIDADE": "MOGI GUACU",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 863,
+    "BASE": "ABC",
+    "COD_NETSMS": 5863
+  },
+  {
+    "CIDADE": "MOGI MIRIM",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 865,
+    "BASE": "ABC",
+    "COD_NETSMS": 5865
+  },
+  {
+    "CIDADE": "MONGAGUA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 869,
+    "BASE": "ABC",
+    "COD_NETSMS": 5869
+  },
+  {
+    "CIDADE": "MONTE ALTO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 534,
+    "BASE": "ISP",
+    "COD_NETSMS": 85529
+  },
+  {
+    "CIDADE": "MONTE MOR",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 882,
+    "BASE": "SOC",
+    "COD_NETSMS": 5882
+  },
+  {
+    "CIDADE": "MONTENEGRO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 950,
+    "BASE": "SUL",
+    "COD_NETSMS": 7950
+  },
+  {
+    "CIDADE": "MONTES CLAROS",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 275,
+    "BASE": "ISP",
+    "COD_NETSMS": 4275
+  },
+  {
+    "CIDADE": "MORUNGABA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 626,
+    "BASE": "ISP",
+    "COD_NETSMS": 85626
+  },
+  {
+    "CIDADE": "MOSSORO",
+    "UF": "RN",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 947,
+    "BASE": "SOC",
+    "COD_NETSMS": 64947
+  },
+  {
+    "CIDADE": "NATAL",
+    "UF": "RN",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 95,
+    "BASE": "SOC",
+    "COD_NETSMS": 1695
+  },
+  {
+    "CIDADE": "NAVEGANTES",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 260,
+    "BASE": "ISP",
+    "COD_NETSMS": 7260
+  },
+  {
+    "CIDADE": "NAVIRAI",
+    "UF": "MS",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 797,
+    "BASE": "ISP",
+    "COD_NETSMS": 40797
+  },
+  {
+    "CIDADE": "NILOPOLIS",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 226,
+    "BASE": "SOC",
+    "COD_NETSMS": 5226
+  },
+  {
+    "CIDADE": "NITEROI",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 228,
+    "BASE": "BRA",
+    "COD_NETSMS": 5228
+  },
+  {
+    "CIDADE": "NOVA FRIBURGO",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 30,
+    "BASE": "ISP",
+    "COD_NETSMS": 5230
+  },
+  {
+    "CIDADE": "NOVA IGUACU",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 237,
+    "BASE": "SOC",
+    "COD_NETSMS": 5237
+  },
+  {
+    "CIDADE": "NOVA LIMA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 312,
+    "BASE": "ISP",
+    "COD_NETSMS": 4312
+  },
+  {
+    "CIDADE": "NOVA MUTUM",
+    "UF": "MT",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 341,
+    "BASE": "ABC",
+    "COD_NETSMS": 42340
+  },
+  {
+    "CIDADE": "NOVA ODESSA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 910,
+    "BASE": "SUL",
+    "COD_NETSMS": 5910
+  },
+  {
+    "CIDADE": "NOVA PETROPOLIS",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 201,
+    "BASE": "SUL",
+    "COD_NETSMS": 71200
+  },
+  {
+    "CIDADE": "NOVO HAMBURGO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 686,
+    "BASE": "SUL",
+    "COD_NETSMS": 71242
+  },
+  {
+    "CIDADE": "OLIMPIA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 987,
+    "BASE": "ISP",
+    "COD_NETSMS": 85987
+  },
+  {
+    "CIDADE": "OLINDA",
+    "UF": "PE",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 269,
+    "BASE": "ABC",
+    "COD_NETSMS": 2269
+  },
+  {
+    "CIDADE": "ORLANDIA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 592,
+    "BASE": "ABC",
+    "COD_NETSMS": 5923
+  },
+  {
+    "CIDADE": "OSASCO",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 924,
+    "BASE": "SOC",
+    "COD_NETSMS": 5924
+  },
+  {
+    "CIDADE": "OSORIO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 293,
+    "BASE": "SUL",
+    "COD_NETSMS": 71293
+  },
+  {
+    "CIDADE": "OURINHOS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 71,
+    "BASE": "ABC",
+    "COD_NETSMS": 86070
+  },
+  {
+    "CIDADE": "PALHOCA",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 278,
+    "BASE": "ISP",
+    "COD_NETSMS": 7278
+  },
+  {
+    "CIDADE": "PALMAS",
+    "UF": "TO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 540,
+    "BASE": "ISP",
+    "COD_NETSMS": 540
+  },
+  {
+    "CIDADE": "PALMEIRA DAS MISSOES",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 412,
+    "BASE": "SUL",
+    "COD_NETSMS": 71412
+  },
+  {
+    "CIDADE": "PANAMBI",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 447,
+    "BASE": "SUL",
+    "COD_NETSMS": 71447
+  },
+  {
+    "CIDADE": "PARA DE MINAS",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 812,
+    "BASE": "ISP",
+    "COD_NETSMS": 33812
+  },
+  {
+    "CIDADE": "PARAGOMINAS",
+    "UF": "PA",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 628,
+    "BASE": "SOC",
+    "COD_NETSMS": 44628
+  },
+  {
+    "CIDADE": "PARAIBA DO SUL",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 677,
+    "BASE": "ISP",
+    "COD_NETSMS": 62677
+  },
+  {
+    "CIDADE": "PARAISO DO TOCANTINS",
+    "UF": "TO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 85,
+    "BASE": "ISP",
+    "COD_NETSMS": 21083
+  },
+  {
+    "CIDADE": "PARANAGUA",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 749,
+    "BASE": "SUL",
+    "COD_NETSMS": 6749
+  },
+  {
+    "CIDADE": "PARAUAPEBAS",
+    "UF": "PA",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 745,
+    "BASE": "SUL",
+    "COD_NETSMS": 89745
+  },
+  {
+    "CIDADE": "PARNAIBA",
+    "UF": "PI",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 69,
+    "BASE": "SOC",
+    "COD_NETSMS": 53066
+  },
+  {
+    "CIDADE": "PARNAMIRIM",
+    "UF": "RN",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 637,
+    "BASE": "SOC",
+    "COD_NETSMS": 1637
+  },
+  {
+    "CIDADE": "PAROBE",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 499,
+    "BASE": "SOC",
+    "COD_NETSMS": 71498
+  },
+  {
+    "CIDADE": "PASSO FUNDO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 693,
+    "BASE": "SUL",
+    "COD_NETSMS": 71587
+  },
+  {
+    "CIDADE": "PASSOS",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 995,
+    "BASE": "ISP",
+    "COD_NETSMS": 33995
+  },
+  {
+    "CIDADE": "PATOS DE MINAS",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 14,
+    "BASE": "ISP",
+    "COD_NETSMS": 34010
+  },
+  {
+    "CIDADE": "PAULINIA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 954,
+    "BASE": "ISP",
+    "COD_NETSMS": 5954
+  },
+  {
+    "CIDADE": "PAULISTA",
+    "UF": "PE",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 291,
+    "BASE": "ABC",
+    "COD_NETSMS": 2291
+  },
+  {
+    "CIDADE": "PEDREIRA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 966,
+    "BASE": "ABC",
+    "COD_NETSMS": 5966
+  },
+  {
+    "CIDADE": "PELOTAS",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 691,
+    "BASE": "SUL",
+    "COD_NETSMS": 71706
+  },
+  {
+    "CIDADE": "PENAPOLIS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 495,
+    "BASE": "ABC",
+    "COD_NETSMS": 86495
+  },
+  {
+    "CIDADE": "PERUIBE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 972,
+    "BASE": "ABC",
+    "COD_NETSMS": 5972
+  },
+  {
+    "CIDADE": "PETROLINA",
+    "UF": "PE",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 956,
+    "BASE": "ABC",
+    "COD_NETSMS": 50954
+  },
+  {
+    "CIDADE": "PETROPOLIS",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 250,
+    "BASE": "ISP",
+    "COD_NETSMS": 5250
+  },
+  {
+    "CIDADE": "PIEDADE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 571,
+    "BASE": "SOC",
+    "COD_NETSMS": 86568
+  },
+  {
+    "CIDADE": "PINDAMONHANGABA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 976,
+    "BASE": "ABC",
+    "COD_NETSMS": 5976
+  },
+  {
+    "CIDADE": "PINHAIS",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 770,
+    "BASE": "ISP",
+    "COD_NETSMS": 6770
+  },
+  {
+    "CIDADE": "PIRACAIA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 657,
+    "BASE": "ABC",
+    "COD_NETSMS": 86657
+  },
+  {
+    "CIDADE": "PIRACICABA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 9,
+    "BASE": "ISP",
+    "COD_NETSMS": 5985
+  },
+  {
+    "CIDADE": "PIRASSUNUNGA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 747,
+    "BASE": "ABC",
+    "COD_NETSMS": 86746
+  },
+  {
+    "CIDADE": "POA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 609,
+    "BASE": "ISP",
+    "COD_NETSMS": 6009
+  },
+  {
+    "CIDADE": "POCOS DE CALDAS",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 37,
+    "BASE": "SUL",
+    "COD_NETSMS": 4437
+  },
+  {
+    "CIDADE": "PONTA GROSSA",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 794,
+    "BASE": "SOC",
+    "COD_NETSMS": 6794
+  },
+  {
+    "CIDADE": "PONTA PORA",
+    "UF": "MS",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 17,
+    "BASE": "ISP",
+    "COD_NETSMS": 41017
+  },
+  {
+    "CIDADE": "PONTAL",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 844,
+    "BASE": "ISP",
+    "COD_NETSMS": 86843
+  },
+  {
+    "CIDADE": "PORTO ALEGRE",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 78,
+    "BASE": "SUL",
+    "COD_NETSMS": 71986
+  },
+  {
+    "CIDADE": "PORTO FELIZ",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 22,
+    "BASE": "SOC",
+    "COD_NETSMS": 6022
+  },
+  {
+    "CIDADE": "PORTO FERREIRA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 908,
+    "BASE": "SOC",
+    "COD_NETSMS": 86908
+  },
+  {
+    "CIDADE": "PORTO SEGURO",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 532,
+    "BASE": "ISP",
+    "COD_NETSMS": 8532
+  },
+  {
+    "CIDADE": "PORTO VELHO",
+    "UF": "RO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 220,
+    "BASE": "ISP",
+    "COD_NETSMS": 22
+  },
+  {
+    "CIDADE": "POTIM",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 24,
+    "BASE": "SOC",
+    "COD_NETSMS": 6024
+  },
+  {
+    "CIDADE": "POTIRENDABA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 941,
+    "BASE": "ISP",
+    "COD_NETSMS": 86940
+  },
+  {
+    "CIDADE": "POUSO ALEGRE",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 459,
+    "BASE": "SUL",
+    "COD_NETSMS": 4459
+  },
+  {
+    "CIDADE": "PRAIA GRANDE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 27,
+    "BASE": "ABC",
+    "COD_NETSMS": 6027
+  },
+  {
+    "CIDADE": "PRESIDENTE BERNARDES",
+    "UF": "SP",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 25,
+    "BASE": "SOC",
+    "COD_NETSMS": 87025
+  },
+  {
+    "CIDADE": "PRESIDENTE PRUDENTE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 36,
+    "BASE": "ISP",
+    "COD_NETSMS": 6036
+  },
+  {
+    "CIDADE": "PROMISSAO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 74,
+    "BASE": "ISP",
+    "COD_NETSMS": 87068
+  },
+  {
+    "CIDADE": "RAFARD",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 48,
+    "BASE": "SOC",
+    "COD_NETSMS": 6048
+  },
+  {
+    "CIDADE": "RECIFE",
+    "UF": "PE",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 136,
+    "BASE": "ABC",
+    "COD_NETSMS": 51136
+  },
+  {
+    "CIDADE": "REGISTRO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 211,
+    "BASE": "SOC",
+    "COD_NETSMS": 87211
+  },
+  {
+    "CIDADE": "RESENDE",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 268,
+    "BASE": "ABC",
+    "COD_NETSMS": 5268
+  },
+  {
+    "CIDADE": "RIBEIRAO PIRES",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 67,
+    "BASE": "ISP",
+    "COD_NETSMS": 6067
+  },
+  {
+    "CIDADE": "RIBEIRAO PRETO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 5,
+    "BASE": "ISP",
+    "COD_NETSMS": 6070
+  },
+  {
+    "CIDADE": "RIO BRANCO",
+    "UF": "AC",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 66,
+    "BASE": "ISP",
+    "COD_NETSMS": 66
+  },
+  {
+    "CIDADE": "RIO CLARO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 76,
+    "BASE": "ABC",
+    "COD_NETSMS": 6076
+  },
+  {
+    "CIDADE": "RIO DAS OSTRAS",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 285,
+    "BASE": "ISP",
+    "COD_NETSMS": 5285
+  },
+  {
+    "CIDADE": "RIO DE JANEIRO",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 38,
+    "BASE": "BRA",
+    "COD_NETSMS": 63118
+  },
+  {
+    "CIDADE": "RIO DO SUL",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 301,
+    "BASE": "SUL",
+    "COD_NETSMS": 78301
+  },
+  {
+    "CIDADE": "RIO GRANDE",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 692,
+    "BASE": "SUL",
+    "COD_NETSMS": 72451
+  },
+  {
+    "CIDADE": "RIO NEGRINHO",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 352,
+    "BASE": "SOC",
+    "COD_NETSMS": 78352
+  },
+  {
+    "CIDADE": "RIO PARDO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 478,
+    "BASE": "SUL",
+    "COD_NETSMS": 72478
+  },
+  {
+    "CIDADE": "RIO VERDE",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 112,
+    "BASE": "SUL",
+    "COD_NETSMS": 9112
+  },
+  {
+    "CIDADE": "ROLANDIA",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 851,
+    "BASE": "SUL",
+    "COD_NETSMS": 6851
+  },
+  {
+    "CIDADE": "RONDONOPOLIS",
+    "UF": "MT",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 818,
+    "BASE": "ISP",
+    "COD_NETSMS": 8818
+  },
+  {
+    "CIDADE": "ROSARIO DO SUL",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 613,
+    "BASE": "SUL",
+    "COD_NETSMS": 72613
+  },
+  {
+    "CIDADE": "SABARA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 541,
+    "BASE": "ISP",
+    "COD_NETSMS": 4541
+  },
+  {
+    "CIDADE": "SALTO",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 295,
+    "BASE": "SOC",
+    "COD_NETSMS": 6095
+  },
+  {
+    "CIDADE": "SALVADOR",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 230,
+    "BASE": "SOC",
+    "COD_NETSMS": 3230
+  },
+  {
+    "CIDADE": "SANTA BARBARA D'OESTE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 103,
+    "BASE": "ABC"
+  },
+  {
+    "CIDADE": "SANTA CRUZ DO RIO PARDO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 108,
+    "BASE": "ABC",
+    "COD_NETSMS": 6108
+  },
+  {
+    "CIDADE": "SANTA CRUZ DO SUL",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 694,
+    "BASE": "SUL",
+    "COD_NETSMS": 72842
+  },
+  {
+    "CIDADE": "SANTA GERTRUDES",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 793,
+    "BASE": "ABC",
+    "COD_NETSMS": 87793
+  },
+  {
+    "CIDADE": "SANTA HELENA DE GOIAS",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 580,
+    "BASE": "SUL",
+    "COD_NETSMS": 21580
+  },
+  {
+    "CIDADE": "SANTA ISABEL",
+    "UF": "SP",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 808,
+    "BASE": "ABC",
+    "COD_NETSMS": 87807
+  },
+  {
+    "CIDADE": "SANTA LUZIA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 72,
+    "BASE": "BRA",
+    "COD_NETSMS": 36072
+  },
+  {
+    "CIDADE": "SANTA MARIA",
+    "UF": "RS",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 75,
+    "BASE": "SUL",
+    "COD_NETSMS": 72907
+  },
+  {
+    "CIDADE": "SANTA ROSA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 940,
+    "BASE": "SUL",
+    "COD_NETSMS": 72940
+  },
+  {
+    "CIDADE": "SANTA ROSA DE VITERBO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 904,
+    "BASE": "ISP",
+    "COD_NETSMS": 87904
+  },
+  {
+    "CIDADE": "SANTANA",
+    "UF": "AP",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 616,
+    "BASE": "SUL",
+    "COD_NETSMS": 2615
+  },
+  {
+    "CIDADE": "SANTANA DE PARNAIBA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 621,
+    "BASE": "SOC",
+    "COD_NETSMS": 6121
+  },
+  {
+    "CIDADE": "SANTANA DO LIVRAMENTO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 41,
+    "BASE": "SOC",
+    "COD_NETSMS": 73040
+  },
+  {
+    "CIDADE": "SANTO ANDRE",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 129,
+    "BASE": "ABC",
+    "COD_NETSMS": 6129
+  },
+  {
+    "CIDADE": "SANTO ANGELO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 77,
+    "BASE": "SUL",
+    "COD_NETSMS": 73075
+  },
+  {
+    "CIDADE": "SANTOS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 4,
+    "BASE": "BRA",
+    "COD_NETSMS": 6139
+  },
+  {
+    "CIDADE": "SANTOS ABC",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 897,
+    "BASE": "ABC",
+    "COD_NETSMS": 89897
+  },
+  {
+    "CIDADE": "SAO BENTO DO SUL",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 570,
+    "BASE": "SOC",
+    "COD_NETSMS": 78565
+  },
+  {
+    "CIDADE": "SAO BERNARDO DO CAMPO",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 141,
+    "BASE": "ABC",
+    "COD_NETSMS": 6141
+  },
+  {
+    "CIDADE": "SAO BORJA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 229,
+    "BASE": "SUL",
+    "COD_NETSMS": 73229
+  },
+  {
+    "CIDADE": "SAO CAETANO DO SUL",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 143,
+    "BASE": "ABC",
+    "COD_NETSMS": 6143
+  },
+  {
+    "CIDADE": "SAO CARLOS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 53,
+    "BASE": "ISP",
+    "COD_NETSMS": 6144
+  },
+  {
+    "CIDADE": "SAO FRANCISCO DO SUL",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 620,
+    "BASE": "SUL",
+    "COD_NETSMS": 78620
+  },
+  {
+    "CIDADE": "SAO GABRIEL",
+    "UF": "RS",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 270,
+    "BASE": "SUL",
+    "COD_NETSMS": 73270
+  },
+  {
+    "CIDADE": "SAO GONCALO",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 305,
+    "BASE": "ISP",
+    "COD_NETSMS": 5305
+  },
+  {
+    "CIDADE": "SAO JOAO DA BOA VISTA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 200,
+    "BASE": "ABC",
+    "COD_NETSMS": 88200
+  },
+  {
+    "CIDADE": "SAO JOAO DE MERITI",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 316,
+    "BASE": "SOC",
+    "COD_NETSMS": 5316
+  },
+  {
+    "CIDADE": "SAO JOAO DEL REI",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 273,
+    "BASE": "ISP",
+    "COD_NETSMS": 37273
+  },
+  {
+    "CIDADE": "SAO JOAQUIM DA BARRA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 615,
+    "BASE": "ABC",
+    "COD_NETSMS": 6154
+  },
+  {
+    "CIDADE": "SAO JOSE",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 363,
+    "BASE": "ISP",
+    "COD_NETSMS": 7363
+  },
+  {
+    "CIDADE": "SAO JOSE DO RIO PARDO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 315,
+    "BASE": "SOROCABA",
+    "COD_NETSMS": 88315
+  },
+  {
+    "CIDADE": "SAO JOSE DO RIO PRETO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 6,
+    "BASE": "ISP",
+    "COD_NETSMS": 6158
+  },
+  {
+    "CIDADE": "SAO JOSE DOS CAMPOS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 162,
+    "BASE": "ABC",
+    "COD_NETSMS": 6162
+  },
+  {
+    "CIDADE": "SAO JOSE DOS PINHAIS",
+    "UF": "PR",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 923,
+    "BASE": "ISP",
+    "COD_NETSMS": 6923
+  },
+  {
+    "CIDADE": "SAO LEOPOLDO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 710,
+    "BASE": "ISP",
+    "COD_NETSMS": 89710
+  },
+  {
+    "CIDADE": "SAO LOURENCO DO SUL",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 482,
+    "BASE": "SUL",
+    "COD_NETSMS": 73482
+  },
+  {
+    "CIDADE": "SAO LUIS",
+    "UF": "MA",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 96,
+    "BASE": "SOC",
+    "COD_NETSMS": 696
+  },
+  {
+    "CIDADE": "SAO LUIZ GONZAGA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 504,
+    "BASE": "SUL",
+    "COD_NETSMS": 73504
+  },
+  {
+    "CIDADE": "SAO PAULO",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 3,
+    "BASE": "SPO",
+    "COD_NETSMS": 88412
+  },
+  {
+    "CIDADE": "SAO PEDRO DA ALDEIA",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 320,
+    "BASE": "SUL",
+    "COD_NETSMS": 5320
+  },
+  {
+    "CIDADE": "SAO ROQUE",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 678,
+    "BASE": "SUL",
+    "COD_NETSMS": 6178
+  },
+  {
+    "CIDADE": "SAO SEBASTIAO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 182,
+    "BASE": "ABC",
+    "COD_NETSMS": 6182
+  },
+  {
+    "CIDADE": "SAO VICENTE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 187,
+    "BASE": "ABC",
+    "COD_NETSMS": 6187
+  },
+  {
+    "CIDADE": "SAPIRANGA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 330,
+    "BASE": "ISP",
+    "COD_NETSMS": 8330
+  },
+  {
+    "CIDADE": "SAPUCAIA DO SUL",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 332,
+    "BASE": "SUL",
+    "COD_NETSMS": 8332
+  },
+  {
+    "CIDADE": "SENADOR CANEDO",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 866,
+    "BASE": "BRA",
+    "COD_NETSMS": 21865
+  },
+  {
+    "CIDADE": "SERRA",
+    "UF": "ES",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 566,
+    "BASE": "ISP",
+    "COD_NETSMS": 5066
+  },
+  {
+    "CIDADE": "SERRA NEGRA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 579,
+    "BASE": "ABC",
+    "COD_NETSMS": 88579
+  },
+  {
+    "CIDADE": "SERRANA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 587,
+    "BASE": "SOC",
+    "COD_NETSMS": 88587
+  },
+  {
+    "CIDADE": "SERTAOZINHO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 195,
+    "BASE": "SOC",
+    "COD_NETSMS": 6195
+  },
+  {
+    "CIDADE": "SETE LAGOAS",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 742,
+    "BASE": "ISP",
+    "COD_NETSMS": 4742
+  },
+  {
+    "CIDADE": "SINOP",
+    "UF": "MT",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 837,
+    "BASE": "SUL",
+    "COD_NETSMS": 8837
+  },
+  {
+    "CIDADE": "SOBRAL",
+    "UF": "CE",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 521,
+    "BASE": "SUL",
+    "COD_NETSMS": 1521
+  },
+  {
+    "CIDADE": "SOROCABA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 7,
+    "BASE": "SOC",
+    "COD_NETSMS": 6201
+  },
+  {
+    "CIDADE": "SORRISO",
+    "UF": "MT",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 838,
+    "BASE": "SUL",
+    "COD_NETSMS": 8838
+  },
+  {
+    "CIDADE": "SUMARE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 207,
+    "BASE": "ABC",
+    "COD_NETSMS": 6207
+  },
+  {
+    "CIDADE": "SUZANO",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 209,
+    "BASE": "ISP",
+    "COD_NETSMS": 6209
+  },
+  {
+    "CIDADE": "TABOAO DA SERRA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 216,
+    "BASE": "SOC",
+    "COD_NETSMS": 6216
+  },
+  {
+    "CIDADE": "TAMBAU",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 854,
+    "BASE": "ISP",
+    "COD_NETSMS": 88854
+  },
+  {
+    "CIDADE": "TAQUARA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 242,
+    "BASE": "SOC",
+    "COD_NETSMS": 74241
+  },
+  {
+    "CIDADE": "TATUI",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 233,
+    "BASE": "SUL",
+    "COD_NETSMS": 6233
+  },
+  {
+    "CIDADE": "TAUBATE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 235,
+    "BASE": "ABC",
+    "COD_NETSMS": 6235
+  },
+  {
+    "CIDADE": "TEIXEIRA DE FREITAS",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 807,
+    "BASE": "ISP",
+    "COD_NETSMS": 9806
+  },
+  {
+    "CIDADE": "TEOFILO OTONI",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 763,
+    "BASE": "ISP",
+    "COD_NETSMS": 4763
+  },
+  {
+    "CIDADE": "TERESINA",
+    "UF": "PI",
+    "REGIONAL": "RNE",
+    "COD_OPERADORA": 63,
+    "BASE": "SOC",
+    "COD_NETSMS": 863
+  },
+  {
+    "CIDADE": "TERESOPOLIS",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 338,
+    "BASE": "ISP",
+    "COD_NETSMS": 5338
+  },
+  {
+    "CIDADE": "TEUTONIA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 324,
+    "BASE": "SUL",
+    "COD_NETSMS": 74322
+  },
+  {
+    "CIDADE": "TIETE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 241,
+    "BASE": "SOC",
+    "COD_NETSMS": 6241
+  },
+  {
+    "CIDADE": "TIMBO",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 26,
+    "BASE": "SUL",
+    "COD_NETSMS": 79022
+  },
+  {
+    "CIDADE": "TIMON",
+    "UF": "MA",
+    "REGIONAL": "RNO",
+    "COD_OPERADORA": 165,
+    "BASE": "SOC",
+    "COD_NETSMS": 24163
+  },
+  {
+    "CIDADE": "TIMOTEO",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 477,
+    "BASE": "ABC",
+    "COD_NETSMS": 4770
+  },
+  {
+    "CIDADE": "TORRES",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 398,
+    "BASE": "SUL",
+    "COD_NETSMS": 8398
+  },
+  {
+    "CIDADE": "TRAMANDAI",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 438,
+    "BASE": "SUL",
+    "COD_NETSMS": 74438
+  },
+  {
+    "CIDADE": "TREMEMBE",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 246,
+    "BASE": "SUL",
+    "COD_NETSMS": 6246
+  },
+  {
+    "CIDADE": "TRES CORACOES",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 780,
+    "BASE": "SUL",
+    "COD_NETSMS": 4780
+  },
+  {
+    "CIDADE": "TRES COROAS",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 497,
+    "BASE": "SUL",
+    "COD_NETSMS": 74497
+  },
+  {
+    "CIDADE": "TRES LAGOAS",
+    "UF": "MS",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 378,
+    "BASE": "ABC",
+    "COD_NETSMS": 41378
+  },
+  {
+    "CIDADE": "TRES RIOS",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 771,
+    "BASE": "ISP",
+    "COD_NETSMS": 63770
+  },
+  {
+    "CIDADE": "TRINDADE",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 47,
+    "BASE": "BRA",
+    "COD_NETSMS": 22047
+  },
+  {
+    "CIDADE": "TUBARAO",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 90,
+    "BASE": "SUL",
+    "COD_NETSMS": 79090
+  },
+  {
+    "CIDADE": "UBA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 164,
+    "BASE": "SOC",
+    "COD_NETSMS": 39160
+  },
+  {
+    "CIDADE": "UBATUBA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 261,
+    "BASE": "ABC",
+    "COD_NETSMS": 6261
+  },
+  {
+    "CIDADE": "UBERABA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 803,
+    "BASE": "ISP",
+    "COD_NETSMS": 4803
+  },
+  {
+    "CIDADE": "UBERLANDIA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 806,
+    "BASE": "ISP",
+    "COD_NETSMS": 4806
+  },
+  {
+    "CIDADE": "URUGUAIANA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 684,
+    "BASE": "SUL",
+    "COD_NETSMS": 74748
+  },
+  {
+    "CIDADE": "VACARIA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 764,
+    "BASE": "SOC",
+    "COD_NETSMS": 74764
+  },
+  {
+    "CIDADE": "VALENCA",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 800,
+    "BASE": "ISP",
+    "COD_NETSMS": 63800
+  },
+  {
+    "CIDADE": "VALINHOS",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 272,
+    "BASE": "SOC",
+    "COD_NETSMS": 6272
+  },
+  {
+    "CIDADE": "VALPARAISO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 362,
+    "BASE": "ISP",
+    "COD_NETSMS": 89362
+  },
+  {
+    "CIDADE": "VALPARAISO DE GOIAS",
+    "UF": "GO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 160,
+    "BASE": "BRA",
+    "COD_NETSMS": 22160
+  },
+  {
+    "CIDADE": "VARGEM GRANDE PAULISTA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 276,
+    "BASE": "SOC",
+    "COD_NETSMS": 6276
+  },
+  {
+    "CIDADE": "VARGINHA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 821,
+    "BASE": "SUL",
+    "COD_NETSMS": 4821
+  },
+  {
+    "CIDADE": "VARZEA GRANDE",
+    "UF": "MT",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 858,
+    "BASE": "SOC",
+    "COD_NETSMS": 8858
+  },
+  {
+    "CIDADE": "VARZEA PAULISTA",
+    "UF": "SP",
+    "REGIONAL": "RSC",
+    "COD_OPERADORA": 277,
+    "BASE": "SUL",
+    "COD_NETSMS": 6277
+  },
+  {
+    "CIDADE": "VASSOURAS",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 836,
+    "BASE": "ISP",
+    "COD_NETSMS": 63835
+  },
+  {
+    "CIDADE": "VENANCIO AIRES",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 829,
+    "BASE": "SUL",
+    "COD_NETSMS": 74829
+  },
+  {
+    "CIDADE": "VERA CRUZ",
+    "UF": "RS",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 839,
+    "BASE": "SUL",
+    "COD_NETSMS": 74837
+  },
+  {
+    "CIDADE": "VERANOPOLIS",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 853,
+    "BASE": "SUL",
+    "COD_NETSMS": 74853
+  },
+  {
+    "CIDADE": "VESPASIANO",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 834,
+    "BASE": "ISP",
+    "COD_NETSMS": 4834
+  },
+  {
+    "CIDADE": "VIAMAO",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 871,
+    "BASE": "SUL",
+    "COD_NETSMS": 8471
+  },
+  {
+    "CIDADE": "VICOSA",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 588,
+    "BASE": "ISP",
+    "COD_NETSMS": 39586
+  },
+  {
+    "CIDADE": "VIDEIRA",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 236,
+    "BASE": "SOC",
+    "COD_NETSMS": 79235
+  },
+  {
+    "CIDADE": "VILA VELHA",
+    "UF": "ES",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 507,
+    "BASE": "SOC",
+    "COD_NETSMS": 5078
+  },
+  {
+    "CIDADE": "VILHENA",
+    "UF": "RO",
+    "REGIONAL": "RCO",
+    "COD_OPERADORA": 206,
+    "BASE": "ISP",
+    "COD_NETSMS": 66206
+  },
+  {
+    "CIDADE": "VINHEDO",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 279,
+    "BASE": "SUL",
+    "COD_NETSMS": 6279
+  },
+  {
+    "CIDADE": "VITORIA",
+    "UF": "ES",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 508,
+    "BASE": "SOC",
+    "COD_NETSMS": 5083
+  },
+  {
+    "CIDADE": "VITORIA DA CONQUISTA",
+    "UF": "BA",
+    "REGIONAL": "RBS",
+    "COD_OPERADORA": 336,
+    "BASE": "ISP",
+    "COD_NETSMS": 3363
+  },
+  {
+    "CIDADE": "VOLTA REDONDA",
+    "UF": "RJ",
+    "REGIONAL": "RRE",
+    "COD_OPERADORA": 359,
+    "BASE": "ISP",
+    "COD_NETSMS": 5359
+  },
+  {
+    "CIDADE": "VOTORANTIM",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 282,
+    "BASE": "SUL",
+    "COD_NETSMS": 6282
+  },
+  {
+    "CIDADE": "VOTUPORANGA",
+    "UF": "SP",
+    "REGIONAL": "RSI",
+    "COD_OPERADORA": 559,
+    "BASE": "ISP",
+    "COD_NETSMS": 89559
+  },
+  {
+    "CIDADE": "XANGRI-LA",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 493,
+    "BASE": "SUL",
+    "COD_NETSMS": 8493
+  },
+  {
+    "CIDADE": "XANXERE",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 334,
+    "BASE": "SOC",
+    "COD_NETSMS": 79332
+  },
+  {
+    "CIDADE": "XAXIM",
+    "UF": "SC",
+    "REGIONAL": "RPS",
+    "COD_OPERADORA": 361,
+    "BASE": "SOC",
+    "COD_NETSMS": 79359
+  }
+]
