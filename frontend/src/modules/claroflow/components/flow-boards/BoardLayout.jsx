@@ -102,9 +102,17 @@ export default function GenericBoard({ assignment, project }) {
               variant="default"
               size={isMobile ? "sm" : "default"}
               onClick={handleTakeTask}
-              disabled={takeLoading || availableTasks.length === 0}
+              disabled={
+                takeLoading ||
+                availableTasks.length === 0 ||
+                inProgressTasks?.length > 0
+              }
             >
-              {takeLoading ? "Processando..." : "Tratar →"}
+              {takeLoading
+                ? "Processando..."
+                : inProgressTasks?.length > 0
+                  ? "Finalize a demanda atual"
+                  : "Tratar →"}
             </Button>
           </CardContent>
         </Card>
