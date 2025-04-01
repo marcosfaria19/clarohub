@@ -87,6 +87,16 @@ const AddApp = ({
             />
           </div>
           <div className="flex flex-col gap-2">
+            <Label htmlFor="info">Descrição</Label>
+            <Input
+              id="info"
+              name="info"
+              value={currentItem.info}
+              onChange={handleChange}
+              className="h-9 bg-menu text-foreground/90"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
             <Label htmlFor="imagemUrl">Imagem Card</Label>
             <Select
               name="imagemUrl"

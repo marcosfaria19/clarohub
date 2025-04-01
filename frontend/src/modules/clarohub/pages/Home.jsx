@@ -154,6 +154,7 @@ const Home = () => {
             >
               <AppCard
                 nome={app.nome}
+                info={app.info}
                 imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
                 logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
                 rota={app.rota}
@@ -245,11 +246,12 @@ const Home = () => {
 
       {renderContent()}
 
-      <SurveyDialog
+      {/*  Modal para responder pesquisas, quando tiver alguma sendo aplicada
+     <SurveyDialog
         show={showSurveyDialog}
         onClose={() => setShowSurveyDialog(false)}
         onDismiss={handleSurveyDismiss}
-      />
+      /> */}
 
       <SublinkModal
         show={showModal}
