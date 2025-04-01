@@ -12,9 +12,9 @@ import Clarospark from "modules/clarospark/pages/Home";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import PageTitle from "modules/shared/components/PageTitle";
 import Claroflow from "modules/claroflow/pages/Flow";
-import ProjectAdmin from "modules/claroflow/components/ProjectAdmin";
 import AssignmentBoard from "modules/claroflow/pages/AssignmentBoard";
 import UsersAdmin from "modules/clarohub/pages/Users";
+import ProjectsFlowDashboard from "modules/claroflow/components/project-flow/ProjectFlowDashboard";
 
 const isTokenExpired = (token) => {
   if (!token) return true;
@@ -177,7 +177,7 @@ const Rotas = () => {
           <ProtectedRoute
             token={token}
             allowedRoles={["admin"]}
-            element={<ProjectAdmin />}
+            element={<ProjectsFlowDashboard />}
           />
         }
       />

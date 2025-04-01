@@ -15,7 +15,7 @@ import {
   SelectItem,
 } from "modules/shared/components/ui/select";
 import { Label } from "modules/shared/components/ui/label";
-import useProjects from "../hooks/useProjects";
+import useProjects from "modules/claroflow/hooks/useProjects";
 
 const AddAssignment = ({
   show,
