@@ -70,12 +70,17 @@ module.exports = (projectsCollection) => {
         }
 
         // Atualiza o assignment com o novo nome
+        const updateData = {};
+        if (req.body.name) updateData["assignments.$.name"] = req.body.name;
+        if (req.body.transitions)
+          updateData["assignments.$.transitions"] = req.body.transitions;
+
         const result = await projectsCollection.updateOne(
           {
             _id: new ObjectId(projectId),
             "assignments._id": new ObjectId(assignmentId),
           },
-          { $set: { "assignments.$.name": name } }
+          { $set: updateData }
         );
 
         if (result.modifiedCount === 0) {
