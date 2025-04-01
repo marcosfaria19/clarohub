@@ -14,6 +14,7 @@ function AppAdmin() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentItem, setCurrentItem] = useState({
     nome: "",
+    info: "",
     imagemUrl: "",
     logoCard: "",
     logoList: "",
@@ -45,6 +46,7 @@ function AppAdmin() {
   const handleAddClick = () => {
     setCurrentItem({
       nome: "",
+      info: "",
       imagemUrl: "",
       logoCard: "",
       logoList: "",
