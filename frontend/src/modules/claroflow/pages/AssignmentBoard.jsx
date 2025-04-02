@@ -58,16 +58,16 @@ const AssignmentBoard = ({ project }) => {
     const loadAssignments = async () => {
       if (project?._id && initialDemands.length === 0) {
         const assignments = await fetchAssignments(project._id);
-
         if (assignments && isMounted) {
-          const formattedAssignments = assignments.map((assignment) => ({
-            id: assignment._id,
-            name: assignment.name,
-            assigned: assignment.assignedUsers.map((user) =>
-              typeof user === "object" ? user.$oid : user,
-            ),
-          }));
-
+          const formattedAssignments = assignments
+            .filter((assignment) => assignment.name !== "Finalizado")
+            .map((assignment) => ({
+              id: assignment._id,
+              name: assignment.name,
+              assigned: assignment.assignedUsers.map((user) =>
+                typeof user === "object" ? user.$oid : user,
+              ),
+            }));
           setInitialDemands(formattedAssignments);
           setDemands(formattedAssignments);
         }
@@ -105,9 +105,11 @@ const AssignmentBoard = ({ project }) => {
   const handleDragEnd = useCallback(
     (event) => {
       const { active, over } = event;
-      const isValidDrop = demands.some((demand) => demand.id === over?.id);
-
-      if (isValidDrop && over.id !== active.id) {
+      if (
+        over &&
+        demands.some((demand) => demand.id === over.id) &&
+        over.id !== active.id
+      ) {
         setDemands((prev) =>
           prev.map((demand) =>
             demand.id === over.id
@@ -142,23 +144,16 @@ const AssignmentBoard = ({ project }) => {
 
   const handleApplyChanges = async () => {
     try {
-      // Formata os dados para o backend
       const assignmentsToUpdate = await updateTeamMembers();
-
-      // Envia para o backend
       await assignUsers(project._id, assignmentsToUpdate);
 
-      // Verificar novas alocações e enviar notificações
       demands.forEach((currentDemand) => {
         const initialDemand = initialDemands.find(
           (d) => d.id === currentDemand.id,
         );
-
-        // Usuários recém-alocados
         const newUsers = currentDemand.assigned.filter(
           (userId) => !initialDemand?.assigned.includes(userId),
         );
-
         newUsers.forEach((userId) => {
           createUserNotification(
             userId,
@@ -168,10 +163,9 @@ const AssignmentBoard = ({ project }) => {
         });
       });
 
-      // Feedback visual
       toast.success("Equipe atualizada com sucesso!");
     } catch (error) {
-      toast.error("Falha ao atualizar equipe:", error);
+      toast.error("Falha ao atualizar equipe. Tente novamente mais tarde.");
       console.error("Erro ao aplicar mudanças:", error);
     }
   };
