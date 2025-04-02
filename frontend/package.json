@@ -83,6 +83,7 @@
     ]
   },
   "devDependencies": {
+    "dagre": "^0.8.5",
     "date-fns": "^4.1.0",
     "dotenv-cli": "^7.4.2",
     "prettier": "^3.3.3",

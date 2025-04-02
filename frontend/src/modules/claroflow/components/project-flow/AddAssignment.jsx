@@ -42,9 +42,7 @@ const AddAssignment = ({
               id="name"
               name="name"
               value={currentItem.name || ""}
-              onChange={(e) =>
-                handleChange({ name: "name", value: e.target.value })
-              }
+              onChange={(e) => handleChange({ name: e.target.value })}
               className="h-9 bg-menu text-foreground/90"
             />
           </div>

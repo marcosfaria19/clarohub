@@ -1,13 +1,8 @@
 // components/AssignmentNode.jsx
 import { Handle } from "reactflow";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "modules/shared/components/ui/card";
+import { Card, CardHeader, CardTitle } from "modules/shared/components/ui/card";
 import { Button } from "modules/shared/components/ui/button";
-import { Avatar, AvatarFallback } from "modules/shared/components/ui/avatar";
+
 import { Edit2, Trash2 } from "lucide-react";
 
 const AssignmentNode = ({ data, selected }) => {
@@ -39,28 +34,6 @@ const AssignmentNode = ({ data, selected }) => {
             </div>
           </div>
         </CardHeader>
-
-        <CardContent>
-          <div className="flex -space-x-2">
-            {data.assignedUsers?.slice(0, 5).map((user, index) => (
-              <Avatar
-                key={index}
-                className="h-8 w-8 border-2 border-background"
-              >
-                <AvatarFallback className="text-xs">
-                  {user?.name?.[0]?.toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
-            ))}
-            {data.assignedUsers?.length > 5 && (
-              <Avatar className="h-8 w-8 border-2 border-background">
-                <AvatarFallback className="text-xs">
-                  +{data.assignedUsers.length - 5}
-                </AvatarFallback>
-              </Avatar>
-            )}
-          </div>
-        </CardContent>
       </Card>
 
       <Handle type="source" position="bottom" />

@@ -1,9 +1,7 @@
-// components/ProjectsFlowDashboard.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "modules/shared/components/ui/button";
-import { CirclePlusIcon, SettingsIcon } from "lucide-react";
+import { CirclePlusIcon } from "lucide-react";
 import Container from "modules/shared/components/ui/container";
-
 import { toast } from "sonner";
 import useProjects from "modules/claroflow/hooks/useProjects";
 import ProjectsSidebar from "./FlowSidebar";
@@ -16,44 +14,75 @@ const ProjectsFlowDashboard = () => {
     loading,
     error,
     createAssignment,
-    fetchProjects,
     editAssignment,
     deleteAssignment,
   } = useProjects();
 
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [currentAssignment, setCurrentAssignment] = useState({
     projectId: "",
+    assignmentId: "",
     name: "",
   });
 
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  useEffect(() => {
+    if (projects.length > 0 && selectedProject) {
+      const updatedProject = projects.find(
+        (p) => p._id === selectedProject._id,
+      );
+      setSelectedProject(updatedProject);
+    }
+  }, [projects]);
+
   const handleAddAssignment = (projectId) => {
+    setCurrentAssignment({ projectId, name: "" });
+    setIsEditMode(false);
+    setShowAddModal(true);
+  };
+
+  const handleEditAssignment = (assignment) => {
     setCurrentAssignment({
-      projectId,
-      name: "",
+      projectId: selectedProject._id,
+      assignmentId: assignment._id,
+      name: assignment.name,
     });
+    setIsEditMode(true);
     setShowAddModal(true);
   };
 
   const handleSaveAssignment = async () => {
     try {
-      await createAssignment(
-        currentAssignment.projectId,
-        currentAssignment.name,
+      if (isEditMode) {
+        await editAssignment(
+          currentAssignment.projectId,
+          currentAssignment.assignmentId,
+          { name: currentAssignment.name },
+        );
+      } else {
+        await createAssignment(
+          currentAssignment.projectId,
+          currentAssignment.name,
+        );
+      }
+
+      const updatedProject = projects.find(
+        (p) => p._id === currentAssignment.projectId,
       );
-      toast.success("Demanda criada com sucesso!");
+      setSelectedProject(updatedProject);
+
       setShowAddModal(false);
-      fetchProjects();
+      toast.success("Alterações salvas!");
     } catch (error) {
-      toast.error("Erro ao criar demanda");
+      toast.error("Erro ao salvar demanda");
     }
   };
 
   return (
-    <Container>
+    <Container innerClassName="min-w-full">
       <div className="flex h-[calc(100vh-180px)]">
-        {/* Sidebar com lista de projetos */}
         <ProjectsSidebar
           projects={projects}
           loading={loading}
@@ -62,26 +91,20 @@ const ProjectsFlowDashboard = () => {
           onAddAssignment={handleAddAssignment}
         />
 
-        {/* Área principal com fluxo visual */}
-        <div className="flex flex-1 flex-col rounded-lg border">
-          <div className="flex items-center justify-between border-b p-4">
+        <div className="flex flex-1 flex-col rounded-lg border border-input">
+          <div className="flex items-center justify-between border-b border-input p-4">
             <h2 className="text-xl font-semibold">
               {selectedProject ? selectedProject.name : "Selecione um projeto"}
             </h2>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <SettingsIcon className="mr-2 h-4 w-4" /> Configurações
+            {selectedProject && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => handleAddAssignment(selectedProject._id)}
+              >
+                <CirclePlusIcon className="mr-2 h-4 w-4" /> Nova Demanda
               </Button>
-              {selectedProject && (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => handleAddAssignment(selectedProject._id)}
-                >
-                  <CirclePlusIcon className="mr-2 h-4 w-4" /> Nova Demanda
-                </Button>
-              )}
-            </div>
+            )}
           </div>
 
           {error ? (
@@ -91,7 +114,7 @@ const ProjectsFlowDashboard = () => {
           ) : selectedProject ? (
             <ProjectFlow
               project={selectedProject}
-              onEditAssignment={editAssignment}
+              onEditAssignment={handleEditAssignment}
               onDeleteAssignment={deleteAssignment}
             />
           ) : (
@@ -102,16 +125,18 @@ const ProjectsFlowDashboard = () => {
         </div>
       </div>
 
-      {/* Modal para adicionar nova demanda */}
       <AddAssignment
         show={showAddModal}
+        isEditMode={isEditMode}
         handleClose={() => setShowAddModal(false)}
         handleSave={handleSaveAssignment}
         currentItem={currentAssignment}
-        handleChange={(update) =>
-          setCurrentAssignment((prev) => ({ ...prev, ...update }))
-        }
-        isEditMode={false}
+        handleChange={(update) => {
+          setCurrentAssignment((prev) => ({
+            ...prev,
+            ...update,
+          }));
+        }}
         projects={projects.filter((p) => p._id === currentAssignment.projectId)}
       />
     </Container>
