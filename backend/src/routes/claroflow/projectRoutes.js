@@ -15,6 +15,35 @@ module.exports = (projectsCollection) => {
     }
   });
 
+  // Rota para ver demandas de um projeto específico
+  router.get(
+    "/projects/:projectId/assignments",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        const { projectId } = req.params;
+        const project = await projectsCollection.findOne({
+          _id: new ObjectId(projectId),
+        });
+
+        if (!project) {
+          return res.status(404).json({ error: "Project not found" });
+        }
+        const assignments = project.assignments.map((assignment) => ({
+          id: assignment._id,
+          name: assignment.name,
+          assignedUsers: assignment.assignedUsers || [],
+          transitions: assignment.transitions || [],
+          position: assignment.position || { x: 0, y: 0 },
+        }));
+        res.status(200).json(assignments);
+      } catch (error) {
+        console.error("Erro ao buscar demandas:", error);
+        res.status(500).json({ error: "Error fetching assignments" });
+      }
+    }
+  );
+
   // Rota para adicionar uma nova demanda a um projeto específico
   router.post(
     "/projects/:projectId/assignments",
@@ -58,15 +87,14 @@ module.exports = (projectsCollection) => {
     async (req, res) => {
       try {
         const { projectId, assignmentId } = req.params;
-        const { name } = req.body;
 
         const project = await projectsCollection.findOne({
           _id: new ObjectId(projectId),
           "assignments._id": new ObjectId(assignmentId),
         });
 
-        if (!name) {
-          return res.status(400).json({ error: "Assignment name is required" });
+        if (!assignmentId) {
+          return res.status(400).json({ error: "Assignment is required" });
         }
 
         // Atualiza o assignment com o novo nome
@@ -207,5 +235,45 @@ module.exports = (projectsCollection) => {
     }
   );
 
+  // Layout dos nodes para demandas de projetos
+  router.patch(
+    "/projects/:projectId/layout",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        const { projectId } = req.params;
+        const { nodes } = req.body;
+
+        const bulkOps = nodes.map(({ id, position }) => ({
+          updateOne: {
+            filter: {
+              _id: new ObjectId(projectId),
+              "assignments._id": new ObjectId(id),
+            },
+            update: {
+              $set: {
+                "assignments.$.position": {
+                  x: position.x,
+                  y: position.y,
+                },
+              },
+            },
+          },
+        }));
+
+        const result = await projectsCollection.bulkWrite(bulkOps);
+        console.log(bulkOps);
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ error: "Nenhum layout atualizado" });
+        }
+
+        res.status(200).json({ message: "Layout salvo com sucesso" });
+      } catch (error) {
+        console.error("Erro ao salvar layout:", error);
+        res.status(500).json({ error: "Erro ao salvar layout" });
+      }
+    }
+  );
   return router;
 };

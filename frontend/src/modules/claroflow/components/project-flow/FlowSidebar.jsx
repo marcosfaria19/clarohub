@@ -9,10 +9,9 @@ const ProjectsSidebar = ({
   loading,
   selectedProject,
   onSelectProject,
-  onAddAssignment,
 }) => {
   return (
-    <div className="flex w-64 flex-col border-r p-4">
+    <div className="flex w-64 flex-col p-4">
       <h3 className="mb-4 text-lg font-semibold">Projetos</h3>
 
       <ScrollArea className="flex-1">
@@ -33,7 +32,7 @@ const ProjectsSidebar = ({
                 className={`cursor-pointer rounded-lg p-3 transition-colors ${
                   selectedProject?._id === project._id
                     ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
+                    : "hover:bg-secondary"
                 }`}
                 onClick={() => onSelectProject(project)}
               >
