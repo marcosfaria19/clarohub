@@ -174,6 +174,21 @@ const AssignmentBoard = ({ project }) => {
     resetToInitialState();
   };
 
+  const handleUpdateRegional = (memberId, demandId, regional) => {
+    setDemands((prev) =>
+      prev.map((demand) =>
+        demand.id === demandId
+          ? {
+              ...demand,
+              assigned: demand.assigned.map((m) =>
+                m === memberId ? { userId: m, regional } : m,
+              ),
+            }
+          : demand,
+      ),
+    );
+  };
+
   return (
     <>
       <DndContext
@@ -201,6 +216,7 @@ const AssignmentBoard = ({ project }) => {
             onUnassign={handleUnassign}
             isMobile={isMobile}
             className="h-full"
+            onUpdateRegional={handleUpdateRegional}
           />
 
           <DragOverlay

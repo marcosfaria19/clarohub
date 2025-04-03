@@ -6,6 +6,7 @@ const DemandsBoard = ({
   onUnassign,
   isMobile,
   className,
+  onUpdateRegional,
 }) => {
   return (
     <div className={`flex-1 bg-background ${className}`}>
@@ -14,6 +15,7 @@ const DemandsBoard = ({
       >
         {demands.map((demand) => (
           <DemandColumn
+            onUpdateRegional={onUpdateRegional}
             key={demand.id}
             demand={demand}
             members={members}
