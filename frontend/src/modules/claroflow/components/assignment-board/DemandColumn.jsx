@@ -1,5 +1,5 @@
 import { useDroppable } from "@dnd-kit/core";
-import { Users, X } from "lucide-react";
+import { ChevronDown, Users, X } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -8,9 +8,28 @@ import {
 import { Button } from "modules/shared/components/ui/button";
 import { Card } from "modules/shared/components/ui/card";
 import { ScrollArea } from "modules/shared/components/ui/scroll-area";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "modules/shared/components/ui/dropdown-menu";
 
-const DemandColumn = ({ demand, members, onUnassign }) => {
+const DemandColumn = ({ demand, members, onUnassign, onUpdateRegional }) => {
   const { setNodeRef, isOver } = useDroppable({ id: demand.id });
+
+  const regionais = [
+    "RSI",
+    "RBS",
+    "RRS",
+    "RPS",
+    "RSC",
+    "RNO",
+    "RCO",
+    "RNE",
+    "RRE",
+    "RMG",
+  ];
 
   return (
     <Card className="flex h-full min-w-72 flex-1 flex-col border border-border bg-card">
@@ -33,22 +52,55 @@ const DemandColumn = ({ demand, members, onUnassign }) => {
         >
           {demand.assigned.map((memberId) => {
             const member = members.find((m) => m.id === memberId);
+            const regional = member?.regional; // Assume que a regional está no membro
+
             return (
               <Card key={memberId} className="bg-background p-2 shadow-sm">
                 <div className="flex items-center gap-2">
+                  {/* Avatar - Mantido exatamente como estava */}
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={member?.avatar} alt={member?.name} />
                     <AvatarFallback className="bg-secondary text-accent">
                       {member?.name[0]}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium text-card-foreground">
+
+                  {/* Nome - Mantido exatamente como estava */}
+                  <span className="flex-1 text-sm font-medium text-card-foreground">
                     {member?.name}
                   </span>
+
+                  {/* Nova implementação da Regional (sem quebrar o layout existente) */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-xs text-muted-foreground hover:bg-accent/10"
+                      >
+                        {regional || "Regional"}
+                        <ChevronDown className="ml-1 h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-40">
+                      {regionais.map((reg) => (
+                        <DropdownMenuItem
+                          key={reg}
+                          onSelect={() =>
+                            onUpdateRegional(memberId, demand.id, reg)
+                          }
+                        >
+                          {reg}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {/* Botão de remover - Mantido exatamente como estava */}
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="ml-auto h-6 w-6 text-muted-foreground hover:text-destructive"
+                    className="h-6 w-6 text-muted-foreground hover:text-destructive"
                     onClick={() => onUnassign(member.id, demand.id)}
                   >
                     <X className="h-3.5 w-3.5" />

@@ -121,24 +121,43 @@ const useProjects = () => {
     }
   };
 
+  // useProjects.js - Função assignUsers atualizada
   const assignUsers = async (projectId, assignments) => {
     try {
       setLoading(true);
+
+      // Formata os dados para o backend
+      const formattedAssignments = assignments.map((assignment) => ({
+        id: assignment.id,
+        assignedUsers: assignment.assigned.map((user) => ({
+          userId: user.userId,
+          regional: user.regional || null, // Permite regional opcional
+        })),
+      }));
+
       const response = await axiosInstance.patch(
         `/flow/projects/${projectId}/assign-users`,
-        { assignments },
+        { assignments: formattedAssignments },
       );
 
-      // Atualiza o estado local
+      // Atualiza o estado local para refletir as mudanças
       setProjects((prev) =>
         prev.map((p) =>
           p._id === projectId
             ? {
                 ...p,
                 assignments: p.assignments.map((a) => {
-                  const updated = assignments.find((u) => u.id === a._id);
+                  const updated = formattedAssignments.find(
+                    (u) => u.id === a._id,
+                  );
                   return updated
-                    ? { ...a, assignedUsers: updated.assignedUsers }
+                    ? {
+                        ...a,
+                        assignedUsers: updated.assignedUsers.map((u) => ({
+                          $oid: u.userId,
+                          regional: u.regional,
+                        })),
+                      }
                     : a;
                 }),
               }
@@ -155,7 +174,6 @@ const useProjects = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchProjects();
   }, [fetchProjects]);

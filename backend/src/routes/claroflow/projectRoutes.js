@@ -176,7 +176,10 @@ module.exports = (projectsCollection) => {
             update: {
               $set: {
                 "assignments.$.assignedUsers": assignment.assignedUsers.map(
-                  (id) => new ObjectId(id)
+                  (user) => ({
+                    userId: new ObjectId(user.userId),
+                    regional: user.regional || null,
+                  })
                 ),
               },
             },
