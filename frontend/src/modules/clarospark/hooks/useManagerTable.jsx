@@ -28,7 +28,7 @@ const useManagerTable = () => {
       // Cria a notificação para o usuário
       await createUserNotification(
         selectedItem.creator._id,
-        "idea_status",
+        "spark",
         `Uma ideia sua foi atualizada para "${newStatus}"`,
       );
 

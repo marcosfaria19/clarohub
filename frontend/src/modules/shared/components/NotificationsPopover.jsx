@@ -62,36 +62,41 @@ export default function NotificationsPopover() {
             </p>
           ) : (
             <>
-              {notifications.map((notification) => (
-                <div
-                  key={notification._id}
-                  className={`mx-2 my-0.5 flex items-start gap-3 rounded-lg border-b border-secondary p-2 ${
-                    notification.read ? "bg-popover" : "bg-accent"
-                  }`}
-                >
-                  <div
-                    className={`mt-2 h-2 w-2 rounded-full ${
-                      notification.read ? "bg-muted" : "bg-blue-500"
-                    }`}
-                  />
-                  <div className="flex-grow">
-                    <p className="text-sm">{notification.message}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {new Date(notification.createdAt).toLocaleString()}
-                    </p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      handleClearReadNotifications(notification._id)
-                    } // Passando o ID aqui
-                    aria-label="Clear read notifications"
+              {notifications.map((notification) => {
+                const isClickable =
+                  notification.type && notification.type !== "global";
+                const Wrapper = isClickable ? "a" : "div";
+
+                return (
+                  <Wrapper
+                    key={notification._id}
+                    href={isClickable ? `/${notification.type}` : undefined}
+                    className={`mx-2 my-0.5 flex items-start gap-3 rounded-lg border-b border-secondary p-2 ${notification.read ? "bg-popover" : "bg-accent"} ${isClickable ? "cursor-pointer" : "cursor-default"} `}
                   >
-                    <Trash2 className="h-5 w-5" />
-                  </Button>
-                </div>
-              ))}
+                    <div
+                      className={`mt-2 h-2 w-2 rounded-full ${
+                        notification.read ? "bg-muted" : "bg-blue-500"
+                      }`}
+                    />
+                    <div className="flex-grow">
+                      <p className="text-sm">{notification.message}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {new Date(notification.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        handleClearReadNotifications(notification._id)
+                      }
+                      aria-label="Clear read notifications"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </Button>
+                  </Wrapper>
+                );
+              })}
             </>
           )}
         </div>
