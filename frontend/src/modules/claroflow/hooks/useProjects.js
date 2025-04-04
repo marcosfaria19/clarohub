@@ -121,7 +121,6 @@ const useProjects = () => {
     }
   };
 
-  // useProjects.js - Função assignUsers atualizada
   const assignUsers = async (projectId, assignments) => {
     try {
       setLoading(true);
