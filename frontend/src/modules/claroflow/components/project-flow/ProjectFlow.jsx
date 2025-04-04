@@ -7,46 +7,19 @@ import ReactFlow, {
   Panel,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import dagre from "dagre";
-import AssignmentNode from "./AssignmentNode";
+
 import { Button } from "modules/shared/components/ui/button";
 import { toast } from "sonner";
 import DeleteConfirmationModal from "modules/shared/components/DeleteConfirmationModal";
 import useProjects from "modules/claroflow/hooks/useProjects";
 import ChangeNotification from "../assignment-board/ChangesNotification";
+import { getLayoutedElements } from "modules/claroflow/utils/graphLayout";
+import AssignmentNode from "./AssignmentNode";
+import CustomEdge from "./CustomEdge";
 
 const nodeTypes = { assignment: AssignmentNode };
-const nodeWidth = 256;
-const nodeHeight = 128;
-
-const getLayoutedElements = (nodes, edges, direction = "TB") => {
-  const dagreGraph = new dagre.graphlib.Graph();
-  dagreGraph.setDefaultEdgeLabel(() => ({}));
-  dagreGraph.setGraph({ rankdir: direction });
-
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-  });
-
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
-
-  dagre.layout(dagreGraph);
-
-  return {
-    nodes: nodes.map((node) => {
-      const dagreNode = dagreGraph.node(node.id);
-      return {
-        ...node,
-        position: {
-          x: dagreNode.x - nodeWidth / 2,
-          y: dagreNode.y - nodeHeight / 2,
-        },
-      };
-    }),
-    edges,
-  };
+const edgeTypes = {
+  custom: CustomEdge,
 };
 
 const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
@@ -79,45 +52,16 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
             source: assignment._id,
             target: targetId,
             animated: true,
+            type: "custom",
           })) || [],
       );
 
-      // Verifica mudanças nos nós
-      const nodesChanged =
-        newNodes.length !== nodes.length ||
-        newNodes.some((newNode, index) => {
-          const oldNode = nodes[index];
-          return (
-            newNode.id !== oldNode.id ||
-            newNode.position.x !== oldNode.position.x ||
-            newNode.position.y !== oldNode.position.y
-          );
-        });
-
-      // Verifica mudanças nas edges
-      const edgesChanged =
-        newEdges.length !== edges.length ||
-        newEdges.some((newEdge, index) => {
-          const oldEdge = edges[index];
-          return (
-            newEdge.source !== oldEdge.source ||
-            newEdge.target !== oldEdge.target
-          );
-        });
-
-      if (nodesChanged || edgesChanged) {
-        setNodes(newNodes);
-        setEdges(newEdges);
-        setInitialNodes(newNodes);
-        setInitialEdges(newEdges);
-        setHasChanges(false);
-      }
+      setNodes(newNodes);
+      setEdges(newEdges);
+      setInitialNodes(newNodes);
+      setInitialEdges(newEdges);
     }
-  }, [project]);
-
-  useEffect(() => {
-    setHasChanges(false);
-  }, [project?._id]);
+  }, [project, setEdges, setNodes, onEditAssignment]);
 
   const handleDeleteAssignment = (assignmentId) => {
     setCurrentAssignmentId(assignmentId);
@@ -151,7 +95,7 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
         toast.error("Erro ao conectar demandas");
       }
     },
-    [edges, project._id, updateTransitions],
+    [edges, project._id, updateTransitions, setEdges],
   );
 
   const onEdgesDelete = async (deletedEdges) => {
@@ -182,23 +126,23 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
       setInitialNodes(nodes);
       setInitialEdges(edges);
       setHasChanges(false);
-      /* toast.success("Layout salvo!"); */
     } catch (error) {
       toast.error("Erro ao salvar layout");
     }
   };
 
-  const handleDiscardChanges = () => {
-    setNodes(initialNodes);
-    setEdges(initialEdges);
+  const handleDiscardChanges = useCallback(() => {
+    setNodes([...initialNodes]);
+    setEdges([...initialEdges]);
     setHasChanges(false);
-  };
+  }, [initialNodes, initialEdges, setEdges, setNodes]);
 
   return (
     <div className="flex-1">
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        edgeTypes={edgeTypes}
         onNodesChange={(changes) => {
           onNodesChange(changes);
           setHasChanges(true);

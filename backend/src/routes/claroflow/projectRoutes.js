@@ -265,7 +265,6 @@ module.exports = (projectsCollection) => {
         }));
 
         const result = await projectsCollection.bulkWrite(bulkOps);
-        console.log(bulkOps);
 
         if (result.modifiedCount === 0) {
           return res.status(404).json({ error: "Nenhum layout atualizado" });
