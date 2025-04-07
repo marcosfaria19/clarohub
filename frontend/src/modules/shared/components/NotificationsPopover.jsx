@@ -8,11 +8,13 @@ import {
 } from "modules/shared/components/ui/popover";
 import useNotifications from "../hooks/useNotifications";
 import { getRandomNoNotificationMessage } from "../utils/noNotificationMessages";
+import { useNavigate } from "react-router-dom";
 
 export default function NotificationsPopover() {
   const { notifications, clearReadNotifications, markAllAsRead } =
     useNotifications();
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -65,13 +67,18 @@ export default function NotificationsPopover() {
               {notifications.map((notification) => {
                 const isClickable =
                   notification.type && notification.type !== "global";
-                const Wrapper = isClickable ? "a" : "div";
 
                 return (
-                  <Wrapper
+                  <div
                     key={notification._id}
-                    href={isClickable ? `/${notification.type}` : undefined}
-                    className={`mx-2 my-0.5 flex items-start gap-3 rounded-lg border-b border-secondary p-2 ${notification.read ? "bg-popover" : "bg-accent"} ${isClickable ? "cursor-pointer" : "cursor-default"} `}
+                    onClick={() => {
+                      if (isClickable) {
+                        navigate(`/${notification.type}`);
+                      }
+                    }}
+                    className={`mx-2 my-0.5 flex items-start gap-3 rounded-lg border-b border-secondary p-2 ${
+                      notification.read ? "bg-popover" : "bg-accent"
+                    } ${isClickable ? "cursor-pointer" : "cursor-default"}`}
                   >
                     <div
                       className={`mt-2 h-2 w-2 rounded-full ${
@@ -87,14 +94,15 @@ export default function NotificationsPopover() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() =>
-                        handleClearReadNotifications(notification._id)
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation(); // Impede a navegação do div pai
+                        handleClearReadNotifications(notification._id);
+                      }}
                       aria-label="Clear read notifications"
                     >
                       <Trash2 className="h-5 w-5" />
                     </Button>
-                  </Wrapper>
+                  </div>
                 );
               })}
             </>
