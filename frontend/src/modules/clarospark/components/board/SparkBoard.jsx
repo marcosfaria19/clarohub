@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "modules/shared/components/ui/carousel";
 
-export default function SparkBoard({ subjects, cards, currentFilter }) {
+export default function SparkBoard({ subjects, cards, currentFilter, userId }) {
   const [activeSubject, setActiveSubject] = useState(subjects[0]);
   const isMobile = useMediaQuery("(max-width: 640px)");
   const isTablet = useMediaQuery("(max-width: 1024px)");
@@ -27,6 +27,8 @@ export default function SparkBoard({ subjects, cards, currentFilter }) {
           return card.status === "Aprovada";
         case "arquivados":
           return card.status === "Arquivada";
+        case "minhasIdeias":
+          return card.creator._id === userId;
         default:
           return true;
       }
@@ -40,7 +42,7 @@ export default function SparkBoard({ subjects, cards, currentFilter }) {
     }
 
     return filteredCards;
-  }, [cards, currentFilter]);
+  }, [cards, currentFilter, userId]);
 
   const renderSubjectTabs = () => (
     <div className="scrollbar-spark mb-4 flex overflow-x-auto rounded-lg">

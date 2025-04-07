@@ -152,6 +152,13 @@ export default function SparkMenu({
                       <Check className="h-4 w-4 text-primary-foreground" />
                     )}
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => handleFilterChange("minhasIdeias")}
+                    className={`flex justify-between ${currentFilter === "minhasIdeias" ? "bg-accent text-accent-foreground" : ""}`}
+                  >
+                    Minhas ideias
+                  </DropdownMenuItem>
                 </>
               )}
               {canToggleView && (

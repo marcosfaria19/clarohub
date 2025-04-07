@@ -52,6 +52,7 @@ export default function Clarospark({ userName, userId }) {
             subjects={subjects}
             cards={sortedCards}
             currentFilter={currentFilter}
+            userId={userId}
           />
 
           <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
