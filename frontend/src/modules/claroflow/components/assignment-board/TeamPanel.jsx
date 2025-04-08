@@ -38,7 +38,9 @@ const TeamPanel = ({
                 assignedCount={demands.reduce(
                   (count, demand) =>
                     count +
-                    demand.assigned.filter((id) => id === member.id).length,
+                    demand.assigned.filter(
+                      (assignment) => assignment.userId === member.id,
+                    ).length,
                   0,
                 )}
               />

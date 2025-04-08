@@ -10,7 +10,12 @@ const { useState } = require("react");
  * - initialSecondary: Valor inicial para a regional secundária.
  * - onSave: Função chamada ao confirmar a seleção, passando as regionals selecionadas.
  */
-const RegionalSelector = ({ initialPrimary, initialSecondary, onSave }) => {
+const RegionalSelector = ({
+  initialPrimary,
+  initialSecondary,
+  onSave,
+  onClose,
+}) => {
   const regions = [
     "RSI",
     "RBS",
@@ -30,6 +35,11 @@ const RegionalSelector = ({ initialPrimary, initialSecondary, onSave }) => {
   // Função para confirmar a seleção e enviar os dados para o componente pai
   const handleSave = () => {
     onSave({ primary, secondary });
+    onClose();
+  };
+
+  const handleBack = () => {
+    setStep(1);
   };
 
   return (
@@ -75,7 +85,7 @@ const RegionalSelector = ({ initialPrimary, initialSecondary, onSave }) => {
               ))}
           </div>
           <div className="flex justify-between">
-            <Button variant="ghost" size="sm" onClick={() => setStep(1)}>
+            <Button variant="secondary" size="sm" onClick={handleBack}>
               Voltar
             </Button>
             <Button size="sm" onClick={handleSave}>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import RegionalSelector from "./RegionalSelector";
 
 const { Settings, X } = require("lucide-react");
@@ -37,6 +38,7 @@ const AssignedUserCard = ({
   const handleRegionalChange = (regionals) => {
     onUpdateRegional(demandId, member.id, regionals);
   };
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   return (
     <Card className="bg-background p-2 shadow-sm">
@@ -68,7 +70,7 @@ const AssignedUserCard = ({
         </div>
         <div className="ml-auto flex items-center justify-end gap-2">
           {/* Popover para alterar as regionals */}
-          <Popover>
+          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger>
               <Settings className="h-3.5 w-3.5" />
             </PopoverTrigger>
@@ -77,6 +79,7 @@ const AssignedUserCard = ({
                 initialPrimary={assignment.regionals?.primary}
                 initialSecondary={assignment.regionals?.secondary}
                 onSave={handleRegionalChange}
+                onClose={() => setIsPopoverOpen(false)}
               />
             </PopoverContent>
           </Popover>

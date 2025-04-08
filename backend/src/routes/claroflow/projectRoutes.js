@@ -157,44 +157,82 @@ module.exports = (projectsCollection) => {
         const { projectId } = req.params;
         const { assignments } = req.body;
 
+        console.log(
+          "📥 assignments recebidos:",
+          JSON.stringify(assignments, null, 2)
+        );
+
+        if (!assignments || !Array.isArray(assignments)) {
+          console.warn("⚠️ assignments está undefined ou não é um array");
+          return res.status(400).json({ error: "Invalid assignments format" });
+        }
+
         // Busca o projeto existente
         const project = await projectsCollection.findOne({
           _id: new ObjectId(projectId),
         });
 
         if (!project) {
+          console.warn("❌ Projeto não encontrado:", projectId);
           return res.status(404).json({ error: "Project not found" });
         }
 
-        // Atualiza todas as assignments
-        const bulkOps = assignments.map((assignment) => ({
-          updateOne: {
-            filter: {
-              _id: new ObjectId(projectId),
-              "assignments._id": new ObjectId(assignment.id),
-            },
-            update: {
-              $set: {
-                "assignments.$.assignedUsers": assignment.assignedUsers.map(
-                  (user) => ({
-                    userId: new ObjectId(user.userId),
-                    regional: user.regional || null,
-                  })
-                ),
+        // Criação das operações em lote
+        const bulkOps = assignments
+          .map((assignment, index) => {
+            if (!assignment?.id || !assignment?.assignedUsers) {
+              console.warn(`⚠️ assignment[${index}] malformado:`, assignment);
+              return null; // ou poderia lançar um erro se quiser forçar
+            }
+
+            const assignedUsersFormatted = assignment.assignedUsers.map(
+              (user, i) => {
+                if (!user?.userId) {
+                  console.warn(
+                    `⚠️ assignedUsers[${i}] malformado em assignment[${index}]`,
+                    user
+                  );
+                }
+                return {
+                  userId: new ObjectId(user.userId),
+                  regionals: user.regionals || null,
+                };
+              }
+            );
+
+            return {
+              updateOne: {
+                filter: {
+                  _id: new ObjectId(projectId),
+                  "assignments._id": new ObjectId(assignment.id),
+                },
+                update: {
+                  $set: {
+                    "assignments.$.assignedUsers": assignedUsersFormatted,
+                  },
+                },
               },
-            },
-          },
-        }));
+            };
+          })
+          .filter(Boolean); // remove possíveis nulls por assignments malformados
+
+        if (bulkOps.length === 0) {
+          console.warn("⚠️ Nenhuma operação válida para executar.");
+          return res
+            .status(400)
+            .json({ error: "No valid assignments to update" });
+        }
 
         const result = await projectsCollection.bulkWrite(bulkOps);
 
         if (result.modifiedCount === 0) {
+          console.warn("⚠️ Nenhuma assignment foi atualizada");
           return res.status(404).json({ error: "No assignments updated" });
         }
 
         res.status(200).json({ message: "Assignments updated successfully" });
       } catch (error) {
-        console.error("Erro ao atualizar assignments:", error);
+        console.error("💥 Erro ao atualizar assignments:", error);
         res.status(500).json({ error: "Error updating assignments" });
       }
     }
