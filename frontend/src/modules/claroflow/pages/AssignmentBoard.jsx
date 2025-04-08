@@ -1,3 +1,5 @@
+// AssignmentBoard.jsx
+// Componente principal que gerencia o board de assignments com funcionalidades de drag and drop.
 import { useEffect, useCallback } from "react";
 import {
   DndContext,
@@ -22,6 +24,7 @@ import { toast } from "sonner";
 import useNotifications from "modules/shared/hooks/useNotifications";
 
 const AssignmentBoard = ({ project }) => {
+  // Obtém funções e estados dos hooks
   const { getUsersByProjectId } = useUsers();
   const { fetchAssignments, assignUsers } = useProjects();
   const {
@@ -41,6 +44,7 @@ const AssignmentBoard = ({ project }) => {
     updateTeamMembers,
   } = useAssignmentBoard({ project, getUsersByProjectId });
 
+  // Modificador customizado para ajuste do offset do drag
   const customOffsetModifier = ({ transform }) => {
     if (!transform) return transform;
     return {
@@ -52,6 +56,22 @@ const AssignmentBoard = ({ project }) => {
 
   const { createUserNotification } = useNotifications();
 
+  // Função auxiliar para transformar as assignments vindas do backend
+  const formatAssignments = (assignments) =>
+    assignments
+      .filter((assignment) => assignment.name !== "Finalizado")
+      .map((assignment) => ({
+        id: assignment._id,
+        name: assignment.name,
+        // Garante que cada usuário atribuído contenha userId e regionals
+        assigned: assignment.assignedUsers.map((user) => ({
+          userId:
+            typeof user.userId === "object" ? user.userId.$oid : user.userId,
+          regionals: user.regionals,
+        })),
+      }));
+
+  // Efeito para carregar as assignments do projeto quando o componente monta
   useEffect(() => {
     let isMounted = true;
 
@@ -59,15 +79,7 @@ const AssignmentBoard = ({ project }) => {
       if (project?._id && initialDemands.length === 0) {
         const assignments = await fetchAssignments(project._id);
         if (assignments && isMounted) {
-          const formattedAssignments = assignments
-            .filter((assignment) => assignment.name !== "Finalizado")
-            .map((assignment) => ({
-              id: assignment._id,
-              name: assignment.name,
-              assigned: assignment.assignedUsers.map((user) =>
-                typeof user === "object" ? user.$oid : user,
-              ),
-            }));
+          const formattedAssignments = formatAssignments(assignments);
           setInitialDemands(formattedAssignments);
           setDemands(formattedAssignments);
         }
@@ -87,6 +99,7 @@ const AssignmentBoard = ({ project }) => {
     fetchAssignments,
   ]);
 
+  // Configuração dos sensores para drag and drop
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, {
@@ -95,6 +108,7 @@ const AssignmentBoard = ({ project }) => {
     useSensor(KeyboardSensor),
   );
 
+  // Handler chamado quando inicia o drag
   const handleDragStart = useCallback(
     (event) => {
       setActiveId(event.active.id);
@@ -102,6 +116,7 @@ const AssignmentBoard = ({ project }) => {
     [setActiveId],
   );
 
+  // Handler chamado ao finalizar o drag, atualiza as assignments adicionando o membro à demanda
   const handleDragEnd = useCallback(
     (event) => {
       const { active, over } = event;
@@ -115,7 +130,13 @@ const AssignmentBoard = ({ project }) => {
             demand.id === over.id
               ? {
                   ...demand,
-                  assigned: [...new Set([...demand.assigned, active.id])],
+                  assigned: [
+                    ...demand.assigned,
+                    {
+                      userId: active.id,
+                      regionals: [],
+                    },
+                  ],
                 }
               : demand,
           ),
@@ -126,6 +147,7 @@ const AssignmentBoard = ({ project }) => {
     [demands, setDemands, setActiveId],
   );
 
+  // Remove um membro da demand (desatribuição)
   const handleUnassign = useCallback(
     (memberId, demandId) => {
       setDemands((prev) =>
@@ -133,7 +155,7 @@ const AssignmentBoard = ({ project }) => {
           demand.id === demandId
             ? {
                 ...demand,
-                assigned: demand.assigned.filter((id) => id !== memberId),
+                assigned: demand.assigned.filter((a) => a.userId !== memberId),
               }
             : demand,
         ),
@@ -142,21 +164,47 @@ const AssignmentBoard = ({ project }) => {
     [setDemands],
   );
 
+  // Atualiza os dados de regionals para uma determinada demand e membro
+  const handleUpdateRegional = useCallback(
+    (demandId, memberId, regionals) => {
+      setDemands((prev) =>
+        prev.map((demand) =>
+          demand.id === demandId
+            ? {
+                ...demand,
+                // Aqui assume-se que a estrutura de regionals é um objeto indexado pelo memberId
+                regionals: {
+                  ...demand.regionals,
+                  [memberId]: regionals,
+                },
+              }
+            : demand,
+        ),
+      );
+    },
+    [setDemands],
+  );
+
+  // Aplica as mudanças chamando a função de atualização e disparando notificações para novos membros
   const handleApplyChanges = async () => {
     try {
       const assignmentsToUpdate = await updateTeamMembers();
       await assignUsers(project._id, assignmentsToUpdate);
 
+      // Verifica os membros novos para disparar notificações
       demands.forEach((currentDemand) => {
         const initialDemand = initialDemands.find(
           (d) => d.id === currentDemand.id,
         );
-        const newUsers = currentDemand.assigned.filter(
-          (userId) => !initialDemand?.assigned.includes(userId),
-        );
-        newUsers.forEach((userId) => {
+        const newUsers = currentDemand.assigned.filter((assignment) => {
+          // Aqui a comparação pode ser aprimorada: se necessário, comparar apenas os IDs dos usuários
+          return !initialDemand?.assigned.some(
+            (initAssign) => initAssign.userId === assignment.userId,
+          );
+        });
+        newUsers.forEach((assignment) => {
           createUserNotification(
-            userId,
+            assignment.userId,
             "flow",
             `Você foi alocado à demanda de ${currentDemand.name}`,
           );
@@ -170,23 +218,9 @@ const AssignmentBoard = ({ project }) => {
     }
   };
 
+  // Descarta as mudanças, resetando o estado para o inicial
   const handleDiscardChanges = () => {
     resetToInitialState();
-  };
-
-  const handleUpdateRegional = (memberId, demandId, regional) => {
-    setDemands((prev) =>
-      prev.map((demand) =>
-        demand.id === demandId
-          ? {
-              ...demand,
-              assigned: demand.assigned.map((m) =>
-                m === memberId ? { userId: m, regional } : m,
-              ),
-            }
-          : demand,
-      ),
-    );
   };
 
   return (
@@ -215,8 +249,8 @@ const AssignmentBoard = ({ project }) => {
             members={members}
             onUnassign={handleUnassign}
             isMobile={isMobile}
-            className="h-full"
             onUpdateRegional={handleUpdateRegional}
+            className="h-full"
           />
 
           <DragOverlay

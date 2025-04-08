@@ -1,11 +1,15 @@
+// useProjects.js
+// Hook responsável por gerenciar os projetos e as operações relacionadas às assignments.
 import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "services/axios";
 
 const useProjects = () => {
+  // Estados para armazenar projetos, loading e erros
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Função para buscar todos os projetos
   const fetchProjects = useCallback(async () => {
     try {
       setLoading(true);
@@ -13,11 +17,13 @@ const useProjects = () => {
       setProjects(response.data);
     } catch (err) {
       setError(err);
+      console.error("Erro ao buscar projetos:", err);
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // Função para buscar as assignments de um projeto específico
   const fetchAssignments = useCallback(
     async (projectId) => {
       try {
@@ -28,9 +34,9 @@ const useProjects = () => {
 
         setLoading(true);
 
-        // Primeiro verifica se os projetos já foram carregados
+        // Garante que os projetos estejam carregados antes de buscar a assignment
         if (projects.length === 0) {
-          await fetchProjects(); // Força o carregamento se necessário
+          await fetchProjects();
         }
 
         const project = projects.find((p) => p._id === projectId);
@@ -51,6 +57,7 @@ const useProjects = () => {
     [projects, fetchProjects],
   );
 
+  // Função para criar uma nova assignment no projeto
   const createAssignment = async (projectId, name) => {
     try {
       setLoading(true);
@@ -60,12 +67,14 @@ const useProjects = () => {
       await fetchProjects();
     } catch (err) {
       setError(err);
+      console.error("Erro ao criar assignment:", err);
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  // Função para editar uma assignment existente
   const editAssignment = async (projectId, assignmentId, updatedData) => {
     try {
       setLoading(true);
@@ -76,12 +85,14 @@ const useProjects = () => {
       await fetchProjects();
     } catch (err) {
       setError(err);
+      console.error("Erro ao editar assignment:", err);
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  // Função para deletar uma assignment do projeto
   const deleteAssignment = async (projectId, assignmentId) => {
     try {
       setLoading(true);
@@ -91,12 +102,14 @@ const useProjects = () => {
       await fetchProjects();
     } catch (err) {
       setError(err);
+      console.error("Erro ao deletar assignment:", err);
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  // Atualiza as transições de uma assignment
   const updateTransitions = async (projectId, assignmentId, transitions) => {
     try {
       setLoading(true);
@@ -106,11 +119,13 @@ const useProjects = () => {
       );
     } catch (err) {
       setError(err);
+      console.error("Erro ao atualizar transições:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  // Salva o layout (posição dos nodes) do board
   const saveLayout = async (projectId, nodes) => {
     try {
       await axiosInstance.patch(`/flow/projects/${projectId}/layout`, {
@@ -118,19 +133,21 @@ const useProjects = () => {
       });
     } catch (err) {
       setError(err);
+      console.error("Erro ao salvar layout:", err);
     }
   };
 
+  // Atualiza as assignments com os usuários atribuídos
   const assignUsers = async (projectId, assignments) => {
     try {
       setLoading(true);
 
-      // Formata os dados para o backend
+      // Formata as assignments para enviar apenas id e os dados dos usuários (userId e regionals)
       const formattedAssignments = assignments.map((assignment) => ({
         id: assignment.id,
         assignedUsers: assignment.assigned.map((user) => ({
-          userId: user.userId,
-          regional: user.regional || null, // Permite regional opcional
+          userId: user.id,
+          regionals: user.regionals,
         })),
       }));
 
@@ -139,7 +156,7 @@ const useProjects = () => {
         { assignments: formattedAssignments },
       );
 
-      // Atualiza o estado local para refletir as mudanças
+      // Atualiza o estado local dos projetos com as alterações
       setProjects((prev) =>
         prev.map((p) =>
           p._id === projectId
@@ -150,13 +167,7 @@ const useProjects = () => {
                     (u) => u.id === a._id,
                   );
                   return updated
-                    ? {
-                        ...a,
-                        assignedUsers: updated.assignedUsers.map((u) => ({
-                          $oid: u.userId,
-                          regional: u.regional,
-                        })),
-                      }
+                    ? { ...a, assignedUsers: updated.assignedUsers }
                     : a;
                 }),
               }
@@ -173,6 +184,8 @@ const useProjects = () => {
       setLoading(false);
     }
   };
+
+  // Carrega os projetos assim que o hook é montado
   useEffect(() => {
     fetchProjects();
   }, [fetchProjects]);
