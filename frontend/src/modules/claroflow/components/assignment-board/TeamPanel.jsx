@@ -12,7 +12,7 @@ const TeamPanel = ({
 }) => {
   return (
     <div className={`w-full bg-background p-4 md:w-[350px] ${className}`}>
-      <div className="flex h-full flex-col space-y-4 rounded-lg border border-border bg-menu p-4">
+      <div className="flex h-full flex-col space-y-4 rounded-lg border border-border bg-card p-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-card-foreground">Equipe</h3>
           <div className="text-md flex items-center gap-2 text-muted-foreground">
