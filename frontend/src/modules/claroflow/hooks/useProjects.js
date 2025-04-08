@@ -142,21 +142,27 @@ const useProjects = () => {
     try {
       setLoading(true);
 
-      // Formata as assignments para enviar apenas id e os dados dos usuários (userId e regionals)
-      const formattedAssignments = assignments.map((assignment) => ({
-        id: assignment.id,
-        assignedUsers: assignment.assigned.map((user) => ({
-          userId: user.id,
-          regionals: user.regionals,
-        })),
-      }));
+      // Corrigido: usamos a propriedade "assignedUsers" e não "assigned"
+      const formattedAssignments = assignments.map((assignment, index) => {
+        // Caso a propriedade assignedUsers esteja ausente, forçamos para array vazio
+        const usersArray = assignment.assignedUsers || [];
+        return {
+          id: assignment.id,
+          assignedUsers: usersArray.map((user, userIndex) => {
+            return {
+              userId: user.userId,
+              regionals: user.regionals || null, // regional opcional
+            };
+          }),
+        };
+      });
 
       const response = await axiosInstance.patch(
         `/flow/projects/${projectId}/assign-users`,
         { assignments: formattedAssignments },
       );
 
-      // Atualiza o estado local dos projetos com as alterações
+      // Atualiza o estado local para refletir as mudanças
       setProjects((prev) =>
         prev.map((p) =>
           p._id === projectId
@@ -167,7 +173,13 @@ const useProjects = () => {
                     (u) => u.id === a._id,
                   );
                   return updated
-                    ? { ...a, assignedUsers: updated.assignedUsers }
+                    ? {
+                        ...a,
+                        assignedUsers: updated.assignedUsers.map((u) => ({
+                          $oid: u.userId,
+                          regionals: u.regionals,
+                        })),
+                      }
                     : a;
                 }),
               }

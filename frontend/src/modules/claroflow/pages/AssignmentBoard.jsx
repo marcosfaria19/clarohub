@@ -168,23 +168,21 @@ const AssignmentBoard = ({ project }) => {
   const handleUpdateRegional = useCallback(
     (demandId, memberId, regionals) => {
       setDemands((prev) =>
-        prev.map((demand) =>
-          demand.id === demandId
-            ? {
-                ...demand,
-                // Aqui assume-se que a estrutura de regionals é um objeto indexado pelo memberId
-                regionals: {
-                  ...demand.regionals,
-                  [memberId]: regionals,
-                },
-              }
-            : demand,
-        ),
+        prev.map((demand) => {
+          if (demand.id !== demandId) return demand;
+
+          const updatedAssigned = demand.assigned.map((assignment) =>
+            assignment.userId === memberId
+              ? { ...assignment, regionals }
+              : assignment,
+          );
+
+          return { ...demand, assigned: updatedAssigned };
+        }),
       );
     },
     [setDemands],
   );
-
   // Aplica as mudanças chamando a função de atualização e disparando notificações para novos membros
   const handleApplyChanges = async () => {
     try {
