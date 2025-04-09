@@ -13,8 +13,9 @@ import { AuthContext } from "modules/shared/contexts/AuthContext";
 import PageTitle from "modules/shared/components/PageTitle";
 import Claroflow from "modules/claroflow/pages/Flow";
 import UsersAdmin from "modules/clarohub/pages/Users";
-import ProjectsFlowDashboard from "modules/claroflow/components/project-flow/ProjectFlowDashboard";
+
 import TeamBoard from "modules/claroflow/pages/TeamBoard";
+import ProjectsFlowDashboard from "modules/claroflow/components/projects/ProjectFlowDashboard";
 
 const isTokenExpired = (token) => {
   if (!token) return true;

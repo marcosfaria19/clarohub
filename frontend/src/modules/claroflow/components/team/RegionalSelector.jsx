@@ -1,3 +1,5 @@
+import { regionals } from "modules/claroflow/utils/regionals";
+
 const { Button } = require("modules/shared/components/ui/button");
 const { useState } = require("react");
 
@@ -16,18 +18,6 @@ const RegionalSelector = ({
   onSave,
   onClose,
 }) => {
-  const regions = [
-    "RSI",
-    "RBS",
-    "RRS",
-    "RPS",
-    "RSC",
-    "RNO",
-    "RCO",
-    "RNE",
-    "RRE",
-    "RMG",
-  ];
   const [step, setStep] = useState(1);
   const [primary, setPrimary] = useState(initialPrimary);
   const [secondary, setSecondary] = useState(initialSecondary);
@@ -48,7 +38,7 @@ const RegionalSelector = ({
         <>
           <h3 className="mb-2 font-medium">Selecione a regional primária:</h3>
           <div className="grid grid-cols-3 gap-2">
-            {regions.map((region) => (
+            {regionals.map((region) => (
               <Button
                 key={region}
                 variant={primary === region ? "default" : "outline"}
@@ -71,7 +61,7 @@ const RegionalSelector = ({
         <>
           <h3 className="mb-2 font-medium">Selecione a regional secundária:</h3>
           <div className="grid grid-cols-3 gap-2">
-            {regions
+            {regionals
               .filter((r) => r !== primary)
               .map((region) => (
                 <Button

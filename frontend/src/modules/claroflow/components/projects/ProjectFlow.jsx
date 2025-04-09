@@ -12,7 +12,7 @@ import { Button } from "modules/shared/components/ui/button";
 import { toast } from "sonner";
 import DeleteConfirmationModal from "modules/shared/components/DeleteConfirmationModal";
 import useProjects from "modules/claroflow/hooks/useProjects";
-import ChangeNotification from "../assignment-board/ChangesNotification";
+import ChangeNotification from "../team/ChangesNotification";
 import { getLayoutedElements } from "modules/claroflow/utils/graphLayout";
 import AssignmentNode from "./AssignmentNode";
 import CustomEdge from "./CustomEdge";
