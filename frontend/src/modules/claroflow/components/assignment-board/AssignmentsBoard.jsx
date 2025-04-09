@@ -1,9 +1,9 @@
-// DemandsBoard.jsx
+// AssignmentsBoard.jsx
 // Componente que renderiza o board de demandas, compondo cada coluna de demanda.
-import DemandColumn from "./DemandColumn";
+import AssignmentColumn from "./AssignmentColumn";
 
-const DemandsBoard = ({
-  demands,
+const AssignmentsBoard = ({
+  assignments,
   members,
   onUnassign,
   isMobile,
@@ -20,10 +20,10 @@ const DemandsBoard = ({
             : "flex-row flex-wrap overflow-y-auto pl-0"
         }`}
       >
-        {demands.map((demand) => (
-          <DemandColumn
-            key={demand.id}
-            demand={demand}
+        {assignments.map((assignment) => (
+          <AssignmentColumn
+            key={assignment.id}
+            assignment={assignment}
             members={members}
             onUnassign={onUnassign}
             onUpdateRegional={onUpdateRegional}
@@ -34,4 +34,4 @@ const DemandsBoard = ({
   );
 };
 
-export default DemandsBoard;
+export default AssignmentsBoard;

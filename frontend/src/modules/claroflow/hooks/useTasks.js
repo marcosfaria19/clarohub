@@ -14,10 +14,16 @@ export const useAvailableTasks = (assignmentId) => {
       const response = await axiosInstance.get(
         `/flow/tasks/assignment/${assignmentId}`,
       );
-      setTasks(response.data.filter((t) => !t.assignedTo));
+      console.log(
+        "Tarefas recebidas do assignmentId",
+        assignmentId,
+        response.data,
+      );
+      setTasks(response.data); // ou filtrado, se quiser
       setError(null);
     } catch (err) {
       setError(err.response?.data || err.message);
+      console.error("Erro ao buscar tarefas:", err);
     } finally {
       setLoading(false);
     }

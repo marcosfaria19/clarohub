@@ -157,13 +157,7 @@ module.exports = (projectsCollection) => {
         const { projectId } = req.params;
         const { assignments } = req.body;
 
-        console.log(
-          "📥 assignments recebidos:",
-          JSON.stringify(assignments, null, 2)
-        );
-
         if (!assignments || !Array.isArray(assignments)) {
-          console.warn("⚠️ assignments está undefined ou não é um array");
           return res.status(400).json({ error: "Invalid assignments format" });
         }
 
@@ -173,7 +167,6 @@ module.exports = (projectsCollection) => {
         });
 
         if (!project) {
-          console.warn("❌ Projeto não encontrado:", projectId);
           return res.status(404).json({ error: "Project not found" });
         }
 
@@ -181,17 +174,12 @@ module.exports = (projectsCollection) => {
         const bulkOps = assignments
           .map((assignment, index) => {
             if (!assignment?.id || !assignment?.assignedUsers) {
-              console.warn(`⚠️ assignment[${index}] malformado:`, assignment);
               return null; // ou poderia lançar um erro se quiser forçar
             }
 
             const assignedUsersFormatted = assignment.assignedUsers.map(
               (user, i) => {
                 if (!user?.userId) {
-                  console.warn(
-                    `⚠️ assignedUsers[${i}] malformado em assignment[${index}]`,
-                    user
-                  );
                 }
                 return {
                   userId: new ObjectId(user.userId),
@@ -217,7 +205,6 @@ module.exports = (projectsCollection) => {
           .filter(Boolean); // remove possíveis nulls por assignments malformados
 
         if (bulkOps.length === 0) {
-          console.warn("⚠️ Nenhuma operação válida para executar.");
           return res
             .status(400)
             .json({ error: "No valid assignments to update" });
@@ -226,7 +213,6 @@ module.exports = (projectsCollection) => {
         const result = await projectsCollection.bulkWrite(bulkOps);
 
         if (result.modifiedCount === 0) {
-          console.warn("⚠️ Nenhuma assignment foi atualizada");
           return res.status(404).json({ error: "No assignments updated" });
         }
 

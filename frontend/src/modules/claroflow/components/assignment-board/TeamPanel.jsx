@@ -7,7 +7,7 @@ const TeamPanel = ({
   members,
   searchQuery,
   onSearchChange,
-  demands,
+  assignments,
   className,
 }) => {
   return (
@@ -35,10 +35,10 @@ const TeamPanel = ({
               <DraggableMember
                 key={member.id}
                 member={member}
-                assignedCount={demands.reduce(
-                  (count, demand) =>
+                assignedCount={assignments.reduce(
+                  (count, assignment) =>
                     count +
-                    demand.assigned.filter(
+                    assignment.assigned.filter(
                       (assignment) => assignment.userId === member.id,
                     ).length,
                   0,
