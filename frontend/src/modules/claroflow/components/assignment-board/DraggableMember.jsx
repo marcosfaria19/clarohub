@@ -29,7 +29,7 @@ const DraggableMember = ({ member, assignedCount }) => {
       <Card
         ref={setNodeRef}
         style={style}
-        className="group m-1 touch-none bg-secondary p-3 outline-none transition-shadow hover:opacity-80 focus-visible:outline-1 focus-visible:outline-accent"
+        className="group m-1 touch-none bg-background p-3 outline-none transition-shadow hover:opacity-80 focus-visible:outline-1 focus-visible:outline-accent"
         {...attributes}
         {...listeners}
       >
