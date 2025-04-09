@@ -1,4 +1,4 @@
-// AssignmentBoard.jsx
+// TeamBoard.jsx
 // Componente principal que gerencia o board de assignments com funcionalidades de drag and drop.
 import { useEffect, useCallback } from "react";
 import {
@@ -16,22 +16,22 @@ import { useUsers } from "../hooks/useUsers";
 import useProjects from "../hooks/useProjects";
 
 import TeamPanel from "../components/assignment-board/TeamPanel";
-import DemandsBoard from "../components/assignment-board/DemandsBoard";
+import AssignmentsBoard from "../components/assignment-board/AssignmentsBoard";
 import AssignmentOverlay from "../components/assignment-board/AssignmentOverlay";
 import { useAssignmentBoard } from "../hooks/useAssignmentBoard";
 import ChangeNotification from "../components/assignment-board/ChangesNotification";
 import { toast } from "sonner";
 import useNotifications from "modules/shared/hooks/useNotifications";
 
-const AssignmentBoard = ({ project }) => {
+const TeamBoard = ({ project }) => {
   // Obtém funções e estados dos hooks
   const { getUsersByProjectId } = useUsers();
   const { fetchAssignments, assignUsers } = useProjects();
   const {
-    demands,
-    setDemands,
-    initialDemands,
-    setInitialDemands,
+    assignments,
+    setAssignments,
+    initialAssignments,
+    setInitialAssignments,
     members,
     filteredMembers,
     activeMember,
@@ -76,12 +76,12 @@ const AssignmentBoard = ({ project }) => {
     let isMounted = true;
 
     const loadAssignments = async () => {
-      if (project?._id && initialDemands.length === 0) {
+      if (project?._id && initialAssignments.length === 0) {
         const assignments = await fetchAssignments(project._id);
         if (assignments && isMounted) {
           const formattedAssignments = formatAssignments(assignments);
-          setInitialDemands(formattedAssignments);
-          setDemands(formattedAssignments);
+          setInitialAssignments(formattedAssignments);
+          setAssignments(formattedAssignments);
         }
       }
     };
@@ -93,9 +93,9 @@ const AssignmentBoard = ({ project }) => {
     };
   }, [
     project,
-    initialDemands.length,
-    setInitialDemands,
-    setDemands,
+    initialAssignments.length,
+    setInitialAssignments,
+    setAssignments,
     fetchAssignments,
   ]);
 
@@ -122,66 +122,68 @@ const AssignmentBoard = ({ project }) => {
       const { active, over } = event;
       if (
         over &&
-        demands.some((demand) => demand.id === over.id) &&
+        assignments.some((assignment) => assignment.id === over.id) &&
         over.id !== active.id
       ) {
-        setDemands((prev) =>
-          prev.map((demand) =>
-            demand.id === over.id
+        setAssignments((prev) =>
+          prev.map((assignment) =>
+            assignment.id === over.id
               ? {
-                  ...demand,
+                  ...assignment,
                   assigned: [
-                    ...demand.assigned,
+                    ...assignment.assigned,
                     {
                       userId: active.id,
                       regionals: [],
                     },
                   ],
                 }
-              : demand,
+              : assignment,
           ),
         );
       }
       setActiveId(null);
     },
-    [demands, setDemands, setActiveId],
+    [assignments, setAssignments, setActiveId],
   );
 
   // Remove um membro da demand (desatribuição)
   const handleUnassign = useCallback(
-    (memberId, demandId) => {
-      setDemands((prev) =>
-        prev.map((demand) =>
-          demand.id === demandId
+    (memberId, assignmentId) => {
+      setAssignments((prev) =>
+        prev.map((assignment) =>
+          assignment.id === assignmentId
             ? {
-                ...demand,
-                assigned: demand.assigned.filter((a) => a.userId !== memberId),
+                ...assignment,
+                assigned: assignment.assigned.filter(
+                  (a) => a.userId !== memberId,
+                ),
               }
-            : demand,
+            : assignment,
         ),
       );
     },
-    [setDemands],
+    [setAssignments],
   );
 
-  // Atualiza os dados de regionals para uma determinada demand e membro
+  // Atualiza os dados de regionals para uma determinada demanda e membro
   const handleUpdateRegional = useCallback(
-    (demandId, memberId, regionals) => {
-      setDemands((prev) =>
-        prev.map((demand) => {
-          if (demand.id !== demandId) return demand;
+    (assignmentId, memberId, regionals) => {
+      setAssignments((prev) =>
+        prev.map((assignment) => {
+          if (assignment.id !== assignmentId) return assignment;
 
-          const updatedAssigned = demand.assigned.map((assignment) =>
+          const updatedAssigned = assignment.assigned.map((assignment) =>
             assignment.userId === memberId
               ? { ...assignment, regionals }
               : assignment,
           );
 
-          return { ...demand, assigned: updatedAssigned };
+          return { ...assignment, assigned: updatedAssigned };
         }),
       );
     },
-    [setDemands],
+    [setAssignments],
   );
   // Aplica as mudanças chamando a função de atualização e disparando notificações para novos membros
   const handleApplyChanges = async () => {
@@ -190,13 +192,13 @@ const AssignmentBoard = ({ project }) => {
       await assignUsers(project._id, assignmentsToUpdate);
 
       // Verifica os membros novos para disparar notificações
-      demands.forEach((currentDemand) => {
-        const initialDemand = initialDemands.find(
-          (d) => d.id === currentDemand.id,
+      assignments.forEach((currentAssignment) => {
+        const initialAssignment = initialAssignments.find(
+          (d) => d.id === currentAssignment.id,
         );
-        const newUsers = currentDemand.assigned.filter((assignment) => {
+        const newUsers = currentAssignment.assigned.filter((assignment) => {
           // Aqui a comparação pode ser aprimorada: se necessário, comparar apenas os IDs dos usuários
-          return !initialDemand?.assigned.some(
+          return !initialAssignment?.assigned.some(
             (initAssign) => initAssign.userId === assignment.userId,
           );
         });
@@ -204,7 +206,7 @@ const AssignmentBoard = ({ project }) => {
           createUserNotification(
             assignment.userId,
             "flow",
-            `Você foi alocado à demanda de ${currentDemand.name}`,
+            `Você foi alocado à demanda de ${currentAssignment.name}`,
           );
         });
       });
@@ -237,13 +239,13 @@ const AssignmentBoard = ({ project }) => {
             members={filteredMembers}
             searchQuery={searchQuery}
             onSearchChange={(e) => setSearchQuery(e.target.value)}
-            demands={demands}
+            assignments={assignments}
             isMobile={isMobile}
             className={isMobile ? "h-[400px]" : "h-full"}
           />
 
-          <DemandsBoard
-            demands={demands}
+          <AssignmentsBoard
+            assignments={assignments}
             members={members}
             onUnassign={handleUnassign}
             isMobile={isMobile}
@@ -270,4 +272,4 @@ const AssignmentBoard = ({ project }) => {
   );
 };
 
-export default AssignmentBoard;
+export default TeamBoard;

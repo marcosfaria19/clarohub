@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from "modules/shared/components/ui/dialog";
 import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
-import AssignmentBoard from "./AssignmentBoard";
+import AssignmentBoard from "./TeamBoard";
 import TasksUpload from "../components/upload/TasksUpload";
 
 export default function Claroflow() {
