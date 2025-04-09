@@ -311,7 +311,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
   // Busca todas as tasks por demanda
   router.get(
     "/assignment/:assignmentId",
-
+    authenticateToken,
     async (req, res) => {
       const { assignmentId } = req.params;
       try {
