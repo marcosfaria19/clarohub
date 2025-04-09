@@ -46,7 +46,7 @@ const AssignedUserCard = ({
         {/* Exibição do avatar do usuário */}
         <Avatar className="h-10 w-10">
           <AvatarImage src={member?.avatar} alt={member?.name} />
-          <AvatarFallback className="bg-secondary text-accent">
+          <AvatarFallback className="bg-card text-accent">
             {member?.name[0]}
           </AvatarFallback>
         </Avatar>
