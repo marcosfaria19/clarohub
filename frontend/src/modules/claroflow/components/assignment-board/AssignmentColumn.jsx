@@ -33,7 +33,11 @@ const AssignmentColumn = ({
       <div className="p-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium text-card-foreground">
-            {assignment.name} ({tasks.length})
+            {assignment.name}
+            <span className="text-base text-foreground/40">
+              {" "}
+              ({tasks.length})
+            </span>
           </h3>
           <div className="text-md flex items-center gap-2 text-muted-foreground">
             <Users className="h-4 w-4" />
@@ -57,9 +61,8 @@ const AssignmentColumn = ({
             return (
               <AssignedUserCard
                 key={index}
-                assignment={assignedUser} // objeto com userId e regionals
+                assignment={assignedUser}
                 member={member}
-                // Aqui passamos o ID da assignment pai
                 assignmentId={assignment.id}
                 onUnassign={onUnassign}
                 onUpdateRegional={onUpdateRegional}

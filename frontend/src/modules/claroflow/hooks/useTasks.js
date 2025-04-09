@@ -19,7 +19,8 @@ export const useAvailableTasks = (assignmentId) => {
         assignmentId,
         response.data,
       );
-      setTasks(response.data); // ou filtrado, se quiser
+      setTasks(response.data.filter((t) => !t.assignedTo));
+      /* setTasks(response.data); */
       setError(null);
     } catch (err) {
       setError(err.response?.data || err.message);
