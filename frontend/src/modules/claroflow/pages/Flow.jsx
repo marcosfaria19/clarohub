@@ -4,7 +4,7 @@ import FlowMenu from "../components/FlowMenu";
 import { FlowHome } from "../components/FlowHome";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useUsers } from "../hooks/useUsers";
-import BoardLayout from "../components/flow-boards/BoardLayout";
+import BoardLayout from "../components/tasks/BoardLayout";
 import { UploadCloudIcon, UploadIcon } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import {

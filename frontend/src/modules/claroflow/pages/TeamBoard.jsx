@@ -15,11 +15,11 @@ import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { useUsers } from "../hooks/useUsers";
 import useProjects from "../hooks/useProjects";
 
-import TeamPanel from "../components/assignment-board/TeamPanel";
-import AssignmentsBoard from "../components/assignment-board/AssignmentsBoard";
-import AssignmentOverlay from "../components/assignment-board/AssignmentOverlay";
+import TeamPanel from "../components/team/TeamPanel";
+import AssignmentsBoard from "../components/team/AssignmentsBoard";
+import AssignmentOverlay from "../components/team/AssignmentOverlay";
 import { useAssignmentBoard } from "../hooks/useAssignmentBoard";
-import ChangeNotification from "../components/assignment-board/ChangesNotification";
+import ChangeNotification from "../components/team/ChangesNotification";
 import { toast } from "sonner";
 import useNotifications from "modules/shared/hooks/useNotifications";
 
