@@ -134,12 +134,8 @@ export default function IdeaCard({
               variant="ghost"
               size="sm"
               className="absolute bottom-1 right-1 p-1 text-foreground"
-              onClick={
-                status === "Em Análise" || "Em Andamento"
-                  ? handleLikeClick
-                  : undefined
-              }
-              disabled={status !== "Em Análise" && status !== "Em Andamento"}
+              onClick={status === "Em Análise" ? handleLikeClick : undefined}
+              disabled={status !== "Em Análise"}
             >
               <img src={likeIcon} alt="Sparks" className="w-6" />
               <span className="relative bottom-4 right-1 text-xs">
@@ -148,9 +144,7 @@ export default function IdeaCard({
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            {status === "Em Análise" || "Em Andamento"
-              ? "Apoiar ideia"
-              : "Like desativado"}
+            {status === "Em Análise" ? "Apoiar ideia" : "Like desativado"}
           </TooltipContent>
         </Tooltip>
       </div>
@@ -202,7 +196,7 @@ export default function IdeaCard({
             <div className="flex-grow" />
 
             <div className="flex space-x-2">
-              {(status === "Em Análise" || status === "Em Andamento") && (
+              {status === "Em Análise" && (
                 <Button variant="primary" onClick={handleLikeClick}>
                   <img src={spark} alt="Sparks" className="mr-2 w-6" />
                   Apoiar

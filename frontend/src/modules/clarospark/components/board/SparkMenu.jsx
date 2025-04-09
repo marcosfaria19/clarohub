@@ -1,10 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import {
-  Trophy,
-  SlidersHorizontal,
-  ArrowDownToLine,
-  Check,
-} from "lucide-react";
+import { Trophy, SlidersHorizontal, ArrowDownToLine } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import RankingModal from "../rankings/RankingModal";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
@@ -121,36 +116,24 @@ export default function SparkMenu({
                     className={`flex justify-between ${currentFilter === "emAnalise" ? "bg-accent text-accent-foreground" : ""}`}
                   >
                     Em Análise
-                    {currentFilter === "emAnalise" && (
-                      <Check className="h-4 w-4 text-primary-foreground" />
-                    )}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleFilterChange("emAndamento")}
                     className={`flex justify-between ${currentFilter === "emAndamento" ? "bg-accent text-accent-foreground" : ""}`}
                   >
                     Em Andamento
-                    {currentFilter === "emAndamento" && (
-                      <Check className="h-4 w-4 text-primary-foreground" />
-                    )}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleFilterChange("aprovados")}
                     className={`flex justify-between ${currentFilter === "aprovados" ? "bg-accent text-accent-foreground" : ""}`}
                   >
                     Aprovadas
-                    {currentFilter === "aprovados" && (
-                      <Check className="h-4 w-4 text-primary-foreground" />
-                    )}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleFilterChange("arquivados")}
                     className={`flex justify-between ${currentFilter === "arquivados" ? "bg-accent text-accent-foreground" : ""}`}
                   >
                     Arquivadas
-                    {currentFilter === "arquivados" && (
-                      <Check className="h-4 w-4 text-primary-foreground" />
-                    )}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem

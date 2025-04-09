@@ -20,7 +20,7 @@ export default function SparkBoard({ subjects, cards, currentFilter, userId }) {
         case "all":
           return true;
         case "emAnalise":
-          return card.status === "Em Análise" || card.status === "Em Andamento";
+          return card.status === "Em Análise";
         case "emAndamento":
           return card.status === "Em Andamento";
         case "aprovados":
