@@ -1,20 +1,12 @@
-import { useState } from "react";
-import RegionalSelector from "./RegionalSelector";
-
-const { Settings, X } = require("lucide-react");
+const { X } = require("lucide-react");
 const {
   Avatar,
   AvatarImage,
   AvatarFallback,
 } = require("modules/shared/components/ui/avatar");
-const { Badge } = require("modules/shared/components/ui/badge");
+
 const { Button } = require("modules/shared/components/ui/button");
 const { Card } = require("modules/shared/components/ui/card");
-const {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} = require("modules/shared/components/ui/popover");
 
 /**
  * AssignedUserCard
@@ -35,10 +27,10 @@ const AssignedUserCard = ({
   onUpdateRegional,
 }) => {
   // Handler para atualizar as regionals do usuário
-  const handleRegionalChange = (regionals) => {
+  /*  const handleRegionalChange = (regionals) => {
     onUpdateRegional(assignmentId, member.id, regionals);
   };
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false); */
 
   return (
     <Card className="bg-background p-2 shadow-sm">
@@ -54,8 +46,9 @@ const AssignedUserCard = ({
           <span className="text-sm font-medium text-card-foreground">
             {member?.name}
           </span>
-          {/* Exibe as regionals, se houver */}
-          {assignment.regionals && (
+
+          {/* Badges com as regionais atribuidas */}
+          {/* {assignment.regionals && (
             <div className="flex gap-1">
               {assignment.regionals.primary && (
                 <Badge variant="basic">{assignment.regionals.primary}</Badge>
@@ -66,11 +59,11 @@ const AssignedUserCard = ({
                 </Badge>
               )}
             </div>
-          )}
+          )} */}
         </div>
         <div className="ml-auto flex items-center justify-end gap-2">
-          {/* Popover para alterar as regionals */}
-          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+          {/* Popover para atribuir regionais ao usuário */}
+          {/* <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger>
               <Settings className="h-3.5 w-3.5" />
             </PopoverTrigger>
@@ -82,7 +75,8 @@ const AssignedUserCard = ({
                 onClose={() => setIsPopoverOpen(false)}
               />
             </PopoverContent>
-          </Popover>
+          </Popover> */}
+
           {/* Botão para desatribuir o usuário da demanda */}
           <Button
             variant="ghost"
