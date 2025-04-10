@@ -1,18 +1,9 @@
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { Users, BarChart as BarChartIcon } from "lucide-react";
+import { Users } from "lucide-react";
 import { Card } from "modules/shared/components/ui/card";
 import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import AssignedUserCard from "./AssignedUserCard";
-import { useAvailableTasks } from "modules/claroflow/hooks/useTasks";
-
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "modules/shared/components/ui/popover";
-import DemandChart from "../charts/DemandChart";
-import { Button } from "modules/shared/components/ui/button";
 
 /**
  * AssignmentColumn
@@ -26,7 +17,6 @@ const AssignmentColumn = ({
   onUpdateRegional,
 }) => {
   const { setNodeRef, isOver } = useDroppable({ id: assignment.id });
-  const { tasks } = useAvailableTasks(assignment.id);
 
   return (
     <Card className="flex min-w-72 flex-1 flex-col border border-border bg-card">
@@ -38,9 +28,9 @@ const AssignmentColumn = ({
             {assignment.name}
           </h3>
 
-          {/* Gráfico + Contadores */}
           <div className="flex items-center gap-3">
-            <Popover>
+            {/* Implementação para mostrar gráficos de demandas por regionais */}
+            {/* <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
@@ -55,7 +45,7 @@ const AssignmentColumn = ({
               <PopoverContent className="w-[400px] bg-background">
                 <DemandChart tasks={tasks} />
               </PopoverContent>
-            </Popover>
+            </Popover> */}
 
             <div className="flex items-center gap-1 text-muted-foreground">
               <Users className="h-4 w-4" />
