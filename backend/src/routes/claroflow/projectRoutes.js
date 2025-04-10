@@ -236,7 +236,8 @@ module.exports = (projectsCollection) => {
         const assignments = await projectsCollection
           .aggregate([
             { $unwind: "$assignments" },
-            { $match: { "assignments.assignedUsers": userObjId } },
+            { $unwind: "$assignments.assignedUsers" },
+            { $match: { "assignments.assignedUsers.userId": userObjId } },
             {
               $project: {
                 _id: "$assignments._id",
