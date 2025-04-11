@@ -14,11 +14,7 @@ export const useAvailableTasks = (assignmentId) => {
       const response = await axiosInstance.get(
         `/flow/tasks/assignment/${assignmentId}`,
       );
-      console.log(
-        "Tarefas recebidas do assignmentId",
-        assignmentId,
-        response.data,
-      );
+
       setTasks(response.data.filter((t) => !t.assignedTo));
       /* setTasks(response.data); */
       setError(null);

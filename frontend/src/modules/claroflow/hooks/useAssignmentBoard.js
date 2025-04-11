@@ -1,7 +1,8 @@
 // useAssignmentBoard.js
 // Hook responsável por gerenciar o estado e lógica do board de assignments.
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { formatUserName } from "modules/shared/utils/formatUsername";
+import { useMediaQuery } from "modules/shared/hooks/use-media-query";
 
 export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
   // Estados para as demandas (assignments), membros ativos, busca, etc.
@@ -9,7 +10,7 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
   const [assignments, setAssignments] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Obtém os usuários do projeto atual
   const projectUsers = useMemo(() => {
@@ -22,7 +23,7 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
       projectUsers
         .map((user) => ({
           ...user,
-          id: user._id, // Define a propriedade id para compatibilidade
+          id: user._id,
           name: formatUserName(user.NOME),
           avatar: user.avatar,
         }))
@@ -94,13 +95,23 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
     );
   }, []);
 
-  // Efeito para detectar mudança no tamanho da tela (mobile ou não)
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  // Retorna a equipe de um assignment específico (nome e avatar dos usuários atribuídos)
+  const getTeamByAssignmentId = useCallback(
+    (assignmentId) => {
+      const assignment = assignments.find((a) => a.id === assignmentId);
+      if (!assignment || !assignment.assigned) return [];
+
+      return assignment.assigned
+        .map(({ userId }) => projectUsers.find((user) => user._id === userId))
+        .filter(Boolean)
+        .map((user) => ({
+          id: user._id,
+          name: formatUserName(user.NOME),
+          avatar: user.avatar,
+        }));
+    },
+    [assignments, projectUsers],
+  );
 
   return {
     assignments,
@@ -119,5 +130,6 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
     resetToInitialState,
     updateTeamMembers,
     updateRegional,
+    getTeamByAssignmentId,
   };
 };
