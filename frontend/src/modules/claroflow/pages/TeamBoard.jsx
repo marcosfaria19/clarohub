@@ -66,8 +66,7 @@ const TeamBoard = ({ project }) => {
         name: assignment.name,
         // Garante que cada usuário atribuído contenha userId e regionals
         assigned: assignment.assignedUsers.map((user) => ({
-          userId:
-            typeof user.userId === "object" ? user.userId.$oid : user.userId,
+          userId: user.userId,
           regionals: user.regionals,
         })),
       }));
@@ -127,20 +126,27 @@ const TeamBoard = ({ project }) => {
         over.id !== active.id
       ) {
         setAssignments((prev) =>
-          prev.map((assignment) =>
-            assignment.id === over.id
-              ? {
-                  ...assignment,
-                  assigned: [
-                    ...assignment.assigned,
-                    {
-                      userId: active.id,
-                      regionals: [],
-                    },
-                  ],
-                }
-              : assignment,
-          ),
+          prev.map((assignment) => {
+            if (assignment.id !== over.id) return assignment;
+
+            const alreadyAssigned = assignment.assigned.some(
+              (a) => a.userId === active.id,
+            );
+
+            // Evita duplicidade
+            if (alreadyAssigned) return assignment;
+
+            return {
+              ...assignment,
+              assigned: [
+                ...assignment.assigned,
+                {
+                  userId: active.id,
+                  regionals: [],
+                },
+              ],
+            };
+          }),
         );
       }
       setActiveId(null);
@@ -204,11 +210,11 @@ const TeamBoard = ({ project }) => {
           );
         });
         newUsers.forEach((assignment) => {
-          /* createUserNotification(
+          createUserNotification(
             assignment.userId,
             "flow",
             `Você foi alocado à demanda de ${currentAssignment.name}`,
-          ); */
+          );
         });
       });
 
