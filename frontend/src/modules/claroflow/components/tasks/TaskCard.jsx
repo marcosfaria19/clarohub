@@ -13,7 +13,6 @@ import { ptBR } from "date-fns/locale";
 
 export function TaskCard({ task, isCompleted, onTransition, user }) {
   const [transitionLoading, setTransitionLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   /**
    * Handler para transição de status
@@ -27,7 +26,6 @@ export function TaskCard({ task, isCompleted, onTransition, user }) {
       });
       onTransition?.();
     } catch (err) {
-      setError(err.response?.data || err.message);
     } finally {
       setTransitionLoading(false);
     }

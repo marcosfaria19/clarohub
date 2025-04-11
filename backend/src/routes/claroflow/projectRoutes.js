@@ -3,7 +3,7 @@ const authenticateToken = require("../../middleware/authMiddleware");
 const { ObjectId } = require("mongodb");
 const router = express.Router();
 
-module.exports = (projectsCollection) => {
+module.exports = (projectsCollection, usersCollection) => {
   // Rota para buscar todos os projetos
   router.get("/projects", authenticateToken, async (req, res) => {
     try {
@@ -259,6 +259,44 @@ module.exports = (projectsCollection) => {
         res
           .status(500)
           .json({ error: "Erro ao buscar assignments para usuário" });
+      }
+    }
+  );
+
+  // Rota para buscar detalhes dos usuários de um assignment
+  router.get(
+    "/assignments/:assignmentId/users/",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        const { assignmentId } = req.params;
+        const assignment = await projectsCollection
+          .aggregate([
+            { $unwind: "$assignments" },
+            { $match: { "assignments._id": new ObjectId(assignmentId) } },
+            { $project: { assignedUsers: "$assignments.assignedUsers" } },
+          ])
+          .toArray();
+        console.log(assignment);
+
+        if (assignment.length === 0) {
+          return res.status(404).json({ error: "Assignment não encontrado" });
+        }
+
+        const userIds = assignment[0].assignedUsers.map((user) => user.userId);
+
+        // Supondo que você tenha uma coleção de usuários
+        const users = await usersCollection
+          .find({ _id: { $in: userIds } })
+          .toArray();
+
+        res.status(200).json(users);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar detalhes dos usuários do assignment:",
+          error
+        );
+        res.status(500).json({ error: "Erro ao buscar detalhes dos usuários" });
       }
     }
   );
