@@ -22,7 +22,7 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
     return project ? getUsersByProjectId(project._id) : [];
   }, [project, getUsersByProjectId]);
 
-  // Formata os usuários para exibição no board
+  // Formata os usuários para exibição no board (ordem alfabetica, apenas id nome e avatar)
   const members = useMemo(
     () =>
       projectUsers
