@@ -3,8 +3,13 @@
 import { useState, useMemo, useCallback } from "react";
 import { formatUserName } from "modules/shared/utils/formatUsername";
 import { useMediaQuery } from "modules/shared/hooks/use-media-query";
+import axiosInstance from "services/axios";
 
 export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   // Estados para as demandas (assignments), membros ativos, busca, etc.
   const [initialAssignments, setInitialAssignments] = useState([]);
   const [assignments, setAssignments] = useState([]);
@@ -113,6 +118,65 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
     [assignments, projectUsers],
   );
 
+  // Atualiza as assignments com os usuários atribuídos
+  const assignUsers = async (projectId, assignments) => {
+    try {
+      setLoading(true);
+
+      // Corrigido: usamos a propriedade "assignedUsers" e não "assigned"
+      const formattedAssignments = assignments.map((assignment, index) => {
+        // Caso a propriedade assignedUsers esteja ausente, forçamos para array vazio
+        const usersArray = assignment.assignedUsers || [];
+        return {
+          id: assignment.id,
+          assignedUsers: usersArray.map((user, userIndex) => {
+            return {
+              userId: user.userId,
+              regionals: user.regionals || null, // regional opcional
+            };
+          }),
+        };
+      });
+
+      const response = await axiosInstance.patch(
+        `/flow/projects/${projectId}/assign-users`,
+        { assignments: formattedAssignments },
+      );
+
+      // Atualiza o estado local para refletir as mudanças
+      setProjects((prev) =>
+        prev.map((p) =>
+          p._id === projectId
+            ? {
+                ...p,
+                assignments: p.assignments.map((a) => {
+                  const updated = formattedAssignments.find(
+                    (u) => u.id === a._id,
+                  );
+                  return updated
+                    ? {
+                        ...a,
+                        assignedUsers: updated.assignedUsers.map((u) => ({
+                          $oid: u.userId,
+                          regionals: u.regionals,
+                        })),
+                      }
+                    : a;
+                }),
+              }
+            : p,
+        ),
+      );
+
+      return response.data;
+    } catch (err) {
+      console.error("Erro ao atualizar assignments:", err);
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
   return {
     assignments,
     setAssignments,
@@ -131,5 +195,9 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
     updateTeamMembers,
     updateRegional,
     getTeamByAssignmentId,
+    assignUsers,
+    error,
+    loading,
+    projects,
   };
 };
