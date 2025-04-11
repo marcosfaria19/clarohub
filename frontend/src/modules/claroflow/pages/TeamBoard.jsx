@@ -26,7 +26,7 @@ import useNotifications from "modules/shared/hooks/useNotifications";
 const TeamBoard = ({ project }) => {
   // Obtém funções e estados dos hooks
   const { getUsersByProjectId } = useUsers();
-  const { fetchAssignments, assignUsers } = useProjects();
+  const { fetchAssignments } = useProjects();
   const {
     assignments,
     setAssignments,
@@ -42,6 +42,7 @@ const TeamBoard = ({ project }) => {
     hasChanges,
     resetToInitialState,
     updateTeamMembers,
+    assignUsers,
   } = useAssignmentBoard({ project, getUsersByProjectId });
 
   // Modificador customizado para ajuste do offset do drag
