@@ -27,21 +27,17 @@ import {
 import { TaskCard } from "./TaskCard";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 
-export default function GenericBoard({ assignment, project }) {
+export default function GenericBoard({ assignment }) {
   const { user } = useContext(AuthContext);
   const userId = user.userId;
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // Buscar membros do time
+  /* Membros do time */
   const {
-    getUsersByProjectAndAssignment,
+    users: teamMembers,
     loading: usersLoading,
     error: usersError,
-  } = useUsers();
-  const teamMembers = getUsersByProjectAndAssignment(
-    project._id,
-    assignment._id,
-  );
+  } = useUsers(assignment._id);
 
   // Buscar tarefas
   const { tasks: availableTasks, refetch: refetchAvailable } =

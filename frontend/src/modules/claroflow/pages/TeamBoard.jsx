@@ -204,11 +204,11 @@ const TeamBoard = ({ project }) => {
           );
         });
         newUsers.forEach((assignment) => {
-          createUserNotification(
+          /* createUserNotification(
             assignment.userId,
             "flow",
             `Você foi alocado à demanda de ${currentAssignment.name}`,
-          );
+          ); */
         });
       });
 
