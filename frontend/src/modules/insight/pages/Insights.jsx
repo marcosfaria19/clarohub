@@ -1,4 +1,3 @@
-// Insights.jsx
 import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Dashboard from "./Dashboard";
@@ -7,12 +6,28 @@ import AnalyticsPage from "./AnalyticsPage";
 import VacationsPage from "./VacationsPage";
 import SettingsPage from "./SettingsPage";
 import Container from "modules/shared/components/ui/container";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "modules/shared/components/ui/sheet";
+import { Menu } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
-import { Menu as MenuIcon, X as XIcon } from "lucide-react";
 
 export default function Insights() {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Mapeamento dos rótulos para cada aba
+  const tabLabels = {
+    dashboard: "Dashboard",
+    team: "Equipe",
+    analytics: "Análise",
+    vacations: "Férias",
+    settings: "Configurações",
+  };
+
+  const activeTabLabel = tabLabels[activeTab] || "Dashboard";
 
   const renderActivePage = () => {
     switch (activeTab) {
@@ -32,48 +47,41 @@ export default function Insights() {
   };
 
   return (
-    // A área principal desconta a altura de header e footer (4rem)
     <div className="flex min-h-[calc(100vh-4rem)]">
-      {/* Menu móvel: exibido apenas em telas pequenas */}
-      <div
-        className={`${
-          mobileSidebarOpen ? "block" : "hidden"
-        } absolute inset-0 z-40 md:hidden`}
-      >
-        {/* Overlay para fechar o menu */}
-        <div
-          className="fixed inset-0 bg-black opacity-50"
-          onClick={() => setMobileSidebarOpen(false)}
-        ></div>
-        <div className="relative flex h-full w-64 flex-col bg-menu">
-          <div className="flex justify-end p-4">
-            <Button onClick={() => setMobileSidebarOpen(false)}>
-              <XIcon className="h-4 w-4" />
-            </Button>
-          </div>
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-        </div>
-      </div>
-
       {/* Sidebar fixa para desktop */}
-      <div className="hidden md:flex">
+      <div className="hidden md:block">
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
-      {/* Conteúdo principal */}
-      <div className="flex flex-1 flex-col">
-        {/* Cabeçalho móvel (apenas em telas pequenas) */}
-        <div className="flex items-center justify-between bg-menu p-4 md:hidden">
-          <Button onClick={() => setMobileSidebarOpen(true)}>
-            <MenuIcon className="h-4 w-4" />
-          </Button>
-          <h1 className="text-lg text-white">Dashboard</h1>
+      {/* Botão de menu para mobile */}
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <div className="fixed left-0 top-16 z-10 w-full bg-background p-2 shadow-sm md:hidden">
+          <SheetTrigger asChild>
+            <Button variant="outline" className="gap-2">
+              <Menu size={20} />
+              {activeTabLabel}
+            </Button>
+          </SheetTrigger>
         </div>
+        <SheetContent side="left" className="select-none bg-background p-0">
+          <Sidebar
+            activeTab={activeTab}
+            setActiveTab={(tab) => {
+              setActiveTab(tab);
+              setIsOpen(false);
+            }}
+          />
+        </SheetContent>
+      </Sheet>
 
-        {/* Área de conteúdo com scroll, utilizando o Container original */}
-        <div className="flex-1 overflow-auto">
-          <Container innerClassName="mx-0">{renderActivePage()}</Container>
-        </div>
+      {/* Conteúdo principal */}
+      <div className="flex-1 md:pl-64 md:pt-0">
+        <Container
+          fullWidth
+          innerClassName="mx-0 px-4 sm:px-6 md:px-8 lg:px-12"
+        >
+          <div className="py-6">{renderActivePage()}</div>
+        </Container>
       </div>
     </div>
   );

@@ -62,7 +62,7 @@ const UpcomingVacations = () => {
         <h3 className="text-lg font-semibold text-card-foreground">
           Próximas Férias
         </h3>
-        <Button variant="link" className="text-primary">
+        <Button variant="link" className="text-foreground">
           Ver todos
         </Button>
       </div>
