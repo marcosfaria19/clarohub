@@ -16,6 +16,7 @@ import UsersAdmin from "modules/clarohub/pages/Users";
 
 import TeamBoard from "modules/claroflow/pages/TeamBoard";
 import ProjectsFlowDashboard from "modules/claroflow/components/projects/ProjectFlowDashboard";
+import Insights from "modules/insight/pages/Insights";
 
 const isTokenExpired = (token) => {
   if (!token) return true;
@@ -189,6 +190,16 @@ const Rotas = () => {
             token={token}
             allowedRoles={["admin"]}
             element={<TeamBoard />}
+          />
+        }
+      />
+      <Route
+        path="/insights"
+        element={
+          <ProtectedRoute
+            token={token}
+            allowedRoles={["admin"]}
+            element={<Insights />}
           />
         }
       />
