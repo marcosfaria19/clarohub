@@ -7,7 +7,13 @@ import {
 } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 
-const Sidebar = ({ activeTab, setActiveTab }) => {
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "modules/shared/components/ui/avatar";
+
+const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: HomeIcon },
     { id: "team", label: "Equipe", icon: UsersIcon },
@@ -17,7 +23,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <div className="flex h-screen w-64 flex-col bg-menu">
+    <div className="flex h-full flex-col bg-menu pt-6 sm:pt-6 md:fixed md:bottom-0 md:left-0 md:top-0 md:w-64 md:border-r md:border-border md:pt-[62px]">
       <nav className="flex-1 p-4">
         <ul className="space-y-2">
           {menuItems.map((item) => (
@@ -40,19 +46,23 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       </nav>
 
       <div className="border-t border-border p-4">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-            <img
-              src="/placeholder.svg?height=32&width=32"
-              alt="User avatar"
-              className="h-full w-full rounded-full"
-            />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-menu-foreground">
-              Marcos Faria
-            </p>
-            <p className="text-xs text-muted-foreground">Gerente</p>
+        <div className="mt-4 flex flex-col space-y-4">
+          <div className="flex items-center space-x-4">
+            <Avatar className="h-10 w-10">
+              <AvatarImage
+                src="/placeholder.svg?height=32&width=32"
+                alt="User avatar"
+              />
+              <AvatarFallback className="bg-secondary text-accent">
+                M
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-foreground">
+                Marcos Faria
+              </span>
+              <span className="text-xs text-foreground">Gerente</span>
+            </div>
           </div>
         </div>
       </div>

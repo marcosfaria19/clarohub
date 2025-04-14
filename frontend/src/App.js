@@ -10,18 +10,17 @@ import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { ThemeProvider } from "modules/shared/contexts/ThemeContext";
 
 function App() {
-  // Acessa o contexto de autenticação
   const { token } = useContext(AuthContext);
 
   return (
     <Router>
       <ThemeProvider>
-      {!token && <Navigate to="/login" />}
-      {token && <Header />}
-      <Rotas />
-      {token && <Footer />}
+        {!token && <Navigate to="/login" />}
+        {token && <Header />}
+        <Rotas />
+        {token && <Footer />}
 
-      <Toaster position="bottom-right" richColors />
+        <Toaster position="bottom-right" richColors />
       </ThemeProvider>
     </Router>
   );
