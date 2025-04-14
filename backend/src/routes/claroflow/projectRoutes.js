@@ -15,6 +15,25 @@ module.exports = (projectsCollection, usersCollection) => {
     }
   });
 
+  // Rota para buscar projeto por projectId
+  router.get("/projects/:projectId", authenticateToken, async (req, res) => {
+    try {
+      const { projectId } = req.params;
+      const project = await projectsCollection.findOne({
+        _id: new ObjectId(projectId),
+      });
+
+      if (!project) {
+        return res.status(404).json({ error: "Project not found" });
+      }
+
+      res.status(200).json(project);
+    } catch (error) {
+      console.error("Erro ao buscar projeto:", error);
+      res.status(500).json({ error: "Error fetching project" });
+    }
+  });
+
   // Rota para ver demandas de um projeto específico
   router.get(
     "/projects/:projectId/assignments",

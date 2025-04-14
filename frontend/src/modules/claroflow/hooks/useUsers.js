@@ -44,11 +44,6 @@ export function useUsers(assignmentId = null) {
     [users],
   );
 
-  const getProjectDetails = useCallback(
-    (userId) => users.find((user) => user._id === userId)?.project || null,
-    [users],
-  );
-
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
@@ -60,6 +55,5 @@ export function useUsers(assignmentId = null) {
     fetchUsers,
     fetchUserAssignments,
     getUsersByProjectId,
-    getProjectDetails,
   };
 }

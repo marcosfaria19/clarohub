@@ -47,6 +47,7 @@ module.exports = (usersCollection, ideasCollection) => {
           avatar: user.avatar,
           dailyLikesUsed: user.dailyLikesUsed,
           dailyIdeasCreated: user.dailyIdeasCreated,
+          project: user.project,
         },
         SECRET_KEY,
         { expiresIn: "12h" }

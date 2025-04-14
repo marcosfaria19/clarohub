@@ -17,10 +17,12 @@ import {
 import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
 import AssignmentBoard from "./TeamBoard";
 import TasksUpload from "../components/upload/TasksUpload";
+import useProjects from "../hooks/useProjects";
 
 export default function Claroflow() {
   const { user } = useContext(AuthContext);
-  const { getProjectDetails, fetchUserAssignments } = useUsers();
+  const { fetchUserAssignments } = useUsers();
+  const { fetchProjectById } = useProjects();
   const [state, setState] = useState({
     project: null,
     assignments: [],
@@ -34,8 +36,7 @@ export default function Claroflow() {
     const loadData = async () => {
       try {
         const [project, assignments] = await Promise.all([
-          getProjectDetails(user.userId),
-
+          fetchProjectById(user.project._id),
           fetchUserAssignments(user.userId),
         ]);
 
@@ -56,7 +57,7 @@ export default function Claroflow() {
     };
 
     loadData();
-  }, [user.userId, getProjectDetails, fetchUserAssignments]);
+  }, [user.userId, fetchProjectById, fetchUserAssignments]);
 
   if (state.loading) return <div>Carregando...</div>;
   if (state.error) return <div>Erro: {state.error}</div>;

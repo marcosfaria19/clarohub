@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
     gestor: "",
     avatar: "",
     permissoes: "",
+    project: {},
   });
 
   const handleReset = () => {
@@ -23,6 +24,7 @@ export const AuthProvider = ({ children }) => {
       gestor: "",
       avatar: "",
       permissoes: "",
+      project: {},
     });
     setToken(null);
   };
@@ -49,6 +51,7 @@ export const AuthProvider = ({ children }) => {
               avatar: decodedToken.avatar,
               dailyLikesUsed: decodedToken.dailyLikesUsed,
               dailyIdeasCreated: decodedToken.dailyIdeasCreated,
+              project: decodedToken.project,
             });
           }
         }
