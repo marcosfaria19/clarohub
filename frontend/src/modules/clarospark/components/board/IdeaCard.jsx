@@ -37,7 +37,7 @@ import statusConfig from "modules/clarospark/utils/statusConfig";
 import { getLikeIcon } from "modules/clarospark/utils/getLikeIcon";
 import spark from "modules/clarospark/assets/f0.png";
 import { useTheme } from "modules/shared/contexts/ThemeContext";
-import { format } from "date-fns";
+
 import { useIdeaIsNew } from "modules/clarospark/hooks/useIdeaIsNew";
 import NewIndicator from "./IdeaNewIndicator";
 import useManagerTable from "modules/clarospark/hooks/useManagerTable";
