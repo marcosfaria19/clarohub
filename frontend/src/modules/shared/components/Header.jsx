@@ -24,12 +24,12 @@ import AvatarDropdown from "modules/shared/components/AvatarDropdown";
 import NotificationsPopover from "modules/shared/components/NotificationsPopover";
 import { formatUserName } from "modules/shared/utils/formatUsername";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
-import { useTheme } from "modules/shared/contexts/ThemeContext"; // Importa o hook de tema
+import { useTheme } from "modules/shared/contexts/ThemeContext";
 import appHeaderInfo from "../utils/appHeaderInfo";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
-  const { theme, toggleTheme } = useTheme(); // Usa o contexto para acessar e alternar o tema
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
 
   const onLogout = () => {
