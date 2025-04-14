@@ -14,9 +14,11 @@ import {
 } from "modules/shared/components/ui/dropdown-menu";
 import { formatDate } from "modules/shared/utils/formatDate";
 import useProjects from "modules/claroflow/hooks/useProjects";
+import { useTasks } from "modules/claroflow/hooks/useTasks";
 
 export function TaskCard({ task, isCompleted, onTransition, project }) {
-  const { transitionTask, transitionLoading } = useProjects();
+  const { transitionLoading } = useProjects();
+  const { transitionTask } = useTasks();
 
   // Obter transições permitidas
   const currentAssignment = project?.assignments?.find(
