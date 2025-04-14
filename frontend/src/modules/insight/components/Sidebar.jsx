@@ -12,6 +12,7 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "modules/shared/components/ui/avatar";
+import { Link } from "react-router-dom";
 
 const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
   const menuItems = [
@@ -23,7 +24,23 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
   ];
 
   return (
-    <div className="flex h-full flex-col bg-menu pt-6 sm:pt-6 md:fixed md:bottom-0 md:left-0 md:top-0 md:w-64 md:border-r md:border-border md:pt-[62px]">
+    <div className="flex h-full flex-col bg-menu md:fixed md:bottom-0 md:left-0 md:top-0 md:w-64 md:border-r md:border-border">
+      {/* Logo */}
+      <div className="flex items-center justify-between border-b border-border bg-menu p-4">
+        <Link to="/home" className="flex items-center space-x-2">
+          <img
+            src={"/logo.png"}
+            alt="Claro Hub"
+            width={"28"}
+            height={"28"}
+            className="mr-1"
+            draggable={false}
+          />
+          <span className="pointer-events-none text-2xl font-semibold text-menu-foreground opacity-90">
+            Claro Hub
+          </span>
+        </Link>
+      </div>
       <nav className="flex-1 p-4">
         <ul className="space-y-2">
           {menuItems.map((item) => (

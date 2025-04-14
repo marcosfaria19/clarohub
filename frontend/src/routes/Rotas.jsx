@@ -2,7 +2,6 @@
 import React, { lazy } from "react";
 import { useRoutes, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
-import AuthLayout from "../layouts/AuthLayout";
 import DefaultLayout from "../layouts/DefaultLayout";
 import SidebarLayout from "../layouts/SidebarLayout";
 
@@ -39,11 +38,7 @@ export default function Rotas() {
   const routes = useRoutes([
     {
       path: "/login",
-      element: (
-        <AuthLayout>
-          <Login />
-        </AuthLayout>
-      ),
+      element: <Login />,
     },
     {
       element: <DefaultLayout />,

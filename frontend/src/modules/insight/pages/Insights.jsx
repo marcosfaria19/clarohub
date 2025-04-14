@@ -75,12 +75,13 @@ export default function Insights() {
       </Sheet>
 
       {/* Conteúdo principal */}
-      <div className="flex-1 md:pl-64 md:pt-0">
+      <div className="flex-1 md:pl-64">
         <Container
           fullWidth
-          innerClassName="mx-0 px-4 sm:px-6 md:px-8 lg:px-12"
+          innerClassName="p-4 lg:pt-10"
+          className="max-h-[calc(100vh-4rem)] overflow-auto"
         >
-          <div className="py-6">{renderActivePage()}</div>
+          {renderActivePage()}
         </Container>
       </div>
     </div>

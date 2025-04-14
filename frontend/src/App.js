@@ -10,7 +10,7 @@ function App() {
   return (
     <Router>
       <ThemeProvider>
-        <Suspense fallback={<Container></Container>}>
+        <Suspense fallback={<Container className="h-screen"></Container>}>
           <Rotas />
         </Suspense>
         <Toaster position="bottom-right" richColors />
