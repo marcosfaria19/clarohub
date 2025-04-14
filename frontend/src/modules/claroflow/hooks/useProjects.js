@@ -57,6 +57,21 @@ const useProjects = () => {
     [projects, fetchProjects],
   );
 
+  // Função para buscar projetos por projectId
+  const fetchProjectById = useCallback(async (projectId) => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(`/flow/projects/${projectId}`);
+      return response.data;
+    } catch (err) {
+      console.error("Erro ao buscar projeto:", err);
+      setError(err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // Função para criar uma nova assignment no projeto
   const createAssignment = async (projectId, name) => {
     try {
@@ -125,6 +140,23 @@ const useProjects = () => {
     }
   };
 
+  const transitionTask = async (taskId, newStatusId, projectId) => {
+    setLoading(true);
+    try {
+      await axiosInstance.patch(`/flow/tasks/transition/${taskId}`, {
+        newStatusId,
+        projectId,
+        obs: "Status alterado pelo usuário",
+      });
+      return true;
+    } catch (err) {
+      console.error("Erro na transição:", err);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Salva o layout (posição dos nodes) do board
   const saveLayout = async (projectId, nodes) => {
     try {
@@ -153,6 +185,8 @@ const useProjects = () => {
     updateTransitions,
     saveLayout,
     fetchAssignments,
+    fetchProjectById,
+    transitionTask,
   };
 };
 

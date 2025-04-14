@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "modules/shared/components/ui/button";
 import {
   Card,
@@ -6,36 +6,32 @@ import {
   CardHeader,
   CardTitle,
 } from "modules/shared/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "modules/shared/components/ui/dropdown-menu";
+import { formatDate } from "modules/shared/utils/formatDate";
+import useProjects from "modules/claroflow/hooks/useProjects";
 
-import axiosInstance from "services/axios";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+export function TaskCard({ task, isCompleted, onTransition, project }) {
+  const { transitionTask, transitionLoading } = useProjects();
 
-export function TaskCard({ task, isCompleted, onTransition, user }) {
-  const [transitionLoading, setTransitionLoading] = useState(false);
+  // Obter transições permitidas
+  const currentAssignment = project?.assignments?.find(
+    (a) => a._id === task.status._id,
+  );
+  const nextAssignments = currentAssignment?.transitions
+    ?.map((id) => project.assignments.find((a) => a._id === id))
+    .filter(Boolean);
 
-  /**
-   * Handler para transição de status
-   */
   const handleTransition = async (newStatusId) => {
-    setTransitionLoading(true);
-    try {
-      await axiosInstance.patch(`/flow/tasks/transition/${task._id}`, {
-        newStatusId,
-        obs: "Status alterado pelo usuário",
-      });
+    const success = await transitionTask(task._id, newStatusId, project._id);
+    if (success) {
       onTransition?.();
-    } catch (err) {
-    } finally {
-      setTransitionLoading(false);
     }
   };
-
-  /**
-   * Formata data para exibição
-   */
-  const formatDate = (date) =>
-    format(new Date(date), "dd/MM/yyyy HH:mm", { locale: ptBR });
 
   return (
     <Card className="group rounded-lg border-border bg-background shadow-sm transition-all hover:bg-accent/40 hover:opacity-80">
@@ -72,14 +68,35 @@ export function TaskCard({ task, isCompleted, onTransition, user }) {
 
         {!isCompleted && (
           <div className="mt-4 flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleTransition("NOVO_STATUS_ID")}
-              disabled={transitionLoading}
-            >
-              {transitionLoading ? "Processando..." : "Marcar como Concluído"}
-            </Button>
+            {nextAssignments?.length > 0 ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={transitionLoading}
+                  >
+                    {transitionLoading
+                      ? "Processando..."
+                      : "Marcar como Concluído"}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {nextAssignments.map((assignment) => (
+                    <DropdownMenuItem
+                      key={assignment._id}
+                      onSelect={() => handleTransition(assignment._id)}
+                    >
+                      {assignment.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <span className="text-sm text-muted-foreground">
+                Nenhuma transição disponível
+              </span>
+            )}
           </div>
         )}
       </CardContent>

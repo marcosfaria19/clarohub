@@ -255,7 +255,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
   // Trocar de fila
   router.patch("/transition/:taskId", authenticateToken, async (req, res) => {
     try {
-      const { newStatusId, obs } = req.body;
+      const { newStatusId, obs, projectId } = req.body;
 
       // 1. Verificar se o usuário é o responsável
       const task = await tasksCollection.findOne({
@@ -269,19 +269,34 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
           .send("Você não é o responsável por esta demanda");
       }
 
-      // 2. Obter novo status (simulado sem collection separada)
-      const newStatus = {
-        _id: new ObjectId(newStatusId),
-        name: "Nome do Status",
-      };
+      // 2. Obter o projeto correto usando o projectId recebido
+      const project = await projectsCollection.findOne({
+        _id: new ObjectId(projectId),
+      });
 
-      // 3. Atualizar task
+      if (!project) {
+        return res.status(404).send("Projeto não encontrado");
+      }
+
+      // 3. Encontrar o novo status nas transições permitidas
+      const newAssignment = project.assignments.find(
+        (a) => a._id.toString() === newStatusId
+      );
+
+      if (!newAssignment) {
+        return res.status(400).send("Status de destino inválido");
+      }
+
+      // 4. Atualizar task
       const result = await tasksCollection.findOneAndUpdate(
         { _id: task._id },
         {
           $set: {
-            status: newStatus,
-            assignedTo: null, // Libera a atribuição
+            status: {
+              _id: new ObjectId(newAssignment._id),
+              name: newAssignment.name,
+            },
+            assignedTo: null,
             updatedAt: new Date(),
           },
           $push: {
@@ -291,9 +306,12 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
                 _id: new ObjectId(req.user.id),
                 name: req.user.NOME,
               },
-              startedAt: task.updatedAt, // Quando assumiu a tarefa
-              finishedAt: new Date(), // Quando finalizou
-              newStatus: newStatus,
+              startedAt: task.updatedAt,
+              finishedAt: new Date(),
+              newStatus: {
+                _id: new ObjectId(newAssignment._id),
+                name: newAssignment.name,
+              },
               obs: obs || "Status alterado",
             },
           },

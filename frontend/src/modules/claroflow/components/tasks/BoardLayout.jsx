@@ -27,7 +27,7 @@ import {
 import { TaskCard } from "./TaskCard";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 
-export default function GenericBoard({ assignment }) {
+export default function GenericBoard({ assignment, project }) {
   const { user } = useContext(AuthContext);
   const userId = user.userId;
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -191,7 +191,9 @@ export default function GenericBoard({ assignment }) {
                   inProgressTasks.map((task) => (
                     <TaskCard
                       key={task._id}
+                      project={project}
                       task={task}
+                      assignment={assignment}
                       onTransition={() => {
                         refetchInProgress();
                         refetchCompleted();
