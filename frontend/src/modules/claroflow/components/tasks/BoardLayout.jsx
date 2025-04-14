@@ -18,52 +18,40 @@ import { useUsers } from "modules/claroflow/hooks/useUsers";
 import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import { useMediaQuery } from "modules/shared/hooks/use-media-query";
 import { cn } from "modules/shared/lib/utils";
-import {
-  useAvailableTasks,
-  useInProgressTasks,
-  useCompletedTasks,
-  useTakeTask,
-} from "modules/claroflow/hooks/useTasks";
+
 import { TaskCard } from "./TaskCard";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
+import { useTasks } from "modules/claroflow/hooks/useTasks";
 
 export default function GenericBoard({ assignment, project }) {
   const { user } = useContext(AuthContext);
   const userId = user.userId;
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  /* Membros do time */
+  // Hook de usuários por assignment
   const {
     users: teamMembers,
     loading: usersLoading,
     error: usersError,
   } = useUsers(assignment._id);
 
-  // Buscar tarefas
-  const { tasks: availableTasks, refetch: refetchAvailable } =
-    useAvailableTasks(assignment?._id);
-
+  // Hook de tarefas
   const {
-    tasks: inProgressTasks,
-    loading: inProgressLoading,
-    error: inProgressError,
-    refetch: refetchInProgress,
-  } = useInProgressTasks(assignment?._id, userId);
-
-  const {
-    tasks: completedTasks,
-    loading: completedLoading,
-    error: completedError,
-    refetch: refetchCompleted,
-  } = useCompletedTasks(assignment?._id, userId);
-
-  // Configurar ação de pegar tarefa
-  const { takeTask, loading: takeLoading } = useTakeTask();
+    availableTasks,
+    inProgressTasks,
+    completedTasks,
+    loading,
+    error,
+    takeTask,
+    refetchAvailableTasks,
+    refetchInProgressTasks,
+    refetchCompletedTasks,
+  } = useTasks({ assignmentId: assignment._id, userId });
 
   const handleTakeTask = async () => {
     try {
       await takeTask(assignment._id);
-      await Promise.all([refetchAvailable(), refetchInProgress()]);
+      await Promise.all([refetchAvailableTasks(), refetchInProgressTasks()]);
     } catch (err) {
       console.error("Falha ao assumir tarefa:", err);
     }
@@ -99,12 +87,12 @@ export default function GenericBoard({ assignment, project }) {
               size={isMobile ? "sm" : "default"}
               onClick={handleTakeTask}
               disabled={
-                takeLoading ||
+                loading ||
                 availableTasks.length === 0 ||
                 inProgressTasks?.length > 0
               }
             >
-              {takeLoading
+              {loading
                 ? "Processando..."
                 : inProgressTasks?.length > 0
                   ? "Finalize a demanda atual"
@@ -183,9 +171,9 @@ export default function GenericBoard({ assignment, project }) {
           <Card className="flex-1 overflow-hidden border-border bg-card">
             <ScrollArea className="h-full">
               <CardContent className="space-y-4 p-4">
-                {inProgressLoading ? (
+                {loading ? (
                   <div className="text-muted-foreground">Carregando...</div>
-                ) : inProgressError ? (
+                ) : error ? (
                   <div className="text-destructive">Erro ao carregar</div>
                 ) : inProgressTasks?.length > 0 ? (
                   inProgressTasks.map((task) => (
@@ -195,8 +183,8 @@ export default function GenericBoard({ assignment, project }) {
                       task={task}
                       assignment={assignment}
                       onTransition={() => {
-                        refetchInProgress();
-                        refetchCompleted();
+                        refetchInProgressTasks();
+                        refetchCompletedTasks();
                       }}
                     />
                   ))
@@ -233,9 +221,9 @@ export default function GenericBoard({ assignment, project }) {
           <Card className="flex-1 overflow-hidden border-border bg-card">
             <ScrollArea className="h-full">
               <CardContent className="space-y-4 p-4">
-                {completedLoading ? (
+                {loading ? (
                   <div className="text-muted-foreground">Carregando...</div>
-                ) : completedError ? (
+                ) : error ? (
                   <div className="text-destructive">Erro ao carregar</div>
                 ) : completedTasks?.length > 0 ? (
                   completedTasks.map((task) => (

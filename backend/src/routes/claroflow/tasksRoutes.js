@@ -167,43 +167,64 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
     }
   );
 
-  // Buscar tasks do usuário concluídas (Finalizados)
+  // Rota para buscar completed tasks por demanda/usuario
 
-  router.get(
-    "/completed/:assignmentId/user/:userId",
-    authenticateToken,
-    async (req, res) => {
-      try {
-        const result = await tasksCollection
-          .aggregate([
-            {
-              $match: {
-                history: {
-                  $elemMatch: {
-                    "status._id": new ObjectId(req.params.assignmentId),
-                    "user._id": new ObjectId(req.params.userId),
+  router.get("/completed/:assignmentId/user/:userId", async (req, res) => {
+    try {
+      const { assignmentId, userId } = req.params;
+
+      const tasks = await tasksCollection
+        .aggregate([
+          {
+            $match: {
+              history: {
+                $elemMatch: {
+                  "status._id": new ObjectId(assignmentId),
+                  "user._id": new ObjectId(userId),
+                  finishedAt: { $exists: true },
+                },
+              },
+            },
+          },
+          {
+            $addFields: {
+              finishedAtByUser: {
+                $first: {
+                  $map: {
+                    input: {
+                      $filter: {
+                        input: "$history",
+                        as: "entry",
+                        cond: {
+                          $and: [
+                            {
+                              $eq: [
+                                "$$entry.status._id",
+                                new ObjectId(assignmentId),
+                              ],
+                            },
+                            { $eq: ["$$entry.user._id", new ObjectId(userId)] },
+                            { $ifNull: ["$$entry.finishedAt", false] },
+                          ],
+                        },
+                      },
+                    },
+                    as: "matchedEntry",
+                    in: "$$matchedEntry.finishedAt",
                   },
                 },
               },
             },
-            {
-              $project: {
-                _id: 1,
-                IDDEMANDA: 1,
-                status: 1,
-                "history.$": 1,
-              },
-            },
-          ])
-          .toArray();
+          },
+        ])
+        .toArray();
 
-        res.status(200).json(result);
-      } catch (err) {
-        console.error("Erro:", err);
-        res.status(500).send("Erro interno");
-      }
+      res.status(200).json(tasks);
+    } catch (err) {
+      console.error("Erro ao buscar tasks completadas:", err);
+      res.status(500).send("Erro interno");
     }
-  );
+  });
 
   // Assumir demanda (prioridade = data)
   router.patch("/take/:assignmentId", authenticateToken, async (req, res) => {

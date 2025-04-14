@@ -1,108 +1,73 @@
+// hooks/useTasks.js
 import { useState, useEffect } from "react";
 import axiosInstance from "services/axios";
 
-// Hook para gerenciar tarefas disponíveis para tratamento
-
-export const useAvailableTasks = (assignmentId) => {
-  const [tasks, setTasks] = useState([]);
+export const useTasks = ({ assignmentId, userId } = {}) => {
+  const [availableTasks, setAvailableTasks] = useState([]);
+  const [inProgressTasks, setInProgressTasks] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchTasks = async () => {
+  const fetchAvailableTasks = async () => {
+    if (!assignmentId) return;
+
     setLoading(true);
     try {
       const response = await axiosInstance.get(
         `/flow/tasks/assignment/${assignmentId}`,
       );
-
-      setTasks(response.data.filter((t) => !t.assignedTo));
-      /* setTasks(response.data); */
+      setAvailableTasks(response.data.filter((t) => !t.assignedTo));
       setError(null);
     } catch (err) {
       setError(err.response?.data || err.message);
-      console.error("Erro ao buscar tarefas:", err);
+      console.error("Erro ao buscar tarefas disponíveis:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (assignmentId) fetchTasks();
-  }, [assignmentId]);
+  const fetchInProgressTasks = async () => {
+    if (!assignmentId || !userId) return;
 
-  return { tasks, loading, error, refetch: fetchTasks };
-};
-
-// Hook para buscar tarefas em tratamento por usuário
-
-export const useInProgressTasks = (assignmentId, userId) => {
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const fetchTasks = async () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get(
         `/flow/tasks/assignment/${assignmentId}/user/${userId}`,
       );
-      setTasks(response.data);
+      setInProgressTasks(response.data);
       setError(null);
     } catch (err) {
       setError(err.response?.data || err.message);
+      console.error("Erro ao buscar tarefas em progresso:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (assignmentId && userId) fetchTasks();
-  }, [assignmentId, userId]);
+  const fetchCompletedTasks = async () => {
+    if (!assignmentId || !userId) return;
 
-  return { tasks, loading, error, refetch: fetchTasks };
-};
-
-// Hook para buscar tarefas finalizadas por usuário
-
-export const useCompletedTasks = (assignmentId, userId) => {
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const fetchTasks = async () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get(
         `/flow/tasks/completed/${assignmentId}/user/${userId}`,
       );
-      setTasks(response.data);
+      setCompletedTasks(response.data);
       setError(null);
     } catch (err) {
       setError(err.response?.data || err.message);
+      console.error("Erro ao buscar tarefas finalizadas:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (assignmentId && userId) fetchTasks();
-  }, [assignmentId, userId]);
-
-  return { tasks, loading, error, refetch: fetchTasks };
-};
-
-// Hook para assumir uma tarefa
-
-export const useTakeTask = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const takeTask = async (assignmentId) => {
+  const takeTask = async (taskId) => {
     setLoading(true);
     try {
-      const response = await axiosInstance.patch(
-        `/flow/tasks/take/${assignmentId}`,
-      );
+      const response = await axiosInstance.patch(`/flow/tasks/take/${taskId}`);
+      await fetchAvailableTasks();
       return response.data;
     } catch (err) {
       setError(err.response?.data || err.message);
@@ -112,5 +77,47 @@ export const useTakeTask = () => {
     }
   };
 
-  return { takeTask, loading, error };
+  const transitionTask = async (taskId, newStatusId, projectId) => {
+    setLoading(true);
+    try {
+      await axiosInstance.patch(`/flow/tasks/transition/${taskId}`, {
+        newStatusId,
+        projectId,
+        obs: "Status alterado pelo usuário",
+      });
+      await Promise.all([fetchInProgressTasks(), fetchCompletedTasks()]);
+      return true;
+    } catch (err) {
+      console.error("Erro na transição:", err);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (assignmentId) {
+      fetchAvailableTasks();
+    }
+  }, [assignmentId]);
+
+  useEffect(() => {
+    if (assignmentId && userId) {
+      fetchInProgressTasks();
+      fetchCompletedTasks();
+    }
+  }, [assignmentId, userId]);
+
+  return {
+    availableTasks,
+    inProgressTasks,
+    completedTasks,
+    loading,
+    error,
+    takeTask,
+    transitionTask,
+    refetchAvailableTasks: fetchAvailableTasks,
+    refetchInProgressTasks: fetchInProgressTasks,
+    refetchCompletedTasks: fetchCompletedTasks,
+  };
 };
