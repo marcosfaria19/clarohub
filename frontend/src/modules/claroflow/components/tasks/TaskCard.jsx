@@ -40,7 +40,7 @@ export function TaskCard({ task, isCompleted, onTransition, project }) {
           <span>#{task.IDDEMANDA}</span>
           {isCompleted && (
             <span className="text-sm text-muted-foreground">
-              {formatDate(task.history[0]?.finishedAt)}
+              {formatDate(task.finishedAtByUser)}
             </span>
           )}
         </CardTitle>

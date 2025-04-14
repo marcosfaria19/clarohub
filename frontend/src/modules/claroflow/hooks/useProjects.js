@@ -140,23 +140,6 @@ const useProjects = () => {
     }
   };
 
-  const transitionTask = async (taskId, newStatusId, projectId) => {
-    setLoading(true);
-    try {
-      await axiosInstance.patch(`/flow/tasks/transition/${taskId}`, {
-        newStatusId,
-        projectId,
-        obs: "Status alterado pelo usuário",
-      });
-      return true;
-    } catch (err) {
-      console.error("Erro na transição:", err);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Salva o layout (posição dos nodes) do board
   const saveLayout = async (projectId, nodes) => {
     try {
@@ -186,7 +169,6 @@ const useProjects = () => {
     saveLayout,
     fetchAssignments,
     fetchProjectById,
-    transitionTask,
   };
 };
 
