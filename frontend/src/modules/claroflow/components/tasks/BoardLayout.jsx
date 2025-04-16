@@ -40,7 +40,9 @@ export default function GenericBoard({ assignment, project }) {
     availableTasks,
     inProgressTasks,
     completedTasks,
-    loading,
+    loadingAvailable,
+    loadingInProgress,
+    loadingCompleted,
     error,
     takeTask,
     refetchAvailableTasks,
@@ -87,12 +89,12 @@ export default function GenericBoard({ assignment, project }) {
               size={isMobile ? "sm" : "default"}
               onClick={handleTakeTask}
               disabled={
-                loading ||
+                loadingAvailable ||
                 availableTasks.length === 0 ||
                 inProgressTasks?.length > 0
               }
             >
-              {loading
+              {loadingAvailable
                 ? "Processando..."
                 : inProgressTasks?.length > 0
                   ? "Finalize a demanda atual"
@@ -171,11 +173,7 @@ export default function GenericBoard({ assignment, project }) {
           <Card className="flex-1 overflow-hidden border-border bg-card">
             <ScrollArea className="h-full">
               <CardContent className="space-y-4 p-4">
-                {loading ? (
-                  <div className="text-muted-foreground">Carregando...</div>
-                ) : error ? (
-                  <div className="text-destructive">Erro ao carregar</div>
-                ) : inProgressTasks?.length > 0 ? (
+                {inProgressTasks?.length > 0 ? (
                   inProgressTasks.map((task) => (
                     <TaskCard
                       key={task._id}
@@ -188,6 +186,8 @@ export default function GenericBoard({ assignment, project }) {
                       }}
                     />
                   ))
+                ) : loadingInProgress ? (
+                  <div className="text-muted-foreground">Carregando...</div>
                 ) : (
                   <div className="text-muted-foreground">
                     Nenhuma demanda em tratamento
@@ -221,14 +221,12 @@ export default function GenericBoard({ assignment, project }) {
           <Card className="flex-1 overflow-hidden border-border bg-card">
             <ScrollArea className="h-full">
               <CardContent className="space-y-4 p-4">
-                {loading ? (
-                  <div className="text-muted-foreground">Carregando...</div>
-                ) : error ? (
-                  <div className="text-destructive">Erro ao carregar</div>
-                ) : completedTasks?.length > 0 ? (
+                {completedTasks?.length > 0 ? (
                   completedTasks.map((task) => (
                     <TaskCard key={task._id} task={task} isCompleted />
                   ))
+                ) : loadingCompleted ? (
+                  <div className="text-muted-foreground">Carregando...</div>
                 ) : (
                   <div className="text-muted-foreground">
                     Nenhuma demanda finalizada
