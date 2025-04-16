@@ -242,19 +242,6 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
             },
             updatedAt: new Date(),
           },
-          $push: {
-            history: {
-              status: {
-                _id: new ObjectId(req.params.assignmentId),
-              },
-              user: {
-                _id: new ObjectId(req.user.id),
-                name: req.user.NOME,
-              },
-              startedAt: new Date(),
-              sentTo: null,
-            },
-          },
         },
         {
           sort: { updatedAt: 1 },
