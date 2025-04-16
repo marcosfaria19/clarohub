@@ -29,7 +29,7 @@ module.exports = (projectsCollection, usersCollection) => {
 
       res.status(200).json(project);
     } catch (error) {
-      console.error("Erro ao buscar projeto:", error);
+      /* console.error("Erro ao buscar projeto:", error); */
       res.status(500).json({ error: "Error fetching project" });
     }
   });

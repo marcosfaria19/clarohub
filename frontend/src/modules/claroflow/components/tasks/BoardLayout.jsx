@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button } from "modules/shared/components/ui/button";
 import {
   Card,
@@ -22,6 +22,7 @@ import { cn } from "modules/shared/lib/utils";
 import { TaskCard } from "./TaskCard";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useTasks } from "modules/claroflow/hooks/useTasks";
+import FinishedTaskFilter from "./FinishedTaskFilter";
 
 export default function GenericBoard({ assignment, project }) {
   const { user } = useContext(AuthContext);
@@ -43,7 +44,6 @@ export default function GenericBoard({ assignment, project }) {
     loadingAvailable,
     loadingInProgress,
     loadingCompleted,
-    error,
     takeTask,
     refetchAvailableTasks,
     refetchInProgressTasks,
@@ -58,6 +58,14 @@ export default function GenericBoard({ assignment, project }) {
       console.error("Falha ao assumir tarefa:", err);
     }
   };
+
+  // Filtro para tarefas finalizadas
+  const [filteredCompletedTasks, setFilteredCompletedTasks] =
+    useState(completedTasks);
+
+  useEffect(() => {
+    setFilteredCompletedTasks(completedTasks);
+  }, [completedTasks]);
 
   return (
     <div
@@ -204,16 +212,13 @@ export default function GenericBoard({ assignment, project }) {
             <CardHeader className="flex h-[70px] items-center p-4">
               <div className="flex w-full items-center justify-between gap-2 max-md:flex-col">
                 <CardTitle className="text-lg font-semibold text-card-foreground">
-                  Finalizadas ({completedTasks?.length || 0})
+                  Finalizadas ({filteredCompletedTasks?.length || 0})
                 </CardTitle>
-                <div className="relative w-full md:w-48">
-                  <Input
-                    placeholder="Buscar finalizadas..."
-                    className="w-full bg-background p-2"
-                    size={isMobile ? "sm" : "default"}
-                  />
-                  <SearchIcon className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                </div>
+                <FinishedTaskFilter
+                  tasks={completedTasks}
+                  isMobile={isMobile}
+                  onFilter={setFilteredCompletedTasks}
+                />
               </div>
             </CardHeader>
           </Card>
@@ -221,8 +226,8 @@ export default function GenericBoard({ assignment, project }) {
           <Card className="flex-1 overflow-hidden border-border bg-card">
             <ScrollArea className="h-full">
               <CardContent className="space-y-4 p-4">
-                {completedTasks?.length > 0 ? (
-                  completedTasks.map((task) => (
+                {filteredCompletedTasks?.length > 0 ? (
+                  filteredCompletedTasks.map((task) => (
                     <TaskCard key={task._id} task={task} isCompleted />
                   ))
                 ) : loadingCompleted ? (
