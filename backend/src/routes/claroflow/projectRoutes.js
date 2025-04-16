@@ -296,7 +296,6 @@ module.exports = (projectsCollection, usersCollection) => {
             { $project: { assignedUsers: "$assignments.assignedUsers" } },
           ])
           .toArray();
-        console.log(assignment);
 
         if (assignment.length === 0) {
           return res.status(404).json({ error: "Assignment não encontrado" });
