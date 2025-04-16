@@ -1,9 +1,16 @@
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { Users } from "lucide-react";
+import { CheckCircle, Users } from "lucide-react";
 import { Card } from "modules/shared/components/ui/card";
 import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import AssignedUserCard from "./AssignedUserCard";
+import { useTasks } from "modules/claroflow/hooks/useTasks";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "modules/shared/components/ui/tooltip";
 
 /**
  * AssignmentColumn
@@ -18,42 +25,57 @@ const AssignmentColumn = ({
 }) => {
   const { setNodeRef, isOver } = useDroppable({ id: assignment.id });
 
+  const { availableTasks } = useTasks({
+    assignmentId: assignment.id,
+  });
+
   return (
     <Card className="flex min-w-72 flex-1 flex-col border border-border bg-card">
-      {/* Cabeçalho da coluna */}
-      <div className="p-4">
-        <div className="flex items-center justify-between">
-          {/* Nome da coluna e gráfico */}
-          <h3 className="text-lg font-medium text-card-foreground">
-            {assignment.name}
-          </h3>
+      <TooltipProvider>
+        <div className="border-b border-border p-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium text-card-foreground">
+              {assignment.name}
+            </h3>
 
-          <div className="flex items-center gap-3">
-            {/* Implementação para mostrar gráficos de demandas por regionais */}
-            {/* <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 gap-1 px-2 text-muted-foreground hover:text-foreground"
-                >
-                  <BarChartIcon className="h-4 w-4" />
-                  <span className="ml-1 font-normal">{tasks.length}</span>
-                </Button>
-              </PopoverTrigger>
+            <div className="flex items-center gap-4 text-muted-foreground">
+              {/* Contagem de tarefas disponíveis */}
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div className="flex items-center gap-1">
+                      <CheckCircle
+                        className={`h-4 w-4 ${availableTasks?.length === 0 ? "text-muted" : "text-green-500"}`}
+                      />
+                      <span className="text-sm">{availableTasks?.length}</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    Demandas disponíveis
+                  </TooltipContent>
+                </Tooltip>
+              </div>
 
-              <PopoverContent className="w-[400px] bg-background">
-                <DemandChart tasks={tasks} />
-              </PopoverContent>
-            </Popover> */}
-
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <Users className="h-4 w-4" />
-              <span className="text-sm">{assignment.assigned.length}</span>
+              {/* Contagem de Usuars atribuídos */}
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div className="flex items-center gap-1">
+                      <Users className="h-4 w-4" />
+                      <span className="text-sm">
+                        {assignment.assigned.length}
+                      </span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    Usuários atribuídos
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </TooltipProvider>
 
       <ScrollArea className="h-full flex-1">
         <div
