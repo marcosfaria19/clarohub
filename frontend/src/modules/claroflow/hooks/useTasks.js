@@ -6,13 +6,17 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
   const [availableTasks, setAvailableTasks] = useState([]);
   const [inProgressTasks, setInProgressTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
-  const [loading, setLoading] = useState(false);
+
+  const [loadingAvailable, setLoadingAvailable] = useState(false);
+  const [loadingInProgress, setLoadingInProgress] = useState(false);
+  const [loadingCompleted, setLoadingCompleted] = useState(false);
+
   const [error, setError] = useState(null);
 
   const fetchAvailableTasks = async () => {
     if (!assignmentId) return;
 
-    setLoading(true);
+    setLoadingAvailable(true);
     try {
       const response = await axiosInstance.get(
         `/flow/tasks/assignment/${assignmentId}`,
@@ -23,14 +27,14 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
       setError(err.response?.data || err.message);
       console.error("Erro ao buscar tarefas disponíveis:", err);
     } finally {
-      setLoading(false);
+      setLoadingAvailable(false);
     }
   };
 
   const fetchInProgressTasks = async () => {
     if (!assignmentId || !userId) return;
 
-    setLoading(true);
+    setLoadingInProgress(true);
     try {
       const response = await axiosInstance.get(
         `/flow/tasks/assignment/${assignmentId}/user/${userId}`,
@@ -41,14 +45,14 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
       setError(err.response?.data || err.message);
       console.error("Erro ao buscar tarefas em progresso:", err);
     } finally {
-      setLoading(false);
+      setLoadingInProgress(false);
     }
   };
 
   const fetchCompletedTasks = async () => {
     if (!assignmentId || !userId) return;
 
-    setLoading(true);
+    setLoadingCompleted(true);
     try {
       const response = await axiosInstance.get(
         `/flow/tasks/completed/${assignmentId}/user/${userId}`,
@@ -59,12 +63,11 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
       setError(err.response?.data || err.message);
       console.error("Erro ao buscar tarefas finalizadas:", err);
     } finally {
-      setLoading(false);
+      setLoadingCompleted(false);
     }
   };
 
   const takeTask = async (taskId) => {
-    setLoading(true);
     try {
       const response = await axiosInstance.patch(`/flow/tasks/take/${taskId}`);
       await fetchAvailableTasks();
@@ -72,13 +75,10 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
     } catch (err) {
       setError(err.response?.data || err.message);
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 
   const transitionTask = async (taskId, newStatusId, projectId) => {
-    setLoading(true);
     try {
       await axiosInstance.patch(`/flow/tasks/transition/${taskId}`, {
         newStatusId,
@@ -90,8 +90,6 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
     } catch (err) {
       console.error("Erro na transição:", err);
       return false;
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -112,7 +110,9 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
     availableTasks,
     inProgressTasks,
     completedTasks,
-    loading,
+    loadingAvailable,
+    loadingInProgress,
+    loadingCompleted,
     error,
     takeTask,
     transitionTask,
