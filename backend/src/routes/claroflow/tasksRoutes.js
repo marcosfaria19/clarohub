@@ -257,16 +257,16 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
           },
         },
         {
-          sort: { updatedAt: 1 }, // Ordena pela mais antiga
+          sort: { updatedAt: 1 },
           returnDocument: "after",
         }
       );
 
-      if (!result.value) {
+      if (!result) {
         return res.status(404).send("Nenhuma demanda disponível");
       }
 
-      res.status(200).json(result.value);
+      res.status(200).json(result);
     } catch (err) {
       console.error("Erro:", err);
       res.status(500).send("Erro interno");
