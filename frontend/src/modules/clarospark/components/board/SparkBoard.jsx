@@ -111,7 +111,7 @@ export default function SparkBoard({ subjects, cards, currentFilter, userId }) {
   );
 
   const renderDesktopView = () => (
-    <div className="scrollbar-hide flex max-h-[75vh] overflow-x-auto drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+    <div className="scrollbar-hide flex max-h-[75vh] min-h-[75vh] overflow-x-auto drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
       {[...subjects].sort().map((subject, index, sortedSubjects) => (
         <div
           key={subject}
