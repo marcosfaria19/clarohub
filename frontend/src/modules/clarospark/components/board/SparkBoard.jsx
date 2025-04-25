@@ -111,11 +111,11 @@ export default function SparkBoard({ subjects, cards, currentFilter, userId }) {
   );
 
   const renderDesktopView = () => (
-    <div className="flex max-h-[75vh] min-h-[75vh] drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+    <div className="scrollbar-hide flex max-h-[75vh] overflow-x-auto drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
       {[...subjects].sort().map((subject, index, sortedSubjects) => (
         <div
           key={subject}
-          className={`relative flex w-[300px] flex-shrink-0 flex-col bg-board ${
+          className={`relative flex min-w-[300px] max-w-[400px] flex-1 flex-col bg-board ${
             index === 0 ? "rounded-l-lg" : ""
           } ${index === sortedSubjects.length - 1 ? "rounded-r-lg" : ""}`}
         >
@@ -124,17 +124,20 @@ export default function SparkBoard({ subjects, cards, currentFilter, userId }) {
               index === 0 ? "rounded-tl-lg" : ""
             } ${index === sortedSubjects.length - 1 ? "rounded-tr-lg" : ""}`}
           >
-            <h2 className="text-center text-xl font-medium antialiased">
+            <h2 className="px-2 text-center text-xl font-medium antialiased">
               {subject}
             </h2>
             {index !== 0 && (
-              <div className="absolute bottom-4 left-[-2px] top-4 w-[1px] bg-white/50"></div>
+              <div className="absolute bottom-4 left-0 top-4 w-[1px] bg-white/50"></div>
             )}
           </div>
+
           {index !== sortedSubjects.length - 1 && (
-            <div className="absolute bottom-5 right-[1px] top-32 w-[1px] bg-foreground/30"></div>
+            <div className="absolute bottom-5 right-0 top-32 w-[1px] bg-foreground/30"></div>
           )}
+
           <div className="bg-board py-2" />
+
           <div
             className={`scrollbar-spark flex-1 overflow-y-auto bg-board ${
               index === 0 ? "rounded-bl-lg" : ""
