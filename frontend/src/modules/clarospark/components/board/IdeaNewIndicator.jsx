@@ -1,20 +1,42 @@
+import React from "react";
 import { motion } from "framer-motion";
 
-export default function NewIndicator({ isNew }) {
+export function NewIndicator({ isNew }) {
   if (!isNew) return null;
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-      className="absolute right-0 top-[-10px] flex items-center space-x-1 rounded-full px-3 py-1 text-xs font-medium text-foreground"
+      className="absolute inset-0 -m-[2px] rounded-lg"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
     >
-      <span className="relative flex h-2 w-2">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground opacity-75"></span>
-        <span className="relative inline-flex h-2 w-2 rounded-full bg-[#a344c7]"></span>
-      </span>
-      <span>Nova!</span>
+      <motion.div
+        className="h-full w-full rounded-lg"
+        style={{
+          boxShadow:
+            "0 0 0 2px hsl(var(--warning) / 0.5), 0 0 15px hsl(var(--warning) / 0.5)",
+        }}
+        animate={{
+          boxShadow: [
+            "0 0 0 2px hsl(var(--warning) / 0.3), 0 0 10px hsl(var(--warning) / 0.3)",
+            "0 0 0 2px hsl(var(--warning) / 0.6), 0 0 20px hsl(var(--warning) / 0.6)",
+            "0 0 0 2px hsl(var(--warning) / 0.3), 0 0 10px hsl(var(--warning) / 0.3)",
+          ],
+        }}
+        transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
+      />
+      <div
+        className="absolute -right-1 -top-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md"
+        style={{
+          backgroundColor: "hsl(var(--warning))",
+          color: "hsl(var(--warning-foreground))",
+        }}
+      >
+        NOVIDADE
+      </div>
     </motion.div>
   );
 }
+
+export default NewIndicator;

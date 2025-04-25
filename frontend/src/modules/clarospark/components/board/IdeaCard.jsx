@@ -122,7 +122,7 @@ export default function IdeaCard({
             <span className="ml-1 truncate text-xs font-semibold">
               {displayedCreator}
             </span>
-            <Badge className={cn("mt-1 w-fit text-[10px]", color)}>
+            <Badge className={cn("mt-1 w-fit text-[11px]", color)}>
               {icon} {status}
             </Badge>
           </div>

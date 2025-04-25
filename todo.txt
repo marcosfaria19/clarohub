@@ -1,0 +1,9 @@
+1) Criar o dicionário para redirecionamento de extrações à demandas corretas. Estudar qual a melhor forma, que funcione genericamente para outros fluxos
+status: _id: project.assignments[0]._id / name: project.assignments[0].name,
+
+2) Criar o algoritmo de prioridades das demandas para cada dicionário. No caso, todas serão ordenadas por data menos Análise de MDU:
+• Data / Regional / Base GED / Ordem Alfabética de Cidades - Estudar como funcionaria essa lógica e se é possível
+
+3) Implementação inicial com dados reais da Dashboard de Gestão
+
+4) Criação da ferramenta de Gestão de Férias

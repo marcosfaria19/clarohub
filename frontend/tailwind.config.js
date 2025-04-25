@@ -53,6 +53,10 @@ module.exports = {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
@@ -97,7 +101,7 @@ module.exports = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "shadow-pulse": "shadow-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite", 
+        "shadow-pulse": "shadow-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },
