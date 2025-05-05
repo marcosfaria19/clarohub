@@ -83,11 +83,11 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
         }
       );
 
-      if (!result.value) {
+      if (!result) {
         return res.status(404).send("Nenhuma demanda disponível");
       }
 
-      res.status(200).json(result.value);
+      res.status(200).json(result);
     } catch (err) {
       console.error("Erro ao assumir demanda:", err);
       res.status(500).send("Erro interno");
@@ -154,7 +154,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
             const cidadeInfo = cidadeMap.get(codOperadora);
 
             // Convertendo a string DATA_INICIO para Date
-            const updatedAt = row.DATA_INICIO
+            const createdAt = row.DATA_INICIO
               ? parseCustomDateFromExcel(row.DATA_INICIO)
               : null;
 
@@ -177,8 +177,8 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
                 name: project.assignments[0].name,
               },
               assignedTo: null,
-              updatedAt,
-              createdAt: new Date(),
+              updatedAt: new Date(),
+              createdAt: createdAt,
               history: [],
             };
           });

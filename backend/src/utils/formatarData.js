@@ -15,10 +15,15 @@ const formatarData = (dataNumerica) => {
 };
 
 // Função para converter string de data no formato "dd/MM/yyyy HH:mm:ss" para Date
-function parseCustomDateFromExcel(dateNum) {
-  const data = new Date((dateNum - 25569) * 86400 * 1000); // Conversão do número para a data em JavaScript
 
-  return data;
+function parseCustomDateFromExcel(dateNum) {
+  // Converter o número do Excel para milissegundos
+  const excelDate = new Date((dateNum - 25569) * 86400 * 1000);
+
+  // Adicionar 3 horas para transformar de horário de Brasília para UTC
+  const utcDate = new Date(excelDate.getTime() + 3 * 60 * 60 * 1000);
+
+  return utcDate;
 }
 
 module.exports = { formatarData, parseCustomDateFromExcel };
