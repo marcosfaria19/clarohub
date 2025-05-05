@@ -7,6 +7,8 @@ const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 const fs = require("fs").promises;
 const path = require("path");
+const { Parser } = require("json2csv");
+const { parseCustomDateFromExcel } = require("../../utils/formatarData");
 
 module.exports = (tasksCollection, usersCollection, projectsCollection) => {
   // Índices otimizados para todas as situações
@@ -151,6 +153,11 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
             const codOperadora = row.COD_OPERADORA?.toString().trim() || "";
             const cidadeInfo = cidadeMap.get(codOperadora);
 
+            // Convertendo a string DATA_INICIO para Date
+            const updatedAt = row.DATA_INICIO
+              ? parseCustomDateFromExcel(row.DATA_INICIO)
+              : null;
+
             return {
               IDDEMANDA: row.IDDEMANDA,
               COD_OPERADORA: codOperadora,
@@ -161,11 +168,6 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
                 REGIONAL: cidadeInfo.REGIONAL,
                 BASE: cidadeInfo.BASE,
               }),
-              createdBy: {
-                _id: user._id,
-                name: user.NOME,
-                date: new Date(),
-              },
               project: {
                 _id: project._id,
                 name: project.name,
@@ -174,7 +176,9 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
                 _id: project.assignments[0]._id,
                 name: project.assignments[0].name,
               },
-              updatedAt: new Date(),
+              assignedTo: null,
+              updatedAt,
+              createdAt: new Date(),
               history: [],
             };
           });
@@ -380,10 +384,9 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
     }
   );
 
-  //////////////////////////////////////////////////////////////////////////////
+  /* Rota para debug de ordenação de tasks 
 
-  const { Parser } = require("json2csv"); // Adicione no topo do arquivo
-  router.get("/debug-sor/:assignmentId", async (req, res) => {
+  router.get("/debug-sort/:assignmentId", async (req, res) => {
     try {
       const assignmentId = new ObjectId(req.params.assignmentId);
       const sortCriteria = await getSortCriteria(assignmentId);
@@ -447,7 +450,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
       console.error("Erro ao gerar CSV:", err);
       res.status(500).json({ error: err.message });
     }
-  });
+  });*/
 
   // Criar índices ao iniciar
   createIndexes().catch(console.error);
