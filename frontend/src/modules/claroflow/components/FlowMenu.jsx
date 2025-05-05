@@ -39,11 +39,26 @@ export default function FlowMenu({
           <Button
             variant="ghost"
             className={`h-10 w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors ${
-              activeTab === "equipe" ? "bg-primary text-accent-foreground" : ""
+              activeTab === "team" ? "bg-primary text-accent-foreground" : ""
             }`}
-            onClick={() => onTabChange("equipe")}
+            onClick={() => onTabChange("team")}
           >
             Equipe
+          </Button>
+        )}
+
+        {/* Aba Fluxo do Projeto */}
+        {role === "admin" && (
+          <Button
+            variant="ghost"
+            className={`h-10 w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors ${
+              activeTab === "projectflow"
+                ? "bg-primary text-accent-foreground"
+                : ""
+            }`}
+            onClick={() => onTabChange("projectflow")}
+          >
+            Fluxos
           </Button>
         )}
 
