@@ -9,26 +9,88 @@ const fs = require("fs").promises;
 const path = require("path");
 
 module.exports = (tasksCollection, usersCollection, projectsCollection) => {
-  // índices para melhor performance na operações do bd
+  // Índices otimizados para todas as situações
   const createIndexes = async () => {
     try {
       await tasksCollection.createIndex({
         "status._id": 1,
         "assignedTo._id": 1,
+        REGIONAL: 1,
+        BASE: 1,
+        CIDADE: 1,
+        updatedAt: 1,
       });
-      await tasksCollection.createIndex({ "assignedTo._id": 1, updatedAt: 1 });
+
       await tasksCollection.createIndex({
         "history.status._id": 1,
         "history.user._id": 1,
         "history.finishedAt": 1,
       });
+
       await tasksCollection.createIndex({ IDDEMANDA: 1 }, { unique: true });
     } catch (err) {
       console.error("Erro ao criar índices:", err);
     }
   };
 
-  createIndexes().catch(console.error);
+  // Helper para determinar critério de ordenação
+  const getSortCriteria = async (assignmentId) => {
+    const project = await projectsCollection.findOne({
+      "assignments._id": assignmentId,
+    });
+
+    if (!project) return { updatedAt: 1 };
+
+    const assignment = project.assignments.find(
+      (a) => a._id.toString() === assignmentId.toString()
+    );
+
+    if (assignment?.sortConfig) {
+      return assignment.sortConfig.orderBy.reduce((sortObj, field) => {
+        sortObj[field] = assignment.sortConfig.orderDirection;
+        return sortObj;
+      }, {});
+    }
+
+    return { updatedAt: 1 }; // Fallback padrão, ordenando apenas por updatedAt
+  };
+
+  // Rota modificada para assumir demanda com ordenação dinâmica
+  router.patch("/take/:assignmentId", authenticateToken, async (req, res) => {
+    try {
+      const assignmentId = new ObjectId(req.params.assignmentId);
+      const sortCriteria = await getSortCriteria(assignmentId);
+
+      const result = await tasksCollection.findOneAndUpdate(
+        {
+          "status._id": assignmentId,
+          assignedTo: null,
+        },
+        {
+          $set: {
+            assignedTo: {
+              _id: new ObjectId(req.user.id),
+              name: req.user.NOME,
+            },
+            updatedAt: new Date(),
+          },
+        },
+        {
+          sort: sortCriteria,
+          returnDocument: "after",
+        }
+      );
+
+      if (!result.value) {
+        return res.status(404).send("Nenhuma demanda disponível");
+      }
+
+      res.status(200).json(result.value);
+    } catch (err) {
+      console.error("Erro ao assumir demanda:", err);
+      res.status(500).send("Erro interno");
+    }
+  });
 
   router.post(
     "/upload",
@@ -226,40 +288,6 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
     }
   });
 
-  // Assumir demanda (prioridade = data)
-  router.patch("/take/:assignmentId", authenticateToken, async (req, res) => {
-    try {
-      const result = await tasksCollection.findOneAndUpdate(
-        {
-          "status._id": new ObjectId(req.params.assignmentId),
-          assignedTo: null,
-        },
-        {
-          $set: {
-            assignedTo: {
-              _id: new ObjectId(req.user.id),
-              name: req.user.NOME,
-            },
-            updatedAt: new Date(),
-          },
-        },
-        {
-          sort: { updatedAt: 1 },
-          returnDocument: "after",
-        }
-      );
-
-      if (!result) {
-        return res.status(404).send("Nenhuma demanda disponível");
-      }
-
-      res.status(200).json(result);
-    } catch (err) {
-      console.error("Erro:", err);
-      res.status(500).send("Erro interno");
-    }
-  });
-
   // Trocar de fila
   router.patch("/transition/:taskId", authenticateToken, async (req, res) => {
     try {
@@ -352,7 +380,77 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
     }
   );
 
-  createIndexes();
+  //////////////////////////////////////////////////////////////////////////////
+
+  const { Parser } = require("json2csv"); // Adicione no topo do arquivo
+  router.get("/debug-sor/:assignmentId", async (req, res) => {
+    try {
+      const assignmentId = new ObjectId(req.params.assignmentId);
+      const sortCriteria = await getSortCriteria(assignmentId);
+
+      const tasks = await tasksCollection
+        .find({
+          "status._id": assignmentId,
+          assignedTo: null,
+        })
+        .sort(sortCriteria)
+        .toArray();
+
+      // Transformação customizada no campo de data
+      const transformedTasks = tasks.map((item) => {
+        const date = item.updatedAt;
+
+        const excelDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}-${date
+          .getDate()
+          .toString()
+          .padStart(2, "0")} ${date
+          .getHours()
+          .toString()
+          .padStart(2, "0")}:${date
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
+
+        return {
+          ...item,
+          updatedAt: excelDate,
+        };
+      });
+
+      const opts = {
+        fields: [
+          "REGIONAL",
+          "BASE",
+          "CIDADE",
+          "ENDERECO_VISTORIA",
+          "updatedAt",
+        ],
+        delimiter: ";",
+        withBOM: true,
+      };
+
+      const parser = new Parser(opts);
+      const csv = "\uFEFF" + parser.parse(transformedTasks);
+
+      res.setHeader("Content-Type", "text/csv; charset=utf-8");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=tasks_${assignmentId}_${
+          new Date().toISOString().split("T")[0]
+        }.csv`
+      );
+
+      res.status(200).send(csv);
+    } catch (err) {
+      console.error("Erro ao gerar CSV:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Criar índices ao iniciar
+  createIndexes().catch(console.error);
 
   return router;
 };
