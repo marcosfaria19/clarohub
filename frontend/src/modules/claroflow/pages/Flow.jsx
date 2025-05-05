@@ -18,6 +18,7 @@ import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
 import AssignmentBoard from "./TeamBoard";
 import TasksUpload from "../components/upload/TasksUpload";
 import useProjects from "../hooks/useProjects";
+import ProjectsFlowDashboard from "../components/projects/ProjectFlowDashboard";
 
 export default function Claroflow() {
   const { user } = useContext(AuthContext);
@@ -77,8 +78,10 @@ export default function Claroflow() {
         {state.project ? (
           state.selectedTab === "home" ? (
             <FlowHome project={state.project} />
-          ) : state.selectedTab === "equipe" ? (
+          ) : state.selectedTab === "team" ? (
             <AssignmentBoard project={state.project} />
+          ) : state.selectedTab === "projectflow" ? (
+            <ProjectsFlowDashboard />
           ) : (
             <BoardLayout
               assignmentId={state.selectedTab}

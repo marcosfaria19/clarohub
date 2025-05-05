@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "modules/shared/components/ui/button";
 import { CirclePlusIcon } from "lucide-react";
-import Container from "modules/shared/components/ui/container";
 import { toast } from "sonner";
 import useProjects from "modules/claroflow/hooks/useProjects";
-import ProjectsSidebar from "./FlowSidebar";
 import AddAssignment from "./AddAssignment";
 import ProjectFlow from "./ProjectFlow";
+import ProjectsSidebar from "./ProjectsSidebar";
 
-const ProjectsFlowDashboard = () => {
+export default function ProjectsFlowDashboard() {
   const {
     projects,
     loading,
@@ -81,34 +80,34 @@ const ProjectsFlowDashboard = () => {
   };
 
   return (
-    <Container innerClassName="min-w-full">
-      <div className="flex h-[calc(100vh-180px)]">
-        <ProjectsSidebar
-          projects={projects}
-          loading={loading}
-          selectedProject={selectedProject}
-          onSelectProject={setSelectedProject}
-          onAddAssignment={handleAddAssignment}
-        />
+    <div className="flex h-[calc(100dvh-250px)] gap-4 bg-background p-4">
+      <ProjectsSidebar
+        projects={projects}
+        loading={loading}
+        selectedProject={selectedProject}
+        onSelectProject={setSelectedProject}
+        onAddAssignment={handleAddAssignment}
+      />
 
-        <div className="flex flex-1 flex-col rounded-lg border border-input">
-          <div className="flex items-center justify-between border-b border-input p-4">
-            <h2 className="text-xl font-semibold">
-              {selectedProject ? selectedProject.name : "Selecione um projeto"}
-            </h2>
-            {selectedProject && (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => handleAddAssignment(selectedProject._id)}
-              >
-                <CirclePlusIcon className="mr-2 h-4 w-4" /> Nova Demanda
-              </Button>
-            )}
-          </div>
+      <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card">
+        <div className="flex items-center justify-between border-b border-border p-4">
+          <h2 className="text-lg font-semibold text-card-foreground">
+            {selectedProject ? selectedProject.name : "Selecione um projeto"}
+          </h2>
+          {selectedProject && (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => handleAddAssignment(selectedProject._id)}
+            >
+              <CirclePlusIcon className="mr-2 h-4 w-4" /> Nova Demanda
+            </Button>
+          )}
+        </div>
 
+        <div className="flex-1 overflow-auto p-4">
           {error ? (
-            <div className="p-4 text-destructive">
+            <div className="text-destructive">
               Erro ao carregar projetos: {error.message}
             </div>
           ) : selectedProject ? (
@@ -118,7 +117,7 @@ const ProjectsFlowDashboard = () => {
               onDeleteAssignment={deleteAssignment}
             />
           ) : (
-            <div className="flex flex-1 items-center justify-center text-muted-foreground">
+            <div className="flex h-full items-center justify-center text-muted-foreground">
               Selecione um projeto para visualizar o fluxo de demandas
             </div>
           )}
@@ -139,8 +138,6 @@ const ProjectsFlowDashboard = () => {
         }}
         projects={projects.filter((p) => p._id === currentAssignment.projectId)}
       />
-    </Container>
+    </div>
   );
-};
-
-export default ProjectsFlowDashboard;
+}

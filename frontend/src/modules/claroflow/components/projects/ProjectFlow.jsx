@@ -18,9 +18,7 @@ import AssignmentNode from "./AssignmentNode";
 import CustomEdge from "./CustomEdge";
 
 const nodeTypes = { assignment: AssignmentNode };
-const edgeTypes = {
-  custom: CustomEdge,
-};
+const edgeTypes = { custom: CustomEdge };
 
 const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
   const { updateTransitions, saveLayout } = useProjects();
@@ -61,7 +59,7 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
       setInitialNodes(newNodes);
       setInitialEdges(newEdges);
     }
-  }, [project, setEdges, setNodes, onEditAssignment]);
+  }, [project, onEditAssignment]);
 
   const handleDeleteAssignment = (assignmentId) => {
     setCurrentAssignmentId(assignmentId);
@@ -69,15 +67,15 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
   };
 
   const handleDeleteConfirm = async () => {
-    if (currentAssignmentId) {
-      try {
-        await onDeleteAssignment(project._id, currentAssignmentId);
-        toast.success("Demanda excluída!");
-      } catch (error) {
-        toast.error("Erro ao excluir demanda");
-      }
-      setShowDeleteModal(false);
+    if (!currentAssignmentId) return;
+
+    try {
+      await onDeleteAssignment(project._id, currentAssignmentId);
+      toast.success("Demanda excluída!");
+    } catch (error) {
+      toast.error("Erro ao excluir demanda");
     }
+    setShowDeleteModal(false);
   };
 
   const onConnect = useCallback(
@@ -91,11 +89,11 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
         ]);
         setEdges((eds) => [...eds, connection]);
         setHasChanges(true);
-      } catch (error) {
+      } catch {
         toast.error("Erro ao conectar demandas");
       }
     },
-    [edges, project._id, updateTransitions, setEdges],
+    [edges, project._id, updateTransitions],
   );
 
   const onEdgesDelete = async (deletedEdges) => {
@@ -109,7 +107,7 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
         await updateTransitions(project._id, edge.source, currentTransitions);
       }
       setHasChanges(true);
-    } catch (error) {
+    } catch {
       toast.error("Erro ao remover conexão");
     }
   };
@@ -118,7 +116,7 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
     const { nodes: layoutedNodes } = getLayoutedElements(nodes, edges, "TB");
     setNodes(layoutedNodes);
     setHasChanges(true);
-  }, [nodes]);
+  }, [nodes, edges]);
 
   const handleApplyChanges = async () => {
     try {
@@ -126,7 +124,7 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
       setInitialNodes(nodes);
       setInitialEdges(edges);
       setHasChanges(false);
-    } catch (error) {
+    } catch {
       toast.error("Erro ao salvar layout");
     }
   };
@@ -135,10 +133,10 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
     setNodes([...initialNodes]);
     setEdges([...initialEdges]);
     setHasChanges(false);
-  }, [initialNodes, initialEdges, setEdges, setNodes]);
+  }, [initialNodes, initialEdges]);
 
   return (
-    <div className="flex-1">
+    <div className="h-full w-full flex-1 bg-card">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -155,9 +153,8 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
         onEdgesDelete={onEdgesDelete}
         nodeTypes={nodeTypes}
         fitView
+        proOptions={{ hideAttribution: true }}
       >
-        <Background />
-        <Controls />
         <Panel position="top-right">
           <Button variant="outline" size="sm" onClick={handleLayout}>
             Ajustar Layout

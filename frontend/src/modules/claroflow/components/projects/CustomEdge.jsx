@@ -1,7 +1,6 @@
-import { Button } from "modules/shared/components/ui/button";
 import { useCallback } from "react";
-import { BaseEdge, getBezierPath, useReactFlow } from "reactflow";
-import { useStore } from "reactflow";
+import { BaseEdge, getBezierPath, useReactFlow, useStore } from "reactflow";
+import { Button } from "modules/shared/components/ui/button";
 
 export default function CustomEdge({
   id,
@@ -36,18 +35,23 @@ export default function CustomEdge({
     <>
       <BaseEdge path={edgePath} markerEnd={markerEnd} />
       <foreignObject
-        width="40"
-        height="40"
-        x={edgeCenterX - 8}
-        y={edgeCenterY - 12}
+        width="32"
+        height="32"
+        x={edgeCenterX - 16}
+        y={edgeCenterY - 16}
+        requiredExtensions="http://www.w3.org/1999/xhtml"
       >
-        <Button
-          size="icon"
-          onClick={onEdgeClick}
-          className="h-4 w-4 rounded-full bg-secondary hover:bg-destructive"
-        >
-          ×
-        </Button>
+        <div className="flex h-full w-full items-center justify-center">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-4 w-4 rounded-full bg-destructive text-white hover:bg-destructive/90"
+            onClick={onEdgeClick}
+            title="Remover conexão"
+          >
+            ×
+          </Button>
+        </div>
       </foreignObject>
     </>
   );

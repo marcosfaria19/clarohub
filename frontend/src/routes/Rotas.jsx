@@ -26,10 +26,6 @@ const UsersAdmin = lazy(() => import("../modules/clarohub/pages/Users"));
 
 // Páginas – Claroflow
 const Claroflow = lazy(() => import("../modules/claroflow/pages/Flow"));
-const TeamBoard = lazy(() => import("../modules/claroflow/pages/TeamBoard"));
-const ProjectsFlowDashboard = lazy(
-  () => import("../modules/claroflow/components/projects/ProjectFlowDashboard"),
-);
 
 // Páginas – Insight
 const Insights = lazy(() => import("../modules/insight/pages/Insights"));
@@ -130,22 +126,6 @@ export default function Rotas() {
           element: (
             <ProtectedRoute allowedRoles={["admin"]}>
               <UsersAdmin />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "/projects/admin",
-          element: (
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <ProjectsFlowDashboard />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "/projects/board",
-          element: (
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <TeamBoard />
             </ProtectedRoute>
           ),
         },
