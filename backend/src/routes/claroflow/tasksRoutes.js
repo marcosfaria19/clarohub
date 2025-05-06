@@ -384,7 +384,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
     }
   );
 
-  /* Rota para debug de ordenação de tasks 
+  /* Rota para debug de ordenação de tasks */
 
   router.get("/debug-sort/:assignmentId", async (req, res) => {
     try {
@@ -401,7 +401,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
 
       // Transformação customizada no campo de data
       const transformedTasks = tasks.map((item) => {
-        const date = item.updatedAt;
+        const date = item.createdAt;
 
         const excelDate = `${date.getFullYear()}-${(date.getMonth() + 1)
           .toString()
@@ -418,7 +418,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
 
         return {
           ...item,
-          updatedAt: excelDate,
+          createdAt: excelDate,
         };
       });
 
@@ -428,7 +428,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
           "BASE",
           "CIDADE",
           "ENDERECO_VISTORIA",
-          "updatedAt",
+          "createdAt",
         ],
         delimiter: ";",
         withBOM: true,
@@ -450,7 +450,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
       console.error("Erro ao gerar CSV:", err);
       res.status(500).json({ error: err.message });
     }
-  });*/
+  });
 
   // Criar índices ao iniciar
   createIndexes().catch(console.error);
