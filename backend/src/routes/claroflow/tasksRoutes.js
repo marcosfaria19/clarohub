@@ -153,9 +153,17 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
             const codOperadora = row.COD_OPERADORA?.toString().trim() || "";
             const cidadeInfo = cidadeMap.get(codOperadora);
 
-            // Convertendo a string DATA_INICIO para Date
-            const createdAt = row.DATA_INICIO
+            // Convertendo a string DATA_INICIO para Date (apenas dia, mês e ano)
+            const rawDate = row.DATA_INICIO
               ? parseCustomDateFromExcel(row.DATA_INICIO)
+              : null;
+
+            const createdAt = rawDate
+              ? new Date(
+                  rawDate.getFullYear(),
+                  rawDate.getMonth(),
+                  rawDate.getDate()
+                )
               : null;
 
             return {
