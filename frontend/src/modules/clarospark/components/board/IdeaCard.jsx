@@ -1,4 +1,6 @@
-import React, { useContext, useState, useEffect } from "react";
+// src/modules/clarospark/components/IdeaCard.jsx
+
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import { Button } from "modules/shared/components/ui/button";
 import { Badge } from "modules/shared/components/ui/badge";
 import {
@@ -13,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "modules/shared/components/ui/dialog";
 import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import {
@@ -33,58 +36,53 @@ import { format } from "date-fns";
 import { useIdeaIsNew } from "modules/clarospark/hooks/useIdeaIsNew";
 import NewIndicator from "./IdeaNewIndicator";
 
-export default function IdeaCard({
-  title,
-  description,
-  creator,
-  likesCount: initialLikesCount = 0,
-  status,
-  anonymous,
-  ideaId,
-  createdAt,
-  history = [],
-}) {
+import useManagerTable from "modules/clarospark/hooks/useManagerTable";
+import StatusChanger from "./StatusChanger";
+
+export default function IdeaCard(props) {
+  const {
+    title,
+    description,
+    creator,
+    likesCount: initialLikesCount = 0,
+    status,
+    anonymous,
+    ideaId,
+    createdAt,
+    history = [],
+  } = props;
+
+  // Monte o objeto inteiro da ideia
+  const idea = { ...props };
+
   const { user } = useContext(AuthContext);
   const { likesCount, handleLike, updateLikeCount } = useLikes();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { color, icon } = statusConfig[status] || statusConfig["Em análise"];
   const { theme } = useTheme();
 
-  // Hook para lógica de "Nova!"
+  // modal de detalhes
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // hook de confirmação compartilhada
+  const {
+    isConfirmOpen,
+    newStatus,
+    updateStatus,
+    setIsConfirmOpen,
+    setSelectedItem,
+    setNewStatus,
+  } = useManagerTable();
+
+  // indicador "Nova!"
   const { isNew, markAsViewed } = useIdeaIsNew(ideaId, createdAt);
 
-  const handleCardClick = () => {
-    setIsModalOpen(true);
-    markAsViewed();
-  };
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const formattedCreatedAt = format(new Date(createdAt), "dd/MM/yyyy");
-
-  const isLongDescription = description.length > 90;
-  const truncatedDescription = isLongDescription
-    ? `${description.substring(0, 90)} ... `
-    : description;
-
-  const displayedCreator =
-    anonymous === 1 ? "Anônimo" : formatUserName(creator.name);
-
-  const displayedAvatar =
-    anonymous === 1 ? "/anonymous-avatar.png" : creator.avatar;
-
+  // likes
   useEffect(() => {
     updateLikeCount(ideaId, initialLikesCount);
   }, [ideaId, initialLikesCount, updateLikeCount]);
 
-  const handleLikeClick = async (e) => {
+  const handleLikeClick = (e) => {
     e.stopPropagation();
-    try {
-      await handleLike(ideaId, user.userId);
-    } catch (error) {
-      console.error("Error handling like:", error);
-    }
+    handleLike(ideaId, user.userId).catch(console.error);
   };
 
   const currentLikes = likesCount[ideaId] || initialLikesCount;
@@ -92,25 +90,59 @@ export default function IdeaCard({
 
   const lastChange = history.length > 0 ? history[history.length - 1] : null;
   const lastChangedBy = lastChange ? lastChange.changedBy : "";
+  // abrir/fechar detalhes
+  const handleCardClick = () => {
+    setIsModalOpen(true);
+    markAsViewed();
+  };
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  // **aqui**: recebe o objeto inteiro e o novo status!
+  const handleStatusChange = useCallback(
+    (selectedIdea, novoStatus) => {
+      console.log("Idea passando ao hook:", selectedIdea, "=>", novoStatus);
+      setSelectedItem(selectedIdea);
+      setNewStatus(novoStatus);
+      setIsConfirmOpen(true);
+    },
+    [setIsConfirmOpen, setNewStatus, setSelectedItem],
+  );
+
+  // só managers/admin
+  const canEdit = ["manager", "admin"].includes(user.permissoes);
+
+  // formata criador e data
+  const displayedCreator =
+    anonymous === 1 ? "Anônimo" : formatUserName(creator.name);
+  const displayedAvatar =
+    anonymous === 1 ? "/anonymous-avatar.png" : creator.avatar;
+  const formattedCreatedAt = format(new Date(createdAt), "dd/MM/yyyy");
+
+  const isLong = description.length > 90;
+  const truncated = isLong
+    ? `${description.substring(0, 90)} ... `
+    : description;
+
+  // cor e ícone do badge
+  const { color, icon } = statusConfig[status] || statusConfig["Em Análise"];
 
   return (
     <TooltipProvider>
       <div
-        className={`relative h-44 w-full max-w-md cursor-pointer rounded-lg bg-card-spark p-4 ${
-          currentLikes > 99 ? "animate-shadow-pulse" : "border-0"
-        } `}
+        className={cn(
+          "relative h-44 w-full max-w-md cursor-pointer rounded-lg bg-card-spark p-4",
+          currentLikes > 99 ? "animate-shadow-pulse" : "border-0",
+        )}
         onClick={handleCardClick}
       >
-        {/* Exibe o indicador "Nova!" se for uma ideia nova */}
         <NewIndicator isNew={isNew} />
 
         <h4 className="max-w-[250px] truncate text-sm font-semibold">
           {title}
         </h4>
-
         <p className="line-clamp-3 text-xs text-foreground">
-          {truncatedDescription}
-          {isLongDescription && <span className="underline">Leia mais</span>}
+          {truncated}
+          {isLong && <span className="underline">Leia mais</span>}
         </p>
 
         <div className="absolute bottom-3 left-4 flex items-center">
@@ -149,14 +181,28 @@ export default function IdeaCard({
         </Tooltip>
       </div>
 
+      {/* Modal de detalhes */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="bg-card-spark sm:max-w-[550px]">
           <DialogHeader className="mb-2 p-0">
             <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
             <div className="mt-2 flex items-center space-x-2">
-              <Badge className={cn("w-fit text-sm", color)}>
-                {icon} {status}
-              </Badge>
+              {canEdit ? (
+                <StatusChanger
+                  currentStatus={status}
+                  disabled={status === "Aprovada"}
+                  // passo a ideia inteira no callback:
+                  onConfirmChange={(novoStatus) =>
+                    handleStatusChange(idea, novoStatus)
+                  }
+                  // evitar propagação p/ não abrir modal de detalhes
+                  triggerProps={{ onClick: (e) => e.stopPropagation() }}
+                />
+              ) : (
+                <Badge className={cn("w-fit text-sm", color)}>
+                  {icon} {status}
+                </Badge>
+              )}
             </div>
             {lastChangedBy && (
               <span className="text-sm text-muted-foreground">
@@ -192,9 +238,7 @@ export default function IdeaCard({
                 </p>
               </div>
             </div>
-
             <div className="flex-grow" />
-
             <div className="flex space-x-2">
               {status === "Em Análise" && (
                 <Button variant="primary" onClick={handleLikeClick}>
@@ -206,6 +250,26 @@ export default function IdeaCard({
                 Fechar
               </Button>
             </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de confirmação de status */}
+      <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="mb-5">
+              Confirmar alteração de status
+            </DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja alterar o status para {newStatus}?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={updateStatus}>Confirmar</Button>
+            <Button variant="secondary" onClick={() => setIsConfirmOpen(false)}>
+              Cancelar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

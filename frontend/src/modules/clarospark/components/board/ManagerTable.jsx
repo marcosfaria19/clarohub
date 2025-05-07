@@ -1,17 +1,5 @@
-// src/modules/your-path/ManagerTable.js
-
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
-import statusConfig from "modules/clarospark/utils/statusConfig";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "modules/shared/components/ui/dropdown-menu";
-import { Badge } from "modules/shared/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +11,7 @@ import {
 import { Button } from "modules/shared/components/ui/button";
 import useManagerTable from "modules/clarospark/hooks/useManagerTable";
 import formatUserName from "modules/shared/utils/formatUsername";
+import StatusChanger from "./StatusChanger";
 
 function ManagerTable() {
   const {
@@ -55,12 +44,6 @@ function ManagerTable() {
   );
 
   const columns = useMemo(() => {
-    const statusDisplayMap = {
-      "Em Análise": "Em Análise",
-      "Em Andamento": "Em Andamento",
-      Aprovada: "Aprovada",
-      Arquivada: "Arquivada",
-    };
     return [
       {
         header: "Colaborador",
@@ -130,40 +113,15 @@ function ManagerTable() {
         sorted: true,
         cell: ({ row }) => {
           const status = row.original.status;
-          const { color } = statusConfig[status] || {};
 
           return (
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger disabled={status === "Aprovada"}>
-                <Badge
-                  variant="outline"
-                  className={`${color} min-w-24 border-0`}
-                >
-                  {status}
-                </Badge>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Alterar Status</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {Object.keys(statusDisplayMap)
-                  .filter(
-                    (displayText) => statusDisplayMap[displayText] !== status,
-                  )
-                  .map((displayText) => (
-                    <DropdownMenuItem
-                      key={displayText}
-                      onClick={() =>
-                        handleStatusChange(
-                          row.original,
-                          statusDisplayMap[displayText],
-                        )
-                      }
-                    >
-                      {displayText}
-                    </DropdownMenuItem>
-                  ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <StatusChanger
+              currentStatus={status}
+              disabled={status === "Aprovada"}
+              onChange={(newStatus) =>
+                handleStatusChange(row.original, newStatus)
+              }
+            />
           );
         },
       },
