@@ -78,7 +78,7 @@ export default function Insights() {
       <div className="flex-1 md:pl-64">
         <Container
           fullWidth
-          innerClassName="p-4 lg:pt-10"
+          innerClassName="p-4 lg:pt-12 sm:pt-12"
           className="max-h-[calc(100vh-4rem)] overflow-auto"
         >
           {renderActivePage()}
