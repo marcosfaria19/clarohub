@@ -18,7 +18,7 @@ export default function StatusChanger({ currentStatus, onChange, disabled }) {
 
   return (
     <DropdownMenu modal={false}>
-      <DropdownMenuTrigger disabled={disabled}>
+      <DropdownMenuTrigger disabled={disabled} className="focus:outline-none">
         <Badge variant="outline" className={`${color} min-w-24 border-0`}>
           {currentStatus}
         </Badge>

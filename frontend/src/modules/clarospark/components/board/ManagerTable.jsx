@@ -43,20 +43,28 @@ function ManagerTable() {
     [setSelectedItem, setNewStatus, setIsConfirmOpen],
   );
 
+  const renderStatusChanger = (row) => (
+    <StatusChanger
+      currentStatus={row.original.status}
+      disabled={row.original.status === "Aprovada"}
+      onChange={(newStatus) => handleStatusChange(row.original, newStatus)}
+    />
+  );
+
+  const renderTextTruncated = (text, title) => (
+    <div className="max-w-[200px] truncate" title={title || text}>
+      {text}
+    </div>
+  );
+
   const columns = useMemo(() => {
     return [
       {
         header: "Colaborador",
         accessorKey: "creator.name",
         sorted: true,
-        cell: ({ row }) => (
-          <div
-            className="max-w-[200px] truncate"
-            title={row.original.creator.name}
-          >
-            {formatUserName(row.original.creator.name)}
-          </div>
-        ),
+        cell: ({ row }) =>
+          renderTextTruncated(formatUserName(row.original.creator.name)),
       },
       {
         header: "Título",
@@ -65,11 +73,7 @@ function ManagerTable() {
       {
         header: "Descrição",
         accessorKey: "description",
-        cell: ({ row }) => (
-          <div className="max-w-lg truncate" title={row.original.description}>
-            {row.original.description}
-          </div>
-        ),
+        cell: ({ row }) => renderTextTruncated(row.original.description),
       },
       {
         header: "Setor",
@@ -95,35 +99,17 @@ function ManagerTable() {
         accessorKey: "lastChangedBy",
         sorted: true,
         cell: ({ row }) => {
-          const lastChange = row.original.history?.length
-            ? row.original.history[row.original.history.length - 1]
-            : null;
-
-          return (
-            <div className="max-w-lg truncate">
-              {lastChange ? formatUserName(lastChange.changedBy) : ""}{" "}
-            </div>
+          const lastChange = row.original.history?.at(-1);
+          return renderTextTruncated(
+            lastChange ? formatUserName(lastChange.changedBy) : "",
           );
         },
       },
-
       {
         header: "Status",
         accessorKey: "status",
         sorted: true,
-        cell: ({ row }) => {
-          const status = row.original.status;
-
-          return (
-            <StatusChanger
-              currentStatus={status}
-              disabled={status === "Aprovada"}
-              onChange={(newStatus) =>
-                handleStatusChange(row.original, newStatus)
-              }
-            />
-          );
-        },
+        cell: ({ row }) => renderStatusChanger(row),
       },
     ];
   }, [handleStatusChange]);

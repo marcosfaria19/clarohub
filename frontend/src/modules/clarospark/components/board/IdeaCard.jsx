@@ -1,6 +1,11 @@
-// src/modules/clarospark/components/IdeaCard.jsx
-
-import React, { useContext, useState, useEffect, useCallback } from "react";
+// Refatoração final em IdeaCard.jsx — melhorias 7 a 9 aplicadas
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  memo,
+} from "react";
 import { Button } from "modules/shared/components/ui/button";
 import { Badge } from "modules/shared/components/ui/badge";
 import {
@@ -35,11 +40,10 @@ import { useTheme } from "modules/shared/contexts/ThemeContext";
 import { format } from "date-fns";
 import { useIdeaIsNew } from "modules/clarospark/hooks/useIdeaIsNew";
 import NewIndicator from "./IdeaNewIndicator";
-
 import useManagerTable from "modules/clarospark/hooks/useManagerTable";
 import StatusChanger from "./StatusChanger";
 
-export default function IdeaCard(props) {
+function IdeaCard(props) {
   const {
     title,
     description,
@@ -52,17 +56,11 @@ export default function IdeaCard(props) {
     history = [],
   } = props;
 
-  // Monte o objeto inteiro da ideia
   const idea = { ...props };
-
   const { user } = useContext(AuthContext);
   const { likesCount, handleLike, updateLikeCount } = useLikes();
   const { theme } = useTheme();
-
-  // modal de detalhes
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // hook de confirmação compartilhada
   const {
     isConfirmOpen,
     newStatus,
@@ -71,11 +69,8 @@ export default function IdeaCard(props) {
     setSelectedItem,
     setNewStatus,
   } = useManagerTable();
-
-  // indicador "Nova!"
   const { isNew, markAsViewed } = useIdeaIsNew(ideaId, createdAt);
 
-  // likes
   useEffect(() => {
     updateLikeCount(ideaId, initialLikesCount);
   }, [ideaId, initialLikesCount, updateLikeCount]);
@@ -90,17 +85,16 @@ export default function IdeaCard(props) {
 
   const lastChange = history.length > 0 ? history[history.length - 1] : null;
   const lastChangedBy = lastChange ? lastChange.changedBy : "";
-  // abrir/fechar detalhes
+
   const handleCardClick = () => {
     setIsModalOpen(true);
     markAsViewed();
   };
+
   const handleCloseModal = () => setIsModalOpen(false);
 
-  // **aqui**: recebe o objeto inteiro e o novo status!
   const handleStatusChange = useCallback(
     (selectedIdea, novoStatus) => {
-      console.log("Idea passando ao hook:", selectedIdea, "=>", novoStatus);
       setSelectedItem(selectedIdea);
       setNewStatus(novoStatus);
       setIsConfirmOpen(true);
@@ -108,10 +102,8 @@ export default function IdeaCard(props) {
     [setIsConfirmOpen, setNewStatus, setSelectedItem],
   );
 
-  // só managers/admin
   const canEdit = ["manager", "admin"].includes(user.permissoes);
 
-  // formata criador e data
   const displayedCreator =
     anonymous === 1 ? "Anônimo" : formatUserName(creator.name);
   const displayedAvatar =
@@ -123,7 +115,6 @@ export default function IdeaCard(props) {
     ? `${description.substring(0, 90)} ... `
     : description;
 
-  // cor e ícone do badge
   const { color, icon } = statusConfig[status] || statusConfig["Em Análise"];
 
   return (
@@ -191,12 +182,7 @@ export default function IdeaCard(props) {
                 <StatusChanger
                   currentStatus={status}
                   disabled={status === "Aprovada"}
-                  // passo a ideia inteira no callback:
-                  onConfirmChange={(novoStatus) =>
-                    handleStatusChange(idea, novoStatus)
-                  }
-                  // evitar propagação p/ não abrir modal de detalhes
-                  triggerProps={{ onClick: (e) => e.stopPropagation() }}
+                  onChange={(newStatus) => handleStatusChange(idea, newStatus)}
                 />
               ) : (
                 <Badge className={cn("w-fit text-sm", color)}>
@@ -217,7 +203,6 @@ export default function IdeaCard(props) {
                 {description}
               </p>
               <Separator />
-              <div className="flex items-center justify-between"></div>
             </div>
           </ScrollArea>
           <DialogFooter className="flex items-center justify-between">
@@ -276,3 +261,5 @@ export default function IdeaCard(props) {
     </TooltipProvider>
   );
 }
+
+export default memo(IdeaCard);
