@@ -32,14 +32,17 @@
     --accent: 263.4 70% 50.4%;
     --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 90.8% 60%;
-    --destructive-foreground: 0 90.8% 95%;
+    --destructive: 0 80% 55%;
+    --destructive-foreground: 0 100% 95%;
 
-    --success: 160 60% 80%;
-    --success-foreground: 160 60% 35%;
+    --warning: 40 100% 60%;
+    --warning-foreground: 32 100% 15%;
 
-    --warning: 48 100% 50%;
-    --warning-foreground: 34 100% 33%;
+    --success: 160 60% 60%;
+    --success-foreground: 160 100% 15%;
+
+    --info: 220 100% 70%;
+    --info-foreground: 220 100% 20%;
 
     --border: 215 27.9% 22%;
     --input: 215 20% 35%;
@@ -55,12 +58,6 @@
     --ring: 263.4 70% 50.4%;
 
     --radius: 0.5rem;
-
-    --chart-1: 263.4 70% 50.4%;
-    --chart-2: 160 60% 80%;
-    --chart-3: 48 100% 50%;
-    --chart-4: 0 90.8% 60%;
-    --chart-5: 217.9 10.6% 64.9%;
   }
 
   .light-theme {
@@ -92,14 +89,17 @@
     --accent: 263.4 70% 50.4%;
     --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 90.8% 50%;
-    --destructive-foreground: 0 90.8% 100%;
+    --destructive: 0 80% 55%;
+    --destructive-foreground: 0 100% 98%;
 
-    --warning: 48 100% 50%;
-    --warning-foreground: 34 100% 33%;
+    --warning: 40 100% 60%;
+    --warning-foreground: 32 100% 18%;
 
-    --success: 160 60% 80%;
-    --success-foreground: 160 60% 35%;
+    --success: 160 60% 70%;
+    --success-foreground: 160 100% 20%;
+
+    --info: 220 100% 70%;
+    --info-foreground: 220 100% 20%;
 
     --border: 267 69% 93%;
     --input: 267 69% 83%;
@@ -107,7 +107,7 @@
     --scrollbar: 263 60% 95%;
     --scrollbar-track: 217 28% 15%;
 
-    --board: 210 20% 98%;
+    --board: 0 0% 95%;
     --board-title: 217 28% 15%;
     --card-spark: 0 0% 100%;
     --podium: 215 16% 47%;
@@ -115,12 +115,6 @@
     --ring: 263.4 70% 50.4%;
 
     --radius: 0.5rem;
-
-    --chart-1: 263.4 70% 50.4%;
-    --chart-2: 160 60% 35%;
-    --chart-3: 48 100% 50%;
-    --chart-4: 0 90.8% 50%;
-    --chart-5: 263 60% 65%;
   }
 }
 
