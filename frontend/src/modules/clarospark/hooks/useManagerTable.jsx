@@ -19,7 +19,6 @@ const useManagerTable = () => {
   };
 
   const updateStatus = async () => {
-    console.log("Atualizando status:", selectedItem, newStatus);
     if (!selectedItem || !newStatus) return;
     try {
       await axiosInstance.patch(`/spark/ideas/${selectedItem._id}`, {
