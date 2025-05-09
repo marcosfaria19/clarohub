@@ -134,6 +134,7 @@ const Home = () => {
     "SharePoint",
     "Central do Colaborador",
     "Gestão",
+    "Suporte",
   ];
 
   const renderCarousel = (apps) => {
