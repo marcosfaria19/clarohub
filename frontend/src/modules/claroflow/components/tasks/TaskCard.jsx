@@ -13,12 +13,6 @@ import {
   DropdownMenuTrigger,
 } from "modules/shared/components/ui/dropdown-menu";
 import { Badge } from "modules/shared/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "modules/shared/components/ui/tooltip";
 import { formatDate } from "modules/shared/utils/formatDate";
 import useProjects from "modules/claroflow/hooks/useProjects";
 import { useTasks } from "modules/claroflow/hooks/useTasks";
@@ -30,8 +24,9 @@ import {
   Loader2,
   Building,
   MapPinned,
-  ExternalLink,
+  Clock,
 } from "lucide-react";
+import { cn } from "modules/shared/lib/utils";
 
 export function TaskCard({ task, isCompleted, onTransition, project }) {
   const { transitionLoading } = useProjects();
@@ -53,62 +48,88 @@ export function TaskCard({ task, isCompleted, onTransition, project }) {
   };
 
   return (
-    <Card className="relative overflow-hidden rounded-xl border border-border bg-background shadow-md transition-all duration-300 hover:border-primary/50 hover:shadow-lg">
-      <div className="absolute left-0 top-0 h-[2px] w-full bg-secondary" />
+    <Card
+      className={cn(
+        "group relative overflow-hidden rounded-lg border shadow-sm transition-all duration-300",
+        isCompleted ? "border-success/40 bg-card" : "border-primary/40 bg-card",
+      )}
+    >
+      {/* Barra de status no topo com maior contraste */}
+      <div
+        className={cn(
+          "absolute left-0 top-0 h-1 w-full",
+          isCompleted ? "bg-success" : "bg-primary",
+        )}
+      />
 
-      <CardHeader className="pb-2 pt-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="rounded-lg bg-primary/15 p-1.5">
-              <Hash className="h-4 w-4 text-primary" />
-            </div>
-            <CardTitle className="text-base font-semibold text-card-foreground">
-              {task.IDDEMANDA}
-            </CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 pt-6">
+        <div className="flex items-center gap-2.5">
+          <div
+            className={cn(
+              "rounded-md p-1.5",
+              isCompleted ? "bg-success/30" : "bg-primary/30",
+            )}
+          >
+            <Hash
+              className={cn(
+                "h-4 w-4",
+                isCompleted
+                  ? "text-success-foreground"
+                  : "text-primary-foreground",
+              )}
+            />
           </div>
-
-          {isCompleted && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge
-                    variant="outline"
-                    className="flex items-center gap-1 bg-green-50 text-green-700 hover:bg-green-100"
-                  >
-                    <Calendar className="h-3 w-3" />
-                    <span className="text-xs">
-                      {formatDate(task.finishedAtByUser)}
-                    </span>
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Completed on {formatDate(task.finishedAtByUser)}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+          <CardTitle className="text-base font-semibold">
+            {task.IDDEMANDA}
+          </CardTitle>
         </div>
+
+        {isCompleted ? (
+          <Badge className="flex items-center gap-1.5 bg-success px-2.5 py-1 text-success-foreground shadow-sm">
+            <Calendar className="h-3.5 w-3.5" />
+            <span className="text-xs font-medium">
+              {formatDate(task.finishedAtByUser)}
+            </span>
+          </Badge>
+        ) : (
+          <Badge className="flex items-center gap-1.5 bg-primary px-2.5 py-1 text-primary-foreground shadow-sm">
+            <Clock className="h-3.5 w-3.5" />
+            <span className="text-xs font-medium">Em tratamento</span>
+          </Badge>
+        )}
       </CardHeader>
 
-      <CardContent className="pt-0">
+      <CardContent className="p-4 pt-3">
         <div className="space-y-3">
-          <div className="flex items-start gap-3 py-2">
-            <div className="mt-0.5 rounded-lg bg-muted p-1.5">
-              <MapPin className="h-4 w-4 text-primary/80" />
+          <div className="flex items-start gap-2.5">
+            <div
+              className={cn(
+                "mt-0.5 rounded-md p-1.5",
+                isCompleted ? "bg-success/30" : "bg-primary/30",
+              )}
+            >
+              <MapPin
+                className={cn(
+                  "h-4 w-4",
+                  isCompleted
+                    ? "text-success-foreground"
+                    : "text-primary-foreground",
+                )}
+              />
             </div>
             <div className="flex-1">
-              <p className="line-clamp-2 text-sm font-medium text-card-foreground">
+              <p className="line-clamp-2 text-sm font-medium text-foreground">
                 {task.ENDERECO_VISTORIA}
               </p>
-              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <MapPinned className="h-3 w-3" />
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-foreground/80">
+                  <MapPinned className="h-3.5 w-3.5" />
                   <span>
                     {task.CIDADE}/{task.UF}
                   </span>
                 </div>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Building className="h-3 w-3" />
+                <div className="flex items-center gap-1.5 text-xs font-medium text-foreground/80">
+                  <Building className="h-3.5 w-3.5" />
                   <span>Base: {task.BASE}</span>
                 </div>
               </div>
@@ -118,31 +139,29 @@ export function TaskCard({ task, isCompleted, onTransition, project }) {
       </CardContent>
 
       {!isCompleted && (
-        <CardFooter className="flex gap-2 pt-1">
-          <Button variant="secondary" size="sm" className="flex-1 gap-1">
-            <ExternalLink className="h-3.5 w-3.5" />
-            Detalhes
-          </Button>
-
+        <CardFooter className="flex justify-end p-4 pt-2">
           {nextAssignments?.length > 0 ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="default"
                   size="sm"
-                  className="flex-1 gap-1"
+                  className={cn(
+                    "gap-1.5 px-3 py-1.5 text-sm font-medium",
+                    transitionLoading
+                      ? "bg-primary/90"
+                      : "bg-primary hover:bg-primary/90",
+                  )}
                   disabled={transitionLoading}
                 >
                   {transitionLoading ? (
-                    <span className="flex items-center justify-center gap-1">
+                    <span className="flex items-center justify-center gap-1.5">
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      <span className="text-xs font-medium">
-                        Processando...
-                      </span>
+                      <span>Processando...</span>
                     </span>
                   ) : (
-                    <span className="flex items-center justify-center gap-1">
-                      <span className="text-sm font-medium">Concluir</span>
+                    <span className="flex items-center justify-center gap-1.5">
+                      <span>Concluir</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </span>
                   )}
@@ -150,7 +169,7 @@ export function TaskCard({ task, isCompleted, onTransition, project }) {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="w-48 rounded-lg border-muted-foreground/20 p-1 shadow-lg"
+                className="w-48 rounded-lg border-border p-1.5 shadow-lg"
               >
                 {nextAssignments.map((assignment) => (
                   <DropdownMenuItem
@@ -167,10 +186,10 @@ export function TaskCard({ task, isCompleted, onTransition, project }) {
             <Button
               variant="default"
               size="sm"
-              className="flex-1 bg-muted text-muted-foreground"
+              className="bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground"
               disabled
             >
-              <span className="text-xs font-medium">Sem transições</span>
+              Sem transições
             </Button>
           )}
         </CardFooter>
