@@ -1,10 +1,5 @@
 import { Handle } from "reactflow";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "modules/shared/components/ui/card";
+import { Card, CardHeader, CardTitle } from "modules/shared/components/ui/card";
 import { Button } from "modules/shared/components/ui/button";
 import { Edit2, Trash2 } from "lucide-react";
 
