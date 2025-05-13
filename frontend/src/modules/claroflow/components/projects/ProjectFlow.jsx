@@ -24,6 +24,11 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
   const [initialEdges, setInitialEdges] = useState([]);
   const [hasChanges, setHasChanges] = useState(false);
 
+  const handleDeleteAssignment = useCallback((assignmentId) => {
+    setCurrentAssignmentId(assignmentId);
+    setShowDeleteModal(true);
+  }, []);
+
   useEffect(() => {
     if (project?.assignments) {
       const newNodes = project.assignments.map((assignment) => ({
@@ -53,12 +58,7 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
       setInitialNodes(newNodes);
       setInitialEdges(newEdges);
     }
-  }, [project, onEditAssignment]);
-
-  const handleDeleteAssignment = (assignmentId) => {
-    setCurrentAssignmentId(assignmentId);
-    setShowDeleteModal(true);
-  };
+  }, [project, onEditAssignment, setNodes, setEdges, handleDeleteAssignment]);
 
   const handleDeleteConfirm = async () => {
     if (!currentAssignmentId) return;
@@ -87,32 +87,35 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
         toast.error("Erro ao conectar demandas");
       }
     },
-    [edges, project._id, updateTransitions],
+    [edges, project._id, updateTransitions, setEdges],
   );
 
-  const onEdgesDelete = async (deletedEdges) => {
-    try {
-      for (const edge of deletedEdges) {
-        const currentTransitions = edges
-          .filter((e) => e.source === edge.source)
-          .map((e) => e.target)
-          .filter((t) => t !== edge.target);
+  const onEdgesDelete = useCallback(
+    async (deletedEdges) => {
+      try {
+        for (const edge of deletedEdges) {
+          const currentTransitions = edges
+            .filter((e) => e.source === edge.source)
+            .map((e) => e.target)
+            .filter((t) => t !== edge.target);
 
-        await updateTransitions(project._id, edge.source, currentTransitions);
+          await updateTransitions(project._id, edge.source, currentTransitions);
+        }
+        setHasChanges(true);
+      } catch {
+        toast.error("Erro ao remover conexão");
       }
-      setHasChanges(true);
-    } catch {
-      toast.error("Erro ao remover conexão");
-    }
-  };
+    },
+    [edges, project._id, updateTransitions],
+  );
 
   const handleLayout = useCallback(() => {
     const { nodes: layoutedNodes } = getLayoutedElements(nodes, edges, "TB");
     setNodes(layoutedNodes);
     setHasChanges(true);
-  }, [nodes, edges]);
+  }, [nodes, edges, setNodes]);
 
-  const handleApplyChanges = async () => {
+  const handleApplyChanges = useCallback(async () => {
     try {
       await saveLayout(project._id, nodes);
       setInitialNodes(nodes);
@@ -121,13 +124,13 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
     } catch {
       toast.error("Erro ao salvar layout");
     }
-  };
+  }, [project._id, nodes, edges, saveLayout]);
 
   const handleDiscardChanges = useCallback(() => {
     setNodes([...initialNodes]);
     setEdges([...initialEdges]);
     setHasChanges(false);
-  }, [initialNodes, initialEdges]);
+  }, [initialNodes, initialEdges, setNodes, setEdges]);
 
   return (
     <div className="h-full w-full flex-1 bg-card">
