@@ -34,7 +34,7 @@ export default function ProjectsFlowDashboard() {
       );
       setSelectedProject(updatedProject);
     }
-  }, [projects]);
+  }, [projects, selectedProject]);
 
   const handleAddAssignment = (projectId) => {
     setCurrentAssignment({ projectId, name: "" });
