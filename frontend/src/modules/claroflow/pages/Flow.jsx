@@ -58,7 +58,7 @@ export default function Claroflow() {
     };
 
     loadData();
-  }, [user.userId, fetchProjectById, fetchUserAssignments]);
+  }, [user.userId, user.project._id, fetchProjectById, fetchUserAssignments]);
 
   if (state.loading) return <div>Carregando...</div>;
   if (state.error) return <div>Erro: {state.error}</div>;

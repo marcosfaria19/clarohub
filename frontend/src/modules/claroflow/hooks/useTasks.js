@@ -1,5 +1,5 @@
 // hooks/useTasks.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "services/axios";
 
 export const useTasks = ({ assignmentId, userId } = {}) => {
@@ -13,7 +13,7 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
 
   const [error, setError] = useState(null);
 
-  const fetchAvailableTasks = async () => {
+  const fetchAvailableTasks = useCallback(async () => {
     if (!assignmentId) return;
 
     setLoadingAvailable(true);
@@ -29,9 +29,9 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
     } finally {
       setLoadingAvailable(false);
     }
-  };
+  }, [assignmentId]);
 
-  const fetchInProgressTasks = async () => {
+  const fetchInProgressTasks = useCallback(async () => {
     if (!assignmentId || !userId) return;
 
     setLoadingInProgress(true);
@@ -47,9 +47,9 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
     } finally {
       setLoadingInProgress(false);
     }
-  };
+  }, [assignmentId, userId]);
 
-  const fetchCompletedTasks = async () => {
+  const fetchCompletedTasks = useCallback(async () => {
     if (!assignmentId || !userId) return;
 
     setLoadingCompleted(true);
@@ -65,46 +65,54 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
     } finally {
       setLoadingCompleted(false);
     }
-  };
+  }, [assignmentId, userId]);
 
-  const takeTask = async (taskId) => {
-    try {
-      const response = await axiosInstance.patch(`/flow/tasks/take/${taskId}`);
-      await fetchAvailableTasks();
-      return response.data;
-    } catch (err) {
-      setError(err.response?.data || err.message);
-      throw err;
-    }
-  };
+  const takeTask = useCallback(
+    async (taskId) => {
+      try {
+        const response = await axiosInstance.patch(
+          `/flow/tasks/take/${taskId}`,
+        );
+        await fetchAvailableTasks();
+        return response.data;
+      } catch (err) {
+        setError(err.response?.data || err.message);
+        throw err;
+      }
+    },
+    [fetchAvailableTasks],
+  );
 
-  const transitionTask = async (taskId, newStatusId, projectId) => {
-    try {
-      await axiosInstance.patch(`/flow/tasks/transition/${taskId}`, {
-        newStatusId,
-        projectId,
-        obs: "Status alterado pelo usuário",
-      });
-      await Promise.all([fetchInProgressTasks(), fetchCompletedTasks()]);
-      return true;
-    } catch (err) {
-      console.error("Erro na transição:", err);
-      return false;
-    }
-  };
+  const transitionTask = useCallback(
+    async (taskId, newStatusId, projectId) => {
+      try {
+        await axiosInstance.patch(`/flow/tasks/transition/${taskId}`, {
+          newStatusId,
+          projectId,
+          obs: "Status alterado pelo usuário",
+        });
+        await Promise.all([fetchInProgressTasks(), fetchCompletedTasks()]);
+        return true;
+      } catch (err) {
+        console.error("Erro na transição:", err);
+        return false;
+      }
+    },
+    [fetchInProgressTasks, fetchCompletedTasks],
+  );
 
   useEffect(() => {
     if (assignmentId) {
       fetchAvailableTasks();
     }
-  }, [assignmentId]);
+  }, [assignmentId, fetchAvailableTasks]);
 
   useEffect(() => {
     if (assignmentId && userId) {
       fetchInProgressTasks();
       fetchCompletedTasks();
     }
-  }, [assignmentId, userId]);
+  }, [assignmentId, userId, fetchInProgressTasks, fetchCompletedTasks]);
 
   return {
     availableTasks,
