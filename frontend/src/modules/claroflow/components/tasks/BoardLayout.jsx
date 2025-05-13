@@ -12,7 +12,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "modules/shared/components/ui/avatar";
-import { Badge } from "modules/shared/components/ui/badge";
 import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import {
   Users,
@@ -81,7 +80,7 @@ export default function GenericBoard({ assignment, project }) {
       {/* Header com título do projeto */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 brightness-[1.6]">
             <FileText className="h-5 w-5 text-primary" />
           </div>
           <div>
@@ -114,13 +113,13 @@ export default function GenericBoard({ assignment, project }) {
             <CardHeader className="p-4 pb-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-primary/10 p-2">
+                  <div className="rounded-lg bg-primary/10 p-2 brightness-[1.6]">
                     <Inbox className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <CardTitle className="text-lg font-semibold text-card-foreground">
                       Fila de Demandas
-                      <span className="px-2 py-1 text-sm font-semibold text-accent brightness-200">
+                      <span className="px-2 py-1 text-base font-semibold text-accent brightness-[1.6]">
                         (
                         {loadingAvailable ? (
                           <Loader2 className="mr-1 inline h-3 w-3 animate-spin" />
@@ -173,13 +172,13 @@ export default function GenericBoard({ assignment, project }) {
             <CardHeader className="p-4 pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-primary/10 p-2">
+                  <div className="rounded-lg bg-primary/10 p-2 brightness-[1.6]">
                     <Users className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <CardTitle className="text-lg font-semibold text-card-foreground">
                       Meu Time
-                      <span className="px-2 py-1 text-sm font-semibold text-accent brightness-200">
+                      <span className="px-2 py-1 text-base font-semibold text-accent brightness-[1.6]">
                         ({teamMembers?.length || 0})
                       </span>
                     </CardTitle>
@@ -232,7 +231,7 @@ export default function GenericBoard({ assignment, project }) {
                             src={user.avatar || "/placeholder.svg"}
                             alt={user.NOME}
                           />
-                          <AvatarFallback className="bg-primary/10 text-primary">
+                          <AvatarFallback className="bg-primary/10 text-primary brightness-[1.6]">
                             {user.NOME.split(" ")
                               .map((n) => n[0])
                               .join("")}
@@ -276,7 +275,7 @@ export default function GenericBoard({ assignment, project }) {
             <Card className="overflow-hidden border-border bg-card/95 shadow-md">
               <CardHeader className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-warning/10 p-2">
+                  <div className="rounded-lg bg-warning/10 p-2 brightness-[0.8]">
                     <Clock className="h-5 w-5 text-warning" />
                   </div>
                   <div className="flex-1">
@@ -355,15 +354,15 @@ export default function GenericBoard({ assignment, project }) {
                   )}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-success/10 p-2">
-                      <CheckCircle2 className="h-5 w-5 text-success" />
+                    <div className="rounded-lg bg-success/10 p-2 brightness-[0.9]">
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <CardTitle className="text-lg font-semibold text-card-foreground">
                           Finalizadas
                         </CardTitle>
-                        <span className="px-0 py-1 text-sm font-semibold text-success">
+                        <span className="px-0 py-1 text-base font-semibold text-green-500">
                           ({filteredCompletedTasks?.length || 0})
                         </span>
                       </div>
@@ -415,7 +414,7 @@ export default function GenericBoard({ assignment, project }) {
                           Nenhuma demanda finalizada
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          Tarefas concluídas aparecerão aqui
+                          Demandas concluídas aparecerão aqui
                         </div>
                       </div>
                     </div>
