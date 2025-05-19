@@ -117,13 +117,13 @@ export default function Claroflow() {
         }
       >
         <DialogContent className="sm:max-w-[625px]">
-          <DialogHeader>
+          <DialogHeader className="py-0">
             <DialogTitle className="flex items-center gap-2">
               <UploadCloudIcon className="h-6 w-6 text-primary" />
-              Importação de Dados - MDU
+              Importação de Dados
             </DialogTitle>
             <DialogDescription>
-              Faça upload da extração de ocorrências do SGD.
+              Faça upload da extração do projeto correspondente.
             </DialogDescription>
           </DialogHeader>
           <TasksUpload

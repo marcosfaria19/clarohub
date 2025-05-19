@@ -8,7 +8,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 const fs = require("fs").promises;
 const path = require("path");
 const { Parser } = require("json2csv");
-const { parseCustomDateFromExcel } = require("../../utils/formatarData");
+const { getParser } = require("../../parsers/parserRouter");
 
 module.exports = (tasksCollection, usersCollection, projectsCollection) => {
   // Índices otimizados para todas as situações
@@ -102,96 +102,55 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
       if (!req.file) return res.status(400).send("Nenhum arquivo foi enviado.");
 
       try {
-        // Carregar dados de mapeamento uma única vez
+        // Carregar mapeamento base GED
         const baseGed = JSON.parse(
           await fs.readFile(
             path.join(__dirname, "../../utils/baseGedCidades.json"),
             "utf-8"
           )
         );
-
-        // Criar mapa para lookup O(1)
+        // Para lookup O(1)
         const cidadeMap = new Map(
-          baseGed.map((entry) => [entry.COD_OPERADORA.toString().trim(), entry])
+          baseGed.map((e) => [e.COD_OPERADORA.toString().trim(), e])
         );
 
-        // Obter usuário e projeto
+        // Usuário, projeto e assignment vindos do frontend
+        const { projectId, assignmentId } = req.body;
         const [user, project] = await Promise.all([
           usersCollection.findOne({ _id: new ObjectId(req.user.id) }),
-          projectsCollection.findOne({ name: "MDU" }),
+          projectsCollection.findOne({ _id: new ObjectId(projectId) }),
         ]);
-
         if (!user || !project) {
           return res.status(400).send("Usuário ou projeto não encontrado");
         }
 
-        // Processar arquivo Excel
+        const assignment = project.assignments.find(
+          (a) => a._id.toString() === assignmentId
+        );
+        if (!assignment) {
+          return res
+            .status(400)
+            .send("Assignment não encontrado para este projeto");
+        }
+
+        // Ler Excel para JSON bruto
         const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
         const rawData = xlsx.utils.sheet_to_json(
           workbook.Sheets[workbook.SheetNames[0]]
         );
 
-        // Validar colunas
-        const requiredColumns = [
-          "IDDEMANDA",
-          "COD_OPERADORA",
-          "ENDERECO_VISTORIA",
-        ];
-        if (rawData.length > 0) {
-          const missing = requiredColumns.filter((col) => !(col in rawData[0]));
-          if (missing.length > 0) {
-            return res
-              .status(400)
-              .send(`Colunas faltantes: ${missing.join(", ")}`);
-          }
+        // Selecionar parser conforme projeto
+        const parser = getParser(project.name, assignment.name);
+        if (!parser) {
+          return res
+            .status(400)
+            .send("Parser não configurado para este projeto");
         }
 
-        // Processar e enriquecer dados
-        const processedData = rawData
-          .filter((row) => row.ENDERECO_VISTORIA?.trim())
-          .map((row) => {
-            const codOperadora = row.COD_OPERADORA?.toString().trim() || "";
-            const cidadeInfo = cidadeMap.get(codOperadora);
+        // Processar e enriquecer dados via parser
+        const processedData = parser(rawData, cidadeMap, project, assignment);
 
-            // Convertendo a string DATA_INICIO para Date (apenas dia, mês e ano)
-            const rawDate = row.DATA_INICIO
-              ? parseCustomDateFromExcel(row.DATA_INICIO)
-              : null;
-
-            const createdAt = rawDate
-              ? new Date(
-                  rawDate.getFullYear(),
-                  rawDate.getMonth(),
-                  rawDate.getDate()
-                )
-              : null;
-
-            return {
-              IDDEMANDA: row.IDDEMANDA,
-              COD_OPERADORA: codOperadora,
-              ENDERECO_VISTORIA: row.ENDERECO_VISTORIA,
-              ...(cidadeInfo && {
-                CIDADE: cidadeInfo.CIDADE,
-                UF: cidadeInfo.UF,
-                REGIONAL: cidadeInfo.REGIONAL,
-                BASE: cidadeInfo.BASE,
-              }),
-              project: {
-                _id: project._id,
-                name: project.name,
-              },
-              status: {
-                _id: project.assignments[0]._id,
-                name: project.assignments[0].name,
-              },
-              assignedTo: null,
-              updatedAt: new Date(),
-              createdAt: createdAt,
-              history: [],
-            };
-          });
-
-        // Verificar duplicatas de forma otimizada
+        // Inserção otimizada sem duplicatas
         const ids = processedData.map((d) => d.IDDEMANDA);
         const existing = await tasksCollection
           .find({ IDDEMANDA: { $in: ids } })
@@ -201,8 +160,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
           (d) => !existingIds.has(d.IDDEMANDA)
         );
 
-        // Inserir dados não duplicados
-        if (newData.length > 0) {
+        if (newData.length) {
           await tasksCollection.insertMany(newData, { ordered: false });
         }
 
