@@ -28,7 +28,19 @@ const UsersAdmin = lazy(() => import("../modules/clarohub/pages/Users"));
 const Claroflow = lazy(() => import("../modules/claroflow/pages/Flow"));
 
 // Páginas – Insight
-const Insights = lazy(() => import("../modules/insight/pages/Insights"));
+
+const InsightsHome = lazy(() => import("../modules/insight/pages/Dashboard"));
+const InsightsTeam = lazy(() => import("../modules/insight/pages/TeamsPage"));
+const InsightsAnalytics = lazy(
+  () => import("../modules/insight/pages/AnalyticsPage"),
+);
+
+const InsightsVacations = lazy(
+  () => import("../modules/insight/pages/VacationsPage"),
+);
+const InsightsSettings = lazy(
+  () => import("../modules/insight/pages/SettingsPage"),
+);
 
 export default function Rotas() {
   const routes = useRoutes([
@@ -138,7 +150,48 @@ export default function Rotas() {
           path: "/insights",
           element: (
             <ProtectedRoute allowedRoles={["admin"]}>
-              <Insights />
+              <Navigate to="/insights/dashboard" replace />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/insights/dashboard",
+          element: (
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <InsightsHome />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/insights/team",
+          element: (
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <InsightsTeam />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/insights/analytics",
+          element: (
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <InsightsAnalytics />
+            </ProtectedRoute>
+          ),
+        },
+
+        {
+          path: "/insights/vacations",
+          element: (
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <InsightsVacations />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/insights/settings",
+          element: (
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <InsightsSettings />
             </ProtectedRoute>
           ),
         },

@@ -120,7 +120,7 @@ const VacationsPage = () => {
   };
 
   return (
-    <>
+    <div className="mx-auto flex min-h-full w-full flex-col bg-background p-10 text-foreground">
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="mb-2 text-2xl font-bold">Calendário de Férias</h2>
@@ -173,7 +173,7 @@ const VacationsPage = () => {
           </div>
         </TabsContent>
       </Tabs>
-    </>
+    </div>
   );
 };
 

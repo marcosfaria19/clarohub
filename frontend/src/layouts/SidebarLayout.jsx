@@ -6,7 +6,7 @@ const SidebarLayout = () => {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col md:pl-64">
         <main className="flex-1">
           <Outlet />
         </main>

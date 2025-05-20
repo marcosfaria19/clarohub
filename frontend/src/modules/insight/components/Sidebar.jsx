@@ -1,26 +1,61 @@
 import {
-  HomeIcon,
-  UsersIcon,
-  BarChart3Icon,
-  CalendarIcon,
-  SettingsIcon,
+  BarChart,
+  Calendar,
+  Home,
+  Settings,
+  Users,
+  LineChart,
+  LogOut,
 } from "lucide-react";
-import { Button } from "modules/shared/components/ui/button";
-
 import {
   Avatar,
   AvatarImage,
   AvatarFallback,
 } from "modules/shared/components/ui/avatar";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { cn } from "modules/shared/lib/utils";
 
-const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
+const Sidebar = () => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
   const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: HomeIcon },
-    { id: "team", label: "Equipe", icon: UsersIcon },
-    { id: "analytics", label: "Análise", icon: BarChart3Icon },
-    { id: "vacations", label: "Férias", icon: CalendarIcon },
-    { id: "settings", label: "Configurações", icon: SettingsIcon },
+    {
+      id: "dashboard",
+      label: "Dashboard",
+      icon: Home,
+      path: "/insights/dashboard",
+    },
+    {
+      id: "team",
+      label: "Equipe",
+      icon: Users,
+      path: "/insights/team",
+    },
+    {
+      id: "analytics",
+      label: "Produtividade",
+      icon: BarChart,
+      path: "/insights/analytics",
+    },
+    {
+      id: "projects",
+      label: "Projetos",
+      icon: LineChart,
+      path: "/insights/projects",
+    },
+    {
+      id: "vacations",
+      label: "Férias",
+      icon: Calendar,
+      path: "/insights/vacations",
+    },
+    {
+      id: "settings",
+      label: "Configurações",
+      icon: Settings,
+      path: "/insights/settings",
+    },
   ];
 
   return (
@@ -45,18 +80,19 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
         <ul className="space-y-2">
           {menuItems.map((item) => (
             <li key={item.id}>
-              <Button
-                onClick={() => setActiveTab(item.id)}
-                variant={activeTab === item.id ? "default" : "ghost"}
-                className={`w-full justify-start ${
-                  activeTab === item.id
+              <Link
+                to={item.path}
+                className={cn(
+                  "flex h-10 w-full items-center rounded-md px-4 py-2 text-sm font-medium transition-colors",
+                  currentPath === item.path ||
+                    currentPath.startsWith(`${item.path}/`)
                     ? "bg-primary text-primary-foreground"
-                    : "text-menu-foreground hover:bg-secondary"
-                }`}
+                    : "text-menu-foreground hover:bg-secondary",
+                )}
               >
                 <item.icon className="mr-2 h-4 w-4" />
                 {item.label}
-              </Button>
+              </Link>
             </li>
           ))}
         </ul>

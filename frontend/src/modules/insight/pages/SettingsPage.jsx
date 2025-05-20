@@ -19,7 +19,7 @@ import {
 
 const SettingsPage = () => {
   return (
-    <>
+    <div className="mx-auto flex min-h-full w-full flex-col bg-background p-10 text-foreground">
       <div className="mb-6">
         <h2 className="mb-2 text-2xl font-bold">Configurações</h2>
         <p className="text-muted-foreground">
@@ -146,7 +146,7 @@ const SettingsPage = () => {
           </Card>
         </TabsContent>
       </Tabs>
-    </>
+    </div>
   );
 };
 
