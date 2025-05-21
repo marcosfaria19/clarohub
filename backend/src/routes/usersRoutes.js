@@ -47,6 +47,7 @@ module.exports = (usersCollection, ideasCollection) => {
           avatar: user.avatar,
           dailyLikesUsed: user.dailyLikesUsed,
           dailyIdeasCreated: user.dailyIdeasCreated,
+          project: user.project,
         },
         SECRET_KEY,
         { expiresIn: "12h" }
@@ -86,7 +87,7 @@ module.exports = (usersCollection, ideasCollection) => {
       // Atualiza o usuário com a senha cadastrada
       const result = await usersCollection.updateOne(
         { LOGIN },
-        { $set: { senha: hashedPassword, PERMISSOES: "guest" } }
+        { $set: { senha: hashedPassword } }
       );
 
       if (result.matchedCount === 0) {
@@ -150,6 +151,11 @@ module.exports = (usersCollection, ideasCollection) => {
     delete newData._id;
 
     try {
+      // Converter o campo `project id` para ObjectId, se existir
+      if (newData.project?._id) {
+        newData.project._id = new ObjectId(newData.project._id);
+      }
+
       const result = await usersCollection.updateOne(
         { _id: new ObjectId(id) },
         { $set: newData }
@@ -172,6 +178,10 @@ module.exports = (usersCollection, ideasCollection) => {
   router.post("/users", authenticateToken, async (req, res) => {
     const newUser = req.body;
     try {
+      // Converter o campo `project id` para ObjectId, se existir
+      if (newUser.project?._id) {
+        newUser.project._id = new ObjectId(newUser.project._id);
+      }
       const result = await usersCollection.insertOne(newUser);
       if (result.insertedCount === 0) {
         return res
