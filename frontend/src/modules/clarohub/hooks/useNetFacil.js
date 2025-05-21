@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useContext } from "react";
 import axiosInstance from "services/axios";
 import { toast } from "sonner";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
 
 export default function useNetFacil({ userName, gestor }) {
+  const { user } = useContext(AuthContext);
+
   const [data, setData] = useState([]);
   const [formData, setFormData] = useState({
     tratativa: "",
@@ -27,9 +30,28 @@ export default function useNetFacil({ userName, gestor }) {
   useEffect(() => {
     axiosInstance
       .get("/netsmsfacil")
-      .then((res) => setData(res.data))
+      .then((res) => {
+        const fetchedData = res.data;
+        const projectName = user?.project?.name;
+
+        if (projectName) {
+          const hasMatchingTratativa = fetchedData.some(
+            (item) => item.TRATATIVA === projectName,
+          );
+
+          if (hasMatchingTratativa) {
+            setData(
+              fetchedData.filter((item) => item.TRATATIVA === projectName),
+            );
+          } else {
+            setData(fetchedData);
+          }
+        } else {
+          setData(fetchedData);
+        }
+      })
       .catch(() => toast.error("Falha ao carregar dados."));
-  }, []);
+  }, [user]);
 
   const getOptions = useMemo(() => {
     return (field) =>
