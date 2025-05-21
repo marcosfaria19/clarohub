@@ -9,7 +9,7 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
     },
     ["Validação Vistoria"]: {
       required: ["IDDEMANDA", "COD_OPERADORA", "ENDERECO_VISTORIA", "FILA"],
-      filaValues: ["Retorno Vistoria"],
+      filaValues: ["Retorno Vistoria", "Validação Vistoria"],
     },
   };
 
@@ -38,8 +38,14 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
         .toString()
         .trim();
       const city = cidadeMap.get(codOper) || {};
-      const createdAt = row.DATA_INICIO
+
+      // Transformação de data do excel em data sem hh/mm/ss, para correta ordenação de prioridades
+      const rawDate = row.DATA_INICIO
         ? parseCustomDateFromExcel(row.DATA_INICIO)
+        : null;
+
+      const createdAt = rawDate
+        ? new Date(rawDate.getFullYear(), rawDate.getMonth(), rawDate.getDate())
         : null;
 
       return {
