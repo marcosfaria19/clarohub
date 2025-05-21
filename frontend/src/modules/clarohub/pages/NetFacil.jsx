@@ -27,19 +27,26 @@ export default function NetFacil({ userName, gestor }) {
 
   return (
     <Container className="select-none">
-      <div className="relative mb-11 text-center">
-        <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-primary/30 blur-3xl"></div>
+      <div className="relative mb-8 flex items-center justify-start gap-4">
+        {/* Fundo decorativo pulsante */}
+        <div className="absolute left-0 top-1/2 h-32 w-32 -translate-y-1/2 animate-pulse rounded-full bg-primary/30 blur-3xl" />
+
+        {/* Ícone */}
         <img
           src={appHeaderInfo["/netfacil"].icon}
-          alt="Net  Fácil Icon"
-          className="mx-auto mb-6 h-20 w-20 text-primary"
+          alt="Net Fácil Icon"
+          className="relative z-10 h-16 w-16 text-primary"
         />
-        <h1 className="relative text-4xl font-bold tracking-tight text-foreground">
-          Net Fácil
-        </h1>
-        <p className="mt-2 text-lg text-muted-foreground">
-          Gerador de texto padrão para o NetSMS
-        </p>
+
+        {/* Título e subtítulo */}
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Net Fácil
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Gerador de texto padrão para o NetSMS
+          </p>
+        </div>
       </div>
 
       <Card className="relative mx-auto mb-12 max-w-full overflow-hidden border-primary/20 bg-background/50 shadow-2xl backdrop-blur-sm">

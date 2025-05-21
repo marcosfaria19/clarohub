@@ -24,12 +24,12 @@ import AvatarDropdown from "modules/shared/components/AvatarDropdown";
 import NotificationsPopover from "modules/shared/components/NotificationsPopover";
 import formatUserName from "modules/shared/utils/formatUsername";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
-import { useTheme } from "modules/shared/contexts/ThemeContext"; // Importa o hook de tema
+import { useTheme } from "modules/shared/contexts/ThemeContext";
 import appHeaderInfo from "../utils/appHeaderInfo";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
-  const { theme, toggleTheme } = useTheme(); // Usa o contexto para acessar e alternar o tema
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
 
   const onLogout = () => {
@@ -44,7 +44,10 @@ const Header = () => {
   return (
     <header className="fixed z-40 mr-0 w-screen select-none bg-menu text-menu-foreground opacity-90">
       <div className="container flex items-center justify-between px-4 py-2 sm:max-w-[1800px]">
-        <Link to="/home" className="flex items-center space-x-2">
+        <Link
+          to="/home"
+          className="flex items-center space-x-2 focus:outline-none"
+        >
           <img
             src={`${currentApp.icon}`}
             alt="Claro Hub"
