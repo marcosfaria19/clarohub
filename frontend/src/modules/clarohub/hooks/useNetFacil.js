@@ -43,6 +43,10 @@ export default function useNetFacil({ userName, gestor }) {
             setData(
               fetchedData.filter((item) => item.TRATATIVA === projectName),
             );
+            setFormData((prev) => ({
+              ...prev,
+              tratativa: projectName,
+            }));
           } else {
             setData(fetchedData);
           }

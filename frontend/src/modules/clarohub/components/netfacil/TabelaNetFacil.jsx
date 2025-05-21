@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Button } from "modules/shared/components/ui/button";
 import {
   Dialog,
@@ -11,10 +11,10 @@ import {
 import { Download } from "lucide-react";
 import axiosInstance from "services/axios";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
+import useNetFacil from "modules/clarohub/hooks/useNetFacil";
 
 const TabelaNetFacil = ({ isOpen, onRequestClose }) => {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { data, isLoading } = useNetFacil({ tratativaFilter: "PROJECT NAME" });
 
   const columns = [
     { header: "ID", accessorKey: "ID" },
@@ -41,22 +41,6 @@ const TabelaNetFacil = ({ isOpen, onRequestClose }) => {
       })
       .catch((error) => console.error("Error downloading the file:", error));
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      setIsLoading(true);
-      axiosInstance
-        .get("/netsmsfacil")
-        .then((response) => {
-          setData(response.data);
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-          setIsLoading(false);
-        });
-    }
-  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onRequestClose}>
