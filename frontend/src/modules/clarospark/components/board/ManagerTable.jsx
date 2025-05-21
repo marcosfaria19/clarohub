@@ -43,14 +43,6 @@ function ManagerTable() {
     [setSelectedItem, setNewStatus, setIsConfirmOpen],
   );
 
-  const renderStatusChanger = (row) => (
-    <StatusChanger
-      currentStatus={row.original.status}
-      disabled={row.original.status === "Aprovada"}
-      onChange={(newStatus) => handleStatusChange(row.original, newStatus)}
-    />
-  );
-
   const renderTextTruncated = (text, title) => (
     <div className="max-w-[200px] truncate" title={title || text}>
       {text}
@@ -58,6 +50,14 @@ function ManagerTable() {
   );
 
   const columns = useMemo(() => {
+    const renderStatusChanger = (row) => (
+      <StatusChanger
+        currentStatus={row.original.status}
+        disabled={row.original.status === "Aprovada"}
+        onChange={(newStatus) => handleStatusChange(row.original, newStatus)}
+      />
+    );
+
     return [
       {
         header: "Colaborador",
