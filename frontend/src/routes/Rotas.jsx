@@ -2,11 +2,11 @@ import React, { useContext } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import OCQualinet from "modules/clarohub/pages/OCQualinet";
-import NetSMSFacil from "modules/clarohub/pages/NetSMSFacil";
+import NetFacil from "modules/clarohub/pages/NetFacil";
 import Login from "modules/clarohub/pages/Login";
 import Users from "modules/clarohub/pages/Users";
 import Home from "modules/clarohub/pages/Home";
-import NetSMSFacilAdmin from "modules/clarohub/pages/NetSMSFacilAdmin";
+import NetFacilAdmin from "modules/clarohub/pages/NetFacilAdmin";
 import OCFacilAdmin from "modules/clarohub/pages/OCFacilAdmin";
 import AppAdmin from "modules/clarohub/pages/AppAdmin";
 import Clarospark from "modules/clarospark/pages/Home";
@@ -110,7 +110,7 @@ const Rotas = () => {
             <PageTitle title="Net Fácil" />
             <ProtectedRoute
               allowedRoles={["guest", "basic", "manager", "admin"]}
-              element={<NetSMSFacil />}
+              element={<NetFacil />}
             />
           </>
         }
@@ -146,7 +146,7 @@ const Rotas = () => {
         element={
           <ProtectedRoute
             allowedRoles={["admin"]}
-            element={<NetSMSFacilAdmin />}
+            element={<NetFacilAdmin />}
           />
         }
       />

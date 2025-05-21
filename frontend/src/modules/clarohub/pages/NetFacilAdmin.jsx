@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import AddNetSMSFacil from "modules/clarohub/components/AddNetSMSFacil";
+import AddNetFacil from "modules/clarohub/components/netfacil/AddNetFacil";
 import axiosInstance from "services/axios";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import Container from "modules/shared/components/ui/container";
@@ -7,7 +7,7 @@ import DeleteConfirmationModal from "modules/clarohub/components/DeleteConfirmat
 import { Button } from "modules/shared/components/ui/button";
 import { CirclePlusIcon } from "lucide-react";
 
-function NetSMSFacilAdmin() {
+function NetFacilAdmin() {
   const [dados, setDados] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -171,7 +171,7 @@ function NetSMSFacilAdmin() {
       />
 
       {/* Modal de edição */}
-      <AddNetSMSFacil
+      <AddNetFacil
         show={showEditModal}
         handleClose={handleCloseModal}
         handleSave={handleSave}
@@ -190,4 +190,4 @@ function NetSMSFacilAdmin() {
   );
 }
 
-export default NetSMSFacilAdmin;
+export default NetFacilAdmin;

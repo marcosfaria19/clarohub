@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import axiosInstance from "services/axios";
 import {
@@ -20,7 +18,7 @@ import {
   SelectValue,
 } from "modules/shared/components/ui/select";
 
-export default function AddNetSMSFacil({
+export default function AddNetFacil({
   show,
   handleClose,
   handleSave,
