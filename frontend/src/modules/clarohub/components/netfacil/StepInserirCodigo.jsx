@@ -2,10 +2,9 @@ import React from "react";
 import { Input } from "modules/shared/components/ui/input";
 import { Button } from "modules/shared/components/ui/button";
 import { Label } from "modules/shared/components/ui/label";
-import { CheckIcon, BookOpenCheck } from "lucide-react";
+import { CheckIcon, BookOpenCheck, Hash } from "lucide-react";
 
 export default function StepInserirCodigo({
-  currentStep,
   codigo,
   setCodigo,
   codigoErro,
@@ -18,8 +17,6 @@ export default function StepInserirCodigo({
   setCurrentStep,
   setTabelaConsulta,
 }) {
-  if (currentStep !== 0) return null;
-
   const handleCodigoSubmit = () => {
     const foundItem = data.find((item) => item.ID === codigo);
     if (foundItem) {
@@ -45,6 +42,12 @@ export default function StepInserirCodigo({
 
   return (
     <div className="flex flex-1 flex-col items-center justify-start space-y-4">
+      <div className="mb-4 flex gap-2 self-start">
+        <Hash className="h-6 w-6 text-primary" />
+        <h2 className="text-lg font-semibold text-foreground">
+          Inserir Código
+        </h2>
+      </div>
       <div className="w-full max-w-xs">
         <Label htmlFor="codigo" className="mb-2 block">
           Código

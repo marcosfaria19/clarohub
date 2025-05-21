@@ -8,10 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "modules/shared/components/ui/select";
-import { Loader2, Zap, ArrowRight } from "lucide-react";
+import { Loader2, Zap, ArrowRight, ClipboardPenIcon } from "lucide-react";
 
 export default function StepPreencherDados({
-  currentStep,
   formData,
   setFormData,
   data,
@@ -29,8 +28,6 @@ export default function StepPreencherDados({
   isLoading,
   setIsLoading,
 }) {
-  if (currentStep !== 1) return null;
-
   const handleTextoPadraoChange = (value) => {
     setFormData({ ...formData, textoPadrao: value });
 
@@ -70,6 +67,12 @@ export default function StepPreencherDados({
 
   return (
     <div className="flex flex-col space-y-4">
+      <div className="mb-4 flex gap-2 self-start">
+        <ClipboardPenIcon className="h-6 w-6 text-primary" />
+        <h2 className="text-lg font-semibold text-foreground">
+          Preencher Dados
+        </h2>
+      </div>
       <Select
         value={formData.tratativa}
         onValueChange={(value) =>
@@ -194,16 +197,28 @@ export default function StepPreencherDados({
       </Select>
       {showIncidenteField && (
         <Input
-          placeholder="ID/Incidente"
+          placeholder="Insira o ID/Incidente"
           value={formData.incidente}
+          className={
+            showIncidenteField && !formData.incidente
+              ? "ring-2 ring-primary"
+              : ""
+          }
           onChange={(e) =>
             setFormData({ ...formData, incidente: e.target.value })
           }
         />
       )}
       <Input
-        placeholder={showObservacaoField ? "Observação" : "Opcional"}
+        placeholder={
+          showObservacaoField ? "Insira uma observação" : "Observação opcional"
+        }
         value={formData.observacao}
+        className={
+          showObservacaoField && !formData.observacao
+            ? "ring-2 ring-primary"
+            : ""
+        }
         onChange={removerAcentos}
       />
       <Button
@@ -220,10 +235,10 @@ export default function StepPreencherDados({
         {isLoading ? (
           <Loader2 className="h-5 w-5 animate-spin" />
         ) : (
-          <Zap className="h-5 w-5" />
+          <Zap className="h-5 w-5 animate-pulse" />
         )}
         Gerar e copiar texto
-        <ArrowRight className="ml-auto h-5 w-5" />
+        <ArrowRight className="absolute right-10 h-5 w-5 animate-pulse" />
       </Button>
     </div>
   );

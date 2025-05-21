@@ -9,9 +9,11 @@ import StepPreencherDados from "../components/netfacil/StepPreencherDados";
 import StepResultado from "../components/netfacil/StepResultado";
 import Stepper from "../components/netfacil/Stepper";
 import useNetFacil from "../hooks/useNetFacil";
+import { Button } from "modules/shared/components/ui/button";
+import { RefreshCwIcon } from "lucide-react";
 
 export default function NetFacil({ userName, gestor }) {
-  const dataHook = useNetFacil({ userName, gestor });
+  const data = useNetFacil({ userName, gestor });
 
   const {
     currentStep,
@@ -21,7 +23,7 @@ export default function NetFacil({ userName, gestor }) {
     showSGDTable,
     handleReset,
     fecharTabelaConsulta,
-  } = dataHook;
+  } = data;
 
   return (
     <Container className="select-none">
@@ -45,21 +47,49 @@ export default function NetFacil({ userName, gestor }) {
 
         <CardContent className="relative p-8">
           <div className="grid gap-8 md:grid-cols-3">
-            <StepInserirCodigo {...dataHook} />
-            <StepPreencherDados {...dataHook} />
-            <StepResultado {...dataHook} />
+            {[
+              {
+                step: 0,
+                title: "Inserir Código",
+                Component: StepInserirCodigo,
+              },
+              {
+                step: 1,
+                title: "Preencher Dados",
+                Component: StepPreencherDados,
+              },
+              {
+                step: 2,
+                title: "Resultado",
+                Component: StepResultado,
+              },
+            ].map(({ step, Component }) => (
+              <div
+                key={step}
+                className={`flex flex-1 transform flex-col transition-all duration-500 ${
+                  currentStep === step ? "opacity-100" : "opacity-50"
+                } ${currentStep === 2 && step !== 2 ? "pointer-events-none" : ""}`}
+              >
+                <div className="relative flex h-full flex-col rounded-xl border-2 border-primary/40 bg-card/70 p-6 backdrop-blur-sm">
+                  <Component {...data} />
+                </div>
+              </div>
+            ))}
           </div>
 
           <Stepper currentStep={currentStep} />
 
           {currentStep === 2 && textoPadraoConcatenado && (
             <div className="mt-8 flex justify-center">
-              <button
+              <Button
                 onClick={handleReset}
-                className="flex items-center gap-2 rounded border px-4 py-2 text-sm hover:bg-muted"
+                className="gap-2"
+                variant="outline"
+                size="lg"
               >
-                Reiniciar
-              </button>
+                <RefreshCwIcon className="h-5 w-5" />
+                Iniciar Nova Geração
+              </Button>
             </div>
           )}
 
@@ -71,7 +101,7 @@ export default function NetFacil({ userName, gestor }) {
             <TabelaFechamentoSGD
               item={item}
               isOpen={showSGDTable}
-              onRequestClose={() => dataHook.setShowSGDTable(false)}
+              onRequestClose={() => data.setShowSGDTable(false)}
             />
           )}
         </CardContent>
