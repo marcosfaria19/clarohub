@@ -115,7 +115,8 @@ export default function Rotas() {
           path: "/flow",
           element: (
             <ProtectedRoute
-              allowedRoles={["guest", "basic", "manager", "admin"]}
+              /* allowedRoles={["guest", "basic", "manager", "admin"]} */
+              allowedRoles={["manager", "admin"]}
             >
               <Claroflow />
             </ProtectedRoute>
