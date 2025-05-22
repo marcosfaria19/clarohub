@@ -1,6 +1,6 @@
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { CheckCircle, Users } from "lucide-react";
+import { CheckCircle, Users, Gauge } from "lucide-react";
 import { Card } from "modules/shared/components/ui/card";
 import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import AssignedUserCard from "./AssignedUserCard";
@@ -12,11 +12,6 @@ import {
   TooltipTrigger,
 } from "modules/shared/components/ui/tooltip";
 
-/**
- * AssignmentColumn
- * Renderiza a coluna de assignment com nome, contagem de tasks e usuários atribuídos.
- * Possui um ícone ao lado do título que, ao ser clicado, exibe o gráfico de tasks por regional.
- */
 const AssignmentColumn = ({
   assignment,
   members,
@@ -28,6 +23,10 @@ const AssignmentColumn = ({
   const { availableTasks } = useTasks({
     assignmentId: assignment.id,
   });
+
+  const assignedCount = assignment.assigned.length;
+  const divisor = assignedCount === 0 ? 1 : assignedCount;
+  const averageTasks = Math.floor((availableTasks?.length || 0) / divisor);
 
   return (
     <Card className="flex min-w-72 flex-1 flex-col border border-border bg-card">
@@ -56,19 +55,32 @@ const AssignmentColumn = ({
                 </Tooltip>
               </div>
 
-              {/* Contagem de Usuars atribuídos */}
+              {/* Contagem de usuários atribuídos */}
               <div className="flex items-center gap-2">
                 <Tooltip>
                   <TooltipTrigger>
                     <div className="flex items-center gap-1">
                       <Users className="h-4 w-4" />
-                      <span className="text-sm">
-                        {assignment.assigned.length}
-                      </span>
+                      <span className="text-sm">{assignedCount}</span>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent side="top">
                     Usuários atribuídos
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+
+              {/* Média de demandas por usuário */}
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div className="flex items-center gap-1">
+                      <Gauge className="h-4 w-4" />
+                      <span className="text-sm">{averageTasks}</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    Média de demandas por usuário
                   </TooltipContent>
                 </Tooltip>
               </div>

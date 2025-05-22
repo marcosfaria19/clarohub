@@ -15,7 +15,7 @@ export default function FlowMenu({
   role,
 }) {
   return (
-    <div className="relative bottom-0 z-20 flex w-auto items-center justify-start overflow-x-auto rounded-none drop-shadow-[0_0px_5px_rgba(0,0,0,0.25)] sm:mt-12 lg:mt-0">
+    <div className="relative bottom-0 z-0 flex w-auto items-center justify-start overflow-x-auto rounded-none drop-shadow-[0_0px_5px_rgba(0,0,0,0.25)] sm:mt-12 lg:mt-0">
       <TooltipProvider>
         {/* Aba Home permanente */}
         <Tooltip>
