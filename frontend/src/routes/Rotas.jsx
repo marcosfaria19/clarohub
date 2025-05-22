@@ -46,7 +46,11 @@ export default function Rotas() {
   const routes = useRoutes([
     {
       path: "/login",
-      element: <Login />,
+      element: (
+        <ProtectedRoute isLoginPage>
+          <Login />
+        </ProtectedRoute>
+      ),
     },
     {
       element: <DefaultLayout />,

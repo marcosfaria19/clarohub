@@ -16,26 +16,34 @@ const isTokenExpired = (token) => {
   }
 };
 
-const ProtectedRoute = ({ allowedRoles, children }) => {
+const ProtectedRoute = ({ allowedRoles, children, isLoginPage = false }) => {
   const { token } = useContext(AuthContext);
 
-  if (!token || isTokenExpired(token)) {
-    return <Navigate to="/login" replace />;
-  }
-
-  let decodedToken;
-  try {
-    decodedToken = jwtDecode(token);
-  } catch (error) {
-    console.error("Erro ao decodificar o token:", error);
-    return <Navigate to="/login" replace />;
-  }
-
-  const userPermissions = decodedToken.PERMISSOES || [];
-  const hasAccess = allowedRoles.some((role) => userPermissions.includes(role));
-
-  if (!hasAccess) {
+  if (isLoginPage && token && !isTokenExpired(token)) {
     return <Navigate to="/home" replace />;
+  }
+
+  if (!isLoginPage) {
+    if (!token || isTokenExpired(token)) {
+      return <Navigate to="/login" replace />;
+    }
+
+    let decodedToken;
+    try {
+      decodedToken = jwtDecode(token);
+    } catch (error) {
+      console.error("Erro ao decodificar o token:", error);
+      return <Navigate to="/login" replace />;
+    }
+
+    const userPermissions = decodedToken.PERMISSOES || [];
+    const hasAccess = allowedRoles.some((role) =>
+      userPermissions.includes(role),
+    );
+
+    if (!hasAccess) {
+      return <Navigate to="/home" replace />;
+    }
   }
 
   return children;
