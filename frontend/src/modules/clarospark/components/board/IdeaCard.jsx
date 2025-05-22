@@ -42,6 +42,7 @@ import { useIdeaIsNew } from "modules/clarospark/hooks/useIdeaIsNew";
 import NewIndicator from "./IdeaNewIndicator";
 import useManagerTable from "modules/clarospark/hooks/useManagerTable";
 import StatusChanger from "./StatusChanger";
+import { format } from "date-fns";
 
 function IdeaCard(props) {
   const {

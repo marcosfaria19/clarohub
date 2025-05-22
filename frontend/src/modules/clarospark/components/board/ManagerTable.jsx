@@ -10,7 +10,7 @@ import {
 } from "modules/shared/components/ui/dialog";
 import { Button } from "modules/shared/components/ui/button";
 import useManagerTable from "modules/clarospark/hooks/useManagerTable";
-import formatUserName from "modules/shared/utils/formatUsername";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 import StatusChanger from "./StatusChanger";
 
 function ManagerTable() {
