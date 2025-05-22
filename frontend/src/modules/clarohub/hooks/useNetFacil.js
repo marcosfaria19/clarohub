@@ -33,8 +33,9 @@ export default function useNetFacil({ userName, gestor }) {
       .then((res) => {
         const fetchedData = res.data;
         const projectName = user?.project?.name;
+        const isManager = user?.permissoes !== "basic";
 
-        if (projectName) {
+        if (projectName && !isManager) {
           const hasMatchingTratativa = fetchedData.some(
             (item) => item.TRATATIVA === projectName,
           );
