@@ -5,7 +5,6 @@ import {
   Settings,
   Users,
   LineChart,
-  LogOut,
 } from "lucide-react";
 import {
   Avatar,

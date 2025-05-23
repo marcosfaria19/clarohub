@@ -17,12 +17,7 @@ import {
   SelectValue,
 } from "modules/shared/components/ui/select";
 import { Badge } from "modules/shared/components/ui/badge";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "modules/shared/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "modules/shared/components/ui/tabs";
 
 const EmployeeCard = ({ employee }) => {
   return (
