@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Calendar } from "modules/shared/components/ui/calendar";
+import React, { useState, useCallback, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useVacation } from "./VacationContext";
+
 import {
   Card,
   CardContent,
@@ -20,105 +22,431 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "modules/shared/components/ui/tooltip";
+import { Button } from "modules/shared/components/ui/button";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Calendar as CalendarIcon,
+  User,
+  Info,
+} from "lucide-react";
+import { cn } from "modules/shared/lib/utils";
 
-const VacationCalendar = ({ vacations, date, setDate, year, setYear }) => {
-  const [selectedMonth, setSelectedMonth] = useState(
-    new Date().getMonth().toString(),
+const VacationCalendar = React.memo(({ className = "" }) => {
+  const {
+    selectedDate,
+    selectedMonth,
+    selectedYear,
+    viewMode,
+    setSelectedDate,
+    setSelectedMonth,
+    setSelectedYear,
+    setViewMode,
+    getVacationsForDate,
+  } = useVacation();
+
+  const [hoveredDate, setHoveredDate] = useState(null);
+
+  // Generate month names
+  const months = useMemo(
+    () => [
+      { value: "0", label: "Janeiro" },
+      { value: "1", label: "Fevereiro" },
+      { value: "2", label: "Março" },
+      { value: "3", label: "Abril" },
+      { value: "4", label: "Maio" },
+      { value: "5", label: "Junho" },
+      { value: "6", label: "Julho" },
+      { value: "7", label: "Agosto" },
+      { value: "8", label: "Setembro" },
+      { value: "9", label: "Outubro" },
+      { value: "10", label: "Novembro" },
+      { value: "11", label: "Dezembro" },
+    ],
+    [],
   );
 
-  // Function to check if a date is within a vacation period
-  const getVacationsForDate = (date) => {
-    if (!date) return [];
-    const d = new Date(date).setHours(0, 0, 0, 0);
-    return vacations.filter(
-      (vacation) =>
-        d >= new Date(vacation.startDate).setHours(0, 0, 0, 0) &&
-        d <= new Date(vacation.endDate).setHours(0, 0, 0, 0),
-    );
-  };
+  // Generate years for selection (current year - 1 to current year + 5)
+  const years = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 7 }, (_, i) => currentYear - 1 + i);
+  }, []);
 
-  // Custom day renderer for the calendar
-  const renderDay = (day) => {
-    if (!(day instanceof Date) || isNaN(day)) return null;
+  // Format date for display
+  const formatDate = useCallback((date) => {
+    return date.toLocaleDateString("pt-BR");
+  }, []);
 
-    const dateVacations = getVacationsForDate(day);
+  // Format date range for display
+  const formatDateRange = useCallback(
+    (start, end) => {
+      return `${formatDate(start)} - ${formatDate(end)}`;
+    },
+    [formatDate],
+  );
 
-    if (dateVacations.length > 0) {
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div
-                className={`relative ${dateVacations[0].color} flex h-full w-full items-center justify-center rounded-md text-white`}
-              >
-                {day.getDate()}
-                {dateVacations.length > 1 && (
-                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
-                    {dateVacations.length}
-                  </span>
-                )}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs">
-              <div className="space-y-2">
-                {dateVacations.map((vacation) => (
-                  <div key={vacation.id} className="text-xs">
-                    <div className="font-semibold">{vacation.employee}</div>
-                    <div className="text-muted-foreground">
-                      {formatDateRange(vacation.startDate, vacation.endDate)}
-                    </div>
-                    {vacation.notes && (
-                      <div className="italic">{vacation.notes}</div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
+  // Get the status color for a vacation
+  const getStatusColor = useCallback((status) => {
+    switch (status) {
+      case "APPROVED":
+        return "bg-success";
+      case "PENDING":
+        return "bg-warning";
+      case "REJECTED":
+        return "bg-destructive";
+      case "CANCELED":
+        return "bg-secondary";
+      default:
+        return "bg-muted";
+    }
+  }, []);
+
+  // Handle month change
+  const handleMonthChange = useCallback(
+    (value) => {
+      setSelectedMonth(Number.parseInt(value));
+      const newDate = new Date(selectedDate);
+      newDate.setMonth(Number.parseInt(value));
+      setSelectedDate(newDate);
+    },
+    [selectedDate, setSelectedDate, setSelectedMonth],
+  );
+
+  // Handle year change
+  const handleYearChange = useCallback(
+    (value) => {
+      setSelectedYear(Number.parseInt(value));
+      const newDate = new Date(selectedDate);
+      newDate.setFullYear(Number.parseInt(value));
+      setSelectedDate(newDate);
+    },
+    [selectedDate, setSelectedDate, setSelectedYear],
+  );
+
+  // Handle view mode change
+  const handleViewModeChange = useCallback(
+    (mode) => {
+      setViewMode(mode);
+    },
+    [setViewMode],
+  );
+
+  // Navigate to previous month/week
+  const navigatePrevious = useCallback(() => {
+    const newDate = new Date(selectedDate);
+    if (viewMode === "month") {
+      newDate.setMonth(newDate.getMonth() - 1);
+    } else {
+      newDate.setDate(newDate.getDate() - 7);
+    }
+    setSelectedDate(newDate);
+    setSelectedMonth(newDate.getMonth());
+    setSelectedYear(newDate.getFullYear());
+  }, [
+    selectedDate,
+    viewMode,
+    setSelectedDate,
+    setSelectedMonth,
+    setSelectedYear,
+  ]);
+
+  // Navigate to next month/week
+  const navigateNext = useCallback(() => {
+    const newDate = new Date(selectedDate);
+    if (viewMode === "month") {
+      newDate.setMonth(newDate.getMonth() + 1);
+    } else {
+      newDate.setDate(newDate.getDate() + 7);
+    }
+    setSelectedDate(newDate);
+    setSelectedMonth(newDate.getMonth());
+    setSelectedYear(newDate.getFullYear());
+  }, [
+    selectedDate,
+    viewMode,
+    setSelectedDate,
+    setSelectedMonth,
+    setSelectedYear,
+  ]);
+
+  // Generate days for the calendar
+  const generateCalendarDays = useMemo(() => {
+    const days = [];
+
+    if (viewMode === "month") {
+      // Get the first day of the month
+      const firstDayOfMonth = new Date(selectedYear, selectedMonth, 1);
+      // Get the last day of the month
+      const lastDayOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
+
+      // Get the day of the week for the first day (0 = Sunday, 1 = Monday, etc.)
+      let firstDayOfWeek = firstDayOfMonth.getDay();
+      // Adjust for Sunday as first day of week
+      if (firstDayOfWeek === 0) firstDayOfWeek = 7;
+
+      // Add days from previous month to fill the first week
+      const daysFromPrevMonth = firstDayOfWeek - 1;
+      const prevMonth = new Date(selectedYear, selectedMonth, 0);
+      for (let i = daysFromPrevMonth; i > 0; i--) {
+        days.push(
+          new Date(
+            selectedYear,
+            selectedMonth - 1,
+            prevMonth.getDate() - i + 1,
+          ),
+        );
+      }
+
+      // Add all days of the current month
+      for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+        days.push(new Date(selectedYear, selectedMonth, i));
+      }
+
+      // Add days from next month to complete the grid (6 rows x 7 columns = 42 cells)
+      const remainingDays = 42 - days.length;
+      for (let i = 1; i <= remainingDays; i++) {
+        days.push(new Date(selectedYear, selectedMonth + 1, i));
+      }
+    } else {
+      // Week view: Get the current week starting from Monday
+      const currentDate = new Date(selectedDate);
+      const dayOfWeek = currentDate.getDay();
+      const diff =
+        currentDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust for Sunday
+
+      const weekStart = new Date(currentDate);
+      weekStart.setDate(diff);
+
+      // Add 7 days starting from Monday
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(weekStart);
+        day.setDate(weekStart.getDate() + i);
+        days.push(day);
+      }
     }
 
-    return <div>{day.getDate()}</div>;
-  };
+    return days;
+  }, [selectedYear, selectedMonth, selectedDate, viewMode]);
 
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
+  // Get day cell content
+  const getDayContent = useCallback(
+    (day) => {
+      const dateVacations = getVacationsForDate(day);
+      const isCurrentMonth = day.getMonth() === selectedMonth;
+      const isToday = new Date().toDateString() === day.toDateString();
 
-  const formatDateRange = (start, end) => {
-    return `${formatDate(start)} - ${formatDate(end)}`;
-  };
+      return (
+        <motion.div
+          className={cn(
+            "relative h-full w-full rounded-md p-1",
+            isCurrentMonth ? "bg-card" : "bg-card/50",
+            isToday && "ring-2 ring-primary ring-offset-1",
+          )}
+          whileHover={{ scale: 1.05 }}
+          onHoverStart={() => setHoveredDate(day)}
+          onHoverEnd={() => setHoveredDate(null)}
+        >
+          <div className="flex items-start justify-between">
+            <span
+              className={cn(
+                "text-sm font-medium",
+                !isCurrentMonth && "text-muted-foreground",
+              )}
+            >
+              {day.getDate()}
+            </span>
 
-  const handleMonthChange = (value) => {
-    setSelectedMonth(value);
-    const newDate = new Date(date);
-    newDate.setMonth(Number.parseInt(value));
-    setDate(newDate);
-  };
+            {dateVacations.length > 0 && (
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+                {dateVacations.length}
+              </span>
+            )}
+          </div>
 
-  const months = [
-    { value: "0", label: "Janeiro" },
-    { value: "1", label: "Fevereiro" },
-    { value: "2", label: "Março" },
-    { value: "3", label: "Abril" },
-    { value: "4", label: "Maio" },
-    { value: "5", label: "Junho" },
-    { value: "6", label: "Julho" },
-    { value: "7", label: "Agosto" },
-    { value: "8", label: "Setembro" },
-    { value: "9", label: "Outubro" },
-    { value: "10", label: "Novembro" },
-    { value: "11", label: "Dezembro" },
-  ];
+          {dateVacations.length > 0 && (
+            <div className="mt-1 space-y-1">
+              {dateVacations.slice(0, 2).map((vacation) => (
+                <div
+                  key={vacation.id}
+                  className={cn(
+                    "h-1.5 w-full rounded-sm",
+                    getStatusColor(vacation.status),
+                  )}
+                />
+              ))}
+              {dateVacations.length > 2 && (
+                <div className="text-center text-[10px] text-muted-foreground">
+                  +{dateVacations.length - 2}
+                </div>
+              )}
+            </div>
+          )}
+        </motion.div>
+      );
+    },
+    [selectedMonth, getVacationsForDate, getStatusColor],
+  );
+
+  // Get tooltip content for a day
+  const getTooltipContent = useCallback(
+    (day) => {
+      const dateVacations = getVacationsForDate(day);
+
+      if (dateVacations.length === 0) {
+        return (
+          <div className="text-xs">
+            <div className="font-semibold">Nenhuma férias</div>
+            <div className="text-muted-foreground">{formatDate(day)}</div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="max-w-xs space-y-2">
+          {dateVacations.map((vacation) => (
+            <div key={vacation.id} className="text-xs">
+              <div className="flex items-center gap-1 font-semibold">
+                <User className="h-3 w-3" />
+                <span>{vacation.employee}</span>
+              </div>
+              <div className="text-muted-foreground">
+                {formatDateRange(vacation.startDate, vacation.endDate)}
+              </div>
+              {vacation.notes && (
+                <div className="flex items-start gap-1 italic text-muted-foreground">
+                  <Info className="h-3 w-3 shrink-0 translate-y-0.5" />
+                  <span>{vacation.notes}</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    },
+    [getVacationsForDate, formatDate, formatDateRange],
+  );
+
+  // Render the calendar grid
+  const renderCalendarGrid = useMemo(() => {
+    const weekDays = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+
+    return (
+      <div className="mt-4">
+        {/* Week days header */}
+        <div className="mb-1 grid grid-cols-7 gap-1">
+          {weekDays.map((day, index) => (
+            <div
+              key={index}
+              className="p-1 text-center text-xs font-medium text-muted-foreground"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar grid */}
+        <div
+          className={cn(
+            "grid gap-1",
+            viewMode === "month"
+              ? "grid-cols-7 grid-rows-6"
+              : "grid-cols-7 grid-rows-1",
+          )}
+        >
+          <AnimatePresence mode="wait">
+            {generateCalendarDays.map((day, index) => (
+              <motion.div
+                key={day.toISOString()}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2, delay: index * 0.01 }}
+                className="aspect-square"
+                onClick={() => setSelectedDate(day)}
+              >
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="h-full cursor-pointer">
+                        {getDayContent(day)}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      {getTooltipContent(day)}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      </div>
+    );
+  }, [
+    generateCalendarDays,
+    viewMode,
+    getDayContent,
+    getTooltipContent,
+    setSelectedDate,
+  ]);
+
+  // Render the legend
+  const renderLegend = useMemo(() => {
+    return (
+      <div className="flex items-center gap-4 text-xs">
+        <div className="flex items-center gap-1">
+          <div className="h-3 w-3 rounded-full bg-success"></div>
+          <span>Aprovado</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="h-3 w-3 rounded-full bg-warning"></div>
+          <span>Pendente</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="h-3 w-3 rounded-full bg-destructive"></div>
+          <span>Rejeitado</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="h-3 w-3 rounded-full bg-secondary"></div>
+          <span>Cancelado</span>
+        </div>
+      </div>
+    );
+  }, []);
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Calendário</CardTitle>
-        <div className="flex gap-2">
-          <Select value={selectedMonth} onValueChange={handleMonthChange}>
-            <SelectTrigger className="w-[130px]">
+    <Card className={cn("w-full", className)}>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-xl font-bold">
+          Calendário de Férias
+        </CardTitle>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 rounded-r-none"
+              onClick={() => handleViewModeChange("month")}
+              disabled={viewMode === "month"}
+            >
+              <CalendarIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 rounded-l-none"
+              onClick={() => handleViewModeChange("week")}
+              disabled={viewMode === "week"}
+            >
+              <CalendarIcon className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <Select
+            value={selectedMonth.toString()}
+            onValueChange={handleMonthChange}
+          >
+            <SelectTrigger className="h-8 w-[130px]">
               <SelectValue placeholder="Mês" />
             </SelectTrigger>
             <SelectContent>
@@ -129,44 +457,69 @@ const VacationCalendar = ({ vacations, date, setDate, year, setYear }) => {
               ))}
             </SelectContent>
           </Select>
-          <Select value={year} onValueChange={setYear}>
-            <SelectTrigger className="w-[100px]">
+
+          <Select
+            value={selectedYear.toString()}
+            onValueChange={handleYearChange}
+          >
+            <SelectTrigger className="h-8 w-[100px]">
               <SelectValue placeholder="Ano" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="2024">2024</SelectItem>
-              <SelectItem value="2023">2023</SelectItem>
-              <SelectItem value="2025">2025</SelectItem>
+              {years.map((year) => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
       </CardHeader>
+
       <CardContent>
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-          className="rounded-md border"
-          renderDay={renderDay}
-        />
-      </CardContent>
-      <CardFooter className="flex justify-between border-t p-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1">
-            <div className="h-3 w-3 rounded-full bg-green-500"></div>
-            <span className="text-xs">Aprovado</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
-            <span className="text-xs">Pendente</span>
-          </div>
+        <div className="mb-4 flex items-center justify-between">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={navigatePrevious}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+
+          <h3 className="text-lg font-medium">
+            {months[selectedMonth].label} {selectedYear}
+            {viewMode === "week" && (
+              <span className="ml-2 text-sm text-muted-foreground">
+                (Semana de {formatDate(generateCalendarDays[0])} a{" "}
+                {formatDate(generateCalendarDays[6])})
+              </span>
+            )}
+          </h3>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={navigateNext}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
+
+        {renderCalendarGrid}
+      </CardContent>
+
+      <CardFooter className="flex justify-between border-t p-4">
+        {renderLegend}
         <div className="text-xs text-muted-foreground">
           Passe o mouse sobre as datas para ver detalhes
         </div>
       </CardFooter>
     </Card>
   );
-};
+});
+
+VacationCalendar.displayName = "VacationCalendar";
 
 export default VacationCalendar;
