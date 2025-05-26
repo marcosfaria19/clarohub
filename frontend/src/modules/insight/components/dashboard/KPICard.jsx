@@ -60,7 +60,7 @@ const KPICard = React.memo(
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className={`p-5 hover:shadow-lg ${className}`}>
+        <Card className={`p-5 hover:shadow-lg ${className} `}>
           <div className="mb-4 flex items-start justify-between">
             <h3 className="text-sm font-medium text-muted-foreground">
               {title}
@@ -76,7 +76,10 @@ const KPICard = React.memo(
               >
                 {value.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}
               </motion.div>
-              <span className="ml-1 text-sm text-muted-foreground">{unit}</span>
+              <span className="ml-1 text-sm text-muted-foreground">
+                {unit}
+                {period && <span> por {period}</span>}
+              </span>
 
               {deviation && (
                 <span className="ml-2 text-sm text-muted-foreground">
@@ -108,12 +111,6 @@ const KPICard = React.memo(
                     {unit}
                   </span>
                 )}
-              </div>
-            )}
-
-            {period && (
-              <div className="mt-1 text-xs text-muted-foreground">
-                Por {period}
               </div>
             )}
           </CardContent>

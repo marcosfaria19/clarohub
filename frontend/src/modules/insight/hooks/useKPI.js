@@ -27,8 +27,8 @@ const isCacheExpired = (timestamp) => {
 // Funções de transformação de dados
 
 // Converte milissegundos para horas com 1 casa decimal
-const msToHours = (ms) => {
-  return parseFloat((ms / (1000 * 60 * 60)).toFixed(1));
+const msToMinutes = (ms) => {
+  return parseFloat((ms / (1000 * 60)).toFixed(1));
 };
 
 // Calcula a tendência com base em valores atuais e anteriores
@@ -51,7 +51,7 @@ const transformAverageTimeToKPICard = (data, previousData) => {
     return {
       title: "Tempo Médio de Tratativa",
       value: 0,
-      unit: "horas",
+      unit: "minutos",
       trend: "neutral",
       trendValue: 0,
       previousValue: 0,
@@ -62,26 +62,26 @@ const transformAverageTimeToKPICard = (data, previousData) => {
   // Calcula a média de todos os usuários
   const totalAvgDuration =
     data.reduce((sum, item) => sum + item.avgDuration, 0) / data.length;
-  const avgHours = msToHours(totalAvgDuration);
+  const avgMinutes = msToMinutes(totalAvgDuration);
 
   // Calcula a média anterior se disponível
-  let previousAvgHours = 0;
+  let previousAvgMinutes = 0;
   if (previousData && previousData.length > 0) {
     const prevTotalAvgDuration =
       previousData.reduce((sum, item) => sum + item.avgDuration, 0) /
       previousData.length;
-    previousAvgHours = msToHours(prevTotalAvgDuration);
+    previousAvgMinutes = msToMinutes(prevTotalAvgDuration);
   }
 
-  const { trend, trendValue } = calculateTrend(avgHours, previousAvgHours);
+  const { trend, trendValue } = calculateTrend(avgMinutes, previousAvgMinutes);
 
   return {
     title: "Tempo Médio de Tratativa",
-    value: avgHours,
-    unit: "horas",
+    value: avgMinutes,
+    unit: "minutos",
     trend,
     trendValue,
-    previousValue: previousAvgHours,
+    previousValue: previousAvgMinutes,
     icon: "clock",
   };
 };
@@ -134,7 +134,7 @@ const transformTeamPerformanceToChart = (data) => {
   return data.map((item) => ({
     period: item.userName.split(" ")[0], // Usa o primeiro nome como período
     demandas: item.count,
-    tempoMedio: msToHours(item.avgDuration),
+    tempoMedio: msToMinutes(item.avgDuration),
   }));
 };
 
@@ -153,7 +153,7 @@ const transformTeamPerformanceToHeatmap = (data) => {
     result.push({
       colaborador: item.userName,
       metrica: "Tempo Médio",
-      valor: msToHours(item.avgDuration),
+      valor: msToMinutes(item.avgDuration),
     });
 
     // Adiciona métrica de volume

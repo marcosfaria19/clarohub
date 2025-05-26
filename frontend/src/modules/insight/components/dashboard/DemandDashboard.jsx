@@ -20,16 +20,6 @@ import {
 } from "modules/shared/components/ui/dropdown-menu";
 import { formatUserName } from "modules/shared/utils/formatUsername";
 
-/**
- * DemandDashboard - Componente melhorado para evitar o "flashing" de mensagens de erro
- *
- * Principais melhorias:
- * 1. Adição de um estado isRefetching separado do isLoading
- * 2. Uso de Framer Motion para transições suaves
- * 3. Manutenção dos dados anteriores durante o recarregamento
- * 4. Correção da lógica de exibição de erros
- * 5. Adição de um delay para mensagens de erro em requisições rápidas
- */
 const DemandDashboard = () => {
   // Estados de filtro gerenciados localmente
   const [period, setPeriod] = useState("day");
@@ -61,7 +51,6 @@ const DemandDashboard = () => {
 
   // Obtendo usuários usando o hook useUsers
   const { users } = useUsers(selectedAssignment);
-  console.log(users);
 
   // Obtendo dados de KPI usando o hook useKPI
   // Passando os parâmetros de filtro diretamente para o hook
@@ -269,9 +258,7 @@ const DemandDashboard = () => {
                   </DropdownMenuItem>
                 ))
               ) : (
-                <div className="px-4 py-2 text-sm text-muted-foreground">
-                  Nenhuma demanda disponível
-                </div>
+                <div className="px-4 py-2 text-sm text-muted-foreground" />
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -341,9 +328,9 @@ const DemandDashboard = () => {
             variant="secondary"
             className="flex items-center"
             onClick={handleRefresh}
-            disabled={isLoading || isRefetching}
+            disabled={isRefetching}
           >
-            {isLoading || isRefetching ? (
+            {isRefetching ? (
               <>
                 <Loader2 className="-ml-1 mr-2 h-4 w-4 animate-spin" />
                 Atualizando...
