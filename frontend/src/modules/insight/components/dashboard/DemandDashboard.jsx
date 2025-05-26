@@ -1,50 +1,149 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { motion } from "framer-motion";
-import { useDashboard } from "./DashboardContext";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import KPICard from "./KPICard";
 import TeamPerformanceChart from "./TeamPerformanceChart";
 import TeamHeatmap from "./TeamHeatmap";
 import PerformanceRadarChart from "./PerformanceRadarChart";
 import DemandStatusTable from "./DemandStatusTable";
+import useProjects from "modules/claroflow/hooks/useProjects";
+import { useUsers } from "modules/claroflow/hooks/useUsers";
+import useKPI from "modules/insight/hooks/useKPI";
 
-// Importando dados mockados
+import { ChevronDown, RefreshCw, Loader2, AlertCircle } from "lucide-react";
+import { Button } from "modules/shared/components/ui/button";
 import {
-  queueTimeData,
-  volumeData,
-  teamPerformanceData,
-  teamHeatmapData,
-  radarData,
-  demandStatusData,
-  teamMembers,
-} from "./mockData";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "modules/shared/components/ui/dropdown-menu";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 
+/**
+ * DemandDashboard - Componente melhorado para evitar o "flashing" de mensagens de erro
+ *
+ * Principais melhorias:
+ * 1. Adição de um estado isRefetching separado do isLoading
+ * 2. Uso de Framer Motion para transições suaves
+ * 3. Manutenção dos dados anteriores durante o recarregamento
+ * 4. Correção da lógica de exibição de erros
+ * 5. Adição de um delay para mensagens de erro em requisições rápidas
+ */
 const DemandDashboard = () => {
-  const {
-    period,
-    setPeriod,
-    teamMember,
-    setTeamMember,
-    isLoading,
-    error,
-    refreshData,
-  } = useDashboard();
+  // Estados de filtro gerenciados localmente
+  const [period, setPeriod] = useState("day");
+  const [teamMember, setTeamMember] = useState(null);
 
-  // Estado para controlar a exibição do seletor de colaborador
+  // Estados para seleção de projeto e demanda (assignment)
+  const [selectedProject, setSelectedProject] = useState();
+  const [selectedAssignment, setSelectedAssignment] = useState();
+  const [assignments, setAssignments] = useState([]);
+
+  // Estado para controlar a exibição dos seletores
   const [showTeamSelector, setShowTeamSelector] = useState(false);
+  const [showProjectSelector, setShowProjectSelector] = useState(false);
+  const [showAssignmentSelector, setShowAssignmentSelector] = useState(false);
 
-  // Efeito para carregar dados iniciais
+  // Estado para controlar a exibição de erros com delay
+  const [showError, setShowError] = useState(false);
+  const errorTimeoutRef = useRef(null);
+
+  // Estado para controlar se é um recarregamento ou carregamento inicial
+  const [isRefetching, setIsRefetching] = useState(false);
+
+  // Obtendo projetos usando o hook useProjects
+  const {
+    projects,
+    fetchAssignments,
+    loading: projectsLoading,
+  } = useProjects();
+
+  // Obtendo usuários usando o hook useUsers
+  const { users } = useUsers(selectedAssignment);
+  console.log(users);
+
+  // Obtendo dados de KPI usando o hook useKPI
+  // Passando os parâmetros de filtro diretamente para o hook
+  const {
+    queueTimeData,
+    volumeData,
+    teamPerformanceData,
+    teamHeatmapData,
+    radarData,
+    loading: kpiLoading,
+    error: kpiError,
+    refetch: refreshKPIData,
+  } = useKPI({
+    projectId: selectedProject,
+    assignmentId: selectedAssignment,
+    period,
+    userId: teamMember ? users.find((u) => u.name === teamMember)?.id : null,
+  });
+
+  // Preparando os dados de KPI para exibição
+  const kpiData = [queueTimeData, volumeData].filter(Boolean);
+
+  // Lista de membros da equipe para o seletor
+  const teamMembers = users.map((user) => ({
+    id: user.id,
+    name: formatUserName(user.NOME),
+  }));
+
+  // Efeito para carregar assignments quando o projeto é selecionado
   useEffect(() => {
-    refreshData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const loadAssignments = async () => {
+      if (!selectedProject) {
+        setAssignments([]);
+        setSelectedAssignment(undefined);
+        return;
+      }
+      const assignmentsData = await fetchAssignments(selectedProject);
+      const filteredAssignments = assignmentsData.filter(
+        (assignment) => assignment.name !== "Finalizado",
+      );
+
+      setAssignments(filteredAssignments);
+    };
+    loadAssignments();
+  }, [selectedProject, fetchAssignments]);
+
+  // Efeito para gerenciar a exibição de erros com delay
+  useEffect(() => {
+    // Limpa o timeout anterior se existir
+    if (errorTimeoutRef.current) {
+      clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = null;
+    }
+
+    // Se houver um erro, configura um timeout para mostrar após 300ms
+    // Isso evita o "flashing" para requisições rápidas (<100ms)
+    if (kpiError) {
+      errorTimeoutRef.current = setTimeout(() => {
+        setShowError(true);
+      }, 300);
+    } else {
+      setShowError(false);
+    }
+
+    // Limpa o timeout quando o componente é desmontado
+    return () => {
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current);
+      }
+    };
+  }, [kpiError]);
 
   // Função para alternar o período
   const handlePeriodChange = useCallback(
     (newPeriod) => {
       setPeriod(newPeriod);
-      refreshData();
+      setIsRefetching(true);
+      refreshKPIData().finally(() => {
+        setIsRefetching(false);
+      });
     },
-    [setPeriod, refreshData],
+    [setPeriod, refreshKPIData],
   );
 
   // Função para selecionar um colaborador
@@ -52,40 +151,45 @@ const DemandDashboard = () => {
     (member) => {
       setTeamMember(member);
       setShowTeamSelector(false);
-      refreshData();
+      setIsRefetching(true);
+      refreshKPIData().finally(() => {
+        setIsRefetching(false);
+      });
     },
-    [setTeamMember, refreshData],
+    [setTeamMember, refreshKPIData],
   );
 
-  // Renderizar mensagem de erro
-  if (error) {
+  // Função para atualizar os dados manualmente
+  const handleRefresh = useCallback(() => {
+    setIsRefetching(true);
+    refreshKPIData().finally(() => {
+      setIsRefetching(false);
+    });
+  }, [refreshKPIData]);
+
+  // Estado de loading combinado
+  const isLoading = projectsLoading || (kpiLoading && !isRefetching);
+
+  // Renderizar mensagem de erro (se houver)
+  if (showError && kpiError && selectedProject && selectedAssignment) {
     return (
-      <div className="rounded-lg bg-card p-6 shadow-md">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="rounded-lg bg-card p-6 shadow-md"
+      >
         <div className="mb-4 flex items-center text-destructive">
-          <svg
-            className="mr-2 h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <AlertCircle className="mr-2 h-6 w-6" />
           <h3 className="text-lg font-medium">Erro ao carregar dados</h3>
         </div>
-        <p className="mb-4 text-muted-foreground">{error}</p>
-        <button
-          className="rounded-md bg-primary px-4 py-2 text-primary-foreground transition-colors hover:bg-primary/90"
-          onClick={() => refreshData()}
-        >
+        <p className="mb-4 text-muted-foreground">
+          Ocorreu um erro ao carregar os dados do dashboard.
+        </p>
+        <Button variant="default" onClick={handleRefresh}>
           Tentar novamente
-        </button>
-      </div>
+        </Button>
+      </motion.div>
     );
   }
 
@@ -103,196 +207,247 @@ const DemandDashboard = () => {
         </div>
 
         <div className="mt-4 flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0 md:mt-0">
+          {/* Seletor de projeto */}
+          <DropdownMenu
+            open={showProjectSelector}
+            onOpenChange={setShowProjectSelector}
+          >
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                className="flex items-center"
+                disabled={projectsLoading}
+              >
+                {projects.find((p) => p._id === selectedProject)?.name ||
+                  "Selecione um projeto"}
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              {projects.map((project) => (
+                <DropdownMenuItem
+                  key={project._id}
+                  onClick={() => {
+                    setSelectedProject(project._id);
+                    setSelectedAssignment(undefined);
+                    setShowProjectSelector(false);
+                  }}
+                >
+                  {project.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Seletor de demanda */}
+          <DropdownMenu
+            open={showAssignmentSelector}
+            onOpenChange={setShowAssignmentSelector}
+          >
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                className="flex items-center"
+                disabled={!selectedProject || assignments.length === 0}
+              >
+                {assignments.find((a) => a._id === selectedAssignment)?.name ||
+                  "Selecione uma demanda"}
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              {assignments.length > 0 ? (
+                assignments.map((assignment) => (
+                  <DropdownMenuItem
+                    key={assignment._id}
+                    onClick={() => {
+                      setSelectedAssignment(assignment._id);
+                      setShowAssignmentSelector(false);
+                    }}
+                  >
+                    {assignment.name}
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <div className="px-4 py-2 text-sm text-muted-foreground">
+                  Nenhuma demanda disponível
+                </div>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {/* Seletor de período */}
           <div className="flex overflow-hidden rounded-md">
-            <button
-              className={`px-3 py-2 text-sm font-medium ${
-                period === "day"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground"
-              }`}
+            <Button
+              variant={period === "day" ? "default" : "secondary"}
+              className="px-3 py-2 text-sm font-medium"
               onClick={() => handlePeriodChange("day")}
             >
               Dia
-            </button>
-            <button
-              className={`px-3 py-2 text-sm font-medium ${
-                period === "week"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground"
-              }`}
+            </Button>
+            <Button
+              variant={period === "week" ? "default" : "secondary"}
+              className="px-3 py-2 text-sm font-medium"
               onClick={() => handlePeriodChange("week")}
             >
               Semana
-            </button>
-            <button
-              className={`px-3 py-2 text-sm font-medium ${
-                period === "month"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground"
-              }`}
+            </Button>
+            <Button
+              variant={period === "month" ? "default" : "secondary"}
+              className="px-3 py-2 text-sm font-medium"
               onClick={() => handlePeriodChange("month")}
             >
               Mês
-            </button>
+            </Button>
           </div>
 
           {/* Seletor de colaborador */}
-          <div className="relative">
-            <button
-              className="flex items-center rounded-md bg-secondary px-3 py-2 text-sm font-medium text-secondary-foreground"
-              onClick={() => setShowTeamSelector(!showTeamSelector)}
-            >
-              {teamMember || "Todos os colaboradores"}
-              <svg
-                className="ml-2 h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+          <DropdownMenu
+            open={showTeamSelector}
+            onOpenChange={setShowTeamSelector}
+          >
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                className="flex items-center"
+                disabled={
+                  !selectedProject ||
+                  assignments.length === 0 ||
+                  !selectedAssignment
+                }
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {showTeamSelector && (
-              <motion.div
-                className="absolute right-0 z-10 mt-2 w-56 rounded-md border border-border bg-popover shadow-lg"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-              >
-                <ul className="py-1">
-                  <li>
-                    <button
-                      className="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-secondary/50"
-                      onClick={() => handleTeamMemberSelect(null)}
-                    >
-                      Todos os colaboradores
-                    </button>
-                  </li>
-                  {teamMembers.map((member) => (
-                    <li key={member.id}>
-                      <button
-                        className="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-secondary/50"
-                        onClick={() => handleTeamMemberSelect(member.nome)}
-                      >
-                        {member.nome}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            )}
-          </div>
+                {teamMember || "Todos os colaboradores"}
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuItem onClick={() => handleTeamMemberSelect(null)}>
+                Todos os colaboradores
+              </DropdownMenuItem>
+              {teamMembers &&
+                teamMembers.map((member) => (
+                  <DropdownMenuItem
+                    key={member._id}
+                    onClick={() => handleTeamMemberSelect(member.name)}
+                  >
+                    {member.name}
+                  </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Botão de atualização */}
-          <button
-            className="flex items-center rounded-md bg-secondary px-3 py-2 text-sm font-medium text-secondary-foreground"
-            onClick={() => refreshData()}
-            disabled={isLoading}
+          <Button
+            variant="secondary"
+            className="flex items-center"
+            onClick={handleRefresh}
+            disabled={isLoading || isRefetching}
           >
-            {isLoading ? (
+            {isLoading || isRefetching ? (
               <>
-                <svg
-                  className="-ml-1 mr-2 h-4 w-4 animate-spin text-foreground"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
+                <Loader2 className="-ml-1 mr-2 h-4 w-4 animate-spin" />
                 Atualizando...
               </>
             ) : (
               <>
-                <svg
-                  className="mr-2 h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
+                <RefreshCw className="mr-2 h-4 w-4" />
                 Atualizar
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
 
-      {/* Overlay de carregamento */}
-      {isLoading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/50">
-          <div className="flex items-center rounded-lg bg-card p-6 shadow-lg">
-            <svg
-              className="mr-3 h-6 w-6 animate-spin text-primary"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            <span className="text-foreground">Carregando dados...</span>
+      {/* Overlay de carregamento - apenas para carregamento inicial, não para refetching */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/50"
+          >
+            <div className="flex items-center rounded-lg bg-card p-6 shadow-lg">
+              <Loader2 className="mr-3 h-6 w-6 animate-spin text-primary" />
+              <span className="text-foreground">Carregando dados...</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Indicador de recarregamento - apenas para refetching, mais sutil */}
+      <AnimatePresence>
+        {isRefetching && !isLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed right-4 top-4 z-50 flex items-center rounded-lg bg-card px-4 py-2 shadow-lg"
+          >
+            <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
+            <span className="text-sm text-foreground">Atualizando...</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mensagem para selecionar projeto e demanda */}
+      {!selectedProject || !selectedAssignment ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex h-64 items-center justify-center rounded-lg border border-dashed border-border p-6"
+        >
+          <div className="text-center">
+            <h3 className="mb-2 text-lg font-medium text-foreground">
+              Selecione um projeto e uma demanda
+            </h3>
+            <p className="text-muted-foreground">
+              Para visualizar os dados do dashboard, selecione um projeto e uma
+              demanda nos seletores acima.
+            </p>
           </div>
-        </div>
+        </motion.div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${selectedProject}-${selectedAssignment}-${period}-${teamMember}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Cards de KPI */}
+            {kpiData && (
+              <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+                {kpiData.map((kpi, index) => (
+                  <KPICard key={index} {...kpi} />
+                ))}
+              </div>
+            )}
+
+            {/* Gráficos */}
+            <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {teamPerformanceData && (
+                <TeamPerformanceChart data={teamPerformanceData} />
+              )}
+              {teamHeatmapData && <TeamHeatmap data={teamHeatmapData} />}
+            </div>
+
+            {/* Gráfico de Radar e Tabela */}
+            <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {radarData && (
+                <PerformanceRadarChart
+                  data={radarData}
+                  colaborador={teamMember || "Colaborador"}
+                />
+              )}
+              {/* Assumindo que demandStatusData está disponível no hook useKPI */}
+              {/* Se não estiver, será necessário adicionar essa funcionalidade */}
+              <DemandStatusTable data={[]} />
+            </div>
+          </motion.div>
+        </AnimatePresence>
       )}
-
-      {/* Cards de KPI */}
-      <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <KPICard {...queueTimeData} />
-        <KPICard {...volumeData} />
-      </div>
-
-      {/* Gráficos */}
-      <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <TeamPerformanceChart data={teamPerformanceData} />
-        <TeamHeatmap data={teamHeatmapData} />
-      </div>
-
-      {/* Gráfico de Radar e Tabela */}
-      <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <PerformanceRadarChart
-          data={radarData}
-          colaborador={teamMember || "Colaborador"}
-        />
-        <DemandStatusTable data={demandStatusData} />
-      </div>
     </div>
   );
 };

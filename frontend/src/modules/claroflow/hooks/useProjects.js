@@ -14,16 +14,20 @@ const useProjects = () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/flow/projects");
+
       setProjects(response.data);
+      return response.data; // Retorna os dados para uso direto
     } catch (err) {
       setError(err);
       console.error("Erro ao buscar projetos:", err);
+      return []; // Retorna array vazio em caso de erro
     } finally {
       setLoading(false);
     }
   }, []);
 
   // Função para buscar as assignments de um projeto específico
+  // Modificada para evitar dependência circular
   const fetchAssignments = useCallback(
     async (projectId) => {
       try {
@@ -34,18 +38,29 @@ const useProjects = () => {
 
         setLoading(true);
 
-        // Garante que os projetos estejam carregados antes de buscar a assignment
-        if (projects.length === 0) {
-          await fetchProjects();
+        // Verifica se o projeto já está no estado
+        let projectData = projects.find((p) => p._id === projectId);
+
+        // Se não encontrar o projeto no estado ou se o estado estiver vazio,
+        // busca diretamente da API em vez de chamar fetchProjects
+        if (!projectData) {
+          try {
+            const response = await axiosInstance.get(
+              `/flow/projects/${projectId}`,
+            );
+            projectData = response.data;
+          } catch (fetchErr) {
+            console.error("Erro ao buscar projeto específico:", fetchErr);
+            return [];
+          }
         }
 
-        const project = projects.find((p) => p._id === projectId);
-
-        if (!project) {
+        if (!projectData) {
+          console.warn(`Projeto com ID ${projectId} não encontrado`);
           return [];
         }
 
-        return project.assignments || [];
+        return projectData.assignments || [];
       } catch (err) {
         console.error("Erro ao buscar assignments:", err);
         setError(err);
@@ -54,7 +69,7 @@ const useProjects = () => {
         setLoading(false);
       }
     },
-    [projects, fetchProjects],
+    [projects], // Removida a dependência de fetchProjects
   );
 
   // Função para buscar projetos por projectId
@@ -62,6 +77,7 @@ const useProjects = () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get(`/flow/projects/${projectId}`);
+
       return response.data;
     } catch (err) {
       console.error("Erro ao buscar projeto:", err);
