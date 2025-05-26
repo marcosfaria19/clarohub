@@ -1,48 +1,11 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import axiosInstance from "services/axios";
 
-// Cache para armazenar resultados e evitar requisições desnecessárias
-const cache = {
-  averageTime: new Map(),
-  teamPerformance: new Map(),
-  teamVolume: new Map(),
-  individualRadar: new Map(),
-};
-
-// Função para gerar chaves de cache baseadas nos parâmetros
-const generateCacheKey = (params) => {
-  return Object.entries(params)
-    .filter(([_, value]) => value !== undefined)
-    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-    .map(([key, value]) => `${key}:${value}`)
-    .join("|");
-};
-
-// Função para verificar se o cache está expirado (15 minutos)
-const isCacheExpired = (timestamp) => {
-  const CACHE_TTL = 15 * 60 * 1000; // 15 minutos em milissegundos
-  return Date.now() - timestamp > CACHE_TTL;
-};
-
 // Funções de transformação de dados
 
 // Converte milissegundos para horas com 1 casa decimal
 const msToMinutes = (ms) => {
   return parseFloat((ms / (1000 * 60)).toFixed(1));
-};
-
-// Calcula a tendência com base em valores atuais e anteriores
-const calculateTrend = (current, previous) => {
-  if (!previous) return { trend: "neutral", trendValue: 0 };
-
-  const diff = current - previous;
-  const percentChange =
-    previous !== 0 ? Math.round((diff / previous) * 100) : 0;
-
-  return {
-    trend: diff > 0 ? "up" : diff < 0 ? "down" : "neutral",
-    trendValue: Math.abs(percentChange),
-  };
 };
 
 // Transforma dados de tempo médio para o formato de KPI Card
@@ -73,14 +36,10 @@ const transformAverageTimeToKPICard = (data, previousData) => {
     previousAvgMinutes = msToMinutes(prevTotalAvgDuration);
   }
 
-  const { trend, trendValue } = calculateTrend(avgMinutes, previousAvgMinutes);
-
   return {
     title: "Tempo Médio de Tratativa",
     value: avgMinutes,
     unit: "minutos",
-    trend,
-    trendValue,
     previousValue: previousAvgMinutes,
     icon: "clock",
   };
@@ -104,8 +63,6 @@ const transformVolumeToKPICard = (data, previousData, periodLabel) => {
   const currentCount = data.count || 0;
   const previousCount = previousData?.count || 0;
 
-  const { trend, trendValue } = calculateTrend(currentCount, previousCount);
-
   const periodMap = {
     day: "dia",
     week: "semana",
@@ -116,8 +73,7 @@ const transformVolumeToKPICard = (data, previousData, periodLabel) => {
     title: "Volume por Período",
     value: currentCount,
     unit: "demandas",
-    trend,
-    trendValue,
+
     previousValue: previousCount,
     period: periodMap[data.period] || periodLabel || "período",
     icon: "chart-bar",
@@ -163,17 +119,11 @@ const transformTeamPerformanceToHeatmap = (data) => {
       valor: item.count,
     });
 
-    // Adiciona métricas fictícias para satisfação e qualidade
-    // Estas métricas não estão disponíveis na API, então usamos valores padrão
-    result.push({
-      colaborador: item.userName,
-      metrica: "Satisfação",
-      valor: 85, // Valor padrão
-    });
+    // Adiciona métricas de atividade
 
     result.push({
       colaborador: item.userName,
-      metrica: "Qualidade",
+      metrica: "Atividade",
       valor: 85, // Valor padrão
     });
   });
@@ -221,7 +171,6 @@ const transformIndividualRadarToChart = (data, teamData) => {
     Math.max(0, (teamAvgCount / maxCount) * 100),
   );
 
-  // Criamos um radar com 6 dimensões, mas apenas velocidade e volume têm dados reais
   return [
     {
       subject: "Velocidade",
@@ -230,13 +179,10 @@ const transformIndividualRadarToChart = (data, teamData) => {
     },
     { subject: "Qualidade", colaborador: 85, equipe: 85 }, // Valores fictícios
     { subject: "Volume", colaborador: volumeColaborador, equipe: volumeEquipe },
-    { subject: "Satisfação", colaborador: 85, equipe: 85 }, // Valores fictícios
-    { subject: "Complexidade", colaborador: 85, equipe: 85 }, // Valores fictícios
-    { subject: "Comunicação", colaborador: 85, equipe: 85 }, // Valores fictícios
   ];
 };
 
-// Funções de API aprimoradas com tratamento de erros e cache
+// Funções de API com tratamento de erros
 
 // Busca tempo médio de tratativa
 export const fetchAverageTime = async ({
@@ -325,22 +271,6 @@ export const useAverageTime = (params = {}) => {
 
   // Função para buscar dados atuais
   const fetchData = useCallback(async () => {
-    const cacheKey = generateCacheKey({
-      period,
-      userId,
-      projectId,
-      assignmentId,
-    });
-
-    // Verifica se há dados em cache válidos
-    if (cache.averageTime.has(cacheKey)) {
-      const { data: cachedData, timestamp } = cache.averageTime.get(cacheKey);
-      if (!isCacheExpired(timestamp)) {
-        setData(cachedData);
-        return cachedData;
-      }
-    }
-
     setLoading(true);
     setError(null);
 
@@ -352,13 +282,6 @@ export const useAverageTime = (params = {}) => {
         assignmentId,
       });
       setData(result);
-
-      // Armazena no cache
-      cache.averageTime.set(cacheKey, {
-        data: result,
-        timestamp: Date.now(),
-      });
-
       return result;
     } catch (err) {
       setError(err);
@@ -387,23 +310,6 @@ export const useAverageTime = (params = {}) => {
 
     if (!previousPeriod) return null;
 
-    const cacheKey = generateCacheKey({
-      period: previousPeriod,
-      userId,
-      projectId,
-      assignmentId,
-      isPrevious: true,
-    });
-
-    // Verifica se há dados em cache válidos
-    if (cache.averageTime.has(cacheKey)) {
-      const { data: cachedData, timestamp } = cache.averageTime.get(cacheKey);
-      if (!isCacheExpired(timestamp)) {
-        setPreviousData(cachedData);
-        return cachedData;
-      }
-    }
-
     try {
       const result = await fetchAverageTime({
         period: previousPeriod,
@@ -413,13 +319,6 @@ export const useAverageTime = (params = {}) => {
       });
 
       setPreviousData(result);
-
-      // Armazena no cache
-      cache.averageTime.set(cacheKey, {
-        data: result,
-        timestamp: Date.now(),
-      });
-
       return result;
     } catch (err) {
       console.error("Erro ao buscar dados anteriores:", err);
@@ -466,30 +365,12 @@ export const useTeamVolume = (params = {}) => {
   const fetchData = useCallback(async () => {
     if (!projectId || !assignmentId) return null;
 
-    const cacheKey = generateCacheKey({ projectId, assignmentId, period });
-
-    // Verifica se há dados em cache válidos
-    if (cache.teamVolume.has(cacheKey)) {
-      const { data: cachedData, timestamp } = cache.teamVolume.get(cacheKey);
-      if (!isCacheExpired(timestamp)) {
-        setData(cachedData);
-        return cachedData;
-      }
-    }
-
     setLoading(true);
     setError(null);
 
     try {
       const result = await fetchTeamVolume({ projectId, assignmentId, period });
       setData(result);
-
-      // Armazena no cache
-      cache.teamVolume.set(cacheKey, {
-        data: result,
-        timestamp: Date.now(),
-      });
-
       return result;
     } catch (err) {
       setError(err);
@@ -518,22 +399,6 @@ export const useTeamVolume = (params = {}) => {
 
     if (!previousPeriod) return null;
 
-    const cacheKey = generateCacheKey({
-      projectId,
-      assignmentId,
-      period: previousPeriod,
-      isPrevious: true,
-    });
-
-    // Verifica se há dados em cache válidos
-    if (cache.teamVolume.has(cacheKey)) {
-      const { data: cachedData, timestamp } = cache.teamVolume.get(cacheKey);
-      if (!isCacheExpired(timestamp)) {
-        setPreviousData(cachedData);
-        return cachedData;
-      }
-    }
-
     try {
       const result = await fetchTeamVolume({
         projectId,
@@ -542,13 +407,6 @@ export const useTeamVolume = (params = {}) => {
       });
 
       setPreviousData(result);
-
-      // Armazena no cache
-      cache.teamVolume.set(cacheKey, {
-        data: result,
-        timestamp: Date.now(),
-      });
-
       return result;
     } catch (err) {
       console.error("Erro ao buscar dados anteriores:", err);
@@ -600,18 +458,6 @@ export const useTeamPerformance = (params = {}) => {
   const fetchData = useCallback(async () => {
     if (!projectId || !assignmentId) return null;
 
-    const cacheKey = generateCacheKey({ projectId, assignmentId, period });
-
-    // Verifica se há dados em cache válidos
-    if (cache.teamPerformance.has(cacheKey)) {
-      const { data: cachedData, timestamp } =
-        cache.teamPerformance.get(cacheKey);
-      if (!isCacheExpired(timestamp)) {
-        setData(cachedData);
-        return cachedData;
-      }
-    }
-
     setLoading(true);
     setError(null);
 
@@ -622,13 +468,6 @@ export const useTeamPerformance = (params = {}) => {
         period,
       });
       setData(result);
-
-      // Armazena no cache
-      cache.teamPerformance.set(cacheKey, {
-        data: result,
-        timestamp: Date.now(),
-      });
-
       return result;
     } catch (err) {
       setError(err);
@@ -681,23 +520,6 @@ export const useIndividualRadar = (params = {}) => {
   const fetchRadarData = useCallback(async () => {
     if (!userId || !projectId || !assignmentId) return null;
 
-    const cacheKey = generateCacheKey({
-      userId,
-      projectId,
-      assignmentId,
-      period,
-    });
-
-    // Verifica se há dados em cache válidos
-    if (cache.individualRadar.has(cacheKey)) {
-      const { data: cachedData, timestamp } =
-        cache.individualRadar.get(cacheKey);
-      if (!isCacheExpired(timestamp)) {
-        setData(cachedData);
-        return cachedData;
-      }
-    }
-
     setLoading(true);
     setError(null);
 
@@ -709,13 +531,6 @@ export const useIndividualRadar = (params = {}) => {
         period,
       });
       setData(result);
-
-      // Armazena no cache
-      cache.individualRadar.set(cacheKey, {
-        data: result,
-        timestamp: Date.now(),
-      });
-
       return result;
     } catch (err) {
       setError(err);
@@ -729,18 +544,6 @@ export const useIndividualRadar = (params = {}) => {
   const fetchTeamData = useCallback(async () => {
     if (!projectId || !assignmentId) return null;
 
-    const cacheKey = generateCacheKey({ projectId, assignmentId, period });
-
-    // Verifica se há dados em cache válidos
-    if (cache.teamPerformance.has(cacheKey)) {
-      const { data: cachedData, timestamp } =
-        cache.teamPerformance.get(cacheKey);
-      if (!isCacheExpired(timestamp)) {
-        setTeamData(cachedData);
-        return cachedData;
-      }
-    }
-
     try {
       const result = await fetchTeamPerformance({
         projectId,
@@ -748,13 +551,6 @@ export const useIndividualRadar = (params = {}) => {
         period,
       });
       setTeamData(result);
-
-      // Armazena no cache
-      cache.teamPerformance.set(cacheKey, {
-        data: result,
-        timestamp: Date.now(),
-      });
-
       return result;
     } catch (err) {
       console.error("Erro ao buscar dados da equipe:", err);
@@ -856,14 +652,6 @@ export const useKPI = (params = {}) => {
     individualRadar.refetch,
   ]);
 
-  // Limpa o cache
-  const clearCache = useCallback(() => {
-    cache.averageTime.clear();
-    cache.teamPerformance.clear();
-    cache.teamVolume.clear();
-    cache.individualRadar.clear();
-  }, []);
-
   return {
     // Dados de KPI
     queueTimeData: averageTime.kpiCardData,
@@ -886,7 +674,6 @@ export const useKPI = (params = {}) => {
 
     // Funções
     refetch: refetchAll,
-    clearCache,
 
     // Hooks individuais para casos específicos
     hooks: {

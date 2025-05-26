@@ -14,27 +14,15 @@ import {
   CardContent,
   CardTitle,
 } from "modules/shared/components/ui/card";
-import { useKPI } from "modules/insight/hooks/useKPI";
 
 const PerformanceRadarChart = React.memo(
   ({
     colaborador = "Colaborador",
     className = "",
-    userId,
-    projectId,
-    assignmentId,
-    period = "day",
+    data = [],
+    loading = false,
   }) => {
-    // Usar o hook useKPI para obter dados reais
-    const { radarData, loading } = useKPI({
-      userId,
-      projectId,
-      assignmentId,
-      period,
-    });
-
-    // Usar os dados do hook ou um fallback vazio
-    const data = radarData || [];
+    // Usar os dados recebidos via props ou um fallback vazio
 
     return (
       <Card>

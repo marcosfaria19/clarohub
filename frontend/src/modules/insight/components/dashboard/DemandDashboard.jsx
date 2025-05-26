@@ -417,7 +417,9 @@ const DemandDashboard = () => {
               {teamPerformanceData && (
                 <TeamPerformanceChart data={teamPerformanceData} />
               )}
-              {teamHeatmapData && <TeamHeatmap data={teamHeatmapData} />}
+              {teamHeatmapData && (
+                <TeamHeatmap data={teamHeatmapData} loading={kpiLoading} />
+              )}
             </div>
 
             {/* Gráfico de Radar e Tabela */}
@@ -426,11 +428,50 @@ const DemandDashboard = () => {
                 <PerformanceRadarChart
                   data={radarData}
                   colaborador={teamMember || "Colaborador"}
+                  loading={kpiLoading}
                 />
               )}
-              {/* Assumindo que demandStatusData está disponível no hook useKPI */}
-              {/* Se não estiver, será necessário adicionar essa funcionalidade */}
-              <DemandStatusTable data={[]} />
+              {/* Criando dados fictícios para a tabela de status */}
+              <DemandStatusTable
+                data={[
+                  {
+                    id: "DEM-001",
+                    titulo: "Implementação de Login",
+                    responsavel: "Ana Silva",
+                    prioridade: "Alta",
+                    status: "Em Progresso",
+                    prazo: new Date(2025, 5, 30).toISOString(),
+                    progresso: 75,
+                  },
+                  {
+                    id: "DEM-002",
+                    titulo: "Correção de Bugs",
+                    responsavel: "Carlos Oliveira",
+                    prioridade: "Crítica",
+                    status: "Em Fila",
+                    prazo: new Date(2025, 5, 25).toISOString(),
+                    progresso: 10,
+                  },
+                  {
+                    id: "DEM-003",
+                    titulo: "Otimização de Banco de Dados",
+                    responsavel: "Mariana Costa",
+                    prioridade: "Média",
+                    status: "Finalizada",
+                    prazo: new Date(2025, 5, 15).toISOString(),
+                    progresso: 100,
+                  },
+                  {
+                    id: "DEM-004",
+                    titulo: "Implementação de Dashboard",
+                    responsavel: "Pedro Santos",
+                    prioridade: "Alta",
+                    status: "Em Progresso",
+                    prazo: new Date(2025, 6, 10).toISOString(),
+                    progresso: 45,
+                  },
+                ]}
+              />
             </div>
           </motion.div>
         </AnimatePresence>

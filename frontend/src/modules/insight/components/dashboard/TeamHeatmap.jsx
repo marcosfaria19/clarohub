@@ -13,29 +13,22 @@ import {
   TableRow,
   TableCell,
 } from "modules/shared/components/ui/table";
-import { useKPI } from "modules/insight/hooks/useKPI";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 
 const TeamHeatmap = React.memo(
-  ({ className = "", projectId, assignmentId, period = "day" }) => {
-    // Usar o hook useKPI para obter dados reais
-    const { teamHeatmapData, loading } = useKPI({
-      projectId,
-      assignmentId,
-      period,
-    });
-
-    // Usar os dados do hook ou um fallback vazio
-    const data = useMemo(() => teamHeatmapData || [], [teamHeatmapData]);
+  ({ data = [], className = "", loading = false }) => {
+    // Usar os dados recebidos via props ou um fallback vazio
+    const heatmapData = useMemo(() => data || [], [data]);
 
     // Extrair colaboradores e métricas únicos
     const colaboradores = useMemo(
-      () => [...new Set(data.map((item) => item.colaborador))],
-      [data],
+      () => [...new Set(heatmapData.map((item) => item.colaborador))],
+      [heatmapData],
     );
 
     const metricas = useMemo(
-      () => [...new Set(data.map((item) => item.metrica))],
-      [data],
+      () => [...new Set(heatmapData.map((item) => item.metrica))],
+      [heatmapData],
     );
 
     // Calcular valores mínimos e máximos para cada métrica
@@ -43,7 +36,7 @@ const TeamHeatmap = React.memo(
       const ranges = {};
 
       metricas.forEach((metrica) => {
-        const values = data
+        const values = heatmapData
           .filter((item) => item.metrica === metrica)
           .map((item) => item.valor);
 
@@ -54,7 +47,7 @@ const TeamHeatmap = React.memo(
       });
 
       return ranges;
-    }, [data, metricas]);
+    }, [heatmapData, metricas]);
 
     // Função para calcular a cor baseada no valor normalizado
     const getColorForValue = (metrica, valor) => {
@@ -84,8 +77,8 @@ const TeamHeatmap = React.memo(
     // Função para formatar o valor baseado na métrica
     const formatValue = (metrica, valor) => {
       if (metrica === "Tempo Médio") {
-        return `${valor.toFixed(1)}h`;
-      } else if (metrica === "Satisfação" || metrica === "Qualidade") {
+        return `${valor.toFixed(1)} min`;
+      } else if (metrica === "Atividade") {
         return `${valor}%`;
       } else {
         return valor.toString();
@@ -132,10 +125,10 @@ const TeamHeatmap = React.memo(
                       className="hover:bg-secondary/20"
                     >
                       <TableCell className="font-medium text-foreground">
-                        {colaborador}
+                        {formatUserName(colaborador)}
                       </TableCell>
                       {metricas.map((metrica) => {
-                        const dataPoint = data.find(
+                        const dataPoint = heatmapData.find(
                           (item) =>
                             item.colaborador === colaborador &&
                             item.metrica === metrica,
