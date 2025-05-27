@@ -41,7 +41,7 @@ const Sidebar = () => {
       id: "projects",
       label: "Projetos",
       icon: LineChart,
-      path: "/insights/projects",
+      path: "/insights/dashboard",
     },
     {
       id: "vacations",
@@ -60,18 +60,18 @@ const Sidebar = () => {
   return (
     <div className="flex h-full flex-col bg-menu md:fixed md:bottom-0 md:left-0 md:top-0 md:w-64 md:border-r md:border-border">
       {/* Logo */}
-      <div className="flex items-center justify-between border-b border-border bg-menu p-4">
-        <Link to="/home" className="flex items-center space-x-2">
+      <div className="ml-2 flex items-center justify-between border-b border-border bg-menu p-4">
+        <Link to="/insights" className="flex items-center space-x-2">
           <img
             src={"/logo.png"}
-            alt="Claro Hub"
+            alt="Claro Insights"
             width={"28"}
             height={"28"}
             className="mr-1"
             draggable={false}
           />
           <span className="pointer-events-none text-2xl font-semibold text-menu-foreground opacity-90">
-            Claro Hub
+            Claro Insight
           </span>
         </Link>
       </div>
