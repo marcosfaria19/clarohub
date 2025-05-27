@@ -64,7 +64,7 @@ const VacationForm = React.memo(
         employeeId: undefined,
         startDate: undefined,
         endDate: undefined,
-        notes: "",
+        reason: "",
       },
     });
 
@@ -186,7 +186,7 @@ const VacationForm = React.memo(
             startDate: values.startDate,
             endDate: values.endDate,
             status: "PENDING",
-            notes: values.notes,
+            reason: values.reason,
           });
 
           form.reset();
@@ -394,7 +394,7 @@ const VacationForm = React.memo(
 
               <FormField
                 control={form.control}
-                name="notes"
+                name="reason"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Observações</FormLabel>
@@ -439,7 +439,5 @@ const VacationForm = React.memo(
     );
   },
 );
-
-VacationForm.displayName = "VacationForm";
 
 export default VacationForm;

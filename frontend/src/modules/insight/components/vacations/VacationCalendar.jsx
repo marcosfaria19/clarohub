@@ -22,23 +22,31 @@ import {
   TooltipTrigger,
 } from "modules/shared/components/ui/tooltip";
 import { Button } from "modules/shared/components/ui/button";
+
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "modules/shared/components/ui/avatar";
 import {
   ChevronLeft,
   ChevronRight,
-  User,
-  Info,
   ListIcon,
   LayoutGridIcon,
+  User,
 } from "lucide-react";
 import { cn } from "modules/shared/lib/utils";
 import { formatUserName } from "modules/shared/utils/formatUsername";
+import { formatDate } from "modules/shared/utils/formatDate";
+import VacationStatusBadge, { getStatusConfig } from "./VacationStatusBadge";
 
 const VacationCalendar = React.memo(({ vacations = [] }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState("month");
-  const [hoveredDate, setHoveredDate] = useState(null);
+  const [clickedDate, setClickedDate] = useState(null);
+  const [currentPersonIndex, setCurrentPersonIndex] = useState(0);
 
   // Generate month names
   const months = useMemo(
@@ -65,36 +73,9 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
     return Array.from({ length: 7 }, (_, i) => currentYear - 1 + i);
   }, []);
 
-  const formatDate = useCallback((date) => {
-    if (!date) return "";
-    const d = new Date(date);
-    if (isNaN(d)) return ""; // data inválida
-    return d.toLocaleDateString("pt-BR");
-  }, []);
-
   // Format date range for display
-  const formatDateRange = useCallback(
-    (start, end) => {
-      return `${formatDate(start)} - ${formatDate(end)}`;
-    },
-    [formatDate],
-  );
-
-  // Get the status color for a vacation
-  const getStatusColor = useCallback((status) => {
-    switch (status.toUpperCase()) {
-      case "APPROVED":
-        return "bg-success";
-      case "PENDING":
-        /* return "bg-warning"; */
-        return "bg-success";
-      case "REJECTED":
-        return "bg-destructive";
-      case "CANCELED":
-        return "bg-secondary";
-      default:
-        return "bg-muted";
-    }
+  const formatDateRange = useCallback((start, end) => {
+    return `${formatDate(start, false)} - ${formatDate(end, false)}`;
   }, []);
 
   // Get vacations for a specific date
@@ -171,6 +152,37 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
     setSelectedYear(newDate.getFullYear());
   }, [selectedDate, viewMode]);
 
+  // Handle day click
+  const handleDayClick = useCallback(
+    (day) => {
+      const dayVacations = getVacationsForDate(day);
+      if (dayVacations.length > 0) {
+        setClickedDate(day);
+        setCurrentPersonIndex(0);
+      } else {
+        setClickedDate(null);
+        setCurrentPersonIndex(0);
+      }
+    },
+    [getVacationsForDate],
+  );
+
+  // Navigate between people on the same day (non-circular)
+  const navigatePerson = useCallback(
+    (direction) => {
+      const dayVacations = getVacationsForDate(clickedDate);
+      if (
+        direction === "next" &&
+        currentPersonIndex < dayVacations.length - 1
+      ) {
+        setCurrentPersonIndex((prev) => prev + 1);
+      } else if (direction === "prev" && currentPersonIndex > 0) {
+        setCurrentPersonIndex((prev) => prev - 1);
+      }
+    },
+    [clickedDate, getVacationsForDate, currentPersonIndex],
+  );
+
   // Generate days for the calendar
   const generateCalendarDays = useMemo(() => {
     const days = [];
@@ -230,25 +242,29 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
     return days;
   }, [selectedYear, selectedMonth, selectedDate, viewMode]);
 
-  // Get day cell content
+  // Get day cell content with dots only (no grouping)
   const getDayContent = useCallback(
     (day) => {
       const dateVacations = getVacationsForDate(day);
       const isCurrentMonth = day.getMonth() === selectedMonth;
       const isToday = new Date().toDateString() === day.toDateString();
+      const isSelected =
+        clickedDate && day.toDateString() === clickedDate.toDateString();
 
       return (
         <motion.div
           className={cn(
-            "relative h-full w-full rounded-lg p-1 transition-colors duration-300 hover:bg-secondary/30 hover:ring-1 hover:ring-secondary",
+            "relative h-full w-full cursor-pointer rounded-lg p-1 transition-all duration-300",
+            "hover:bg-secondary/30 hover:ring-1 hover:ring-secondary",
             isCurrentMonth ? "bg-card" : "bg-card/50",
             isToday && "ring-2 ring-primary",
+            isSelected && "bg-primary/10 ring-2 ring-primary",
+            dateVacations.length > 0 && "hover:scale-105",
           )}
-          whileHover={{ scale: 1.02 }}
-          onHoverStart={() => setHoveredDate(day)}
-          onHoverEnd={() => setHoveredDate(null)}
+          whileHover={{ scale: dateVacations.length > 0 ? 1.02 : 1 }}
+          onClick={() => handleDayClick(day)}
         >
-          <div className="flex items-start justify-between">
+          <div className="flex h-full flex-col items-center justify-center">
             <span
               className={cn(
                 "text-sm font-medium",
@@ -259,37 +275,25 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
             </span>
 
             {dateVacations.length > 0 && (
-              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
-                {dateVacations.length}
-              </span>
+              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 transform">
+                <div className="flex max-w-[50px] flex-wrap justify-center gap-0.5">
+                  {dateVacations.map((vacation, index) => (
+                    <div
+                      key={vacation.id || vacation._id || index}
+                      className={`h-1.5 w-1.5 rounded-full ${getStatusConfig(vacation.status).className}`}
+                    />
+                  ))}
+                </div>
+              </div>
             )}
           </div>
-
-          {dateVacations.length > 0 && (
-            <div className="mt-1 space-y-1">
-              {dateVacations.slice(0, 2).map((vacation) => (
-                <div
-                  key={vacation.id}
-                  className={cn(
-                    "h-1.5 w-full rounded-sm",
-                    getStatusColor(vacation.status),
-                  )}
-                />
-              ))}
-              {dateVacations.length > 2 && (
-                <div className="text-center text-xs text-muted-foreground">
-                  +{dateVacations.length - 2}
-                </div>
-              )}
-            </div>
-          )}
         </motion.div>
       );
     },
-    [selectedMonth, getVacationsForDate, getStatusColor],
+    [selectedMonth, getVacationsForDate, clickedDate, handleDayClick],
   );
 
-  // Get tooltip content for a day
+  // Get tooltip content for a day with names
   const getTooltipContent = useCallback(
     (day) => {
       const dateVacations = getVacationsForDate(day);
@@ -298,34 +302,40 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
         return (
           <div className="text-xs">
             <div className="font-semibold">Nenhuma férias</div>
-            <div className="text-muted-foreground">{formatDate(day)}</div>
+            <div className="text-muted-foreground">
+              {formatDate(day, false)}
+            </div>
           </div>
         );
       }
 
       return (
-        <div className="max-w-xs space-y-2">
-          {dateVacations.map((vacation) => (
-            <div key={vacation.id} className="text-xs">
-              <div className="flex items-center gap-1 font-semibold">
-                <User className="h-3 w-3" />
-                <span>{formatUserName(vacation.nome)}</span>
+        <div className="max-w-xs text-xs">
+          <div className="font-semibold">{formatDate(day, false)}</div>
+          <div className="mb-2 text-muted-foreground">
+            {dateVacations.length} pessoa{dateVacations.length !== 1 ? "s" : ""}{" "}
+            em férias
+          </div>
+          <div className="space-y-1">
+            {dateVacations.map((vacation, index) => (
+              <div
+                key={vacation.id || vacation._id || index}
+                className="flex items-center gap-1"
+              >
+                <User className="h-3 w-3 text-muted-foreground" />
+                <span className="text-muted-foreground">
+                  {formatUserName(vacation.nome || vacation.employee)}
+                </span>
               </div>
-              <div className="text-muted-foreground">
-                {formatDateRange(vacation.startDate, vacation.endDate)}
-              </div>
-              {vacation.notes && (
-                <div className="flex items-start gap-1 italic text-muted-foreground">
-                  <Info className="h-3 w-3 shrink-0 translate-y-0.5" />
-                  <span>{vacation.notes}</span>
-                </div>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="mt-2 border-t pt-1 text-muted-foreground">
+            Clique para ver detalhes
+          </div>
         </div>
       );
     },
-    [getVacationsForDate, formatDate, formatDateRange],
+    [getVacationsForDate],
   );
 
   // Render the calendar grid
@@ -364,14 +374,11 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.2, delay: index * 0.01 }}
                 className="h-[70px]"
-                onClick={() => setSelectedDate(day)}
               >
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div className="h-full cursor-pointer">
-                        {getDayContent(day)}
-                      </div>
+                      <div className="h-full">{getDayContent(day)}</div>
                     </TooltipTrigger>
                     <TooltipContent side="top">
                       {getTooltipContent(day)}
@@ -394,128 +401,271 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
           <div className="h-3 w-3 rounded-full bg-success"></div>
           <span>Aprovado</span>
         </div>
-        {/* <div className="flex items-center gap-1">
-            <div className="h-3 w-3 rounded-full bg-warning"></div>
-            <span>Pendente</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="h-3 w-3 rounded-full bg-destructive"></div>
-            <span>Rejeitado</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="h-3 w-3 rounded-full bg-secondary"></div>
-            <span>Cancelado</span>
-          </div> */}
       </div>
     );
   }, []);
 
+  // Get this month's vacations for sidebar
+  const thisMonthVacations = useMemo(() => {
+    return vacations.filter(
+      (vacation) =>
+        new Date(vacation.startDate).getMonth() === selectedMonth &&
+        new Date(vacation.startDate).getFullYear() === selectedYear,
+    );
+  }, [vacations, selectedMonth, selectedYear]);
+
+  // Get clicked date vacation details
+  const clickedDateVacations = useMemo(() => {
+    if (!clickedDate) return [];
+    return getVacationsForDate(clickedDate);
+  }, [clickedDate, getVacationsForDate]);
+
+  const currentVacation = clickedDateVacations[currentPersonIndex];
+
   return (
-    <Card className="w-full">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-xl font-bold">
-          Calendário de Férias
-        </CardTitle>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 rounded-r-none"
-              onClick={() => handleViewModeChange("month")}
-              disabled={viewMode === "month"}
-            >
-              <LayoutGridIcon className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 rounded-l-none"
-              onClick={() => handleViewModeChange("week")}
-              disabled={viewMode === "week"}
-            >
-              <ListIcon className="h-4 w-4" />
-            </Button>
-          </div>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+      <div className="lg:col-span-3">
+        <Card className="w-full">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-xl font-bold">
+              Calendário de Férias
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-r-none"
+                  onClick={() => handleViewModeChange("month")}
+                  disabled={viewMode === "month"}
+                >
+                  <LayoutGridIcon className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-l-none"
+                  onClick={() => handleViewModeChange("week")}
+                  disabled={viewMode === "week"}
+                >
+                  <ListIcon className="h-4 w-4" />
+                </Button>
+              </div>
 
-          <Select
-            value={selectedMonth.toString()}
-            onValueChange={handleMonthChange}
-          >
-            <SelectTrigger className="h-8 w-[130px]">
-              <SelectValue placeholder="Mês" />
-            </SelectTrigger>
-            <SelectContent>
-              {months.map((month) => (
-                <SelectItem key={month.value} value={month.value}>
-                  {month.label}
-                </SelectItem>
+              <Select
+                value={selectedMonth.toString()}
+                onValueChange={handleMonthChange}
+              >
+                <SelectTrigger className="h-8 w-[130px]">
+                  <SelectValue placeholder="Mês" />
+                </SelectTrigger>
+                <SelectContent>
+                  {months.map((month) => (
+                    <SelectItem key={month.value} value={month.value}>
+                      {month.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={selectedYear.toString()}
+                onValueChange={handleYearChange}
+              >
+                <SelectTrigger className="h-8 w-[100px]">
+                  <SelectValue placeholder="Ano" />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map((year) => (
+                    <SelectItem key={year} value={year.toString()}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+
+          <CardContent>
+            <div className="mb-4 flex items-center justify-center gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={navigatePrevious}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              <h3 className="text-lg font-medium">
+                {months[selectedMonth].label} {selectedYear}
+                {viewMode === "week" && (
+                  <span className="ml-2 text-sm text-muted-foreground">
+                    (Semana de {formatDate(generateCalendarDays[0], false)} a{" "}
+                    {formatDate(generateCalendarDays[6], false)})
+                  </span>
+                )}
+              </h3>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={navigateNext}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {renderCalendarGrid}
+          </CardContent>
+
+          <CardFooter className="flex justify-between border-t p-4">
+            {renderLegend}
+            <div className="text-xs text-muted-foreground">
+              Clique nos dias para ver detalhes das férias
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
+
+      <div className="space-y-4">
+        {currentVacation && clickedDate && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">Detalhes das Férias</CardTitle>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {currentPersonIndex + 1} de {clickedDateVacations.length}
+                  </span>
+                  {clickedDateVacations.length > 1 && (
+                    <div className="flex gap-1">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => navigatePerson("prev")}
+                        disabled={currentPersonIndex === 0}
+                      >
+                        <ChevronLeft className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => navigatePerson("next")}
+                        disabled={
+                          currentPersonIndex === clickedDateVacations.length - 1
+                        }
+                      >
+                        <ChevronRight className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarImage
+                    src={
+                      currentVacation.avatar ||
+                      "/placeholder.svg?height=40&width=40"
+                    }
+                    alt={currentVacation.nome || currentVacation.employee}
+                  />
+                  <AvatarFallback>
+                    {(currentVacation.nome || currentVacation.employee)
+                      ?.split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium">
+                    {currentVacation.nome || currentVacation.employee}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Gestor: {formatUserName(currentVacation.gestor)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm">
+                  <span className="font-medium">Período:</span>{" "}
+                  {formatDateRange(
+                    currentVacation.startDate,
+                    currentVacation.endDate,
+                  )}
+                </p>
+
+                <div className="flex gap-2">
+                  <VacationStatusBadge status={currentVacation.status} />
+                </div>
+
+                {currentVacation.notes && (
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium">Observações:</span>{" "}
+                    {currentVacation.notes}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Este Mês</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {thisMonthVacations.map((vacation) => (
+                <div
+                  key={vacation.id || vacation._id}
+                  className="flex items-center gap-2"
+                >
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage
+                      src={
+                        vacation.avatar || "/placeholder.svg?height=24&width=24"
+                      }
+                      alt={vacation.nome || vacation.employee}
+                    />
+                    <AvatarFallback className="text-xs">
+                      {(vacation.nome || vacation.employee)
+                        ?.split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">
+                      {vacation.nome || vacation.employee}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDate(vacation.startDate, false)} -{" "}
+                      {formatDate(vacation.endDate, false)}
+                    </p>
+                  </div>
+                  <div className={`h-2 w-2 rounded-full bg-success`} />
+                </div>
               ))}
-            </SelectContent>
-          </Select>
 
-          <Select
-            value={selectedYear.toString()}
-            onValueChange={handleYearChange}
-          >
-            <SelectTrigger className="h-8 w-[100px]">
-              <SelectValue placeholder="Ano" />
-            </SelectTrigger>
-            <SelectContent>
-              {years.map((year) => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </CardHeader>
-
-      <CardContent>
-        <div className="mb-4 flex items-center justify-between">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={navigatePrevious}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-
-          <h3 className="text-lg font-medium">
-            {months[selectedMonth].label} {selectedYear}
-            {viewMode === "week" && (
-              <span className="ml-2 text-sm text-muted-foreground">
-                (Semana de {formatDate(generateCalendarDays[0])} a{" "}
-                {formatDate(generateCalendarDays[6])})
-              </span>
-            )}
-          </h3>
-
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={navigateNext}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {renderCalendarGrid}
-      </CardContent>
-
-      <CardFooter className="flex justify-between border-t p-4">
-        {renderLegend}
-        <div className="text-xs text-muted-foreground">
-          Passe o mouse sobre as datas para ver detalhes
-        </div>
-      </CardFooter>
-    </Card>
+              {thisMonthVacations.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  Nenhuma férias este mês
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 });
-
-VacationCalendar.displayName = "VacationCalendar";
 
 export default VacationCalendar;

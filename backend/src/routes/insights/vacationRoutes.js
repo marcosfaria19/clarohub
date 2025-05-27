@@ -66,7 +66,7 @@ module.exports = (usersCollection) => {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       reason: reason || "",
-      status: "pending",
+      status: "approved",
       createdAt: new Date(),
       updatedAt: new Date(),
     };

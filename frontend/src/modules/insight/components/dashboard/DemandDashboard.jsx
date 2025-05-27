@@ -439,40 +439,13 @@ const DemandDashboard = () => {
               <DemandStatusTable
                 data={[
                   {
-                    id: "DEM-001",
-                    titulo: "Implementação de Login",
-                    responsavel: "Ana Silva",
+                    id: "35611877",
+                    titulo: "Análise",
+                    responsavel: "Marcos Faria",
                     prioridade: "Alta",
-                    status: "Em Progresso",
+                    status: "Finalizada",
                     prazo: new Date(2025, 5, 30).toISOString(),
                     progresso: 75,
-                  },
-                  {
-                    id: "DEM-002",
-                    titulo: "Correção de Bugs",
-                    responsavel: "Carlos Oliveira",
-                    prioridade: "Crítica",
-                    status: "Em Fila",
-                    prazo: new Date(2025, 5, 25).toISOString(),
-                    progresso: 10,
-                  },
-                  {
-                    id: "DEM-003",
-                    titulo: "Otimização de Banco de Dados",
-                    responsavel: "Mariana Costa",
-                    prioridade: "Média",
-                    status: "Finalizada",
-                    prazo: new Date(2025, 5, 15).toISOString(),
-                    progresso: 100,
-                  },
-                  {
-                    id: "DEM-004",
-                    titulo: "Implementação de Dashboard",
-                    responsavel: "Pedro Santos",
-                    prioridade: "Alta",
-                    status: "Em Progresso",
-                    prazo: new Date(2025, 6, 10).toISOString(),
-                    progresso: 45,
                   },
                 ]}
               />
