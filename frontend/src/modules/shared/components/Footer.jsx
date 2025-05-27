@@ -11,10 +11,6 @@ const Footer = () => {
   const developers = [
     { name: "Marcos Faria", email: "marcos.faria.terceiros@claro.com.br" },
     { name: "Fares Nunes", email: "fares.nunes@claro.com.br" },
-    {
-      name: "Danielli Leite",
-      email: "danielli.leite.terceiros@claro.com.br",
-    },
   ];
 
   const copyToClipboard = (email) => {
@@ -36,7 +32,7 @@ const Footer = () => {
             &copy; Projetos Americana {new Date().getFullYear()}
           </p>
           <p className="text-center text-sm sm:text-right md:text-base">
-            Suporte ao sistema:{" "}
+            Desenvolvido por:{" "}
             <TooltipProvider>
               {developers.map((dev, index) => (
                 <React.Fragment key={dev.name}>

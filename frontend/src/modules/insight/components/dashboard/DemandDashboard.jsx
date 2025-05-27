@@ -183,7 +183,11 @@ const DemandDashboard = () => {
   }
 
   return (
-    <div className="p-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0, transition: { duration: 0.3 } }}
+      exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
+    >
       {/* Cabeçalho do Dashboard */}
       <div className="mb-6 flex flex-col items-start justify-between md:flex-row md:items-center">
         <div>
@@ -476,7 +480,7 @@ const DemandDashboard = () => {
           </motion.div>
         </AnimatePresence>
       )}
-    </div>
+    </motion.div>
   );
 };
 

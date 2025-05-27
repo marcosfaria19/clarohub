@@ -88,11 +88,15 @@ async function startServer() {
       clarohub.collection("flow.projects")
     );
 
-    // Rotas dos KPIs do dsahboard
+    // Rotas dos KPIs do dashboard
     const insightsRoutes = require("./src/routes/insights/insightsRoutes")(
       clarohub.collection("flow.tasks"),
       clarohub.collection("users"),
       clarohub.collection("flow.projects")
+    );
+
+    const vacationRoutes = require("./src/routes/insights/vacationRoutes")(
+      clarohub.collection("users")
     );
 
     // Rotas protegidas
@@ -108,6 +112,7 @@ async function startServer() {
     app.use("/flow/", projectRoutes);
     app.use("/flow/tasks/", tasksRoutes);
     app.use("/insights/", insightsRoutes);
+    app.use("/vacations/", vacationRoutes);
 
     // Middleware para servir imagens estáticas
     app.use(

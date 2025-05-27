@@ -7,7 +7,7 @@ const VacationStatusBadge = React.memo(
   ({ status, className = "", animate = true }) => {
     const getStatusConfig = () => {
       switch (status) {
-        case "APPROVED":
+        case "approved":
           return {
             label: "Aprovado",
             className: "bg-success text-success-foreground hover:bg-success/80",
@@ -17,7 +17,7 @@ const VacationStatusBadge = React.memo(
               hover: { scale: 1.05 },
             },
           };
-        case "PENDING":
+        /* case "pending":
           return {
             label: "Pendente",
             className: "bg-warning text-warning-foreground hover:bg-warning/80",
@@ -26,33 +26,11 @@ const VacationStatusBadge = React.memo(
               animate: { scale: 1, opacity: 1 },
               hover: { scale: 1.05 },
             },
-          };
-        case "REJECTED":
-          return {
-            label: "Rejeitado",
-            className:
-              "bg-destructive text-destructive-foreground hover:bg-destructive/80",
-            variants: {
-              initial: { scale: 0.8, opacity: 0 },
-              animate: { scale: 1, opacity: 1 },
-              hover: { scale: 1.05 },
-            },
-          };
-        case "CANCELED":
-          return {
-            label: "Cancelado",
-            className:
-              "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-            variants: {
-              initial: { scale: 0.8, opacity: 0 },
-              animate: { scale: 1, opacity: 1 },
-              hover: { scale: 1.05 },
-            },
-          };
+          }; */
         default:
           return {
-            label: "Desconhecido",
-            className: "bg-muted text-muted-foreground",
+            label: "Aprovado",
+            className: "bg-success text-success-foreground hover:bg-success/80",
             variants: {
               initial: { scale: 0.8, opacity: 0 },
               animate: { scale: 1, opacity: 1 },

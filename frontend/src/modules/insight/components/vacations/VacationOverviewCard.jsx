@@ -1,6 +1,5 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
-import { useVacation } from "./VacationContext";
 
 import {
   Card,
@@ -28,14 +27,50 @@ import { CalendarIcon, InfoIcon } from "lucide-react";
 import { cn } from "modules/shared/lib/utils";
 
 const VacationOverviewCard = React.memo(
-  ({ className = "", employeeId, onEmployeeChange }) => {
-    const { employees, getVacationsByEmployee } = useVacation();
+  ({
+    className = "",
+    employeeId,
+    onEmployeeChange,
+    vacations = [],
+    loading = false,
+    error = null,
+  }) => {
+    // We need to extract employees from vacations since we no longer have direct access to employees
+    const employees = useMemo(() => {
+      if (!vacations || vacations.length === 0) return [];
+
+      // Extract unique employees from vacations
+      const uniqueEmployees = new Map();
+
+      vacations.forEach((vacation) => {
+        if (vacation.employeeId && !uniqueEmployees.has(vacation.employeeId)) {
+          uniqueEmployees.set(vacation.employeeId, {
+            id: vacation.employeeId,
+            name: vacation.employee,
+            department: vacation.department || "",
+            vacationDaysAvailable: vacation.daysAvailable || 0,
+            vacationDaysTaken: vacation.daysTaken || 0,
+          });
+        }
+      });
+
+      return Array.from(uniqueEmployees.values());
+    }, [vacations]);
 
     // Get selected employee
     const selectedEmployee = useMemo(() => {
       if (!employeeId) return null;
       return employees.find((e) => e.id === employeeId) || null;
     }, [employees, employeeId]);
+
+    // Get employee vacations
+    const getVacationsByEmployee = useCallback(
+      (empId) => {
+        if (!empId || !vacations || vacations.length === 0) return [];
+        return vacations.filter((vacation) => vacation.employeeId === empId);
+      },
+      [vacations],
+    );
 
     // Get employee vacations
     const employeeVacations = useMemo(() => {
@@ -145,7 +180,11 @@ const VacationOverviewCard = React.memo(
         </CardHeader>
 
         <CardContent>
-          {selectedEmployee ? (
+          {loading ? (
+            <div className="flex h-[200px] items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+            </div>
+          ) : selectedEmployee ? (
             <motion.div
               variants={containerVariants}
               initial="hidden"

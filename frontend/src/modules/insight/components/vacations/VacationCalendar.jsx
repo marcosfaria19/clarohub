@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useVacation } from "./VacationContext";
 
 import {
   Card,
@@ -26,25 +25,19 @@ import { Button } from "modules/shared/components/ui/button";
 import {
   ChevronLeft,
   ChevronRight,
-  Calendar as CalendarIcon,
   User,
   Info,
+  ListIcon,
+  LayoutGridIcon,
 } from "lucide-react";
 import { cn } from "modules/shared/lib/utils";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 
-const VacationCalendar = React.memo(({ className = "" }) => {
-  const {
-    selectedDate,
-    selectedMonth,
-    selectedYear,
-    viewMode,
-    setSelectedDate,
-    setSelectedMonth,
-    setSelectedYear,
-    setViewMode,
-    getVacationsForDate,
-  } = useVacation();
-
+const VacationCalendar = React.memo(({ vacations = [] }) => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [viewMode, setViewMode] = useState("month");
   const [hoveredDate, setHoveredDate] = useState(null);
 
   // Generate month names
@@ -72,9 +65,11 @@ const VacationCalendar = React.memo(({ className = "" }) => {
     return Array.from({ length: 7 }, (_, i) => currentYear - 1 + i);
   }, []);
 
-  // Format date for display
   const formatDate = useCallback((date) => {
-    return date.toLocaleDateString("pt-BR");
+    if (!date) return "";
+    const d = new Date(date);
+    if (isNaN(d)) return ""; // data inválida
+    return d.toLocaleDateString("pt-BR");
   }, []);
 
   // Format date range for display
@@ -87,11 +82,12 @@ const VacationCalendar = React.memo(({ className = "" }) => {
 
   // Get the status color for a vacation
   const getStatusColor = useCallback((status) => {
-    switch (status) {
+    switch (status.toUpperCase()) {
       case "APPROVED":
         return "bg-success";
       case "PENDING":
-        return "bg-warning";
+        /* return "bg-warning"; */
+        return "bg-success";
       case "REJECTED":
         return "bg-destructive";
       case "CANCELED":
@@ -101,6 +97,27 @@ const VacationCalendar = React.memo(({ className = "" }) => {
     }
   }, []);
 
+  // Get vacations for a specific date
+  const getVacationsForDate = useCallback(
+    (date) => {
+      if (!vacations || vacations.length === 0) return [];
+
+      return vacations.filter((vacation) => {
+        const startDate = new Date(vacation.startDate);
+        const endDate = new Date(vacation.endDate);
+        const checkDate = new Date(date);
+
+        // Reset time part for accurate date comparison
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        checkDate.setHours(0, 0, 0, 0);
+
+        return checkDate >= startDate && checkDate <= endDate;
+      });
+    },
+    [vacations],
+  );
+
   // Handle month change
   const handleMonthChange = useCallback(
     (value) => {
@@ -109,7 +126,7 @@ const VacationCalendar = React.memo(({ className = "" }) => {
       newDate.setMonth(Number.parseInt(value));
       setSelectedDate(newDate);
     },
-    [selectedDate, setSelectedDate, setSelectedMonth],
+    [selectedDate],
   );
 
   // Handle year change
@@ -120,16 +137,13 @@ const VacationCalendar = React.memo(({ className = "" }) => {
       newDate.setFullYear(Number.parseInt(value));
       setSelectedDate(newDate);
     },
-    [selectedDate, setSelectedDate, setSelectedYear],
+    [selectedDate],
   );
 
   // Handle view mode change
-  const handleViewModeChange = useCallback(
-    (mode) => {
-      setViewMode(mode);
-    },
-    [setViewMode],
-  );
+  const handleViewModeChange = useCallback((mode) => {
+    setViewMode(mode);
+  }, []);
 
   // Navigate to previous month/week
   const navigatePrevious = useCallback(() => {
@@ -142,13 +156,7 @@ const VacationCalendar = React.memo(({ className = "" }) => {
     setSelectedDate(newDate);
     setSelectedMonth(newDate.getMonth());
     setSelectedYear(newDate.getFullYear());
-  }, [
-    selectedDate,
-    viewMode,
-    setSelectedDate,
-    setSelectedMonth,
-    setSelectedYear,
-  ]);
+  }, [selectedDate, viewMode]);
 
   // Navigate to next month/week
   const navigateNext = useCallback(() => {
@@ -161,13 +169,7 @@ const VacationCalendar = React.memo(({ className = "" }) => {
     setSelectedDate(newDate);
     setSelectedMonth(newDate.getMonth());
     setSelectedYear(newDate.getFullYear());
-  }, [
-    selectedDate,
-    viewMode,
-    setSelectedDate,
-    setSelectedMonth,
-    setSelectedYear,
-  ]);
+  }, [selectedDate, viewMode]);
 
   // Generate days for the calendar
   const generateCalendarDays = useMemo(() => {
@@ -238,11 +240,11 @@ const VacationCalendar = React.memo(({ className = "" }) => {
       return (
         <motion.div
           className={cn(
-            "relative h-full w-full rounded-md p-1",
+            "relative h-full w-full rounded-lg p-1 transition-colors duration-300 hover:bg-secondary/30 hover:ring-1 hover:ring-secondary",
             isCurrentMonth ? "bg-card" : "bg-card/50",
-            isToday && "ring-2 ring-primary ring-offset-1",
+            isToday && "ring-2 ring-primary",
           )}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
           onHoverStart={() => setHoveredDate(day)}
           onHoverEnd={() => setHoveredDate(null)}
         >
@@ -275,7 +277,7 @@ const VacationCalendar = React.memo(({ className = "" }) => {
                 />
               ))}
               {dateVacations.length > 2 && (
-                <div className="text-center text-[10px] text-muted-foreground">
+                <div className="text-center text-xs text-muted-foreground">
                   +{dateVacations.length - 2}
                 </div>
               )}
@@ -307,7 +309,7 @@ const VacationCalendar = React.memo(({ className = "" }) => {
             <div key={vacation.id} className="text-xs">
               <div className="flex items-center gap-1 font-semibold">
                 <User className="h-3 w-3" />
-                <span>{vacation.employee}</span>
+                <span>{formatUserName(vacation.nome)}</span>
               </div>
               <div className="text-muted-foreground">
                 {formatDateRange(vacation.startDate, vacation.endDate)}
@@ -361,7 +363,7 @@ const VacationCalendar = React.memo(({ className = "" }) => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.2, delay: index * 0.01 }}
-                className="aspect-square"
+                className="h-[70px]"
                 onClick={() => setSelectedDate(day)}
               >
                 <TooltipProvider>
@@ -382,13 +384,7 @@ const VacationCalendar = React.memo(({ className = "" }) => {
         </div>
       </div>
     );
-  }, [
-    generateCalendarDays,
-    viewMode,
-    getDayContent,
-    getTooltipContent,
-    setSelectedDate,
-  ]);
+  }, [generateCalendarDays, viewMode, getDayContent, getTooltipContent]);
 
   // Render the legend
   const renderLegend = useMemo(() => {
@@ -398,24 +394,24 @@ const VacationCalendar = React.memo(({ className = "" }) => {
           <div className="h-3 w-3 rounded-full bg-success"></div>
           <span>Aprovado</span>
         </div>
-        <div className="flex items-center gap-1">
-          <div className="h-3 w-3 rounded-full bg-warning"></div>
-          <span>Pendente</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="h-3 w-3 rounded-full bg-destructive"></div>
-          <span>Rejeitado</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="h-3 w-3 rounded-full bg-secondary"></div>
-          <span>Cancelado</span>
-        </div>
+        {/* <div className="flex items-center gap-1">
+            <div className="h-3 w-3 rounded-full bg-warning"></div>
+            <span>Pendente</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="h-3 w-3 rounded-full bg-destructive"></div>
+            <span>Rejeitado</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="h-3 w-3 rounded-full bg-secondary"></div>
+            <span>Cancelado</span>
+          </div> */}
       </div>
     );
   }, []);
 
   return (
-    <Card className={cn("w-full", className)}>
+    <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-xl font-bold">
           Calendário de Férias
@@ -429,7 +425,7 @@ const VacationCalendar = React.memo(({ className = "" }) => {
               onClick={() => handleViewModeChange("month")}
               disabled={viewMode === "month"}
             >
-              <CalendarIcon className="h-4 w-4" />
+              <LayoutGridIcon className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -438,7 +434,7 @@ const VacationCalendar = React.memo(({ className = "" }) => {
               onClick={() => handleViewModeChange("week")}
               disabled={viewMode === "week"}
             >
-              <CalendarIcon className="h-4 w-4" />
+              <ListIcon className="h-4 w-4" />
             </Button>
           </div>
 
