@@ -74,7 +74,7 @@ export default function NetFacil({ userName, gestor }) {
               <div
                 key={step}
                 className={`flex flex-1 transform flex-col transition-all duration-500 ${
-                  currentStep === step ? "opacity-100" : "opacity-50"
+                  currentStep === step ? "z-50 opacity-100" : "opacity-50"
                 } ${currentStep === 2 && step !== 2 ? "pointer-events-none" : ""}`}
               >
                 <div className="relative flex h-full flex-col rounded-xl border-2 border-primary/40 bg-card/70 p-6 backdrop-blur-sm">
