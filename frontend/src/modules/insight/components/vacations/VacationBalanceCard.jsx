@@ -22,9 +22,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "modules/shared/components/ui/select";
-import { CalendarIcon, InfoIcon, User } from "lucide-react";
-import { cn } from "modules/shared/lib/utils";
+import { BriefcaseBusiness, CalendarIcon, InfoIcon, User } from "lucide-react";
 import { capitalizeFirstLetters } from "modules/shared/utils/formatUsername";
+import { getDuration } from "modules/insight/utils/sortVacation";
 
 const VacationBalanceCard = React.memo(
   ({
@@ -41,13 +41,13 @@ const VacationBalanceCard = React.memo(
 
       vacations.forEach((vacation) => {
         const id = vacation.employeeId || vacation._id;
-        const name = vacation.employee || vacation.nome;
+        const name = vacation.nome;
 
         if (id && !uniqueEmployees.has(id)) {
           uniqueEmployees.set(id, {
             id: id,
             name: name,
-            department: vacation.department || "Não informado",
+            department: vacation.login[0] === "Z" ? "Procisa" : "Claro",
             vacationDaysAvailable: vacation.daysAvailable || 20,
             vacationDaysTaken: vacation.daysTaken || 0,
           });
@@ -93,16 +93,13 @@ const VacationBalanceCard = React.memo(
         selectedEmployee.vacationDaysTaken;
       const available = selectedEmployee.vacationDaysAvailable;
       const taken = selectedEmployee.vacationDaysTaken;
-
       const scheduled = employeeVacations
         .filter((v) => v.status === "pending" || v.status === "PENDING")
-        .reduce((acc, vacation) => {
-          const start = new Date(vacation.startDate);
-          const end = new Date(vacation.endDate);
-          const diffTime = Math.abs(end.getTime() - start.getTime());
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-          return acc + diffDays;
-        }, 0);
+        .reduce(
+          (acc, vacation) =>
+            acc + getDuration(vacation.startDate, vacation.endDate),
+          0,
+        );
 
       const percentageUsed = Math.round((taken / total) * 100);
 
@@ -139,12 +136,12 @@ const VacationBalanceCard = React.memo(
     };
 
     return (
-      <Card className={cn("w-full", className)}>
+      <Card className="h-full w-full">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg">Saldo de Férias</CardTitle>
-              <CardDescription className="text-sm">
+              <CardDescription>
                 Visualize o saldo de férias disponível
               </CardDescription>
             </div>
@@ -186,8 +183,8 @@ const VacationBalanceCard = React.memo(
                   <h3 className="font-medium">
                     {capitalizeFirstLetters(selectedEmployee.name)}
                   </h3>
-                  <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <User className="h-3 w-3" />
+                  <span className="text-md flex items-center gap-1 text-muted-foreground">
+                    <BriefcaseBusiness className="h-4 w-4" />
                     {selectedEmployee.department}
                   </span>
                 </div>

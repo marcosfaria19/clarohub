@@ -16,30 +16,14 @@ import { CalendarDaysIcon } from "lucide-react";
 
 import AllVacationsDialog from "./AllVacationsDialog";
 import VacationOverviewCard from "./VacationOverviewCard";
+import { sortVacations } from "modules/insight/utils/sortVacation";
 
 const VacationTimeline = React.memo(
   ({ limit = 10, vacations = [], loading = false }) => {
     const [showAllVacations, setShowAllVacations] = useState(false);
 
     const upcomingVacations = useMemo(() => {
-      if (!vacations || vacations.length === 0) return [];
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const upcoming = vacations
-        .filter((vacation) => {
-          const endDate = new Date(vacation.endDate);
-          endDate.setHours(0, 0, 0, 0);
-          return endDate >= today;
-        })
-        .sort((a, b) => {
-          const aDaysUntil = Math.abs(new Date(a.startDate) - today);
-          const bDaysUntil = Math.abs(new Date(b.startDate) - today);
-          return aDaysUntil - bDaysUntil;
-        });
-
-      return upcoming.slice(0, limit);
+      return sortVacations(vacations).slice(0, limit);
     }, [vacations, limit]);
 
     const containerVariants = {
@@ -62,7 +46,7 @@ const VacationTimeline = React.memo(
     const renderEmptyState = () => {
       if (loading) {
         return (
-          <div className="flex h-[200px] flex-col items-center justify-center text-center text-muted-foreground">
+          <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
             <CalendarDaysIcon className="mb-2 h-12 w-12 animate-pulse opacity-20" />
             <h3 className="text-lg font-medium">Carregando...</h3>
           </div>
@@ -70,7 +54,7 @@ const VacationTimeline = React.memo(
       }
 
       return (
-        <div className="flex h-[200px] flex-col items-center justify-center text-center text-muted-foreground">
+        <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
           <CalendarDaysIcon className="mb-2 h-12 w-12 opacity-20" />
           <h3 className="text-lg font-medium">Nenhuma férias agendada</h3>
           <p className="max-w-xs text-sm">
@@ -101,7 +85,7 @@ const VacationTimeline = React.memo(
           </CardHeader>
 
           <CardContent>
-            <ScrollArea className="h-[400px] pr-4">
+            <ScrollArea className="h-[calc(100vh-420px)] pr-4">
               {loading || upcomingVacations.length === 0 ? (
                 renderEmptyState()
               ) : (

@@ -23,51 +23,25 @@ import { Button } from "modules/shared/components/ui/button";
 import { CalendarIcon, Search } from "lucide-react";
 
 import VacationOverviewCard from "./VacationOverviewCard";
+import { sortVacations } from "modules/insight/utils/sortVacation";
 
 const AllVacationsDialog = React.memo(
   ({ open, onOpenChange, vacations = [], loading = false }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("date");
 
-    const getDuration = (startDate, endDate) => {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      const diffTime = Math.abs(end - start);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-      return diffDays;
-    };
-
     const filteredAndSortedVacations = useMemo(() => {
       let filtered = vacations;
 
-      // Filter by search term
       if (searchTerm) {
         filtered = filtered.filter(
           (vacation) =>
-            (vacation.nome || vacation.employee)
-              ?.toLowerCase()
-              .includes(searchTerm.toLowerCase()) ||
+            vacation.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             vacation.gestor?.toLowerCase().includes(searchTerm.toLowerCase()),
         );
       }
 
-      // Sort
-      filtered.sort((a, b) => {
-        switch (sortBy) {
-          case "date":
-            return new Date(a.startDate) - new Date(b.startDate);
-          case "employee":
-            return (a.nome || a.employee)?.localeCompare(b.nome || b.employee);
-          case "duration":
-            const aDuration = getDuration(a.startDate, a.endDate);
-            const bDuration = getDuration(b.startDate, b.endDate);
-            return bDuration - aDuration;
-          default:
-            return 0;
-        }
-      });
-
-      return filtered;
+      return sortVacations(filtered, sortBy);
     }, [vacations, searchTerm, sortBy]);
 
     const containerVariants = {
