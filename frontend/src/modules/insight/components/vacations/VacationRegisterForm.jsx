@@ -38,6 +38,7 @@ import { CalendarIcon, PlusIcon, AlertCircle } from "lucide-react";
 import { cn } from "modules/shared/lib/utils";
 import { useForm } from "react-hook-form";
 import { useUsers } from "modules/claroflow/hooks/useUsers";
+import { capitalizeFirstLetters } from "modules/shared/utils/formatUsername";
 
 const VacationRegisterForm = React.memo(
   ({
@@ -50,6 +51,11 @@ const VacationRegisterForm = React.memo(
   }) => {
     // Use the useUsers hook to get the list of collaborators
     const { users, loading: usersLoading } = useUsers();
+    const validUsers = users.filter(
+      (u) =>
+        u.GESTOR !== "ELVIS CLEBER ALVES DA SILVA" &&
+        u.GESTOR !== "RODRIGO JOSE RODRIGUES GIL",
+    );
 
     const [open, setOpen] = useState(false);
     const [localLoading, setLocalLoading] = useState(false);
@@ -170,7 +176,7 @@ const VacationRegisterForm = React.memo(
             return;
           }
 
-          const employee = users.find((e) => e._id === values.employeeId);
+          const employee = validUsers.find((e) => e._id === values.employeeId);
 
           if (!employee) {
             throw new Error("Colaborador não encontrado");
@@ -202,7 +208,7 @@ const VacationRegisterForm = React.memo(
           setLocalLoading(false);
         }
       },
-      [form, users, hasOverlap, scheduleVacation, onSuccess],
+      [form, validUsers, hasOverlap, scheduleVacation, onSuccess],
     );
 
     const handleOpenChange = useCallback(
@@ -255,9 +261,9 @@ const VacationRegisterForm = React.memo(
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {users.map((employee) => (
+                        {validUsers.map((employee) => (
                           <SelectItem key={employee._id} value={employee._id}>
-                            {employee.NOME}
+                            {capitalizeFirstLetters(employee.NOME)}
                           </SelectItem>
                         ))}
                       </SelectContent>

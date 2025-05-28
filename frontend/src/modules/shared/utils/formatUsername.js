@@ -23,11 +23,16 @@ export const formatUserName = (name) => {
 export const capitalizeFirstLetters = (name) => {
   if (!name) return ""; // Retorna vazio se o nome for inválido
 
+  const exceptions = ["da", "de", "do", "das", "dos", "e"];
+
   return name
-    .toLowerCase() // Garante que todas as letras fiquem minúsculas
-    .split(" ") // Divide a string em um array de palavras
-    .map(
-      (word) => word.charAt(0).toUpperCase() + word.slice(1), // Capitaliza a primeira letra de cada palavra
-    )
-    .join(" "); // Junta as palavras de volta em uma string
+    .toLowerCase()
+    .split(" ")
+    .map((word) => {
+      if (exceptions.includes(word)) {
+        return word;
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
 };

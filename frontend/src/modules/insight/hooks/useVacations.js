@@ -10,8 +10,6 @@ export function useVacations() {
   const fetchVacations = useCallback(async (userId = null) => {
     setLoading(true);
     try {
-      /* const endpoint = userId ? `/vacations/user/${userId}` : "/vacations";
-      const response = await axiosInstance.get(endpoint); */
       const response = await axiosInstance.get("/vacations");
       setVacations(response.data);
       setError(null);
