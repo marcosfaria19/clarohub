@@ -522,8 +522,36 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
         <Card>
           <CardHeader className="border-b border-border">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <CardTitle className="flex items-center gap-2 text-xl font-bold">
-                Calendário de Férias
+              <CardTitle className="flex items-center gap-6">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={navigatePrevious}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold">
+                    {months[selectedMonth].label} {selectedYear}
+                  </h3>
+                  {viewMode === "week" && (
+                    <p className="text-sm text-muted-foreground">
+                      Semana de {formatDate(generateCalendarDays[0], false)} a{" "}
+                      {formatDate(generateCalendarDays[6], false)}
+                    </p>
+                  )}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={navigateNext}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </CardTitle>
 
               <div className="flex flex-wrap items-center gap-2">
@@ -583,41 +611,7 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
             </div>
           </CardHeader>
 
-          <CardContent className="p-4">
-            <div className="mb-4 flex items-center justify-center gap-4">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={navigatePrevious}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-
-              <div className="text-center">
-                <h3 className="text-lg font-medium">
-                  {months[selectedMonth].label} {selectedYear}
-                </h3>
-                {viewMode === "week" && (
-                  <p className="text-sm text-muted-foreground">
-                    Semana de {formatDate(generateCalendarDays[0], false)} a{" "}
-                    {formatDate(generateCalendarDays[6], false)}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={navigateNext}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {renderCalendarGrid}
-          </CardContent>
+          <CardContent className="p-4">{renderCalendarGrid}</CardContent>
 
           <CardFooter className="flex flex-col border-t border-border p-4 sm:flex-row sm:justify-between">
             {renderLegend}
@@ -634,7 +628,7 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
             <CardTitle className="flex items-center gap-2 text-lg">
               <Users className="h-4 w-4" />
               Este Mês
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="basic" className="ml-2">
                 {thisMonthVacations.length}
               </Badge>
             </CardTitle>
@@ -666,8 +660,8 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
                       </Avatar>
                       <div
                         className={cn(
-                          "absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-background",
-                          getUserColor(employee),
+                          "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-background",
+                          getUserColor(vacation.nome),
                         )}
                       />
                     </div>
@@ -750,8 +744,8 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
                   </Avatar>
                   <div
                     className={cn(
-                      "absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-background",
-                      getUserColor(currentPerson),
+                      "absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full border-2 border-background",
+                      getUserColor(currentVacation.nome),
                     )}
                   />
                 </div>

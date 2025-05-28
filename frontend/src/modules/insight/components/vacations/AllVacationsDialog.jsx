@@ -20,14 +20,13 @@ import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import { Input } from "modules/shared/components/ui/input";
 import { Badge } from "modules/shared/components/ui/badge";
 import { Button } from "modules/shared/components/ui/button";
-import { CalendarIcon, Search, Filter } from "lucide-react";
+import { CalendarIcon, Search } from "lucide-react";
 
 import VacationOverviewCard from "./VacationOverviewCard";
 
 const AllVacationsDialog = React.memo(
   ({ open, onOpenChange, vacations = [], loading = false }) => {
     const [searchTerm, setSearchTerm] = useState("");
-    const [statusFilter, setStatusFilter] = useState("all");
     const [sortBy, setSortBy] = useState("date");
 
     const getDuration = (startDate, endDate) => {
@@ -52,13 +51,6 @@ const AllVacationsDialog = React.memo(
         );
       }
 
-      // Filter by status
-      if (statusFilter !== "all") {
-        filtered = filtered.filter(
-          (vacation) => vacation.status?.toLowerCase() === statusFilter,
-        );
-      }
-
       // Sort
       filtered.sort((a, b) => {
         switch (sortBy) {
@@ -76,7 +68,7 @@ const AllVacationsDialog = React.memo(
       });
 
       return filtered;
-    }, [vacations, searchTerm, statusFilter, sortBy]);
+    }, [vacations, searchTerm, sortBy]);
 
     const containerVariants = {
       hidden: { opacity: 0 },
@@ -101,7 +93,7 @@ const AllVacationsDialog = React.memo(
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               Todas as Férias
-              <Badge variant="secondary">
+              <Badge variant="basic">
                 {filteredAndSortedVacations.length} registros
               </Badge>
             </DialogTitle>
@@ -114,7 +106,7 @@ const AllVacationsDialog = React.memo(
             {/* Filters */}
             <div className="flex flex-col gap-4 sm:flex-row">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 z-50 h-4 w-4 -translate-y-1/2 transform text-foreground" />
                 <Input
                   placeholder="Buscar por funcionário ou gestor..."
                   value={searchTerm}
@@ -122,20 +114,6 @@ const AllVacationsDialog = React.memo(
                   className="pl-10"
                 />
               </div>
-
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-[180px]">
-                  <Filter className="mr-2 h-4 w-4" />
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os Status</SelectItem>
-                  <SelectItem value="approved">Aprovado</SelectItem>
-                  <SelectItem value="pending">Pendente</SelectItem>
-                  <SelectItem value="rejected">Rejeitado</SelectItem>
-                  <SelectItem value="canceled">Cancelado</SelectItem>
-                </SelectContent>
-              </Select>
 
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-full sm:w-[180px]">
@@ -150,7 +128,7 @@ const AllVacationsDialog = React.memo(
             </div>
 
             {/* Vacation List */}
-            <ScrollArea className="h-[400px] pr-4">
+            <ScrollArea className="h-[400px]">
               {loading ? (
                 <div className="flex h-32 items-center justify-center">
                   <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
