@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "modules/shared/components/ui/card";
@@ -25,6 +24,7 @@ import {
 } from "modules/shared/components/ui/select";
 import { CalendarIcon, InfoIcon, User } from "lucide-react";
 import { cn } from "modules/shared/lib/utils";
+import { capitalizeFirstLetters } from "modules/shared/utils/formatUsername";
 
 const VacationBalanceCard = React.memo(
   ({
@@ -151,7 +151,7 @@ const VacationBalanceCard = React.memo(
 
             {onEmployeeChange && (
               <Select
-                value={employeeId?.toString()}
+                value={employeeId || ""}
                 onValueChange={handleEmployeeChange}
               >
                 <SelectTrigger className="w-[180px]">
@@ -159,11 +159,8 @@ const VacationBalanceCard = React.memo(
                 </SelectTrigger>
                 <SelectContent>
                   {employees.map((employee) => (
-                    <SelectItem
-                      key={employee.id}
-                      value={employee.id.toString()}
-                    >
-                      {employee.name}
+                    <SelectItem key={employee.id} value={employee.id}>
+                      {capitalizeFirstLetters(employee.name)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -186,7 +183,9 @@ const VacationBalanceCard = React.memo(
             >
               <motion.div variants={itemVariants} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-medium">{selectedEmployee.name}</h3>
+                  <h3 className="font-medium">
+                    {capitalizeFirstLetters(selectedEmployee.name)}
+                  </h3>
                   <span className="flex items-center gap-1 text-sm text-muted-foreground">
                     <User className="h-3 w-3" />
                     {selectedEmployee.department}
@@ -289,10 +288,6 @@ const VacationBalanceCard = React.memo(
             </div>
           )}
         </CardContent>
-
-        <CardFooter className="border-t p-4 text-sm text-muted-foreground">
-          Última atualização: {new Date().toLocaleDateString("pt-BR")}
-        </CardFooter>
       </Card>
     );
   },

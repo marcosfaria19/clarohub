@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import VacationCalendar from "./VacationCalendar";
-import VacationForm from "./VacationForm";
+import VacationRegisterForm from "./VacationRegisterForm";
 import VacationBalanceCard from "./VacationBalanceCard";
 import VacationTimeline from "./VacationTimeline";
 import {
@@ -42,7 +42,7 @@ const VacationsModule = () => {
               Gerencie e visualize as férias da equipe
             </p>
           </div>
-          <VacationForm
+          <VacationRegisterForm
             trigger={
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />

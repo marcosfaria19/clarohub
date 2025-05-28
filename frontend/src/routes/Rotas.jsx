@@ -29,7 +29,9 @@ const Claroflow = lazy(() => import("../modules/claroflow/pages/Flow"));
 
 // Páginas – Insight
 
-const InsightsHome = lazy(() => import("../modules/insight/pages/Dashboard"));
+const InsightsHome = lazy(
+  () => import("../modules/insight/pages/DashboardPage"),
+);
 const InsightsTeam = lazy(() => import("../modules/insight/pages/TeamsPage"));
 const InsightsAnalytics = lazy(
   () => import("../modules/insight/pages/AnalyticsPage"),

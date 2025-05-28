@@ -39,7 +39,7 @@ import { cn } from "modules/shared/lib/utils";
 import { useForm } from "react-hook-form";
 import { useUsers } from "modules/claroflow/hooks/useUsers";
 
-const VacationForm = React.memo(
+const VacationRegisterForm = React.memo(
   ({
     trigger,
     className = "",
@@ -49,7 +49,7 @@ const VacationForm = React.memo(
     vacations,
   }) => {
     // Use the useUsers hook to get the list of collaborators
-    const { users, loading: usersLoading, error: usersError } = useUsers();
+    const { users, loading: usersLoading } = useUsers();
 
     const [open, setOpen] = useState(false);
     const [localLoading, setLocalLoading] = useState(false);
@@ -440,4 +440,4 @@ const VacationForm = React.memo(
   },
 );
 
-export default VacationForm;
+export default VacationRegisterForm;

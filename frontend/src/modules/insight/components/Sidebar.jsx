@@ -13,10 +13,14 @@ import {
 } from "modules/shared/components/ui/avatar";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "modules/shared/lib/utils";
+import { useContext } from "react";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 
 const Sidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
+  const { user } = useContext(AuthContext);
 
   const menuItems = [
     {
@@ -101,19 +105,16 @@ const Sidebar = () => {
         <div className="mt-4 flex flex-col space-y-4">
           <div className="flex items-center space-x-4">
             <Avatar className="h-10 w-10">
-              <AvatarImage
-                src="/placeholder.svg?height=32&width=32"
-                alt="User avatar"
-              />
+              <AvatarImage src={user.avatar} alt="@usuario" />
               <AvatarFallback className="bg-secondary text-accent">
-                M
+                {user.userName[0]}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
               <span className="text-sm font-medium text-foreground">
-                Marcos Faria
+                {formatUserName(user.userName)}
               </span>
-              <span className="text-xs text-foreground">Gerente</span>
+              <span className="text-xs text-foreground">Gestão</span>
             </div>
           </div>
         </div>

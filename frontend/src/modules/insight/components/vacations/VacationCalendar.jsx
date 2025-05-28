@@ -22,7 +22,7 @@ import {
   TooltipTrigger,
 } from "modules/shared/components/ui/tooltip";
 import { Button } from "modules/shared/components/ui/button";
-
+import { Badge } from "modules/shared/components/ui/badge";
 import {
   Avatar,
   AvatarImage,
@@ -31,14 +31,37 @@ import {
 import {
   ChevronLeft,
   ChevronRight,
-  ListIcon,
-  LayoutGridIcon,
-  User,
+  Calendar,
+  Grid3X3,
+  Users,
 } from "lucide-react";
 import { cn } from "modules/shared/lib/utils";
-import { formatUserName } from "modules/shared/utils/formatUsername";
+import {
+  capitalizeFirstLetters,
+  formatUserName,
+} from "modules/shared/utils/formatUsername";
 import { formatDate } from "modules/shared/utils/formatDate";
-import VacationStatusBadge, { getStatusConfig } from "./VacationStatusBadge";
+import VacationStatusBadge from "./VacationStatusBadge";
+
+// Color palette using CSS variables
+const USER_COLORS = [
+  "bg-primary",
+  "bg-success",
+  "bg-warning",
+  "bg-destructive",
+  "bg-secondary",
+  "bg-accent",
+  "bg-blue-500",
+  "bg-purple-500",
+  "bg-pink-500",
+  "bg-orange-500",
+  "bg-green-500",
+  "bg-teal-500",
+  "bg-indigo-500",
+  "bg-red-500",
+  "bg-yellow-500",
+  "bg-cyan-500",
+];
 
 const VacationCalendar = React.memo(({ vacations = [] }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -67,11 +90,36 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
     [],
   );
 
-  // Generate years for selection (current year - 1 to current year + 5)
+  // Generate years for selection
   const years = useMemo(() => {
     const currentYear = new Date().getFullYear();
     return Array.from({ length: 7 }, (_, i) => currentYear - 1 + i);
   }, []);
+
+  // Create a map of users to colors
+  const userColorMap = useMemo(() => {
+    const uniqueUsers = new Set();
+    vacations.forEach((vacation) => {
+      uniqueUsers.add(vacation.nome);
+    });
+
+    const userArray = Array.from(uniqueUsers);
+    const colorMap = {};
+
+    userArray.forEach((user, index) => {
+      colorMap[user] = USER_COLORS[index % USER_COLORS.length];
+    });
+
+    return colorMap;
+  }, [vacations]);
+
+  // Get color for a specific user
+  const getUserColor = useCallback(
+    (user) => {
+      return userColorMap[user] || "bg-muted";
+    },
+    [userColorMap],
+  );
 
   // Format date range for display
   const formatDateRange = useCallback((start, end) => {
@@ -88,7 +136,6 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
         const endDate = new Date(vacation.endDate);
         const checkDate = new Date(date);
 
-        // Reset time part for accurate date comparison
         startDate.setHours(0, 0, 0, 0);
         endDate.setHours(0, 0, 0, 0);
         checkDate.setHours(0, 0, 0, 0);
@@ -167,7 +214,7 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
     [getVacationsForDate],
   );
 
-  // Navigate between people on the same day (non-circular)
+  // Navigate between people on the same day
   const navigatePerson = useCallback(
     (direction) => {
       const dayVacations = getVacationsForDate(clickedDate);
@@ -188,17 +235,12 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
     const days = [];
 
     if (viewMode === "month") {
-      // Get the first day of the month
       const firstDayOfMonth = new Date(selectedYear, selectedMonth, 1);
-      // Get the last day of the month
       const lastDayOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
 
-      // Get the day of the week for the first day (0 = Sunday, 1 = Monday, etc.)
       let firstDayOfWeek = firstDayOfMonth.getDay();
-      // Adjust for Sunday as first day of week
       if (firstDayOfWeek === 0) firstDayOfWeek = 7;
 
-      // Add days from previous month to fill the first week
       const daysFromPrevMonth = firstDayOfWeek - 1;
       const prevMonth = new Date(selectedYear, selectedMonth, 0);
       for (let i = daysFromPrevMonth; i > 0; i--) {
@@ -211,27 +253,23 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
         );
       }
 
-      // Add all days of the current month
       for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
         days.push(new Date(selectedYear, selectedMonth, i));
       }
 
-      // Add days from next month to complete the grid (6 rows x 7 columns = 42 cells)
       const remainingDays = 42 - days.length;
       for (let i = 1; i <= remainingDays; i++) {
         days.push(new Date(selectedYear, selectedMonth + 1, i));
       }
     } else {
-      // Week view: Get the current week starting from Monday
       const currentDate = new Date(selectedDate);
       const dayOfWeek = currentDate.getDay();
       const diff =
-        currentDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust for Sunday
+        currentDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
 
       const weekStart = new Date(currentDate);
       weekStart.setDate(diff);
 
-      // Add 7 days starting from Monday
       for (let i = 0; i < 7; i++) {
         const day = new Date(weekStart);
         day.setDate(weekStart.getDate() + i);
@@ -242,7 +280,6 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
     return days;
   }, [selectedYear, selectedMonth, selectedDate, viewMode]);
 
-  // Get day cell content with dots only (no grouping)
   const getDayContent = useCallback(
     (day) => {
       const dateVacations = getVacationsForDate(day);
@@ -254,46 +291,64 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
       return (
         <motion.div
           className={cn(
-            "relative h-full w-full cursor-pointer rounded-lg p-1 transition-all duration-300",
-            "hover:bg-secondary/30 hover:ring-1 hover:ring-secondary",
-            isCurrentMonth ? "bg-card" : "bg-card/50",
-            isToday && "ring-2 ring-primary",
-            isSelected && "bg-primary/10 ring-2 ring-primary",
-            dateVacations.length > 0 && "hover:scale-105",
+            "relative h-full w-full cursor-pointer rounded-md border transition-all duration-200",
+            isCurrentMonth ? "bg-container" : "bg-transparent",
+            isToday && "border-primary",
+            isSelected && "border-primary bg-primary/5",
+            !isSelected && !isToday && "border-border",
+            dateVacations.length > 0 && "hover:border-primary/50",
           )}
-          whileHover={{ scale: dateVacations.length > 0 ? 1.02 : 1 }}
+          whileHover={{ scale: 1.01 }}
           onClick={() => handleDayClick(day)}
         >
-          <div className="flex h-full flex-col items-center justify-center">
-            <span
-              className={cn(
-                "text-sm font-medium",
-                !isCurrentMonth && "text-muted-foreground",
-              )}
-            >
-              {day.getDate()}
-            </span>
+          <div className="flex h-full flex-col p-2">
+            <div className="flex items-center justify-between">
+              <span
+                className={cn(
+                  "text-sm font-medium",
+                  !isCurrentMonth && "font-normal text-muted-foreground/40",
+                )}
+              >
+                {day.getDate()}
+              </span>
+            </div>
 
             {dateVacations.length > 0 && (
-              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 transform">
-                <div className="flex max-w-[50px] flex-wrap justify-center gap-0.5">
-                  {dateVacations.map((vacation, index) => (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {dateVacations.slice(0, 3).map((vacation, index) => {
+                  const employee = vacation.nome;
+                  return (
                     <div
                       key={vacation.id || vacation._id || index}
-                      className={`h-1.5 w-1.5 rounded-full ${getStatusConfig(vacation.status).className}`}
+                      className={cn(
+                        "h-2 w-2 rounded-full",
+                        getUserColor(employee),
+                      )}
+                      title={employee}
                     />
-                  ))}
-                </div>
+                  );
+                })}
+                {dateVacations.length > 3 && (
+                  <div className="flex h-2 w-2 items-center justify-center rounded-full bg-muted text-[6px] font-bold text-muted-foreground">
+                    +{dateVacations.length - 3}
+                  </div>
+                )}
               </div>
             )}
           </div>
         </motion.div>
       );
     },
-    [selectedMonth, getVacationsForDate, clickedDate, handleDayClick],
+    [
+      selectedMonth,
+      getVacationsForDate,
+      clickedDate,
+      handleDayClick,
+      getUserColor,
+    ],
   );
 
-  // Get tooltip content for a day with names
+  // Clean tooltip content
   const getTooltipContent = useCallback(
     (day) => {
       const dateVacations = getVacationsForDate(day);
@@ -317,17 +372,23 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
             em férias
           </div>
           <div className="space-y-1">
-            {dateVacations.map((vacation, index) => (
-              <div
-                key={vacation.id || vacation._id || index}
-                className="flex items-center gap-1"
-              >
-                <User className="h-3 w-3 text-muted-foreground" />
-                <span className="text-muted-foreground">
-                  {formatUserName(vacation.nome || vacation.employee)}
-                </span>
-              </div>
-            ))}
+            {dateVacations.map((vacation, index) => {
+              const employee = vacation.nome;
+              return (
+                <div
+                  key={vacation.id || vacation._id || index}
+                  className="flex items-center gap-1"
+                >
+                  <div
+                    className={cn(
+                      "h-2 w-2 rounded-full",
+                      getUserColor(employee),
+                    )}
+                  />
+                  <span>{formatUserName(employee)}</span>
+                </div>
+              );
+            })}
           </div>
           <div className="mt-2 border-t pt-1 text-muted-foreground">
             Clique para ver detalhes
@@ -335,7 +396,7 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
         </div>
       );
     },
-    [getVacationsForDate],
+    [getVacationsForDate, getUserColor],
   );
 
   // Render the calendar grid
@@ -345,11 +406,11 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
     return (
       <div className="mt-4">
         {/* Week days header */}
-        <div className="mb-1 grid grid-cols-7 gap-1">
+        <div className="mb-2 grid grid-cols-7 gap-2">
           {weekDays.map((day, index) => (
             <div
               key={index}
-              className="p-1 text-center text-xs font-medium text-muted-foreground"
+              className="p-2 text-center text-xs font-medium text-muted-foreground"
             >
               {day}
             </div>
@@ -359,7 +420,7 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
         {/* Calendar grid */}
         <div
           className={cn(
-            "grid gap-1",
+            "grid gap-2",
             viewMode === "month"
               ? "grid-cols-7 grid-rows-6"
               : "grid-cols-7 grid-rows-1",
@@ -369,10 +430,10 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
             {generateCalendarDays.map((day, index) => (
               <motion.div
                 key={day.toISOString()}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.2, delay: index * 0.01 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
                 className="h-[70px]"
               >
                 <TooltipProvider>
@@ -393,25 +454,56 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
     );
   }, [generateCalendarDays, viewMode, getDayContent, getTooltipContent]);
 
-  // Render the legend
+  // Get unique users for the legend
+  const uniqueUsers = useMemo(() => {
+    const users = new Set();
+    vacations.forEach((vacation) => {
+      users.add(vacation.nome);
+    });
+    return Array.from(users).slice(0, 10);
+  }, [vacations]);
+
+  // Render the legend with user colors
   const renderLegend = useMemo(() => {
-    return (
-      <div className="flex items-center gap-4 text-xs">
-        <div className="flex items-center gap-1">
-          <div className="h-3 w-3 rounded-full bg-success"></div>
-          <span>Aprovado</span>
+    if (uniqueUsers.length === 0) {
+      return (
+        <div className="text-xs text-muted-foreground">
+          Nenhum usuário com férias
         </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        {uniqueUsers.map((user) => (
+          <div key={user} className="flex items-center gap-1">
+            <div
+              className={cn("h-3 w-3 rounded-full", getUserColor(user))}
+            ></div>
+            <span className="text-xs">{formatUserName(user)}</span>
+          </div>
+        ))}
+        {vacations.length > 0 && uniqueUsers.length > 10 && (
+          <div className="text-xs text-muted-foreground">
+            +{uniqueUsers.length - 10} mais
+          </div>
+        )}
       </div>
     );
-  }, []);
+  }, [uniqueUsers, getUserColor, vacations.length]);
 
   // Get this month's vacations for sidebar
   const thisMonthVacations = useMemo(() => {
-    return vacations.filter(
-      (vacation) =>
-        new Date(vacation.startDate).getMonth() === selectedMonth &&
-        new Date(vacation.startDate).getFullYear() === selectedYear,
-    );
+    return vacations.filter((vacation) => {
+      const start = new Date(vacation.startDate);
+      const end = new Date(vacation.endDate);
+
+      // Se o intervalo das férias se sobrepõe ao mês selecionado
+      const monthStart = new Date(selectedYear, selectedMonth, 1);
+      const monthEnd = new Date(selectedYear, selectedMonth + 1, 0);
+
+      return start <= monthEnd && end >= monthStart;
+    });
   }, [vacations, selectedMonth, selectedYear]);
 
   // Get clicked date vacation details
@@ -421,72 +513,77 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
   }, [clickedDate, getVacationsForDate]);
 
   const currentVacation = clickedDateVacations[currentPersonIndex];
+  console.log(currentVacation);
+  const currentPerson = capitalizeFirstLetters(currentVacation?.nome);
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
       <div className="lg:col-span-3">
-        <Card className="w-full">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xl font-bold">
-              Calendário de Férias
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 rounded-r-none"
-                  onClick={() => handleViewModeChange("month")}
-                  disabled={viewMode === "month"}
+        <Card>
+          <CardHeader className="border-b border-border">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <CardTitle className="flex items-center gap-2 text-xl font-bold">
+                Calendário de Férias
+              </CardTitle>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {/* View Mode Toggle */}
+                <div className="flex items-center">
+                  <Button
+                    variant={viewMode === "month" ? "default" : "outline"}
+                    size="sm"
+                    className="h-9 rounded-r-none"
+                    onClick={() => handleViewModeChange("month")}
+                  >
+                    <Grid3X3 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === "week" ? "default" : "outline"}
+                    size="sm"
+                    className="h-9 rounded-l-none"
+                    onClick={() => handleViewModeChange("week")}
+                  >
+                    <Calendar className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Month/Year Selectors */}
+                <Select
+                  value={selectedMonth.toString()}
+                  onValueChange={handleMonthChange}
                 >
-                  <LayoutGridIcon className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 rounded-l-none"
-                  onClick={() => handleViewModeChange("week")}
-                  disabled={viewMode === "week"}
+                  <SelectTrigger className="h-9 w-[130px]">
+                    <SelectValue placeholder="Mês" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((month) => (
+                      <SelectItem key={month.value} value={month.value}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={selectedYear.toString()}
+                  onValueChange={handleYearChange}
                 >
-                  <ListIcon className="h-4 w-4" />
-                </Button>
+                  <SelectTrigger className="h-9 w-[100px]">
+                    <SelectValue placeholder="Ano" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((year) => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-
-              <Select
-                value={selectedMonth.toString()}
-                onValueChange={handleMonthChange}
-              >
-                <SelectTrigger className="h-8 w-[130px]">
-                  <SelectValue placeholder="Mês" />
-                </SelectTrigger>
-                <SelectContent>
-                  {months.map((month) => (
-                    <SelectItem key={month.value} value={month.value}>
-                      {month.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={selectedYear.toString()}
-                onValueChange={handleYearChange}
-              >
-                <SelectTrigger className="h-8 w-[100px]">
-                  <SelectValue placeholder="Ano" />
-                </SelectTrigger>
-                <SelectContent>
-                  {years.map((year) => (
-                    <SelectItem key={year} value={year.toString()}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="p-4">
             <div className="mb-4 flex items-center justify-center gap-4">
               <Button
                 variant="outline"
@@ -497,15 +594,17 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
                 <ChevronLeft className="h-4 w-4" />
               </Button>
 
-              <h3 className="text-lg font-medium">
-                {months[selectedMonth].label} {selectedYear}
+              <div className="text-center">
+                <h3 className="text-lg font-medium">
+                  {months[selectedMonth].label} {selectedYear}
+                </h3>
                 {viewMode === "week" && (
-                  <span className="ml-2 text-sm text-muted-foreground">
-                    (Semana de {formatDate(generateCalendarDays[0], false)} a{" "}
-                    {formatDate(generateCalendarDays[6], false)})
-                  </span>
+                  <p className="text-sm text-muted-foreground">
+                    Semana de {formatDate(generateCalendarDays[0], false)} a{" "}
+                    {formatDate(generateCalendarDays[6], false)}
+                  </p>
                 )}
-              </h3>
+              </div>
 
               <Button
                 variant="outline"
@@ -520,9 +619,9 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
             {renderCalendarGrid}
           </CardContent>
 
-          <CardFooter className="flex justify-between border-t p-4">
+          <CardFooter className="flex flex-col border-t border-border p-4 sm:flex-row sm:justify-between">
             {renderLegend}
-            <div className="text-xs text-muted-foreground">
+            <div className="mt-2 text-xs text-muted-foreground sm:mt-0">
               Clique nos dias para ver detalhes das férias
             </div>
           </CardFooter>
@@ -530,9 +629,74 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
       </div>
 
       <div className="space-y-4">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Users className="h-4 w-4" />
+              Este Mês
+              <Badge variant="secondary" className="ml-2">
+                {thisMonthVacations.length}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {thisMonthVacations.map((vacation) => {
+                const employee = capitalizeFirstLetters(vacation.nome);
+                return (
+                  <div
+                    key={vacation.id || vacation._id}
+                    className="flex items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted/20"
+                  >
+                    <div className="relative">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage
+                          src={
+                            vacation.avatar ||
+                            "/placeholder.svg?height=32&width=32"
+                          }
+                          alt={employee}
+                        />
+                        <AvatarFallback className="text-xs">
+                          {employee
+                            ?.split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div
+                        className={cn(
+                          "absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-background",
+                          getUserColor(employee),
+                        )}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{employee}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDate(vacation.startDate, false)} -{" "}
+                        {formatDate(vacation.endDate, false)}
+                      </p>
+                    </div>
+                    <VacationStatusBadge status={vacation.status} />
+                  </div>
+                );
+              })}
+
+              {thisMonthVacations.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <Calendar className="mb-2 h-8 w-8 text-muted-foreground/50" />
+                  <p className="text-sm text-muted-foreground">
+                    Nenhuma férias este mês
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
         {currentVacation && clickedDate && (
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Detalhes das Férias</CardTitle>
                 <div className="flex items-center gap-2">
@@ -568,101 +732,58 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-3">
-                <Avatar>
-                  <AvatarImage
-                    src={
-                      currentVacation.avatar ||
-                      "/placeholder.svg?height=40&width=40"
-                    }
-                    alt={currentVacation.nome || currentVacation.employee}
+                <div className="relative">
+                  <Avatar>
+                    <AvatarImage
+                      src={
+                        currentVacation.avatar ||
+                        "/placeholder.svg?height=40&width=40"
+                      }
+                      alt={currentPerson}
+                    />
+                    <AvatarFallback>
+                      {currentPerson
+                        ?.split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div
+                    className={cn(
+                      "absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-background",
+                      getUserColor(currentPerson),
+                    )}
                   />
-                  <AvatarFallback>
-                    {(currentVacation.nome || currentVacation.employee)
-                      ?.split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
+                </div>
                 <div>
-                  <p className="font-medium">
-                    {currentVacation.nome || currentVacation.employee}
-                  </p>
+                  <p className="font-medium">{currentPerson}</p>
                   <p className="text-sm text-muted-foreground">
                     Gestor: {formatUserName(currentVacation.gestor)}
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <p className="text-sm">
-                  <span className="font-medium">Período:</span>{" "}
-                  {formatDateRange(
-                    currentVacation.startDate,
-                    currentVacation.endDate,
-                  )}
-                </p>
-
-                <div className="flex gap-2">
-                  <VacationStatusBadge status={currentVacation.status} />
-                </div>
-
-                {currentVacation.notes && (
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-medium">Observações:</span>{" "}
-                    {currentVacation.notes}
+              <div className="rounded-md">
+                <div className="space-y-2">
+                  <p className="text-sm">
+                    <span className="font-medium">Período:</span>{" "}
+                    {formatDateRange(
+                      currentVacation.startDate,
+                      currentVacation.endDate,
+                    )}
                   </p>
-                )}
+
+                  {currentVacation.notes && (
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium">Observações:</span>{" "}
+                      {currentVacation.notes}
+                    </p>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
         )}
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Este Mês</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {thisMonthVacations.map((vacation) => (
-                <div
-                  key={vacation.id || vacation._id}
-                  className="flex items-center gap-2"
-                >
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage
-                      src={
-                        vacation.avatar || "/placeholder.svg?height=24&width=24"
-                      }
-                      alt={vacation.nome || vacation.employee}
-                    />
-                    <AvatarFallback className="text-xs">
-                      {(vacation.nome || vacation.employee)
-                        ?.split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">
-                      {vacation.nome || vacation.employee}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatDate(vacation.startDate, false)} -{" "}
-                      {formatDate(vacation.endDate, false)}
-                    </p>
-                  </div>
-                  <div className={`h-2 w-2 rounded-full bg-success`} />
-                </div>
-              ))}
-
-              {thisMonthVacations.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  Nenhuma férias este mês
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

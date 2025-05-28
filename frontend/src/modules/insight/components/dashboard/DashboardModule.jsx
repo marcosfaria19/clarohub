@@ -20,7 +20,7 @@ import {
 } from "modules/shared/components/ui/dropdown-menu";
 import { formatUserName } from "modules/shared/utils/formatUsername";
 
-const DemandDashboard = () => {
+const DashboardModule = () => {
   // Estados de filtro gerenciados localmente
   const [period, setPeriod] = useState("day");
   const [teamMember, setTeamMember] = useState(null);
@@ -457,4 +457,4 @@ const DemandDashboard = () => {
   );
 };
 
-export default React.memo(DemandDashboard);
+export default React.memo(DashboardModule);
