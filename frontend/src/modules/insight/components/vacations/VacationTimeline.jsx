@@ -70,15 +70,15 @@ const VacationTimeline = React.memo(
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-3">
-                  Visão Geral de Férias
+                <CardTitle className="mb-1 flex items-center gap-3">
+                  Férias Próximas
                   <Badge className="border-transparent bg-accent text-accent-foreground hover:bg-accent/80">
                     {vacations.length}{" "}
                     {vacations.length === 1 ? "registro" : "registros"}
                   </Badge>
                 </CardTitle>
                 <CardDescription>
-                  Lista cronológica de férias ordenada por proximidade
+                  Lista de férias ordenada por proximidade
                 </CardDescription>
               </div>
             </div>

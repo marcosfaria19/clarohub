@@ -1,32 +1,77 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import VacationCalendar from "./VacationCalendar";
 import VacationRegisterForm from "./VacationRegisterForm";
 import VacationBalanceCard from "./VacationBalanceCard";
 import VacationTimeline from "./VacationTimeline";
+import VacationTable from "./VacationTable";
+
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "modules/shared/components/ui/tabs";
-import { CalendarDays, List, Plus } from "lucide-react";
+import { CalendarDays, List, Plus, Table as TableIcon } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
+import { toast } from "sonner";
 
 import { useVacations } from "modules/insight/hooks/useVacations";
+import DeleteConfirmationModal from "modules/shared/components/DeleteConfirmationModal";
 
 const VacationsModule = () => {
   const [activeTab, setActiveTab] = useState("calendar");
   const [selectedEmployeeId, setSelectedEmployeeId] = useState();
+  const [vacationToEdit, setVacationToEdit] = useState(null);
+  const [vacationToDelete, setVacationToDelete] = useState(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const {
     vacations,
     loading,
-    error,
     scheduleVacation,
     updateVacation,
     deleteVacation,
   } = useVacations();
+
+  const handleVacationSuccess = useCallback(() => {
+    toast.success("Férias agendadas com sucesso", {
+      description: "O período de férias foi registrado no sistema.",
+    });
+  }, []);
+
+  const handleUpdateSuccess = useCallback(() => {
+    toast.success("Férias atualizadas com sucesso", {
+      description: "As informações de férias foram atualizadas.",
+    });
+    setVacationToEdit(null);
+  }, []);
+
+  const handleDeleteVacation = useCallback(async () => {
+    if (!vacationToDelete) return;
+    try {
+      await deleteVacation(vacationToDelete._id);
+      toast.success("Férias excluídas com sucesso", {
+        description: "O registro de férias foi removido do sistema.",
+      });
+      setVacationToDelete(null);
+    } catch (error) {
+      toast.error("Erro ao excluir férias", {
+        description: "Ocorreu um erro ao tentar excluir as férias.",
+      });
+    } finally {
+      setIsDeleteDialogOpen(false);
+    }
+  }, [deleteVacation, vacationToDelete]);
+
+  const handleEditVacation = useCallback((vacation) => {
+    setVacationToEdit(vacation);
+  }, []);
+
+  const handleDeleteConfirmation = useCallback((vacation) => {
+    setVacationToDelete(vacation);
+    setIsDeleteDialogOpen(true);
+  }, []);
 
   return (
     <motion.div
@@ -52,21 +97,16 @@ const VacationsModule = () => {
             scheduleVacation={scheduleVacation}
             loading={loading}
             vacations={vacations}
+            onSuccess={handleVacationSuccess}
           />
         </div>
-
-        {error && (
-          <div className="mb-4 rounded-md bg-destructive/15 p-3 text-destructive">
-            {error}
-          </div>
-        )}
 
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+          <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
             <TabsTrigger value="calendar" className="gap-2">
               <CalendarDays className="h-4 w-4" />
               Calendário
@@ -74,6 +114,10 @@ const VacationsModule = () => {
             <TabsTrigger value="overview" className="gap-2">
               <List className="h-4 w-4" />
               Visão Geral
+            </TabsTrigger>
+            <TabsTrigger value="table" className="gap-2">
+              <TableIcon className="h-4 w-4" />
+              Tabela
             </TabsTrigger>
           </TabsList>
 
@@ -98,10 +142,24 @@ const VacationsModule = () => {
               vacations={vacations}
               loading={loading}
               onUpdate={updateVacation}
-              onDelete={deleteVacation}
+              onDelete={handleDeleteConfirmation}
+            />
+          </TabsContent>
+
+          <TabsContent value="table">
+            <VacationTable
+              vacations={vacations}
+              onEditVacation={handleEditVacation}
+              onDeleteVacation={handleDeleteConfirmation}
             />
           </TabsContent>
         </Tabs>
+
+        <DeleteConfirmationModal
+          show={isDeleteDialogOpen}
+          handleClose={() => setIsDeleteDialogOpen(false)}
+          handleDeleteConfirm={handleDeleteVacation}
+        />
       </div>
     </motion.div>
   );

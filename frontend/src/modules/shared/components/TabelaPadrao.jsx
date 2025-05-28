@@ -40,7 +40,6 @@ import {
   PaginationPrevious,
 } from "modules/shared/components/ui/pagination";
 import { Input } from "modules/shared/components/ui/input";
-import { toast } from "sonner";
 import { Skeleton } from "modules/shared/components/ui/skeleton";
 
 export function TabelaPadrao({
@@ -70,23 +69,6 @@ export function TabelaPadrao({
           cell: ({ row }) => {
             const data = row.original;
 
-            const copyDataToClipboard = () => {
-              const values = columns
-                .filter((column) => column.accessorKey)
-                .map((column) => {
-                  const keys = column.accessorKey.split(".");
-                  const value = keys.reduce(
-                    (acc, key) => (acc ? acc[key] : undefined),
-                    data,
-                  );
-                  return `${column.header || column.accessorKey}: ${value || ""}`;
-                })
-                .join("\n");
-
-              navigator.clipboard.writeText(values);
-              toast.success("Item copiado com sucesso", { duration: 2000 });
-            };
-
             return (
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
@@ -98,9 +80,7 @@ export function TabelaPadrao({
                 <DropdownMenuPortal>
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                    <DropdownMenuItem onClick={copyDataToClipboard}>
-                      Copiar dados
-                    </DropdownMenuItem>
+
                     <DropdownMenuSeparator />
                     {onEdit && (
                       <DropdownMenuItem onClick={() => onEdit(data)}>
@@ -243,7 +223,7 @@ export function TabelaPadrao({
                         <>
                           {header.column.columnDef.sorted ? (
                             <Button
-                              className="text-menu-foreground flex"
+                              className="flex text-menu-foreground"
                               variant="ghost"
                               onClick={() =>
                                 header.column.toggleSorting(
