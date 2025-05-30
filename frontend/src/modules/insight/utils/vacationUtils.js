@@ -1,12 +1,11 @@
-
 /**
  * Vacation Calendar Utility Functions
- * 
+ *
  * This file contains utility functions for handling dates, vacation data processing,
  * and user data formatting for the Vacation Calendar component.
  */
 
-import { formatUserName, capitalizeFirstLetters } from "modules/shared/utils/formatUsername";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 import { formatDate } from "modules/shared/utils/formatDate";
 
 /**
@@ -58,8 +57,8 @@ export const generateMonths = () => [
 export const generateYears = (range = 3) => {
   const currentYear = new Date().getFullYear();
   return Array.from(
-    { length: range * 2 + 1 }, 
-    (_, i) => currentYear - range + i
+    { length: range * 2 + 1 },
+    (_, i) => currentYear - range + i,
   );
 };
 
@@ -168,7 +167,12 @@ export const getUniqueUsers = (vacations, limit = Infinity) => {
  * @param {number} limit - Maximum number of users to return
  * @returns {Array} Array of unique user names with vacations in the month
  */
-export const getUsersWithVacationsInMonth = (vacations, year, month, limit = Infinity) => {
+export const getUsersWithVacationsInMonth = (
+  vacations,
+  year,
+  month,
+  limit = Infinity,
+) => {
   const monthVacations = getVacationsForMonth(vacations, year, month);
   return getUniqueUsers(monthVacations, limit);
 };
@@ -185,9 +189,7 @@ export const generateTooltipContent = (day, dateVacations, getUserColorFn) => {
     return (
       <div className="text-xs">
         <div className="font-semibold">Nenhuma férias</div>
-        <div className="text-muted-foreground">
-          {formatDate(day, false)}
-        </div>
+        <div className="text-muted-foreground">{formatDate(day, false)}</div>
       </div>
     );
   }
@@ -196,8 +198,8 @@ export const generateTooltipContent = (day, dateVacations, getUserColorFn) => {
     <div className="max-w-xs text-xs">
       <div className="font-semibold">{formatDate(day, false)}</div>
       <div className="mb-2 text-muted-foreground">
-        {dateVacations.length} pessoa{dateVacations.length !== 1 ? "s" : ""}{" "}
-        em férias
+        {dateVacations.length} pessoa{dateVacations.length !== 1 ? "s" : ""} em
+        férias
       </div>
       <div className="space-y-1">
         {dateVacations.map((vacation, index) => {
@@ -222,7 +224,7 @@ export const generateTooltipContent = (day, dateVacations, getUserColorFn) => {
   );
 };
 
-export default {
+const vacationUtils = {
   USER_COLORS,
   generateMonths,
   generateYears,
@@ -233,5 +235,7 @@ export default {
   getVacationsForMonth,
   getUniqueUsers,
   getUsersWithVacationsInMonth,
-  generateTooltipContent
+  generateTooltipContent,
 };
+
+export default vacationUtils;

@@ -645,12 +645,7 @@ export const useKPI = (params = {}) => {
       teamPerformance.refetch(),
       individualRadar.refetch(),
     ]);
-  }, [
-    averageTime.refetch,
-    teamVolume.refetch,
-    teamPerformance.refetch,
-    individualRadar.refetch,
-  ]);
+  }, [averageTime, teamVolume, teamPerformance, individualRadar]);
 
   return {
     // Dados de KPI

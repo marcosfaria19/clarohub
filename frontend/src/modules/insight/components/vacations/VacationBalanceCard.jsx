@@ -27,13 +27,7 @@ import { capitalizeFirstLetters } from "modules/shared/utils/formatUsername";
 import { getDuration } from "modules/insight/utils/sortVacation";
 
 const VacationBalanceCard = React.memo(
-  ({
-    className = "",
-    employeeId,
-    onEmployeeChange,
-    vacations = [],
-    loading = false,
-  }) => {
+  ({ employeeId, onEmployeeChange, vacations = [], loading = false }) => {
     const employees = useMemo(() => {
       if (!vacations || vacations.length === 0) return [];
 

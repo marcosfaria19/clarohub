@@ -75,7 +75,7 @@ const DashboardModule = () => {
 
   // Lista de membros da equipe para o seletor
   const teamMembers = users.map((user) => ({
-    id: user.id,
+    id: user._id,
     name: formatUserName(user.NOME),
   }));
 
@@ -318,7 +318,7 @@ const DashboardModule = () => {
               {teamMembers &&
                 teamMembers.map((member) => (
                   <DropdownMenuItem
-                    key={member._id}
+                    key={member.id}
                     onClick={() => handleTeamMemberSelect(member.name)}
                   >
                     {member.name}

@@ -1,7 +1,6 @@
-
 /**
  * Calendar Utility Functions
- * 
+ *
  * This file contains utility functions for calendar generation,
  * view mode handling, and navigation for the Vacation Calendar component.
  */
@@ -22,7 +21,12 @@ export const WEEK_DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
  * @param {Date} selectedDate - Selected date
  * @returns {Array} Array of Date objects representing calendar days
  */
-export const generateCalendarDays = (viewMode, selectedYear, selectedMonth, selectedDate) => {
+export const generateCalendarDays = (
+  viewMode,
+  selectedYear,
+  selectedMonth,
+  selectedDate,
+) => {
   const days = [];
 
   if (viewMode === "month") {
@@ -38,11 +42,7 @@ export const generateCalendarDays = (viewMode, selectedYear, selectedMonth, sele
     const prevMonth = new Date(selectedYear, selectedMonth, 0);
     for (let i = daysFromPrevMonth; i > 0; i--) {
       days.push(
-        new Date(
-          selectedYear,
-          selectedMonth - 1,
-          prevMonth.getDate() - i + 1,
-        ),
+        new Date(selectedYear, selectedMonth - 1, prevMonth.getDate() - i + 1),
       );
     }
 
@@ -127,10 +127,16 @@ export const navigateToNextPeriod = (currentDate, viewMode) => {
  * @param {number} vacationCount - Number of vacations for this day
  * @returns {string} CSS classes for the day cell
  */
-export const getDayClassNames = (day, selectedMonth, clickedDate, vacationCount) => {
+export const getDayClassNames = (
+  day,
+  selectedMonth,
+  clickedDate,
+  vacationCount,
+) => {
   const isCurrentMonth = day.getMonth() === selectedMonth;
   const isToday = new Date().toDateString() === day.toDateString();
-  const isSelected = clickedDate && day.toDateString() === clickedDate.toDateString();
+  const isSelected =
+    clickedDate && day.toDateString() === clickedDate.toDateString();
 
   return cn(
     "relative h-full w-full cursor-pointer rounded-md border transition-all duration-200",
@@ -184,7 +190,7 @@ export const navigateBetweenPeople = (direction, currentIndex, totalCount) => {
   return currentIndex;
 };
 
-export default {
+const calendarUtils = {
   WEEK_DAYS,
   generateCalendarDays,
   getWeekDateRange,
@@ -193,5 +199,7 @@ export default {
   getDayClassNames,
   getDayNumberClassNames,
   getCalendarGridClassNames,
-  navigateBetweenPeople
+  navigateBetweenPeople,
 };
+
+export default calendarUtils;
