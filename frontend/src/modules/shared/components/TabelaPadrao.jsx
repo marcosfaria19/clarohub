@@ -173,12 +173,6 @@ export function TabelaPadrao({
         .join(" ")
         .toLowerCase();
 
-      console.log("🔍 Filtro:", {
-        filterValue,
-        searchableValue,
-        rowOriginal: row.original,
-      });
-
       return searchableValue.includes(filterValue.toLowerCase());
     },
   });
