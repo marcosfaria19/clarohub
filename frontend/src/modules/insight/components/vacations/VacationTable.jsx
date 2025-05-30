@@ -24,55 +24,46 @@ import { useUsers } from "modules/claroflow/hooks/useUsers";
 import { Badge } from "modules/shared/components/ui/badge";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 
-const VacationTable = ({
-  vacations = [],
-  onEditVacation,
-  onDeleteVacation,
-}) => {
-  const [searchTerm, setSearchTerm] = useState("");
+const VacationTable = ({ vacations = [], onDeleteVacation }) => {
   const [companyFilter, setCompanyFilter] = useState("all");
   const [showNoVacations, setShowNoVacations] = useState(false);
   const { users, loading: usersLoading } = useUsers();
 
-  const usersWithoutVacations = useMemo(() => {
+  const allData = useMemo(() => {
     const vacationUserIds = new Set(vacations.map((v) => v.employeeId));
-    return users.filter((user) => !vacationUserIds.has(user._id));
-  }, [users, vacations]);
 
-  const filteredVacations = useMemo(() => {
-    let filtered = vacations;
-
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (vacation) =>
-          vacation.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          vacation.gestor?.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-    }
-
-    if (companyFilter === "procisa") {
-      filtered = filtered.filter((vacation) => vacation.login?.startsWith("Z"));
-    } else if (companyFilter === "claro") {
-      filtered = filtered.filter(
-        (vacation) => !vacation.login?.startsWith("Z"),
-      );
-    }
-
-    return filtered;
-  }, [vacations, searchTerm, companyFilter]);
-
-  const displayData = useMemo(() => {
-    if (showNoVacations) {
-      return usersWithoutVacations.map((user) => ({
+    const usersWithoutVacation = users
+      .filter((user) => !vacationUserIds.has(user._id))
+      .filter((user) => {
+        if (companyFilter === "procisa") return user.LOGIN?.startsWith("Z");
+        if (companyFilter === "claro") return !user.LOGIN?.startsWith("Z");
+        return true;
+      })
+      .map((user) => ({
         _id: user._id,
         nome: user.NOME,
         gestor: user.GESTOR,
         login: user.LOGIN,
         noVacation: true,
       }));
-    }
-    return filteredVacations;
-  }, [filteredVacations, usersWithoutVacations, showNoVacations]);
+
+    const vacationsFiltered = vacations
+      .filter((vacation) => {
+        if (companyFilter === "procisa") return vacation.login?.startsWith("Z");
+        if (companyFilter === "claro") return !vacation.login?.startsWith("Z");
+        return true;
+      })
+      .map((vacation) => ({
+        ...vacation,
+        noVacation: false,
+      }));
+
+    return [...usersWithoutVacation, ...vacationsFiltered];
+  }, [users, vacations, companyFilter]);
+
+  const displayData = useMemo(() => {
+    return allData.filter((item) => item.noVacation === showNoVacations);
+  }, [allData, showNoVacations]);
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -103,10 +94,10 @@ const VacationTable = ({
       baseColumns.push({
         accessorKey: "periodo",
         header: "Período",
-        cell: ({ row }) =>
-          row.original.noVacation
-            ? "-"
-            : formatDateRange(row.original.startDate, row.original.endDate),
+        cell: ({ row }) => {
+          if (row.original.noVacation) return "-";
+          return formatDateRange(row.original.startDate, row.original.endDate);
+        },
       });
     }
 
@@ -157,8 +148,8 @@ const VacationTable = ({
           <TabelaPadrao
             columns={columns}
             data={displayData}
-            actions
-            onEdit={onEditVacation}
+            actions={!showNoVacations}
+            onEdit={false}
             onDelete={onDeleteVacation}
             filterInput={true}
             pagination={true}

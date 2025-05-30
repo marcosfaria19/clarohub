@@ -22,7 +22,6 @@ import DeleteConfirmationModal from "modules/shared/components/DeleteConfirmatio
 const VacationsModule = () => {
   const [activeTab, setActiveTab] = useState("calendar");
   const [selectedEmployeeId, setSelectedEmployeeId] = useState();
-  const [vacationToEdit, setVacationToEdit] = useState(null);
   const [vacationToDelete, setVacationToDelete] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
@@ -38,13 +37,6 @@ const VacationsModule = () => {
     toast.success("Férias agendadas com sucesso", {
       description: "O período de férias foi registrado no sistema.",
     });
-  }, []);
-
-  const handleUpdateSuccess = useCallback(() => {
-    toast.success("Férias atualizadas com sucesso", {
-      description: "As informações de férias foram atualizadas.",
-    });
-    setVacationToEdit(null);
   }, []);
 
   const handleDeleteVacation = useCallback(async () => {
@@ -63,10 +55,6 @@ const VacationsModule = () => {
       setIsDeleteDialogOpen(false);
     }
   }, [deleteVacation, vacationToDelete]);
-
-  const handleEditVacation = useCallback((vacation) => {
-    setVacationToEdit(vacation);
-  }, []);
 
   const handleDeleteConfirmation = useCallback((vacation) => {
     setVacationToDelete(vacation);
@@ -113,11 +101,11 @@ const VacationsModule = () => {
             </TabsTrigger>
             <TabsTrigger value="overview" className="gap-2">
               <List className="h-4 w-4" />
-              Visão Geral
+              Férias Próximas
             </TabsTrigger>
             <TabsTrigger value="table" className="gap-2">
               <TableIcon className="h-4 w-4" />
-              Tabela
+              Visão Geral
             </TabsTrigger>
           </TabsList>
 
@@ -149,7 +137,6 @@ const VacationsModule = () => {
           <TabsContent value="table">
             <VacationTable
               vacations={vacations}
-              onEditVacation={handleEditVacation}
               onDeleteVacation={handleDeleteConfirmation}
             />
           </TabsContent>

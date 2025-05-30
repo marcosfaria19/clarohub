@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   flexRender,
   useReactTable,
@@ -7,6 +7,8 @@ import {
   getSortedRowModel,
   getFilteredRowModel,
 } from "@tanstack/react-table";
+import { motion, AnimatePresence } from "framer-motion";
+
 import {
   Table,
   TableBody,
@@ -24,7 +26,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuPortal,
 } from "modules/shared/components/ui/dropdown-menu";
 import {
   ArrowUpDown,
@@ -40,6 +41,7 @@ import {
   PaginationPrevious,
 } from "modules/shared/components/ui/pagination";
 import { Input } from "modules/shared/components/ui/input";
+import { toast } from "sonner";
 import { Skeleton } from "modules/shared/components/ui/skeleton";
 
 export function TabelaPadrao({
@@ -48,10 +50,13 @@ export function TabelaPadrao({
   actions,
   onEdit,
   onDelete,
+  onCopy = false,
+  onView = false,
   filterInput = true,
   columnFilter = true,
   pagination = true,
   isLoading = false,
+  pageSize = 10,
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -65,9 +70,27 @@ export function TabelaPadrao({
         ...columns,
         {
           id: "actions",
+          header: "Ações",
           enableHiding: false,
           cell: ({ row }) => {
             const data = row.original;
+
+            const copyDataToClipboard = () => {
+              const values = columns
+                .filter((column) => column.accessorKey)
+                .map((column) => {
+                  const keys = column.accessorKey.split(".");
+                  const value = keys.reduce(
+                    (acc, key) => (acc ? acc[key] : undefined),
+                    data,
+                  );
+                  return `${column.header || column.accessorKey}: ${value || ""}`;
+                })
+                .join("\n");
+
+              navigator.clipboard.writeText(values);
+              toast.success("Item copiado com sucesso", { duration: 2000 });
+            };
 
             return (
               <DropdownMenu modal={false}>
@@ -77,23 +100,31 @@ export function TabelaPadrao({
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                <DropdownMenuContent align="end" disablePortal>
+                  <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                  {onCopy && (
+                    <DropdownMenuItem onClick={copyDataToClipboard}>
+                      Copiar dados
+                    </DropdownMenuItem>
+                  )}
+                  {onView && (
+                    <DropdownMenuItem onClick={() => onView(data)}>
+                      Exibir
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
 
-                    <DropdownMenuSeparator />
-                    {onEdit && (
-                      <DropdownMenuItem onClick={() => onEdit(data)}>
-                        Editar
-                      </DropdownMenuItem>
-                    )}
-                    {onDelete && (
-                      <DropdownMenuItem onClick={() => onDelete(data)}>
-                        Excluir
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenuPortal>
+                  {onEdit && (
+                    <DropdownMenuItem onClick={() => onEdit(data)}>
+                      Editar
+                    </DropdownMenuItem>
+                  )}
+                  {onDelete && (
+                    <DropdownMenuItem onClick={() => onDelete(data)}>
+                      Excluir
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
               </DropdownMenu>
             );
           },
@@ -101,7 +132,7 @@ export function TabelaPadrao({
       ];
     }
     return columns;
-  }, [columns, actions, onEdit, onDelete]);
+  }, [columns, actions, onEdit, onDelete, onCopy, onView]);
 
   const table = useReactTable({
     data,
@@ -111,6 +142,11 @@ export function TabelaPadrao({
       columnVisibility,
       rowSelection,
       globalFilter,
+    },
+    initialState: {
+      pagination: {
+        pageSize,
+      },
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -138,9 +174,19 @@ export function TabelaPadrao({
         .join(" ")
         .toLowerCase();
 
+      console.log("🔍 Filtro:", {
+        filterValue,
+        searchableValue,
+        rowOriginal: row.original,
+      });
+
       return searchableValue.includes(filterValue.toLowerCase());
     },
   });
+
+  useEffect(() => {
+    table.setPageSize(pageSize);
+  }, [pageSize, table]);
 
   const renderSkeletonRows = () => {
     return Array.from({ length: 5 }).map((_, index) => (
@@ -156,25 +202,27 @@ export function TabelaPadrao({
 
   return (
     <>
-      <div className="mb-4 flex w-full justify-between">
-        <div className="flex w-1/2">
-          {filterInput && (
+      {/* Filtro */}
+      <div>
+        {filterInput && (
+          <div className="mb-4 flex w-full justify-between">
             <div className="relative">
               <Input
                 placeholder="Filtrar..."
                 value={globalFilter ?? ""}
                 onChange={(event) => setGlobalFilter(event.target.value)}
-                className="h-10 rounded-md border border-secondary p-2 pl-10"
+                className="w-full border-border bg-card pl-10 text-foreground placeholder-foreground/60 focus:border-accent focus:ring-accent"
                 disabled={isLoading}
               />
               <SearchIcon
-                className="absolute left-3 top-2.5 text-foreground hover:opacity-80"
+                className="absolute bottom-2.5 left-3 text-foreground/50 hover:opacity-80"
                 size={20}
               />
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
+        {/*Botão para ocultar colunas */}
         <div className="flex w-1/2 justify-end">
           {columnFilter && (
             <DropdownMenu modal={false}>
@@ -211,6 +259,7 @@ export function TabelaPadrao({
         </div>
       </div>
 
+      {/* Tabela */}
       <div>
         <Table>
           <TableHeader>
@@ -284,7 +333,7 @@ export function TabelaPadrao({
       {pagination && (
         <Pagination className="justify-between py-4">
           <PaginationContent>
-            <span className="text-sm">
+            <span className="ml-2 text-sm">
               Página {table.getState().pagination.pageIndex + 1} de{" "}
               {table.getPageCount()}
             </span>
