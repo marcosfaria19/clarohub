@@ -13,10 +13,7 @@ import {
 import { Button } from "modules/shared/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "modules/shared/lib/utils";
-import {
-  formatUserName,
-  capitalizeFirstLetters,
-} from "modules/shared/utils/formatUsername";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 import {
   formatDateRange,
   getUserColor,

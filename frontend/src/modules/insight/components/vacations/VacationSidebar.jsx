@@ -14,10 +14,7 @@ import { Badge } from "modules/shared/components/ui/badge";
 import { Users, Calendar } from "lucide-react";
 import { cn } from "modules/shared/lib/utils";
 import { formatDate } from "modules/shared/utils/formatDate";
-import {
-  capitalizeFirstLetters,
-  formatUserName,
-} from "modules/shared/utils/formatUsername";
+import { formatUserName } from "modules/shared/utils/formatUsername";
 
 import VacationStatusBadge from "./VacationStatusBadge";
 import VacationDetails from "./VacationDetails";
