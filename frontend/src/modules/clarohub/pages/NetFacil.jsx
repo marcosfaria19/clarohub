@@ -12,8 +12,8 @@ import useNetFacil from "../hooks/useNetFacil";
 import { Button } from "modules/shared/components/ui/button";
 import { RefreshCwIcon } from "lucide-react";
 
-export default function NetFacil({ userName, gestor }) {
-  const data = useNetFacil({ userName, gestor });
+export default function NetFacil() {
+  const data = useNetFacil();
 
   const {
     currentStep,

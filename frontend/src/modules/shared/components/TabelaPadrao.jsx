@@ -196,7 +196,7 @@ export function TabelaPadrao({
   return (
     <>
       {/* Filtro */}
-      <div>
+      <div className="flex">
         {filterInput && (
           <div className="mb-4 flex w-full justify-between">
             <div className="relative">

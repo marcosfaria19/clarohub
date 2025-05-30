@@ -3,8 +3,10 @@ import axiosInstance from "services/axios";
 import { toast } from "sonner";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 
-export default function useNetFacil({ userName, gestor }) {
+export default function useNetFacil() {
   const { user } = useContext(AuthContext);
+  const gestor = user.gestor;
+  const userName = user.userName;
 
   const [data, setData] = useState([]);
   const [formData, setFormData] = useState({
@@ -120,11 +122,11 @@ export default function useNetFacil({ userName, gestor }) {
     setShowSGDTable,
     isLoading,
     setIsLoading,
-    userName,
-    gestor,
     getOptions,
     findItem,
     handleReset,
     fecharTabelaConsulta,
+    userName,
+    gestor,
   };
 }
