@@ -7,7 +7,6 @@ import {
   getSortedRowModel,
   getFilteredRowModel,
 } from "@tanstack/react-table";
-import { motion, AnimatePresence } from "framer-motion";
 
 import {
   Table,
