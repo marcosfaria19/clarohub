@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "modules/shared/components/ui/select";
-import { BriefcaseBusiness, CalendarIcon, InfoIcon, User } from "lucide-react";
+import { BriefcaseBusiness, CalendarIcon, InfoIcon } from "lucide-react";
 import { capitalizeFirstLetters } from "modules/shared/utils/formatUsername";
 import { getDuration } from "modules/insight/utils/sortVacation";
 

@@ -25,15 +25,10 @@ const VacationOverviewCard = React.memo(
     vacation,
     index,
     showDaysUntil = false,
-    isCompact = false,
     animate = true,
-    className = "",
     variants = null,
   }) => {
-    const formatDate = (date) => {
-      return new Date(date).toLocaleDateString("pt-BR");
-    };
-
+    const formatDate = (date) => new Date(date).toLocaleDateString("pt-BR");
     const daysUntil = getDaysUntil(vacation.startDate);
     const isActive = daysUntil <= 0 && getDaysUntil(vacation.endDate) >= 0;
     const duration = getDuration(vacation.startDate, vacation.endDate);
@@ -41,31 +36,19 @@ const VacationOverviewCard = React.memo(
     const cardContent = (
       <Card
         className={cn(
+          "transition-colors hover:bg-accent/30",
           isActive && "border-primary/80 bg-primary/5",
-          !isCompact && "transition-shadow hover:shadow-md",
-          isCompact && "transition-colors hover:bg-accent/50",
-          className,
         )}
       >
-        <CardContent className={cn("p-4", isCompact && "p-3")}>
-          <div
-            className={cn(
-              "flex items-start justify-between",
-              isCompact && "flex items-center gap-4",
-            )}
-          >
-            <div
-              className={cn(
-                "flex items-start gap-3",
-                isCompact && "flex-1 space-y-1",
-              )}
-            >
-              <Avatar className={cn("h-10 w-10", isCompact && "h-8 w-8")}>
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between">
+            <div className="flex flex-1 items-start gap-3">
+              <Avatar className="h-10 w-10">
                 <AvatarImage
                   src={vacation.avatar || "/placeholder.svg?height=40&width=40"}
                   alt={vacation.nome}
                 />
-                <AvatarFallback className={isCompact ? "text-xs" : ""}>
+                <AvatarFallback>
                   {vacation.nome
                     ?.split(" ")
                     .map((n) => n[0])
@@ -73,52 +56,25 @@ const VacationOverviewCard = React.memo(
                 </AvatarFallback>
               </Avatar>
 
-              <div className={cn("space-y-1", isCompact && "flex-1")}>
-                <div
-                  className={cn(
-                    isCompact && "flex items-center justify-between",
-                  )}
-                >
+              <div className="flex-1 space-y-1">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h3
-                      className={cn(
-                        "font-medium",
-                        isCompact ? "text-sm" : "text-base",
-                      )}
-                    >
+                    <h3 className="text-base font-medium">
                       {capitalizeFirstLetters(vacation.nome)}
                     </h3>
-                    <p
-                      className={cn(
-                        "flex items-center gap-1 text-muted-foreground",
-                        isCompact ? "text-xs" : "text-sm",
-                      )}
-                    >
+                    <p className="flex items-center gap-1 text-sm text-muted-foreground">
                       <User className="h-3 w-3" />
                       Gestor: {formatUserName(vacation.gestor)}
                     </p>
                   </div>
-                  {isCompact && (
-                    <VacationStatusBadge status={vacation.status} />
-                  )}
                 </div>
 
-                <div
-                  className={cn(
-                    "flex items-center gap-2 text-muted-foreground",
-                    isCompact ? "text-xs" : "text-sm",
-                  )}
-                >
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CalendarIcon className="h-4 w-4" />
                   <span>{formatDate(vacation.startDate)}</span>
                   <ArrowRightIcon className="h-3 w-3" />
                   <span>{formatDate(vacation.endDate)}</span>
-                  <Badge
-                    className={cn(
-                      "border-transparent bg-warning text-warning-foreground hover:bg-warning/80",
-                      isCompact && "text-xs",
-                    )}
-                  >
+                  <Badge className="border-transparent bg-warning text-warning-foreground hover:bg-warning/80">
                     {duration} dia{duration !== 1 ? "s" : ""}
                   </Badge>
                 </div>
@@ -134,11 +90,9 @@ const VacationOverviewCard = React.memo(
               </div>
             </div>
 
-            {!isCompact && (
-              <div className="flex flex-col items-end gap-2">
-                <VacationStatusBadge status={vacation.status} />
-              </div>
-            )}
+            <div className="flex flex-col items-end gap-2">
+              <VacationStatusBadge status={vacation.status} />
+            </div>
           </div>
         </CardContent>
       </Card>

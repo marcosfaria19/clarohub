@@ -125,16 +125,23 @@ module.exports = (usersCollection) => {
     }
   });
 
-  // Excluir férias
   router.delete("/:vacationId", authenticateToken, async (req, res) => {
     const { vacationId } = req.params;
+
     try {
+      const user = await usersCollection.findOne({
+        "vacations._id": new ObjectId(vacationId),
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: "Férias não encontradas" });
+      }
+
       const result = await usersCollection.updateOne(
-        { _id: new ObjectId(req.user.id) },
+        { _id: user._id },
         { $pull: { vacations: { _id: new ObjectId(vacationId) } } }
       );
-      if (result.modifiedCount === 0)
-        return res.status(404).json({ error: "Férias não encontradas" });
+
       res.status(200).json({ message: "Férias excluídas com sucesso" });
     } catch (error) {
       console.error("Erro ao excluir férias:", error);

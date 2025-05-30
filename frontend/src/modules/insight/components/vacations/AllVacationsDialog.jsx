@@ -125,8 +125,7 @@ const AllVacationsDialog = React.memo(
                       key={vacation.id || vacation._id || index}
                       vacation={vacation}
                       index={index}
-                      showNotes={true}
-                      isCompact={true}
+                      showDaysUntil={true}
                       animate={true}
                       variants={itemVariants}
                     />

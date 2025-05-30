@@ -211,7 +211,7 @@ export function TabelaPadrao({
                 placeholder="Filtrar..."
                 value={globalFilter ?? ""}
                 onChange={(event) => setGlobalFilter(event.target.value)}
-                className="w-full border-border bg-card pl-10 text-foreground placeholder-foreground/60 focus:border-accent focus:ring-accent"
+                className="w-full pl-10"
                 disabled={isLoading}
               />
               <SearchIcon

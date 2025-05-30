@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import VacationCalendar from "./VacationCalendar";
 import VacationRegisterForm from "./VacationRegisterForm";
-import VacationBalanceCard from "./VacationBalanceCard";
 import VacationTimeline from "./VacationTimeline";
 import VacationTable from "./VacationTable";
 
@@ -21,7 +20,6 @@ import DeleteConfirmationModal from "modules/shared/components/DeleteConfirmatio
 
 const VacationsModule = () => {
   const [activeTab, setActiveTab] = useState("calendar");
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState();
   const [vacationToDelete, setVacationToDelete] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
@@ -110,18 +108,18 @@ const VacationsModule = () => {
           </TabsList>
 
           <TabsContent value="overview">
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+              <div className="lg:col-span-3">
                 <VacationTimeline vacations={vacations} loading={loading} />
               </div>
-              <div>
+              {/*  <div>
                 <VacationBalanceCard
                   employeeId={selectedEmployeeId}
                   onEmployeeChange={setSelectedEmployeeId}
                   vacations={vacations}
                   loading={loading}
                 />
-              </div>
+              </div> */}
             </div>
           </TabsContent>
 

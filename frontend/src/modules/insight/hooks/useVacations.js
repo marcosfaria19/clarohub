@@ -41,21 +41,25 @@ export function useVacations() {
   }, []);
 
   // Agendar novas férias
-  const scheduleVacation = useCallback(async (vacationData) => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.post("/vacations", vacationData);
-      setVacations((prev) => [...prev, response.data]);
-      setError(null);
-      return response.data;
-    } catch (err) {
-      console.error("Erro ao agendar férias:", err);
-      setError("Erro ao agendar férias");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const scheduleVacation = useCallback(
+    async (vacationData) => {
+      setLoading(true);
+      try {
+        const response = await axiosInstance.post("/vacations", vacationData);
+        setError(null);
+        // Atualiza a lista completa após inserir
+        await fetchVacations();
+        return response.data;
+      } catch (err) {
+        console.error("Erro ao agendar férias:", err);
+        setError("Erro ao agendar férias");
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchVacations],
+  );
 
   // Atualizar férias existentes
   const updateVacation = useCallback(async (vacationId, vacationData) => {
