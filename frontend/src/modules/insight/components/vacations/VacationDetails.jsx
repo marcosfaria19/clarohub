@@ -35,7 +35,7 @@ const VacationDetails = ({
   const currentVacation = clickedDateVacations[currentPersonIndex];
   if (!currentVacation) return null;
 
-  const currentPerson = capitalizeFirstLetters(currentVacation.nome);
+  const currentPerson = formatUserName(currentVacation.nome);
 
   return (
     <Card>

@@ -14,7 +14,10 @@ import { Badge } from "modules/shared/components/ui/badge";
 import { Users, Calendar } from "lucide-react";
 import { cn } from "modules/shared/lib/utils";
 import { formatDate } from "modules/shared/utils/formatDate";
-import { capitalizeFirstLetters } from "modules/shared/utils/formatUsername";
+import {
+  capitalizeFirstLetters,
+  formatUserName,
+} from "modules/shared/utils/formatUsername";
 
 import VacationStatusBadge from "./VacationStatusBadge";
 import VacationDetails from "./VacationDetails";
@@ -55,7 +58,7 @@ const VacationSidebar = ({
         <CardContent>
           <div className="space-y-3">
             {thisMonthVacations.map((vacation) => {
-              const employee = capitalizeFirstLetters(vacation.nome);
+              const employee = formatUserName(vacation.nome);
               return (
                 <div
                   key={vacation.id || vacation._id}
