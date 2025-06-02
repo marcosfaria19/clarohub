@@ -98,6 +98,7 @@ module.exports = (qualinetCollection) => {
             END_COMPLETO: item.END_COMPLETO,
             COD_NODE: item.COD_NODE,
             UF: item.UF,
+            insertedAt: new Date(),
           }));
         if (filteredDataWithoutRS.length === 0) {
           return res.status(400).send("Nenhum dado novo a ser inserido.");
