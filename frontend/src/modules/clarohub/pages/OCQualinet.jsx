@@ -164,9 +164,10 @@ export default function OCQualinet() {
                       {selectedFile ? (
                         <div className="text-center">
                           <FileIcon className="mx-auto mb-4 h-16 w-16 text-primary" />
-                          <p className="text-sm font-medium text-foreground">
+                          <p className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium text-foreground">
                             {selectedFile.name}
                           </p>
+
                           <p className="mt-2 text-xs text-muted-foreground">
                             Carregado com sucesso
                           </p>
