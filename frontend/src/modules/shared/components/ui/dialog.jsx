@@ -3,6 +3,16 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 import { cn } from "modules/shared/lib/utils";
 
+import { createContext, useContext } from "react";
+
+const DialogContext = createContext(false);
+
+export const useInDialog = () => useContext(DialogContext);
+
+export const DialogProvider = ({ children }) => (
+  <DialogContext.Provider value={true}>{children}</DialogContext.Provider>
+);
+
 const Dialog = DialogPrimitive.Root;
 
 const DialogTrigger = DialogPrimitive.Trigger;
@@ -36,11 +46,12 @@ const DialogContent = React.forwardRef(
         )}
         {...props}
       >
-        {children}
+        <DialogProvider>{children}</DialogProvider>
       </DialogPrimitive.Content>
     </DialogPortal>
   ),
 );
+
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({ className, ...props }) => (

@@ -251,7 +251,6 @@ const VacationRegisterForm = React.memo(
                   <FormItem>
                     <FormLabel>Colaborador</FormLabel>
                     <Select
-                      modal={true}
                       onValueChange={(value) => field.onChange(value)}
                       value={field.value}
                     >

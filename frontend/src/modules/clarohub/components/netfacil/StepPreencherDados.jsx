@@ -175,7 +175,7 @@ export default function StepPreencherDados({
         <SelectTrigger>
           <SelectValue placeholder="Texto Padrão" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent position="popper">
           {[
             ...new Set(
               data
