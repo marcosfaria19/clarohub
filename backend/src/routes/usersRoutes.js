@@ -42,6 +42,7 @@ module.exports = (usersCollection, ideasCollection) => {
           id: user._id,
           LOGIN: user.LOGIN,
           PERMISSOES: user.PERMISSOES,
+          ROLES_ADICIONAIS: user.ROLES_ADICIONAIS,
           NOME: user.NOME,
           GESTOR: user.GESTOR,
           avatar: user.avatar,

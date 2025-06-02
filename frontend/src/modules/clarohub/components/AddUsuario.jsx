@@ -19,6 +19,7 @@ import {
 } from "modules/shared/components/ui/select";
 import { toast } from "sonner";
 import { UserIcon, UserCheck, BarChart3Icon, ShieldIcon } from "lucide-react";
+import { Checkbox } from "modules/shared/components/ui/checkbox";
 
 const AddUsuario = ({
   show,
@@ -30,6 +31,9 @@ const AddUsuario = ({
 }) => {
   const [projects, setProjects] = useState([]);
   const [gestores, setGestores] = useState([]);
+  const [selectedRolesAdicionais, setSelectedRolesAdicionais] = useState(
+    currentItem.ROLES_ADICIONAIS || [],
+  );
   const [selectedPermission, setSelectedPermission] = useState(
     currentItem.PERMISSOES || "",
   );
@@ -79,6 +83,7 @@ const AddUsuario = ({
 
   useEffect(() => {
     setSelectedPermission(currentItem.PERMISSOES || "");
+    setSelectedRolesAdicionais(currentItem.ROLES_ADICIONAIS || []);
   }, [currentItem]);
 
   const handleSubmit = (e) => {
@@ -196,8 +201,37 @@ const AddUsuario = ({
             </div>
 
             <div>
+              <Label className="mb-3">Permissões Adicionais</Label>
+              <div className="flex flex-col gap-2">
+                {["flow_upload"].map((role) => (
+                  <div key={role} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={role}
+                      checked={selectedRolesAdicionais.includes(role)}
+                      onCheckedChange={(checked) => {
+                        const updatedRoles = checked
+                          ? [...selectedRolesAdicionais, role]
+                          : selectedRolesAdicionais.filter((r) => r !== role);
+                        setSelectedRolesAdicionais(updatedRoles);
+                        handleChange({
+                          target: {
+                            name: "ROLES_ADICIONAIS",
+                            value: updatedRoles,
+                          },
+                        });
+                      }}
+                    />
+                    <Label htmlFor={role} className="capitalize">
+                      {role.replace(/_/g, " ")}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
               <Label htmlFor="formPermissao" className="mb-3">
-                Permissão
+                Acesso
               </Label>
               <div className="mb-5 flex gap-2">
                 {permissions.map((permission) => {
@@ -230,11 +264,11 @@ const AddUsuario = ({
             </Button>
           )}
           <div className="ml-auto flex space-x-2">
-            <Button type="button" onClick={handleSave}>
-              {isEditMode ? "Salvar" : "Adicionar"}
-            </Button>
             <Button variant="secondary" onClick={handleClose}>
               Cancelar
+            </Button>
+            <Button type="button" onClick={handleSave}>
+              {isEditMode ? "Salvar" : "Adicionar"}
             </Button>
           </div>
         </DialogFooter>

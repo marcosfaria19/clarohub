@@ -96,19 +96,22 @@ export default function Claroflow() {
         )}
       </div>
 
-      {state.selectedTab === "home" && (
-        <div className="animate-fade-in-up fixed bottom-24 right-28 z-50">
-          <Button
-            variant="default"
-            size="lg"
-            className="gap-2 shadow-lg transition-shadow hover:shadow-xl"
-            onClick={() => setState((prev) => ({ ...prev, showUpload: true }))}
-          >
-            <UploadIcon className="h-5 w-5" />
-            Nova Importação
-          </Button>
-        </div>
-      )}
+      {state.selectedTab === "home" &&
+        user.roles_adicionais?.includes("flow_upload") && (
+          <div className="animate-fade-in-up fixed bottom-24 right-28 z-50">
+            <Button
+              variant="default"
+              size="lg"
+              className="gap-2 shadow-lg transition-shadow hover:shadow-xl"
+              onClick={() =>
+                setState((prev) => ({ ...prev, showUpload: true }))
+              }
+            >
+              <UploadIcon className="h-5 w-5" />
+              Nova Importação
+            </Button>
+          </div>
+        )}
 
       <Dialog
         open={state.showUpload}

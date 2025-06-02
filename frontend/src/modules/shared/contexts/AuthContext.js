@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
     gestor: "",
     avatar: "",
     permissoes: "",
+    roles_adicionais: [],
     project: {},
   });
 
@@ -24,6 +25,7 @@ export const AuthProvider = ({ children }) => {
       gestor: "",
       avatar: "",
       permissoes: "",
+      roles_adicionais: [],
       project: {},
     });
     setToken(null);
@@ -48,6 +50,7 @@ export const AuthProvider = ({ children }) => {
               login: decodedToken.LOGIN,
               gestor: decodedToken.GESTOR,
               permissoes: decodedToken.PERMISSOES,
+              roles_adicionais: decodedToken.ROLES_ADICIONAIS || [],
               avatar: decodedToken.avatar,
               dailyLikesUsed: decodedToken.dailyLikesUsed,
               dailyIdeasCreated: decodedToken.dailyIdeasCreated,
