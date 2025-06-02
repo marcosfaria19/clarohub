@@ -3,7 +3,7 @@ const multer = require("multer");
 const xlsx = require("xlsx");
 const { ObjectId } = require("mongodb");
 const cidadeParaUF = require("../utils/cidadeParaUF");
-const formatarData = require("../utils/formatarData");
+const { formatarData } = require("../utils/formatarData");
 const authenticateToken = require("../middleware/authMiddleware");
 const router = express.Router();
 
