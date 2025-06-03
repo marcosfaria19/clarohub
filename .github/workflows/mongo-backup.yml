@@ -1,0 +1,34 @@
+name: MongoDB Atlas Backup (Weekly)
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # Todos os dias às 02:00 UTC (23h BRT)
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Instalar mongodump
+        run: |
+          curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server.gpg
+          echo "deb [ arch=amd64 signed-by=/usr/share/keyrings/mongodb-server.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+          sudo apt-get update
+          sudo apt-get install -y mongodb-database-tools
+
+      - name: Executar mongodump e compactar
+        id: backup
+        run: |
+          TIMESTAMP=$(date +%F-%H-%M)
+          mongodump --uri="${{ secrets.MONGO_URI }}" \
+                    --gzip \
+                    --archive="mongo-backup-$TIMESTAMP.gz"
+          echo "Backup criado: mongo-backup-$TIMESTAMP.gz"
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+
+      - name: Armazenar nos Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mongo-backup-${{ steps.backup.outputs.timestamp }}
+          path: mongo-backup-*.gz
