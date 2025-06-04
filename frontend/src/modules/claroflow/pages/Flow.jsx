@@ -5,7 +5,7 @@ import { FlowHome } from "../components/FlowHome";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useUsers } from "../hooks/useUsers";
 import BoardLayout from "../components/tasks/BoardLayout";
-import { UploadCloudIcon, UploadIcon } from "lucide-react";
+import { Plus, UploadCloudIcon } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import {
   Dialog,
@@ -98,17 +98,17 @@ export default function Claroflow() {
 
       {state.selectedTab === "home" &&
         user.roles_adicionais?.includes("flow_upload") && (
-          <div className="animate-fade-in-up fixed bottom-24 right-28 z-50">
+          <div className="fixed bottom-6 right-6 z-50 md:bottom-10 md:right-10">
             <Button
               variant="default"
               size="lg"
-              className="gap-2 shadow-lg transition-shadow hover:shadow-xl"
+              className="flex items-center gap-2 rounded-full shadow-lg hover:shadow-xl"
               onClick={() =>
                 setState((prev) => ({ ...prev, showUpload: true }))
               }
             >
-              <UploadIcon className="h-5 w-5" />
-              Nova Importação
+              <Plus className="h-5 w-5" />
+              <span className="hidden sm:inline">Nova Importação</span>
             </Button>
           </div>
         )}

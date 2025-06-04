@@ -1,12 +1,6 @@
 import React from "react";
-import { HouseIcon } from "lucide-react";
+import { GitBranch, Home, Users } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "modules/shared/components/ui/tooltip";
 
 export default function FlowMenu({
   assignments = [],
@@ -15,72 +9,69 @@ export default function FlowMenu({
   role,
 }) {
   return (
-    <div className="relative bottom-0 z-0 flex w-auto items-center justify-start overflow-x-auto rounded-none drop-shadow-[0_0px_5px_rgba(0,0,0,0.25)] sm:mt-12 lg:mt-0">
-      <TooltipProvider>
-        {/* Aba Home permanente */}
-        <Tooltip>
-          <TooltipTrigger asChild>
+    <div className="relative bottom-0 z-10 flex w-auto items-center justify-start overflow-x-auto rounded-none drop-shadow-[0_0px_5px_rgba(0,0,0,0.25)] sm:mt-12 lg:mt-0">
+      {/* Aba Home permanente */}
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className={`relative w-14 min-w-[50px] rounded-none rounded-t-[20px] bg-secondary text-secondary-foreground/80 focus:opacity-80 focus-visible:ring-0 ${
+          activeTab === "home" ? "bg-primary text-accent-foreground" : ""
+        }`}
+        onClick={() => onTabChange("home")}
+      >
+        <Home className="h-4 w-4" />
+        <span className="sr-only">Página Inicial</span>
+      </Button>
+
+      {/* Aba Equipe */}
+      {(role === "manager" || role === "admin") && (
+        <Button
+          variant="ghost"
+          className={`h-10 w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors focus:opacity-80 focus-visible:ring-0 ${
+            activeTab === "team" ? "bg-primary text-accent-foreground" : ""
+          }`}
+          onClick={() => onTabChange("team")}
+        >
+          <Users className="mr-2 h-4 w-4" />
+          Equipe
+        </Button>
+      )}
+
+      {/* Aba Fluxo do Projeto */}
+      {role === "admin" && (
+        <Button
+          variant="ghost"
+          className={`h-10 w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors focus-visible:ring-0 focus:opacity-80${
+            activeTab === "projectflow"
+              ? "bg-primary text-accent-foreground"
+              : ""
+          }`}
+          onClick={() => onTabChange("projectflow")}
+        >
+          <GitBranch className="mr-2 h-4 w-4" />
+          Fluxos
+        </Button>
+      )}
+
+      {/* Abas de demandas */}
+      {assignments?.length > 0 &&
+        assignments
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((assignment) => (
             <Button
+              key={assignment._id}
               variant="ghost"
-              size="icon"
-              className={`relative w-14 min-w-[50px] rounded-none rounded-t-[20px] bg-secondary text-secondary-foreground/80 ${
-                activeTab === "home" ? "bg-primary text-accent-foreground" : ""
+              className={`h-10 min-w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors focus:opacity-80 focus-visible:ring-0 ${
+                activeTab === assignment._id
+                  ? "bg-primary text-accent-foreground"
+                  : ""
               }`}
-              onClick={() => onTabChange("home")}
+              onClick={() => onTabChange(assignment._id)}
             >
-              <HouseIcon className="h-5 w-5" />
+              {assignment.name}
             </Button>
-          </TooltipTrigger>
-          <TooltipContent>Página Inicial</TooltipContent>
-        </Tooltip>
-
-        {/* Aba Equipe */}
-        {(role === "manager" || role === "admin") && (
-          <Button
-            variant="ghost"
-            className={`h-10 w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors ${
-              activeTab === "team" ? "bg-primary text-accent-foreground" : ""
-            }`}
-            onClick={() => onTabChange("team")}
-          >
-            Equipe
-          </Button>
-        )}
-
-        {/* Aba Fluxo do Projeto */}
-        {role === "admin" && (
-          <Button
-            variant="ghost"
-            className={`h-10 w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors ${
-              activeTab === "projectflow"
-                ? "bg-primary text-accent-foreground"
-                : ""
-            }`}
-            onClick={() => onTabChange("projectflow")}
-          >
-            Fluxos
-          </Button>
-        )}
-
-        {/* Abas de demandas */}
-        {assignments?.length > 0 &&
-          assignments
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((assignment) => (
-              <Button
-                key={assignment._id}
-                variant="ghost"
-                className={`h-10 min-w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors ${
-                  activeTab === assignment._id
-                    ? "bg-primary text-accent-foreground"
-                    : ""
-                }`}
-                onClick={() => onTabChange(assignment._id)}
-              >
-                {assignment.name}
-              </Button>
-            ))}
-      </TooltipProvider>
+          ))}
     </div>
   );
 }
