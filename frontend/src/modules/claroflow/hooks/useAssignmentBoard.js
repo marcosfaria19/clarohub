@@ -80,26 +80,6 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
     }
   }, [assignments]);
 
-  // Atualiza os dados de regionais para um membro em uma demanda
-  const updateRegional = useCallback((assignmentId, userId, regionals) => {
-    setAssignments((prev) =>
-      prev.map((assignment) => {
-        if (assignment.id === assignmentId) {
-          return {
-            ...assignment,
-            // Atualiza cada atribuição: se o userId corresponder, atualiza as regionals
-            assigned: assignment.assigned.map((assignment) =>
-              assignment.userId === userId
-                ? { ...assignment, regionals }
-                : assignment,
-            ),
-          };
-        }
-        return assignment;
-      }),
-    );
-  }, []);
-
   // Retorna a equipe de um assignment específico (nome e avatar dos usuários atribuídos)
   const getTeamByAssignmentId = useCallback(
     (assignmentId) => {
@@ -132,7 +112,6 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
           assignedUsers: usersArray.map((user, userIndex) => {
             return {
               userId: user.userId,
-              regionals: user.regionals || null, // regional opcional
             };
           }),
         };
@@ -193,7 +172,6 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
     hasChanges,
     resetToInitialState,
     updateTeamMembers,
-    updateRegional,
     getTeamByAssignmentId,
     assignUsers,
     error,

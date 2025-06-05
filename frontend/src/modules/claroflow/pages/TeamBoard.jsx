@@ -196,19 +196,21 @@ const TeamBoard = ({ project }) => {
   const handleApplyChanges = async () => {
     try {
       const assignmentsToUpdate = await updateTeamMembers();
+
       await assignUsers(project._id, assignmentsToUpdate);
 
-      // Verifica os membros novos para disparar notificações
+      // Notificar novos membros
       assignments.forEach((currentAssignment) => {
         const initialAssignment = initialAssignments.find(
           (d) => d.id === currentAssignment.id,
         );
+
         const newUsers = currentAssignment.assigned.filter((assignment) => {
-          // Aqui a comparação pode ser aprimorada: se necessário, comparar apenas os IDs dos usuários
           return !initialAssignment?.assigned.some(
             (initAssign) => initAssign.userId === assignment.userId,
           );
         });
+
         newUsers.forEach((assignment) => {
           createUserNotification(
             assignment.userId,
@@ -220,16 +222,37 @@ const TeamBoard = ({ project }) => {
 
       toast.success("Equipe atualizada com sucesso!");
     } catch (error) {
-      toast.error("Falha ao atualizar equipe. Tente novamente mais tarde.");
       console.error("Erro ao aplicar mudanças:", error);
+
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data.blockedRemovals
+      ) {
+        const conflicts = error.response.data.blockedRemovals;
+
+        const conflictMessages = conflicts.map(
+          (conflict) =>
+            `• ${conflict.userName} não pode ser removido de ${conflict.assignmentName} (possui ${conflict.tasksInProgress} tarefa(s) em andamento)`,
+        );
+
+        toast.error(
+          `Não foi possível aplicar as alterações:\n${conflictMessages.join("\n")}`,
+          { duration: 8000 },
+        );
+
+        handleDiscardChanges();
+      } else {
+        toast.error("Falha ao atualizar equipe. Tente novamente mais tarde.");
+      }
     }
   };
 
   // Descarta as mudanças, resetando o estado para o inicial
   const handleDiscardChanges = () => {
     resetToInitialState();
+    setInitialAssignments([...initialAssignments]);
   };
-
   return (
     <>
       <DndContext

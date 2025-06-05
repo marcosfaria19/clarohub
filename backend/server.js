@@ -79,7 +79,8 @@ async function startServer() {
     // Rotas Flow
     const projectRoutes = require("./src/routes/claroflow/projectRoutes")(
       clarohub.collection("flow.projects"),
-      clarohub.collection("users")
+      clarohub.collection("users"),
+      clarohub.collection("flow.tasks")
     );
 
     const tasksRoutes = require("./src/routes/claroflow/tasksRoutes")(

@@ -3,7 +3,7 @@ const authenticateToken = require("../../middleware/authMiddleware");
 const { ObjectId } = require("mongodb");
 const router = express.Router();
 
-module.exports = (projectsCollection, usersCollection) => {
+module.exports = (projectsCollection, usersCollection, tasksCollection) => {
   // Rota para buscar todos os projetos
   router.get("/projects", authenticateToken, async (req, res) => {
     try {
@@ -167,7 +167,7 @@ module.exports = (projectsCollection, usersCollection) => {
     }
   );
 
-  // Rota para atualizar múltiplas assignments com usuários
+  // Rota para atualizar múltiplas assignments com validação de usuários com tasks em andamento
   router.patch(
     "/projects/:projectId/assign-users",
     authenticateToken,
@@ -180,7 +180,6 @@ module.exports = (projectsCollection, usersCollection) => {
           return res.status(400).json({ error: "Invalid assignments format" });
         }
 
-        // Busca o projeto existente
         const project = await projectsCollection.findOne({
           _id: new ObjectId(projectId),
         });
@@ -189,45 +188,89 @@ module.exports = (projectsCollection, usersCollection) => {
           return res.status(404).json({ error: "Project not found" });
         }
 
-        // Criação das operações em lote
-        const bulkOps = assignments
-          .map((assignment, index) => {
-            if (!assignment?.id || !assignment?.assignedUsers) {
-              return null; // ou poderia lançar um erro se quiser forçar
+        const blockedRemovals = [];
+
+        for (const assignment of assignments) {
+          const { id: assignmentId, assignedUsers: newAssignedUsers } =
+            assignment;
+
+          const currentAssignment = project.assignments.find((a) =>
+            a._id.equals(new ObjectId(assignmentId))
+          );
+
+          if (!currentAssignment) {
+            continue;
+          }
+
+          const currentUserIds =
+            currentAssignment.assignedUsers?.map((u) => u.userId.toString()) ||
+            [];
+          const newUserIds =
+            newAssignedUsers?.map((u) => u.userId.toString()) || [];
+
+          const removedUserIds = currentUserIds.filter(
+            (id) => !newUserIds.includes(id)
+          );
+
+          for (const userId of removedUserIds) {
+            const tasksInProgress = await tasksCollection
+              .find({
+                "status._id": new ObjectId(assignmentId),
+                "assignedTo._id": new ObjectId(userId),
+              })
+              .toArray();
+
+            if (tasksInProgress.length > 0) {
+              const user = await usersCollection.findOne({
+                _id: new ObjectId(userId),
+              });
+
+              blockedRemovals.push({
+                assignmentId,
+                assignmentName: currentAssignment.name,
+                userId,
+                userName: user?.NOME || "Usuário desconhecido",
+                tasksInProgress: tasksInProgress.length,
+              });
             }
+          }
+        }
 
-            const assignedUsersFormatted = assignment.assignedUsers.map(
-              (user, i) => {
-                if (!user?.userId) {
-                }
-                return {
-                  userId: new ObjectId(user.userId),
-                  regionals: user.regionals || null,
-                };
-              }
-            );
+        if (blockedRemovals.length > 0) {
+          console.log(
+            "Alterações bloqueadas devido a tarefas em andamento:",
+            blockedRemovals
+          );
+          return res.status(400).json({
+            error:
+              "Não é possível aplicar as alterações devido a usuários com tarefas em andamento.",
+            blockedRemovals,
+          });
+        }
 
-            return {
-              updateOne: {
-                filter: {
-                  _id: new ObjectId(projectId),
-                  "assignments._id": new ObjectId(assignment.id),
-                },
-                update: {
-                  $set: {
-                    "assignments.$.assignedUsers": assignedUsersFormatted,
-                  },
+        console.log("Nenhum bloqueio encontrado, aplicando alterações...");
+
+        const bulkOps = assignments.map((assignment) => {
+          const assignedUsersFormatted = assignment.assignedUsers.map(
+            (user) => ({
+              userId: new ObjectId(user.userId),
+            })
+          );
+
+          return {
+            updateOne: {
+              filter: {
+                _id: new ObjectId(projectId),
+                "assignments._id": new ObjectId(assignment.id),
+              },
+              update: {
+                $set: {
+                  "assignments.$.assignedUsers": assignedUsersFormatted,
                 },
               },
-            };
-          })
-          .filter(Boolean); // remove possíveis nulls por assignments malformados
-
-        if (bulkOps.length === 0) {
-          return res
-            .status(400)
-            .json({ error: "No valid assignments to update" });
-        }
+            },
+          };
+        });
 
         const result = await projectsCollection.bulkWrite(bulkOps);
 

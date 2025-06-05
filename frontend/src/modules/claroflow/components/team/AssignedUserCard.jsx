@@ -8,30 +8,7 @@ const {
 const { Button } = require("modules/shared/components/ui/button");
 const { Card } = require("modules/shared/components/ui/card");
 
-/**
- * AssignedUserCard
- * Componente que renderiza o cartão do usuário atribuído à demanda.
- *
- * Props:
- * - assignment: Objeto contendo os dados da assignment (userId e regionals).
- * - member: Objeto com os dados do usuário (nome, avatar, id).
- * - onUnassign: Função para desatribuir o usuário da demanda.
- * - onUpdateRegional: Função para atualizar as regionals do usuário.
- * - assignmentId: ID da demanda (usado para identificar a coluna).
- */
-const AssignedUserCard = ({
-  assignment,
-  member,
-  assignmentId,
-  onUnassign,
-  onUpdateRegional,
-}) => {
-  // Handler para atualizar as regionals do usuário
-  /*  const handleRegionalChange = (regionals) => {
-    onUpdateRegional(assignmentId, member.id, regionals);
-  };
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false); */
-
+const AssignedUserCard = ({ assignment, member, assignmentId, onUnassign }) => {
   return (
     <Card className="bg-background p-2 shadow-sm">
       <div className="flex items-center gap-2">
@@ -46,38 +23,8 @@ const AssignedUserCard = ({
           <span className="text-sm font-medium text-card-foreground">
             {member?.name}
           </span>
-
-          {/* Badges com as regionais atribuidas */}
-          {/* {assignment.regionals && (
-            <div className="flex gap-1">
-              {assignment.regionals.primary && (
-                <Badge variant="basic">{assignment.regionals.primary}</Badge>
-              )}
-              {assignment.regionals.secondary && (
-                <Badge variant="basic" className="bg-accent/60">
-                  {assignment.regionals.secondary}
-                </Badge>
-              )}
-            </div>
-          )} */}
         </div>
         <div className="ml-auto flex items-center justify-end gap-2">
-          {/* Popover para atribuir regionais ao usuário */}
-          {/* <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger>
-              <Settings className="h-3.5 w-3.5" />
-            </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <RegionalSelector
-                initialPrimary={assignment.regionals?.primary}
-                initialSecondary={assignment.regionals?.secondary}
-                onSave={handleRegionalChange}
-                onClose={() => setIsPopoverOpen(false)}
-              />
-            </PopoverContent>
-          </Popover> */}
-
-          {/* Botão para desatribuir o usuário da demanda */}
           <Button
             variant="ghost"
             size="icon"
