@@ -1,11 +1,4 @@
-import {
-  BarChart,
-  Calendar,
-  Home,
-  Settings,
-  Users,
-  LineChart,
-} from "lucide-react";
+import { Calendar } from "lucide-react";
 import {
   Avatar,
   AvatarImage,
@@ -23,7 +16,7 @@ const Sidebar = () => {
   const { user } = useContext(AuthContext);
 
   const menuItems = [
-    {
+    /*    {
       id: "dashboard",
       label: "Dashboard",
       icon: Home,
@@ -45,19 +38,19 @@ const Sidebar = () => {
       id: "projects",
       label: "Projetos",
       icon: LineChart,
-      path: "/insights/dashboard",
+      path: "/insights/",
     },
+        {
+      id: "settings",
+      label: "Configurações",
+      icon: Settings,
+      path: "/insights/settings",
+    }, */
     {
       id: "vacations",
       label: "Férias",
       icon: Calendar,
       path: "/insights/vacations",
-    },
-    {
-      id: "settings",
-      label: "Configurações",
-      icon: Settings,
-      path: "/insights/settings",
     },
   ];
 

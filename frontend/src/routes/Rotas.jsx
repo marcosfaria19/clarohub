@@ -154,7 +154,7 @@ export default function Rotas() {
           path: "/insights",
           element: (
             <ProtectedRoute allowedRoles={["admin", "manager"]}>
-              <Navigate to="/insights/dashboard" replace />
+              <Navigate to="/insights/vacations" replace />
             </ProtectedRoute>
           ),
         },
