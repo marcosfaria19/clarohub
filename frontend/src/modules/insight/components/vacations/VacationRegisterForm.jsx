@@ -30,8 +30,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "modules/shared/components/ui/popover";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "modules/shared/components/ui/radio-group";
 import { Button } from "modules/shared/components/ui/button";
-
 import { Textarea } from "modules/shared/components/ui/textarea";
 import { Calendar } from "modules/shared/components/ui/calendar";
 import { CalendarIcon, PlusIcon, AlertCircle } from "lucide-react";
@@ -49,7 +52,6 @@ const VacationRegisterForm = React.memo(
     loading: externalLoading,
     vacations,
   }) => {
-    // Use the useUsers hook to get the list of collaborators
     const { users, loading: usersLoading } = useUsers();
     const validUsers = users.filter(
       (u) =>
@@ -62,28 +64,27 @@ const VacationRegisterForm = React.memo(
     const [hasOverlap, setHasOverlap] = useState(false);
     const [vacationDays, setVacationDays] = useState(0);
 
-    // Combine external loading state with local loading state
     const loading = externalLoading || localLoading || usersLoading;
 
     const form = useForm({
       defaultValues: {
         employeeId: undefined,
-        startDate: undefined,
-        endDate: undefined,
+        dateRange: undefined,
         reason: "",
+        type: "vacation",
       },
     });
 
     const watchEmployeeId = form.watch("employeeId");
-    const watchStartDate = form.watch("startDate");
-    const watchEndDate = form.watch("endDate");
+    const watchDateRange = form.watch("dateRange");
+    const watchStartDate = watchDateRange?.from;
+    const watchEndDate = watchDateRange?.to;
 
     const formatDate = useCallback((date) => {
       if (!date) return "";
       return date.toLocaleDateString("pt-BR");
     }, []);
 
-    // Function to check vacation overlap
     const checkVacationOverlap = useCallback(
       (employeeId, startDate, endDate) => {
         if (!employeeId || !startDate || !endDate || !vacations) return false;
@@ -98,11 +99,10 @@ const VacationRegisterForm = React.memo(
       [vacations],
     );
 
-    // Function to calculate vacation days
     const calculateVacationDays = useCallback((startDate, endDate) => {
       if (!startDate || !endDate) return 0;
 
-      const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+      const oneDay = 24 * 60 * 60 * 1000;
       const diffDays = Math.round(Math.abs((endDate - startDate) / oneDay)) + 1;
       return diffDays;
     }, []);
@@ -143,24 +143,27 @@ const VacationRegisterForm = React.memo(
             return;
           }
 
-          if (!values.startDate) {
-            form.setError("startDate", {
+          const startDate = values.dateRange?.from;
+          const endDate = values.dateRange?.to;
+
+          if (!startDate) {
+            form.setError("dateRange", {
               type: "manual",
-              message: "Por favor selecione a data inicial",
+              message: "Por favor selecione um intervalo de datas",
             });
             return;
           }
 
-          if (!values.endDate) {
-            form.setError("endDate", {
+          if (!endDate) {
+            form.setError("dateRange", {
               type: "manual",
-              message: "Por favor selecione a data final",
+              message: "Por favor selecione a data final do intervalo",
             });
             return;
           }
 
-          if (values.endDate < values.startDate) {
-            form.setError("endDate", {
+          if (endDate < startDate) {
+            form.setError("dateRange", {
               type: "manual",
               message:
                 "A data final deve ser igual ou posterior à data inicial",
@@ -169,7 +172,7 @@ const VacationRegisterForm = React.memo(
           }
 
           if (hasOverlap) {
-            form.setError("startDate", {
+            form.setError("dateRange", {
               type: "manual",
               message: "Este período se sobrepõe a férias já agendadas",
             });
@@ -177,7 +180,6 @@ const VacationRegisterForm = React.memo(
           }
 
           const employee = validUsers.find((e) => e._id === values.employeeId);
-
           if (!employee) {
             throw new Error("Colaborador não encontrado");
           }
@@ -189,20 +191,21 @@ const VacationRegisterForm = React.memo(
             login: employee.LOGIN,
             permissoes: employee.PERMISSOES,
             project: employee.project,
-            startDate: values.startDate,
-            endDate: values.endDate,
+            startDate,
+            endDate,
             status: "PENDING",
             reason: values.reason,
+            type: values.type,
           });
 
           form.reset();
           setOpen(false);
           if (onSuccess) onSuccess();
         } catch (error) {
-          console.error("Error submitting vacation request:", error);
+          console.error("Erro ao enviar solicitação de férias:", error);
           form.setError("root", {
             type: "manual",
-            message: "Erro ao enviar solicitação de férias. Tente novamente.",
+            message: "Erro ao enviar solicitação. Tente novamente.",
           });
         } finally {
           setLocalLoading(false);
@@ -238,7 +241,8 @@ const VacationRegisterForm = React.memo(
           <DialogHeader>
             <DialogTitle>Agendar Novas Férias</DialogTitle>
             <DialogDescription>
-              Preencha os detalhes para agendar férias para um membro da equipe.
+              Preencha os detalhes para agendar férias ou folga para um membro
+              da equipe.
             </DialogDescription>
           </DialogHeader>
 
@@ -250,21 +254,20 @@ const VacationRegisterForm = React.memo(
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Colaborador</FormLabel>
-                    <Select
-                      onValueChange={(value) => field.onChange(value)}
-                      value={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione um colaborador" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {validUsers.map((employee) => (
-                          <SelectItem key={employee._id} value={employee._id}>
-                            {capitalizeFirstLetters(employee.NOME)}
-                          </SelectItem>
-                        ))}
+                        {[...validUsers]
+                          .sort((a, b) => a.NOME.localeCompare(b.NOME))
+                          .map((employee) => (
+                            <SelectItem key={employee._id} value={employee._id}>
+                              {capitalizeFirstLetters(employee.NOME)}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -272,94 +275,82 @@ const VacationRegisterForm = React.memo(
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="startDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Data Inicial</FormLabel>
-                      <Popover modal={true}>
-                        <PopoverTrigger asChild>
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        className="flex gap-4"
+                      >
+                        <FormItem className="flex items-center space-x-2">
                           <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground",
-                              )}
-                            >
-                              {field.value ? (
-                                formatDate(field.value)
-                              ) : (
-                                <span>Selecione a data</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
+                            <RadioGroupItem value="vacation" />
                           </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date < new Date(new Date().setHours(0, 0, 0, 0))
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                          <FormLabel className="font-normal">Férias</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2">
+                          <FormControl>
+                            <RadioGroupItem value="dayoff" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Folga</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="endDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Data Final</FormLabel>
-                      <Popover modal={true}>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground",
-                              )}
-                            >
-                              {field.value ? (
-                                formatDate(field.value)
+              <FormField
+                control={form.control}
+                name="dateRange"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Período</FormLabel>
+                    <Popover modal>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value?.from && "text-muted-foreground",
+                            )}
+                          >
+                            {field.value?.from ? (
+                              field.value.to ? (
+                                `${formatDate(field.value.from)} - ${formatDate(
+                                  field.value.to,
+                                )}`
                               ) : (
-                                <span>Selecione a data</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              watchStartDate
-                                ? date < watchStartDate
-                                : date <
-                                  new Date(new Date().setHours(0, 0, 0, 0))
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                                formatDate(field.value.from)
+                              )
+                            ) : (
+                              <span>Selecione o intervalo</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="range"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={() => false}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               {vacationDays > 0 && (
                 <motion.div

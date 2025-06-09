@@ -1,20 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "modules/shared/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "modules/shared/components/ui/select";
-import { Button } from "modules/shared/components/ui/button";
-import { AlertCircle } from "lucide-react";
+
 import { formatDateRange } from "modules/insight/utils/vacationUtils";
 import {
   capitalizeFirstLetters,
@@ -22,6 +7,24 @@ import {
 } from "modules/shared/utils/formatUsername";
 import { useUsers } from "modules/claroflow/hooks/useUsers";
 import { Badge } from "modules/shared/components/ui/badge";
+
+import VacationTypeBadge from "./VacationTypeBadge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "modules/shared/components/ui/card";
+import { Button } from "modules/shared/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "modules/shared/components/ui/select";
+import { AlertCircle } from "lucide-react";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 
 const VacationTable = ({ vacations = [], onDeleteVacation }) => {
@@ -34,6 +37,11 @@ const VacationTable = ({ vacations = [], onDeleteVacation }) => {
 
     const usersWithoutVacation = users
       .filter((user) => !vacationUserIds.has(user._id))
+      .filter(
+        (user) =>
+          user.GESTOR !== "ELVIS CLEBER ALVES DA SILVA" &&
+          user.GESTOR !== "RODRIGO JOSE RODRIGUES GIL",
+      )
       .filter((user) => {
         if (companyFilter === "procisa") return user.LOGIN?.startsWith("Z");
         if (companyFilter === "claro") return !user.LOGIN?.startsWith("Z");
@@ -77,6 +85,7 @@ const VacationTable = ({ vacations = [], onDeleteVacation }) => {
         header: "Gestor",
         cell: ({ row }) => formatUserName(row.original.gestor),
       },
+
       {
         accessorKey: "login",
         header: "Empresa",
@@ -91,14 +100,24 @@ const VacationTable = ({ vacations = [], onDeleteVacation }) => {
     ];
 
     if (!showNoVacations) {
-      baseColumns.push({
-        accessorKey: "periodo",
-        header: "Período",
-        cell: ({ row }) => {
-          if (row.original.noVacation) return "-";
-          return formatDateRange(row.original.startDate, row.original.endDate);
+      baseColumns.push(
+        {
+          accessorKey: "periodo",
+          header: "Período",
+          cell: ({ row }) => {
+            if (row.original.noVacation) return "-";
+            return formatDateRange(
+              row.original.startDate,
+              row.original.endDate,
+            );
+          },
         },
-      });
+        {
+          accessorKey: "type",
+          header: "Tipo",
+          cell: ({ row }) => <VacationTypeBadge type={row.original.type} />,
+        },
+      );
     }
 
     return baseColumns;

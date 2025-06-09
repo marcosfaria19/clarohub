@@ -112,14 +112,6 @@ const VacationsModule = () => {
               <div className="lg:col-span-3">
                 <VacationTimeline vacations={vacations} loading={loading} />
               </div>
-              {/*  <div>
-                <VacationBalanceCard
-                  employeeId={selectedEmployeeId}
-                  onEmployeeChange={setSelectedEmployeeId}
-                  vacations={vacations}
-                  loading={loading}
-                />
-              </div> */}
             </div>
           </TabsContent>
 

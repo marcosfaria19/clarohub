@@ -8,7 +8,7 @@ import {
   AvatarFallback,
 } from "modules/shared/components/ui/avatar";
 import { CalendarIcon, ArrowRightIcon, Clock, User } from "lucide-react";
-import VacationStatusBadge from "./VacationStatusBadge";
+import VacationTypeBadge from "./VacationTypeBadge";
 import { cn } from "modules/shared/lib/utils";
 import {
   capitalizeFirstLetters,
@@ -79,19 +79,17 @@ const VacationOverviewCard = React.memo(
                   </Badge>
                 </div>
 
-                {showDaysUntil &&
-                  vacation.status === "approved" &&
-                  daysUntil >= 0 && (
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {getDaysUntilText(vacation.startDate)}
-                    </div>
-                  )}
+                {showDaysUntil && daysUntil >= 0 && (
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    {getDaysUntilText(vacation.startDate)}
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="flex flex-col items-end gap-2">
-              <VacationStatusBadge status={vacation.status} />
+              <VacationTypeBadge type={vacation.type} />
             </div>
           </div>
         </CardContent>

@@ -16,7 +16,7 @@ import { cn } from "modules/shared/lib/utils";
 import { formatDate } from "modules/shared/utils/formatDate";
 import { formatUserName } from "modules/shared/utils/formatUsername";
 
-import VacationStatusBadge from "./VacationStatusBadge";
+import VacationTypeBadge from "./VacationTypeBadge";
 import VacationDetails from "./VacationDetails";
 import {
   getUserColor,
@@ -91,7 +91,7 @@ const VacationSidebar = ({
                       {formatDate(vacation.endDate, false)}
                     </p>
                   </div>
-                  <VacationStatusBadge status={vacation.status} />
+                  <VacationTypeBadge type={vacation.type} />
                 </div>
               );
             })}

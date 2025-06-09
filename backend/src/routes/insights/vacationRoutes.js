@@ -55,7 +55,7 @@ module.exports = (usersCollection) => {
 
   // Agendar novas férias
   router.post("/", authenticateToken, async (req, res) => {
-    const { startDate, endDate, reason, employeeId } = req.body;
+    const { startDate, endDate, reason, employeeId, type } = req.body;
 
     if (!startDate || !endDate || !employeeId) {
       return res.status(400).json({ error: "Campos obrigatórios faltando" });
@@ -69,6 +69,7 @@ module.exports = (usersCollection) => {
       status: "approved",
       createdAt: new Date(),
       updatedAt: new Date(),
+      type: type,
     };
 
     try {
