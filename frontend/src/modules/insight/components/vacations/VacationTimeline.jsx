@@ -29,13 +29,20 @@ const VacationTimeline = React.memo(({ vacations = [], loading = false }) => {
   const [sortBy, setSortBy] = useState("date");
 
   const filteredAndSortedVacations = useMemo(() => {
-    let filtered = vacations;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let filtered = vacations.filter((vacation) => {
+      const startDate = new Date(vacation.startDate);
+      return startDate >= today;
+    });
 
     if (searchTerm) {
       filtered = filtered.filter(
         (vacation) =>
           vacation.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          vacation.gestor?.toLowerCase().includes(searchTerm.toLowerCase()),
+          vacation.project.name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -81,7 +88,7 @@ const VacationTimeline = React.memo(({ vacations = [], loading = false }) => {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="mb-1 flex items-center gap-3">
-              Todas as Férias
+              Férias Próximas
               <Badge className="border-transparent bg-accent text-accent-foreground hover:bg-accent/80">
                 {filteredAndSortedVacations.length}{" "}
                 {filteredAndSortedVacations.length === 1
@@ -90,7 +97,7 @@ const VacationTimeline = React.memo(({ vacations = [], loading = false }) => {
               </Badge>
             </CardTitle>
             <CardDescription>
-              Visualize e gerencie todas as férias cadastradas
+              Visualize as próximas férias dos colaboradores
             </CardDescription>
           </div>
         </div>
@@ -105,7 +112,7 @@ const VacationTimeline = React.memo(({ vacations = [], loading = false }) => {
               size={20}
             />
             <Input
-              placeholder="Buscar por funcionário ou gestor..."
+              placeholder="Buscar por funcionário ou projeto..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"

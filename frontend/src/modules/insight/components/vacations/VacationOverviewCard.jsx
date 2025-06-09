@@ -7,13 +7,10 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "modules/shared/components/ui/avatar";
-import { CalendarIcon, ArrowRightIcon, Clock, User } from "lucide-react";
+import { CalendarIcon, ArrowRightIcon, Clock, PencilIcon } from "lucide-react";
 import VacationTypeBadge from "./VacationTypeBadge";
 import { cn } from "modules/shared/lib/utils";
-import {
-  capitalizeFirstLetters,
-  formatUserName,
-} from "modules/shared/utils/formatUsername";
+import { capitalizeFirstLetters } from "modules/shared/utils/formatUsername";
 import {
   getDaysUntil,
   getDaysUntilText,
@@ -63,8 +60,8 @@ const VacationOverviewCard = React.memo(
                       {capitalizeFirstLetters(vacation.nome)}
                     </h3>
                     <p className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <User className="h-3 w-3" />
-                      Gestor: {formatUserName(vacation.gestor)}
+                      <PencilIcon className="h-3 w-3" />
+                      Projeto: {vacation.project.name}
                     </p>
                   </div>
                 </div>
