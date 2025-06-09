@@ -106,9 +106,7 @@ export default function Rotas() {
         {
           path: "/spark",
           element: (
-            <ProtectedRoute
-              allowedRoles={["guest", "basic", "manager", "admin"]}
-            >
+            <ProtectedRoute allowedRoles={["basic", "manager", "admin"]}>
               <Clarospark />
             </ProtectedRoute>
           ),
