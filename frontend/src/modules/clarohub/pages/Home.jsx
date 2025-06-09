@@ -170,6 +170,10 @@ const Home = () => {
                     imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
                     logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
                     rota={app.rota}
+                    isNew={
+                      new Date(app.createdAt).getTime() >
+                      Date.now() - 7 * 24 * 60 * 60 * 1000
+                    }
                     isFavorite={favorites.some((fav) => fav._id === app._id)}
                     onFavoriteClick={() => handleFavoriteClick(app)}
                     onCardClick={() => handleCardClick(app)}

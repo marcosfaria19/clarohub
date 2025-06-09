@@ -61,8 +61,13 @@ module.exports = (appCollection) => {
   });
 
   // Rota para cadastrar um novo app
+
   router.post("/apps", authenticateToken, async (req, res) => {
-    const newApp = req.body;
+    const newApp = {
+      ...req.body,
+      createdAt: new Date(),
+    };
+
     try {
       const result = await appCollection.insertOne(newApp);
       if (result.insertedCount === 0) {

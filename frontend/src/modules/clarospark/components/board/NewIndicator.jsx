@@ -3,10 +3,9 @@ import { motion } from "framer-motion";
 
 export function NewIndicator({ isNew }) {
   if (!isNew) return null;
-
   return (
     <motion.div
-      className="absolute inset-0 -m-[2px] rounded-lg"
+      className="absolute inset-0 -m-[1px] overflow-visible rounded-lg"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -27,7 +26,7 @@ export function NewIndicator({ isNew }) {
         transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
       />
       <div
-        className="absolute -right-1 -top-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md"
+        className="absolute -right-1 -top-1 z-50 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md"
         style={{
           backgroundColor: "hsl(var(--warning))",
           color: "hsl(var(--warning-foreground))",
