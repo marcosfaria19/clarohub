@@ -7,13 +7,12 @@ import {
 import {
   generateCalendarDays,
   navigateBetweenPeople,
-  navigateToNextPeriod,
-  navigateToPreviousPeriod,
 } from "modules/insight/utils/calendarUtils";
-import CalendarHeader from "./CalendarHeader";
-import CalendarGrid from "./CalendarGrid";
+
 import VacationLegend from "./VacationLegend";
 import VacationSidebar from "./VacationSidebar";
+import CalendarHeader from "./CalendarHeader";
+import CalendarGrid from "./CalendarGrid";
 
 const VacationCalendar = React.memo(({ vacations = [] }) => {
   // State management
@@ -72,21 +71,23 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
     setViewMode(mode);
   }, []);
 
-  // Navigate to previous month/week
+  // Navigate to previous month
   const navigatePrevious = useCallback(() => {
-    const newDate = navigateToPreviousPeriod(selectedDate, viewMode);
+    const newDate = new Date(selectedDate);
+    newDate.setMonth(newDate.getMonth() - 1);
     setSelectedDate(newDate);
     setSelectedMonth(newDate.getMonth());
     setSelectedYear(newDate.getFullYear());
-  }, [selectedDate, viewMode]);
+  }, [selectedDate]);
 
-  // Navigate to next month/week
+  // Navigate to next month
   const navigateNext = useCallback(() => {
-    const newDate = navigateToNextPeriod(selectedDate, viewMode);
+    const newDate = new Date(selectedDate);
+    newDate.setMonth(newDate.getMonth() + 1);
     setSelectedDate(newDate);
     setSelectedMonth(newDate.getMonth());
     setSelectedYear(newDate.getFullYear());
-  }, [selectedDate, viewMode]);
+  }, [selectedDate]);
 
   // Handle day click
   const handleDayClick = useCallback(
@@ -116,7 +117,7 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
       <div className="lg:col-span-3">
-        <Card>
+        <Card className="overflow-hidden rounded-xl shadow-lg">
           <CalendarHeader
             selectedMonth={selectedMonth}
             selectedYear={selectedYear}
@@ -133,18 +134,21 @@ const VacationCalendar = React.memo(({ vacations = [] }) => {
             viewMode={viewMode}
             calendarDays={calendarDays}
             selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
             clickedDate={clickedDate}
             userColorMap={userColorMap}
             vacations={vacations}
             onDayClick={handleDayClick}
           />
 
-          <VacationLegend
-            vacations={vacations}
-            selectedYear={selectedYear}
-            selectedMonth={selectedMonth}
-            userColorMap={userColorMap}
-          />
+          {viewMode !== "team" && (
+            <VacationLegend
+              vacations={vacations}
+              selectedYear={selectedYear}
+              selectedMonth={selectedMonth}
+              userColorMap={userColorMap}
+            />
+          )}
         </Card>
       </div>
 

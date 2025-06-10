@@ -31,6 +31,7 @@ const CalendarDay = ({
   );
 
   const isCurrentMonth = day.getMonth() === selectedMonth;
+  const isToday = new Date().toDateString() === day.toDateString();
 
   const dayContent = (
     <motion.div
@@ -40,12 +41,19 @@ const CalendarDay = ({
         clickedDate,
         dateVacations.length,
       )}
-      whileHover={{ scale: 1.01 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       onClick={() => onDayClick(day)}
     >
       <div className="flex h-full flex-col p-2">
         <div className="flex items-center justify-between">
-          <span className={getDayNumberClassNames(isCurrentMonth)}>
+          <span
+            className={cn(
+              getDayNumberClassNames(isCurrentMonth),
+              "flex h-6 w-6 items-center justify-center rounded-full",
+              isToday && "bg-primary text-primary-foreground",
+            )}
+          >
             {day.getDate()}
           </span>
         </div>
@@ -58,7 +66,7 @@ const CalendarDay = ({
                 <div
                   key={vacation.id || vacation._id || index}
                   className={cn(
-                    "h-2 w-2 rounded-full",
+                    "h-2 w-2 rounded-full shadow-sm",
                     getUserColor(userColorMap, employee),
                   )}
                   title={employee}
@@ -66,7 +74,7 @@ const CalendarDay = ({
               );
             })}
             {dateVacations.length > 3 && (
-              <div className="flex h-2 w-2 items-center justify-center rounded-full bg-muted text-[6px] font-bold text-muted-foreground">
+              <div className="flex h-2 w-2 items-center justify-center rounded-full bg-muted text-[6px] font-bold text-muted-foreground shadow-sm">
                 +{dateVacations.length - 3}
               </div>
             )}
@@ -90,7 +98,12 @@ const CalendarDay = ({
         <TooltipTrigger asChild>
           <div className="h-full">{dayContent}</div>
         </TooltipTrigger>
-        <TooltipContent side="top">{tooltipContent}</TooltipContent>
+        <TooltipContent
+          side="top"
+          className="border border-border/20 bg-popover shadow-lg"
+        >
+          {tooltipContent}
+        </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

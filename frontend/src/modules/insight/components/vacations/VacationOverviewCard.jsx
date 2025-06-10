@@ -42,15 +42,9 @@ const VacationOverviewCard = React.memo(
             <div className="flex flex-1 items-start gap-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={vacation.avatar || "/placeholder.svg?height=40&width=40"}
+                  src={vacation.avatar || "/placeholder-avatar.png"}
                   alt={vacation.nome}
                 />
-                <AvatarFallback>
-                  {vacation.nome
-                    ?.split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
               </Avatar>
 
               <div className="flex-1 space-y-1">

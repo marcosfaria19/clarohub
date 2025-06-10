@@ -41,11 +41,11 @@ const VacationSidebar = ({
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader className="pb-3">
+      <Card className="overflow-hidden rounded-xl shadow-lg">
+        <CardHeader className="pb-3 backdrop-blur-sm">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Users className="h-4 w-4" />
-            Este Mês
+            <Users className="h-4 w-4 text-primary-flow" />
+            <span>Este Mês</span>
             <Badge variant="basic" className="ml-2">
               {thisMonthVacations.length}
             </Badge>
@@ -65,33 +65,27 @@ const VacationSidebar = ({
                 return (
                   <div
                     key={vacation.id || vacation._id}
-                    className="flex items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted/20"
+                    className="flex items-center gap-3 rounded-lg p-2 shadow-sm transition-all hover:bg-muted/30"
                   >
                     <div className="relative">
-                      <Avatar className="h-8 w-8">
+                      <Avatar className="h-9 w-9">
                         <AvatarImage
-                          src={
-                            vacation.avatar ||
-                            "/placeholder.svg?height=32&width=32"
-                          }
+                          src={vacation.avatar || "/placeholder-avatar.png"}
                           alt={employee}
+                          className="object-cover"
                         />
-                        <AvatarFallback className="text-xs">
-                          {employee
-                            ?.split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
                       </Avatar>
                       <div
                         className={cn(
-                          "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-background",
+                          "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-background shadow-sm",
                           getUserColor(userColorMap, vacation.nome),
                         )}
                       />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{employee}</p>
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {employee}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {formatDate(vacation.startDate, false)} -{" "}
                         {formatDate(vacation.endDate, false)}
@@ -104,8 +98,10 @@ const VacationSidebar = ({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-6 text-center">
-              <Calendar className="mb-2 h-8 w-8 text-muted-foreground/50" />
-              <p className="text-sm text-muted-foreground">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/80">
+                <Calendar className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <p className="text-sm font-medium text-muted-foreground">
                 Nenhuma férias este mês
               </p>
             </div>

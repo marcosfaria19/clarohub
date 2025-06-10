@@ -33,22 +33,22 @@ const CalendarHeader = ({
   return (
     <CardHeader className="border-b border-border">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <CardTitle className="flex items-center gap-6">
+        <CardTitle className="flex items-center gap-3">
           <Button
             variant="outline"
             size="sm"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 rounded-full p-0 shadow-sm transition-shadow hover:shadow-md"
             onClick={onNavigatePrevious}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
 
           <div className="text-center">
-            <h3 className="text-2xl font-bold">
+            <h3 className="text-xl font-bold text-foreground sm:text-2xl">
               {months[selectedMonth].label} {selectedYear}
             </h3>
             {viewMode === "week" && (
-              <p className="text-sm text-muted-foreground">
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                 {getWeekDateRange(calendarDays)}
               </p>
             )}
@@ -57,63 +57,70 @@ const CalendarHeader = ({
           <Button
             variant="outline"
             size="sm"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 rounded-full p-0 shadow-sm transition-shadow hover:shadow-md"
             onClick={onNavigateNext}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </CardTitle>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
           {/* View Mode Toggle */}
-          <div className="flex items-center">
+          <div className="flex items-center overflow-hidden">
             <Button
               variant={viewMode === "month" ? "default" : "outline"}
               size="sm"
-              className="h-9 rounded-r-none"
+              className="h-9 rounded-r-none px-3 outline-none"
               onClick={() => onViewModeChange("month")}
             >
-              <Grid3X3 className="h-4 w-4" />
+              <Grid3X3 className="mr-1.5 h-4 w-4" />
+              <span className="text-xs">Mês</span>
             </Button>
             <Button
-              variant={viewMode === "week" ? "default" : "outline"}
+              variant={viewMode === "team" ? "default" : "outline"}
               size="sm"
-              className="h-9 rounded-l-none"
-              onClick={() => onViewModeChange("week")}
+              className="h-9 rounded-l-none px-3 outline-none"
+              onClick={() => onViewModeChange("team")}
             >
-              <Calendar className="h-4 w-4" />
+              <Calendar className="mr-1.5 h-4 w-4" />
+              <span className="text-xs">Time</span>
             </Button>
           </div>
 
           {/* Month/Year Selectors */}
-          <Select
-            value={selectedMonth.toString()}
-            onValueChange={onMonthChange}
-          >
-            <SelectTrigger className="h-9 w-[130px]">
-              <SelectValue placeholder="Mês" />
-            </SelectTrigger>
-            <SelectContent>
-              {months.map((month) => (
-                <SelectItem key={month.value} value={month.value}>
-                  {month.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex gap-2">
+            <Select
+              value={selectedMonth.toString()}
+              onValueChange={onMonthChange}
+            >
+              <SelectTrigger className="h-9 w-[110px]">
+                <SelectValue placeholder="Mês" />
+              </SelectTrigger>
+              <SelectContent>
+                {months.map((month) => (
+                  <SelectItem key={month.value} value={month.value}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Select value={selectedYear.toString()} onValueChange={onYearChange}>
-            <SelectTrigger className="h-9 w-[100px]">
-              <SelectValue placeholder="Ano" />
-            </SelectTrigger>
-            <SelectContent>
-              {years.map((year) => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Select
+              value={selectedYear.toString()}
+              onValueChange={onYearChange}
+            >
+              <SelectTrigger className="h-9 w-[90px]">
+                <SelectValue placeholder="Ano" />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
     </CardHeader>

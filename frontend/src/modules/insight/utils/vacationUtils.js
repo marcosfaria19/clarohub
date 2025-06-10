@@ -1,22 +1,12 @@
-/**
- * Vacation Calendar Utility Functions
- *
- * This file contains utility functions for handling dates, vacation data processing,
- * and user data formatting for the Vacation Calendar component.
- */
-
 import { formatUserName } from "modules/shared/utils/formatUsername";
 import { formatDate } from "modules/shared/utils/formatDate";
 
-/**
- * Color palette for user representation in the calendar
- */
+/* Color palette for user representation in the calendar */
 export const USER_COLORS = [
   "bg-primary",
   "bg-success",
   "bg-warning",
   "bg-destructive",
-  "bg-secondary",
   "bg-accent",
   "bg-blue-500",
   "bg-purple-500",
@@ -30,10 +20,7 @@ export const USER_COLORS = [
   "bg-cyan-500",
 ];
 
-/**
- * Generate month names with values and labels
- * @returns {Array} Array of month objects with value and label properties
- */
+/* Generate month names with values and labels */
 export const generateMonths = () => [
   { value: "0", label: "Janeiro" },
   { value: "1", label: "Fevereiro" },
@@ -49,11 +36,7 @@ export const generateMonths = () => [
   { value: "11", label: "Dezembro" },
 ];
 
-/**
- * Generate a range of years centered around the current year
- * @param {number} range - Number of years to include before and after current year
- * @returns {Array} Array of year numbers
- */
+/* Generate a range of years centered around the current year */
 export const generateYears = (range = 3) => {
   const currentYear = new Date().getFullYear();
   return Array.from(
@@ -62,11 +45,7 @@ export const generateYears = (range = 3) => {
   );
 };
 
-/**
- * Create a map of users to colors for consistent color assignment
- * @param {Array} vacations - Array of vacation objects
- * @returns {Object} Map of user names to color classes
- */
+/* Create a map of users to colors for consistent color assignment */
 export const createUserColorMap = (vacations) => {
   const uniqueUsers = new Set();
   vacations.forEach((vacation) => {
@@ -83,32 +62,17 @@ export const createUserColorMap = (vacations) => {
   return colorMap;
 };
 
-/**
- * Get color for a specific user from the color map
- * @param {Object} userColorMap - Map of users to colors
- * @param {string} user - User name
- * @returns {string} CSS class for the user's color
- */
+/* Get color for a specific user from the color map */
 export const getUserColor = (userColorMap, user) => {
   return userColorMap[user] || "bg-muted";
 };
 
-/**
- * Format date range for display
- * @param {string|Date} start - Start date
- * @param {string|Date} end - End date
- * @returns {string} Formatted date range string
- */
+/* Format date range for display */
 export const formatDateRange = (start, end) => {
   return `${formatDate(start, false)} - ${formatDate(end, false)}`;
 };
 
-/**
- * Get vacations for a specific date
- * @param {Array} vacations - Array of vacation objects
- * @param {Date} date - Date to check for vacations
- * @returns {Array} Vacations that include the specified date
- */
+/* Get vacations for a specific date */
 export const getVacationsForDate = (vacations, date) => {
   if (!vacations || vacations.length === 0) return [];
 
@@ -125,13 +89,7 @@ export const getVacationsForDate = (vacations, date) => {
   });
 };
 
-/**
- * Get vacations for a specific month
- * @param {Array} vacations - Array of vacation objects
- * @param {number} year - Year to filter by
- * @param {number} month - Month to filter by (0-11)
- * @returns {Array} Vacations that overlap with the specified month
- */
+/* Get vacations for a specific month */
 export const getVacationsForMonth = (vacations, year, month) => {
   return vacations.filter((vacation) => {
     const start = new Date(vacation.startDate);
@@ -145,12 +103,8 @@ export const getVacationsForMonth = (vacations, year, month) => {
   });
 };
 
-/**
- * Get unique users from vacation data
- * @param {Array} vacations - Array of vacation objects
- * @param {number} limit - Maximum number of users to return
- * @returns {Array} Array of unique user names
- */
+/* Get unique users from vacation data */
+
 export const getUniqueUsers = (vacations, limit = Infinity) => {
   const users = new Set();
   vacations.forEach((vacation) => {
@@ -159,14 +113,25 @@ export const getUniqueUsers = (vacations, limit = Infinity) => {
   return Array.from(users).slice(0, limit);
 };
 
-/**
- * Get unique users with vacations in the specified month
- * @param {Array} vacations - Array of vacation objects
- * @param {number} year - Year to filter by
- * @param {number} month - Month to filter by (0-11)
- * @param {number} limit - Maximum number of users to return
- * @returns {Array} Array of unique user names with vacations in the month
- */
+/* Get unique user objects from vacation data */
+
+export const getUniqueUserObjects = (vacations, limit = Infinity) => {
+  const seen = new Set();
+  const uniqueUsers = [];
+
+  for (const vacation of vacations) {
+    if (!seen.has(vacation.nome)) {
+      seen.add(vacation.nome);
+      uniqueUsers.push(vacation);
+    }
+    if (uniqueUsers.length >= limit) break;
+  }
+
+  return uniqueUsers;
+};
+
+/* Get unique users with vacations in the specified month */
+
 export const getUsersWithVacationsInMonth = (
   vacations,
   year,
@@ -177,13 +142,7 @@ export const getUsersWithVacationsInMonth = (
   return getUniqueUsers(monthVacations, limit);
 };
 
-/**
- * Generate tooltip content for a calendar day
- * @param {Date} day - Calendar day
- * @param {Array} dateVacations - Vacations for this day
- * @param {Function} getUserColorFn - Function to get user color
- * @returns {JSX.Element} Tooltip content
- */
+/* Generate tooltip content for a calendar day */
 export const generateTooltipContent = (day, dateVacations, getUserColorFn) => {
   if (dateVacations.length === 0) {
     return (
