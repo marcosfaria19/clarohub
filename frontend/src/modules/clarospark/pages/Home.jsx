@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Plus } from "lucide-react";
 import { Dialog, DialogTrigger } from "modules/shared/components/ui/dialog";
 import { useSubjectsAndCards } from "modules/clarospark/hooks/useSubjectsAndCards";
@@ -12,14 +12,19 @@ import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
 import Container from "modules/shared/components/ui/container";
 import { Button } from "modules/shared/components/ui/button";
 import Tour from "../components/Tour";
+import { AuthContext } from "modules/shared/contexts/AuthContext";
 
-export default function Clarospark({ userName, userId }) {
+export default function Clarospark() {
   const { subjects, sortedCards, isLoading, error } = useSubjectsAndCards();
   const { newCard, setNewCard, handleAddCard } = useNewCard(subjects);
   const [showAddModal, setShowAddModal] = useState(false);
   const [isManagerView, setIsManagerView] = useState(false);
   const [currentFilter, setCurrentFilter] = useState("emAnalise");
   const [runTour, setRunTour] = useState(true);
+
+  const { user } = useContext(AuthContext);
+  const userId = user.userId;
+  const userName = user.userName;
 
   if (isLoading)
     return (
