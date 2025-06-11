@@ -2,11 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "modules/shared/components/ui/card";
 import { Badge } from "modules/shared/components/ui/badge";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "modules/shared/components/ui/avatar";
+import { Avatar, AvatarImage } from "modules/shared/components/ui/avatar";
 import { CalendarIcon, ArrowRightIcon, Clock, PencilIcon } from "lucide-react";
 import VacationTypeBadge from "./VacationTypeBadge";
 import { cn } from "modules/shared/lib/utils";

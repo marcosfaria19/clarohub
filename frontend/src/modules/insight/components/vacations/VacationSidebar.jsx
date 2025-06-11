@@ -5,11 +5,7 @@ import {
   CardContent,
   CardTitle,
 } from "modules/shared/components/ui/card";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "modules/shared/components/ui/avatar";
+import { Avatar, AvatarImage } from "modules/shared/components/ui/avatar";
 import { Badge } from "modules/shared/components/ui/badge";
 import { Users, Calendar } from "lucide-react";
 import { cn } from "modules/shared/lib/utils";
