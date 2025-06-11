@@ -330,7 +330,7 @@ const DashboardModule = () => {
           {/* Botão de atualização */}
           <Button
             variant="secondary"
-            className="flex items-center"
+            className="flex w-36 items-center"
             onClick={handleRefresh}
             disabled={isRefetching}
           >
@@ -386,7 +386,7 @@ const DashboardModule = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex h-64 items-center justify-center rounded-lg border border-dashed border-border p-6"
+          className="flex h-[80vh] items-center justify-center rounded-lg border border-dashed border-border p-6"
         >
           <div className="text-center">
             <h3 className="mb-2 text-lg font-medium text-foreground">
