@@ -118,8 +118,9 @@ const VacationTeamView = ({
           <div className="max-h-[500px] flex-1 overflow-auto">
             <div className="flex min-w-max">
               {/* Coluna de Colaboradores */}
-              <div className="shadow-right sticky left-0 z-20 flex flex-col bg-background">
-                <div className="flex h-[56.5px] w-[180px] flex-shrink-0 items-center justify-center border-b border-input bg-accent/30 text-sm font-medium text-muted-foreground">
+              <div className="shadow-right sticky left-0 z-30 flex flex-col bg-background">
+                {/* Cabeçalho fixo */}
+                <div className="sticky top-0 z-40 flex h-[56.5px] w-[180px] flex-shrink-0 items-center justify-center border-b border-input bg-accent/30 text-sm font-medium text-muted-foreground">
                   Colaboradores
                 </div>
 
@@ -155,7 +156,7 @@ const VacationTeamView = ({
               {/* Linha do tempo */}
               <div className="flex flex-1 flex-col">
                 {/* Cabeçalho de dias */}
-                <div className="flex border-b border-input bg-accent/30">
+                <div className="sticky top-0 z-30 flex border-b border-input bg-accent/30">
                   {monthDays.map((day) => {
                     const isToday =
                       new Date().toDateString() === day.toDateString();

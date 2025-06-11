@@ -83,7 +83,7 @@ const CalendarHeader = ({
               onClick={() => onViewModeChange("team")}
             >
               <Calendar className="mr-1.5 h-4 w-4" />
-              <span className="text-xs">Time</span>
+              <span className="text-xs">Equipe</span>
             </Button>
           </div>
 
