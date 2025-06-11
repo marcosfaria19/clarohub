@@ -62,12 +62,12 @@ const VacationRegisterForm = React.memo(
         u.GESTOR !== "RODRIGO JOSE RODRIGUES GIL",
     );
 
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(isEditMode || false);
     const [localLoading, setLocalLoading] = useState(false);
     const [hasOverlap, setHasOverlap] = useState(false);
     const [vacationDays, setVacationDays] = useState(0);
 
-    const loading = externalLoading || localLoading || usersLoading;
+    const loading = Boolean(externalLoading) || localLoading || usersLoading;
 
     const form = useForm({
       defaultValues: {
@@ -99,7 +99,7 @@ const VacationRegisterForm = React.memo(
         return vacations.some(
           (vacation) =>
             vacation.employeeId === employeeId &&
-            vacation._id !== initialData?._id && // Exclude current vacation in edit mode
+            vacation._id !== initialData?._id &&
             startDate <= new Date(vacation.endDate) &&
             endDate >= new Date(vacation.startDate),
         );
@@ -133,6 +133,26 @@ const VacationRegisterForm = React.memo(
       checkVacationOverlap,
       calculateVacationDays,
     ]);
+
+    useEffect(() => {
+      if (isEditMode && initialData) {
+        form.reset({
+          employeeId: initialData.userId,
+          dateRange: {
+            from: new Date(initialData.startDate),
+            to: new Date(initialData.endDate),
+          },
+          reason: initialData.reason || "",
+          type: initialData.type || "vacation",
+        });
+      }
+    }, [isEditMode, initialData, form]);
+
+    useEffect(() => {
+      if (isEditMode) {
+        setOpen(true);
+      }
+    }, [isEditMode]);
 
     const validateForm = useCallback((values) => {
       if (!values.employeeId) {
@@ -216,7 +236,6 @@ const VacationRegisterForm = React.memo(
               login: employee.LOGIN,
               permissoes: employee.PERMISSOES,
               project: employee.project,
-              status: "PENDING",
             });
           }
 
@@ -253,10 +272,12 @@ const VacationRegisterForm = React.memo(
           form.reset();
           setHasOverlap(false);
           setVacationDays(0);
-          onCancel?.();
+          if (isEditMode) {
+            onCancel?.();
+          }
         }
       },
-      [form, onCancel],
+      [form, onCancel, isEditMode],
     );
 
     return (
@@ -365,9 +386,7 @@ const VacationRegisterForm = React.memo(
                           >
                             {field.value?.from ? (
                               field.value.to ? (
-                                `${formatDate(field.value.from)} - ${formatDate(
-                                  field.value.to,
-                                )}`
+                                `${formatDate(field.value.from)} - ${formatDate(field.value.to)}`
                               ) : (
                                 formatDate(field.value.from)
                               )

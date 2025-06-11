@@ -58,28 +58,33 @@ export function useVacations() {
     [fetchVacations],
   );
 
-  const updateVacation = useCallback(async (vacationId, vacationData) => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.put(
-        `/vacations/${vacationId}`,
-        vacationData,
-      );
-      setVacations((prev) =>
-        prev.map((vacation) =>
-          vacation._id === vacationId ? response.data : vacation,
-        ),
-      );
-      setError(null);
-      return response.data;
-    } catch (err) {
-      console.error(`Erro ao atualizar férias ${vacationId}:`, err);
-      setError("Erro ao atualizar férias");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const updateVacation = useCallback(
+    async (vacationId, vacationData) => {
+      setLoading(true);
+      try {
+        const response = await axiosInstance.put(
+          `/vacations/${vacationId}`,
+          vacationData,
+        );
+        setVacations((prev) =>
+          prev.map((vacation) =>
+            vacation._id === vacationId ? response.data : vacation,
+          ),
+        );
+        setError(null);
+        // Atualiza a lista completa após inserir
+        await fetchVacations();
+        return response.data;
+      } catch (err) {
+        console.error(`Erro ao atualizar férias ${vacationId}:`, err);
+        setError("Erro ao atualizar férias");
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchVacations],
+  );
 
   const deleteVacation = useCallback(async (vacationId) => {
     setLoading(true);

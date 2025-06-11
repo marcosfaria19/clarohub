@@ -99,7 +99,7 @@ export function TabelaPadrao({
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" disablePortal>
+                <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Ações</DropdownMenuLabel>
                   {onCopy && (
                     <DropdownMenuItem onClick={copyDataToClipboard}>

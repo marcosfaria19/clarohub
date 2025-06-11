@@ -66,7 +66,6 @@ module.exports = (usersCollection) => {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       reason: reason || "",
-      status: "approved",
       createdAt: new Date(),
       updatedAt: new Date(),
       type: type,
@@ -92,13 +91,14 @@ module.exports = (usersCollection) => {
   // Atualizar férias
   router.put("/:vacationId", authenticateToken, async (req, res) => {
     const { vacationId } = req.params;
-    const { startDate, endDate, reason } = req.body;
+    const { startDate, endDate, reason, type } = req.body;
     try {
       const updateFields = {};
       if (startDate)
         updateFields["vacations.$.startDate"] = new Date(startDate);
       if (endDate) updateFields["vacations.$.endDate"] = new Date(endDate);
       if (reason !== undefined) updateFields["vacations.$.reason"] = reason;
+      if (type) updateFields["vacations.$.type"] = type;
       updateFields["vacations.$.updatedAt"] = new Date();
 
       const result = await usersCollection.updateOne(
