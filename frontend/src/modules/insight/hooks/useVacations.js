@@ -6,8 +6,7 @@ export function useVacations() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Buscar todas as férias
-  const fetchVacations = useCallback(async (userId = null) => {
+  const fetchVacations = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get("/vacations");
@@ -23,7 +22,6 @@ export function useVacations() {
     }
   }, []);
 
-  // Buscar férias de um usuário específico
   const fetchUserVacations = useCallback(async (userId) => {
     if (!userId) return [];
     setLoading(true);
@@ -40,7 +38,6 @@ export function useVacations() {
     }
   }, []);
 
-  // Agendar novas férias
   const scheduleVacation = useCallback(
     async (vacationData) => {
       setLoading(true);
@@ -61,7 +58,6 @@ export function useVacations() {
     [fetchVacations],
   );
 
-  // Atualizar férias existentes
   const updateVacation = useCallback(async (vacationId, vacationData) => {
     setLoading(true);
     try {
@@ -85,7 +81,6 @@ export function useVacations() {
     }
   }, []);
 
-  // Excluir férias
   const deleteVacation = useCallback(async (vacationId) => {
     setLoading(true);
     try {
@@ -104,54 +99,6 @@ export function useVacations() {
     }
   }, []);
 
-  // Aprovar férias
-  const approveVacation = useCallback(async (vacationId) => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.patch(
-        `/vacations/${vacationId}/approve`,
-      );
-      setVacations((prev) =>
-        prev.map((vacation) =>
-          vacation._id === vacationId ? response.data : vacation,
-        ),
-      );
-      setError(null);
-      return response.data;
-    } catch (err) {
-      console.error(`Erro ao aprovar férias ${vacationId}:`, err);
-      setError("Erro ao aprovar férias");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Rejeitar férias
-  const rejectVacation = useCallback(async (vacationId, reason) => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.patch(
-        `/vacations/${vacationId}/reject`,
-        { reason },
-      );
-      setVacations((prev) =>
-        prev.map((vacation) =>
-          vacation._id === vacationId ? response.data : vacation,
-        ),
-      );
-      setError(null);
-      return response.data;
-    } catch (err) {
-      console.error(`Erro ao rejeitar férias ${vacationId}:`, err);
-      setError("Erro ao rejeitar férias");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Verificar sobreposição de férias para um usuário
   const checkVacationOverlap = useCallback(
     async (userId, startDate, endDate, excludeVacationId = null) => {
       try {
@@ -170,21 +117,6 @@ export function useVacations() {
     [],
   );
 
-  // Obter estatísticas de férias (dias disponíveis, usados, etc.)
-  const getVacationStats = useCallback(async (userId) => {
-    try {
-      const response = await axiosInstance.get(`/vacations/stats/${userId}`);
-      return response.data;
-    } catch (err) {
-      console.error(
-        `Erro ao obter estatísticas de férias para usuário ${userId}:`,
-        err,
-      );
-      throw err;
-    }
-  }, []);
-
-  // Carregar férias ao montar o componente
   useEffect(() => {
     fetchVacations();
   }, [fetchVacations]);
@@ -198,9 +130,6 @@ export function useVacations() {
     scheduleVacation,
     updateVacation,
     deleteVacation,
-    approveVacation,
-    rejectVacation,
     checkVacationOverlap,
-    getVacationStats,
   };
 }

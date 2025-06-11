@@ -1,13 +1,8 @@
 import React, { useState, useMemo } from "react";
-
 import { formatDateRange } from "modules/insight/utils/vacationUtils";
-import {
-  capitalizeFirstLetters,
-  formatUserName,
-} from "modules/shared/utils/formatUsername";
+import { capitalizeFirstLetters } from "modules/shared/utils/formatUsername";
 import { useUsers } from "modules/claroflow/hooks/useUsers";
 import { Badge } from "modules/shared/components/ui/badge";
-
 import VacationTypeBadge from "./VacationTypeBadge";
 import {
   Card,
@@ -27,7 +22,11 @@ import {
 import { AlertCircle } from "lucide-react";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 
-const VacationTable = ({ vacations = [], onDeleteVacation }) => {
+const VacationTable = ({
+  vacations = [],
+  onDeleteVacation,
+  onEditVacation,
+}) => {
   const [companyFilter, setCompanyFilter] = useState("all");
   const [showNoVacations, setShowNoVacations] = useState(false);
   const { users, loading: usersLoading } = useUsers();
@@ -78,14 +77,9 @@ const VacationTable = ({ vacations = [], onDeleteVacation }) => {
       {
         accessorKey: "nome",
         header: "Colaborador",
+        sorted: true,
         cell: ({ row }) => capitalizeFirstLetters(row.original.nome),
       },
-      {
-        accessorKey: "gestor",
-        header: "Gestor",
-        cell: ({ row }) => formatUserName(row.original.gestor),
-      },
-
       {
         accessorKey: "login",
         header: "Empresa",
@@ -105,7 +99,6 @@ const VacationTable = ({ vacations = [], onDeleteVacation }) => {
           accessorKey: "periodo",
           header: "Período",
           cell: ({ row }) => {
-            if (row.original.noVacation) return "-";
             return formatDateRange(
               row.original.startDate,
               row.original.endDate,
@@ -116,6 +109,18 @@ const VacationTable = ({ vacations = [], onDeleteVacation }) => {
           accessorKey: "type",
           header: "Tipo",
           cell: ({ row }) => <VacationTypeBadge type={row.original.type} />,
+        },
+        {
+          accessorKey: "reason",
+          header: "OBS",
+          cell: ({ row }) => (
+            <div
+              title={row.original.reason}
+              className="max-w-[300px] overflow-hidden truncate whitespace-nowrap"
+            >
+              {row.original.reason}
+            </div>
+          ),
         },
       );
     }
@@ -168,7 +173,7 @@ const VacationTable = ({ vacations = [], onDeleteVacation }) => {
             columns={columns}
             data={displayData}
             actions={!showNoVacations}
-            onEdit={false}
+            onEdit={onEditVacation}
             onDelete={onDeleteVacation}
             filterInput={true}
             pagination={true}

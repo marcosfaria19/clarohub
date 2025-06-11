@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
 import {
   Dialog,
   DialogContent,
@@ -49,8 +48,12 @@ const VacationRegisterForm = React.memo(
     className = "",
     onSuccess,
     scheduleVacation,
+    updateVacation,
     loading: externalLoading,
     vacations,
+    initialData,
+    isEditMode = false,
+    onCancel,
   }) => {
     const { users, loading: usersLoading } = useUsers();
     const validUsers = users.filter(
@@ -68,10 +71,15 @@ const VacationRegisterForm = React.memo(
 
     const form = useForm({
       defaultValues: {
-        employeeId: undefined,
-        dateRange: undefined,
-        reason: "",
-        type: "vacation",
+        employeeId: initialData?.employeeId || undefined,
+        dateRange: initialData
+          ? {
+              from: new Date(initialData.startDate),
+              to: new Date(initialData.endDate),
+            }
+          : undefined,
+        reason: initialData?.reason || "",
+        type: initialData?.type || "vacation",
       },
     });
 
@@ -81,8 +89,7 @@ const VacationRegisterForm = React.memo(
     const watchEndDate = watchDateRange?.to;
 
     const formatDate = useCallback((date) => {
-      if (!date) return "";
-      return date.toLocaleDateString("pt-BR");
+      return date?.toLocaleDateString("pt-BR") || "";
     }, []);
 
     const checkVacationOverlap = useCallback(
@@ -92,19 +99,18 @@ const VacationRegisterForm = React.memo(
         return vacations.some(
           (vacation) =>
             vacation.employeeId === employeeId &&
+            vacation._id !== initialData?._id && // Exclude current vacation in edit mode
             startDate <= new Date(vacation.endDate) &&
             endDate >= new Date(vacation.startDate),
         );
       },
-      [vacations],
+      [vacations, initialData],
     );
 
     const calculateVacationDays = useCallback((startDate, endDate) => {
       if (!startDate || !endDate) return 0;
-
       const oneDay = 24 * 60 * 60 * 1000;
-      const diffDays = Math.round(Math.abs((endDate - startDate) / oneDay)) + 1;
-      return diffDays;
+      return Math.round(Math.abs((endDate - startDate) / oneDay)) + 1;
     }, []);
 
     useEffect(() => {
@@ -115,9 +121,7 @@ const VacationRegisterForm = React.memo(
           watchEndDate,
         );
         setHasOverlap(hasConflict);
-
-        const days = calculateVacationDays(watchStartDate, watchEndDate);
-        setVacationDays(days);
+        setVacationDays(calculateVacationDays(watchStartDate, watchEndDate));
       } else {
         setHasOverlap(false);
         setVacationDays(0);
@@ -130,116 +134,149 @@ const VacationRegisterForm = React.memo(
       calculateVacationDays,
     ]);
 
+    const validateForm = useCallback((values) => {
+      if (!values.employeeId) {
+        return {
+          field: "employeeId",
+          message: "Por favor selecione um colaborador",
+        };
+      }
+
+      const startDate = values.dateRange?.from;
+      const endDate = values.dateRange?.to;
+
+      if (!startDate) {
+        return {
+          field: "dateRange",
+          message: "Por favor selecione um intervalo de datas",
+        };
+      }
+
+      if (!endDate) {
+        return {
+          field: "dateRange",
+          message: "Por favor selecione a data final do intervalo",
+        };
+      }
+
+      if (endDate < startDate) {
+        return {
+          field: "dateRange",
+          message: "A data final deve ser igual ou posterior à data inicial",
+        };
+      }
+
+      return null;
+    }, []);
+
     const onSubmit = useCallback(
       async (values) => {
+        setLocalLoading(true);
+
+        const validationError = validateForm(values);
+        if (validationError) {
+          form.setError(validationError.field, {
+            type: "manual",
+            message: validationError.message,
+          });
+          setLocalLoading(false);
+          return;
+        }
+
+        if (hasOverlap) {
+          form.setError("dateRange", {
+            type: "manual",
+            message: "Este período se sobrepõe a férias já agendadas",
+          });
+          setLocalLoading(false);
+          return;
+        }
+
         try {
-          setLocalLoading(true);
-
-          if (!values.employeeId) {
-            form.setError("employeeId", {
-              type: "manual",
-              message: "Por favor selecione um colaborador",
-            });
-            return;
-          }
-
-          const startDate = values.dateRange?.from;
-          const endDate = values.dateRange?.to;
-
-          if (!startDate) {
-            form.setError("dateRange", {
-              type: "manual",
-              message: "Por favor selecione um intervalo de datas",
-            });
-            return;
-          }
-
-          if (!endDate) {
-            form.setError("dateRange", {
-              type: "manual",
-              message: "Por favor selecione a data final do intervalo",
-            });
-            return;
-          }
-
-          if (endDate < startDate) {
-            form.setError("dateRange", {
-              type: "manual",
-              message:
-                "A data final deve ser igual ou posterior à data inicial",
-            });
-            return;
-          }
-
-          if (hasOverlap) {
-            form.setError("dateRange", {
-              type: "manual",
-              message: "Este período se sobrepõe a férias já agendadas",
-            });
-            return;
-          }
-
           const employee = validUsers.find((e) => e._id === values.employeeId);
           if (!employee) {
             throw new Error("Colaborador não encontrado");
           }
 
-          await scheduleVacation({
-            employeeId: values.employeeId,
-            employee: employee.NOME,
-            gestor: employee.GESTOR,
-            login: employee.LOGIN,
-            permissoes: employee.PERMISSOES,
-            project: employee.project,
-            startDate,
-            endDate,
-            status: "PENDING",
+          const payload = {
+            startDate: values.dateRange.from,
+            endDate: values.dateRange.to,
             reason: values.reason,
             type: values.type,
-          });
+          };
+
+          if (isEditMode && initialData) {
+            await updateVacation(initialData._id, payload);
+          } else {
+            await scheduleVacation({
+              ...payload,
+              employeeId: values.employeeId,
+              employee: employee.NOME,
+              gestor: employee.GESTOR,
+              login: employee.LOGIN,
+              permissoes: employee.PERMISSOES,
+              project: employee.project,
+              status: "PENDING",
+            });
+          }
 
           form.reset();
           setOpen(false);
-          if (onSuccess) onSuccess();
+          onSuccess?.();
         } catch (error) {
-          console.error("Erro ao enviar solicitação de férias:", error);
           form.setError("root", {
             type: "manual",
-            message: "Erro ao enviar solicitação. Tente novamente.",
+            message:
+              error.message || "Ocorreu um erro ao processar sua solicitação",
           });
         } finally {
           setLocalLoading(false);
         }
       },
-      [form, validUsers, hasOverlap, scheduleVacation, onSuccess],
+      [
+        form,
+        validUsers,
+        hasOverlap,
+        scheduleVacation,
+        updateVacation,
+        onSuccess,
+        isEditMode,
+        initialData,
+        validateForm,
+      ],
     );
 
     const handleOpenChange = useCallback(
-      (open) => {
-        setOpen(open);
-        if (!open) {
+      (isOpen) => {
+        setOpen(isOpen);
+        if (!isOpen) {
           form.reset();
           setHasOverlap(false);
           setVacationDays(0);
+          onCancel?.();
         }
       },
-      [form],
+      [form, onCancel],
     );
 
     return (
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogTrigger asChild>
-          {trigger || (
-            <Button className={className} size="sm">
-              <PlusIcon className="mr-2 h-4 w-4" />
-              Agendar Férias
-            </Button>
-          )}
-        </DialogTrigger>
+        {!isEditMode && (
+          <DialogTrigger asChild>
+            {trigger || (
+              <Button className={className} size="sm">
+                <PlusIcon className="mr-2 h-4 w-4" />
+                Agendar Férias
+              </Button>
+            )}
+          </DialogTrigger>
+        )}
 
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Agendar Novas Férias</DialogTitle>
+            <DialogTitle>
+              {isEditMode ? "Editar Férias" : "Agendar Novas Férias"}
+            </DialogTitle>
             <DialogDescription>
               Preencha os detalhes para agendar férias ou folga para um membro
               da equipe.
@@ -254,7 +291,11 @@ const VacationRegisterForm = React.memo(
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Colaborador</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={isEditMode}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione um colaborador" />
@@ -419,13 +460,17 @@ const VacationRegisterForm = React.memo(
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={() => setOpen(false)}
+                  onClick={() => handleOpenChange(false)}
                   disabled={loading}
                 >
                   Cancelar
                 </Button>
                 <Button type="submit" disabled={loading || hasOverlap}>
-                  {loading ? "Enviando..." : "Agendar"}
+                  {loading
+                    ? "Enviando..."
+                    : isEditMode
+                      ? "Atualizar"
+                      : "Agendar"}
                 </Button>
               </DialogFooter>
             </form>

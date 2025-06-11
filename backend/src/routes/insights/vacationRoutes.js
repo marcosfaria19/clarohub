@@ -150,52 +150,6 @@ module.exports = (usersCollection) => {
     }
   });
 
-  // Aprovar férias
-  router.patch("/:vacationId/approve", authenticateToken, async (req, res) => {
-    const { vacationId } = req.params;
-    try {
-      const result = await usersCollection.updateOne(
-        { "vacations._id": new ObjectId(vacationId) },
-        {
-          $set: {
-            "vacations.$.status": "approved",
-            "vacations.$.updatedAt": new Date(),
-          },
-        }
-      );
-      if (result.matchedCount === 0)
-        return res.status(404).json({ error: "Férias não encontradas" });
-      res.status(200).json({ message: "Férias aprovadas" });
-    } catch (error) {
-      console.error("Erro ao aprovar férias:", error);
-      res.status(500).json({ error: "Erro ao aprovar férias" });
-    }
-  });
-
-  // Rejeitar férias
-  router.patch("/:vacationId/reject", authenticateToken, async (req, res) => {
-    const { vacationId } = req.params;
-    const { reason } = req.body;
-    try {
-      const result = await usersCollection.updateOne(
-        { "vacations._id": new ObjectId(vacationId) },
-        {
-          $set: {
-            "vacations.$.status": "rejected",
-            "vacations.$.rejectionReason": reason,
-            "vacations.$.updatedAt": new Date(),
-          },
-        }
-      );
-      if (result.matchedCount === 0)
-        return res.status(404).json({ error: "Férias não encontradas" });
-      res.status(200).json({ message: "Férias rejeitadas" });
-    } catch (error) {
-      console.error("Erro ao rejeitar férias:", error);
-      res.status(500).json({ error: "Erro ao rejeitar férias" });
-    }
-  });
-
   // Verificar sobreposição de férias
   router.post("/check-overlap", authenticateToken, async (req, res) => {
     const { userId, startDate, endDate, excludeVacationId } = req.body;
@@ -215,29 +169,6 @@ module.exports = (usersCollection) => {
     } catch (error) {
       console.error("Erro ao verificar sobreposição:", error);
       res.status(500).json({ error: "Erro ao verificar sobreposição" });
-    }
-  });
-
-  // Estatísticas de férias
-  router.get("/stats/:userId", authenticateToken, async (req, res) => {
-    const { userId } = req.params;
-    try {
-      const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-      if (!user)
-        return res.status(404).json({ error: "Usuário não encontrado" });
-
-      const totalVacations = user.vacations?.length || 0;
-      const approved =
-        user.vacations?.filter((v) => v.status === "approved").length || 0;
-      const pending =
-        user.vacations?.filter((v) => v.status === "pending").length || 0;
-      const rejected =
-        user.vacations?.filter((v) => v.status === "rejected").length || 0;
-
-      res.status(200).json({ totalVacations, approved, pending, rejected });
-    } catch (error) {
-      console.error("Erro ao obter estatísticas de férias:", error);
-      res.status(500).json({ error: "Erro ao obter estatísticas de férias" });
     }
   });
 

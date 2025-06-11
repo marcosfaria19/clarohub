@@ -4,17 +4,15 @@ import VacationCalendar from "./VacationCalendar";
 import VacationRegisterForm from "./VacationRegisterForm";
 import VacationTimeline from "./VacationTimeline";
 import VacationTable from "./VacationTable";
-
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "modules/shared/components/ui/tabs";
-import { CalendarDays, List, Plus, Table as TableIcon } from "lucide-react";
+import { CalendarDays, List, Plus, TableIcon } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import { toast } from "sonner";
-
 import { useVacations } from "modules/insight/hooks/useVacations";
 import DeleteConfirmationModal from "modules/shared/components/DeleteConfirmationModal";
 
@@ -22,6 +20,7 @@ const VacationsModule = () => {
   const [activeTab, setActiveTab] = useState("calendar");
   const [vacationToDelete, setVacationToDelete] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [editingVacation, setEditingVacation] = useState(null);
 
   const {
     vacations,
@@ -35,6 +34,13 @@ const VacationsModule = () => {
     toast.success("Férias agendadas com sucesso", {
       description: "O período de férias foi registrado no sistema.",
     });
+  }, []);
+
+  const handleVacationUpdateSuccess = useCallback(() => {
+    toast.success("Férias atualizadas com sucesso", {
+      description: "As alterações foram salvas no sistema.",
+    });
+    setEditingVacation(null);
   }, []);
 
   const handleDeleteVacation = useCallback(async () => {
@@ -59,6 +65,14 @@ const VacationsModule = () => {
     setIsDeleteDialogOpen(true);
   }, []);
 
+  const handleEditVacation = useCallback((vacation) => {
+    setEditingVacation(vacation);
+  }, []);
+
+  const handleCancelEdit = useCallback(() => {
+    setEditingVacation(null);
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -81,6 +95,7 @@ const VacationsModule = () => {
               </Button>
             }
             scheduleVacation={scheduleVacation}
+            updateVacation={updateVacation}
             loading={loading}
             vacations={vacations}
             onSuccess={handleVacationSuccess}
@@ -128,6 +143,7 @@ const VacationsModule = () => {
             <VacationTable
               vacations={vacations}
               onDeleteVacation={handleDeleteConfirmation}
+              onEditVacation={handleEditVacation}
             />
           </TabsContent>
         </Tabs>
@@ -137,6 +153,20 @@ const VacationsModule = () => {
           handleClose={() => setIsDeleteDialogOpen(false)}
           handleDeleteConfirm={handleDeleteVacation}
         />
+
+        {editingVacation && (
+          <VacationRegisterForm
+            initialData={editingVacation}
+            isEditMode={true}
+            scheduleVacation={scheduleVacation}
+            updateVacation={updateVacation}
+            loading={loading}
+            vacations={vacations}
+            onSuccess={handleVacationUpdateSuccess}
+            onCancel={handleCancelEdit}
+            open={true}
+          />
+        )}
       </div>
     </motion.div>
   );
