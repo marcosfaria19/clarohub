@@ -51,7 +51,7 @@ const CalendarDay = ({
             className={cn(
               getDayNumberClassNames(isCurrentMonth),
               "flex h-6 w-6 items-center justify-center rounded-full",
-              isToday && "bg-primary text-primary-foreground",
+              isToday && "bg-primary font-semibold text-primary-foreground",
             )}
           >
             {day.getDate()}
@@ -60,22 +60,27 @@ const CalendarDay = ({
 
         {dateVacations.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">
-            {dateVacations.slice(0, 3).map((vacation, index) => {
+            {/* 3 primeiras bolinhas de status */}
+            {dateVacations.slice(0, 5).map((vacation, index) => {
               const employee = vacation.nome;
               return (
                 <div
                   key={vacation.id || vacation._id || index}
                   className={cn(
-                    "h-2 w-2 rounded-full shadow-sm",
+                    "h-3 w-3 rounded-full shadow-sm",
                     getUserColor(userColorMap, employee),
                   )}
                   title={employee}
                 />
               );
             })}
-            {dateVacations.length > 3 && (
-              <div className="flex h-2 w-2 items-center justify-center rounded-full bg-muted text-[6px] font-bold text-muted-foreground shadow-sm">
-                +{dateVacations.length - 3}
+
+            {/* Indicador de férias adicionais */}
+            {dateVacations.length > 5 && (
+              <div className="flex items-center justify-center">
+                <div className="flex h-3 w-3 items-center justify-center rounded-full bg-accent text-[15px] font-bold text-accent-foreground shadow-sm">
+                  +{dateVacations.length - 5}
+                </div>
               </div>
             )}
           </div>
