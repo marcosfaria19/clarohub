@@ -3,11 +3,11 @@ const { parseCustomDateFromExcel } = require("../utils/formatarData");
 module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
   const spec = {
     Análise: {
-      required: ["IDDEMANDA", "COD_OPERADORA", "ENDERECO_VISTORIA", "FILA"],
+      required: ["IDDEMANDA", "COD_OPERADORA", "ENDERECO", "FILA"],
       filaValues: ["Ocorrências PRJ", "Pedidos GED"],
     },
     ["Validação Vistoria"]: {
-      required: ["IDDEMANDA", "COD_OPERADORA", "ENDERECO_VISTORIA", "FILA"],
+      required: ["IDDEMANDA", "COD_OPERADORA", "ENDERECO", "FILA"],
       filaValues: ["Retorno Vistoria", "Validação Vistoria"],
     },
   };
@@ -43,7 +43,7 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
     cfg.filaValues.includes(row.FILA?.trim())
   );
 
-  filtered = filtered.filter((row) => row.ENDERECO_VISTORIA?.trim());
+  filtered = filtered.filter((row) => row.ENDERECO?.trim());
 
   return filtered.map((row) => {
     const codOper = (row.COD_OPERADORA || row.COD_OPERADORA_NODE)
@@ -62,7 +62,7 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
     return {
       IDDEMANDA: row.IDDEMANDA,
       COD_OPERADORA: codOper,
-      ENDERECO_VISTORIA: row.ENDERECO_VISTORIA,
+      ENDERECO_VISTORIA: row.ENDERECO,
       ...city,
       project: { _id: project._id, name: project.name },
       status: { _id: assignment._id, name: assignment.name },

@@ -389,13 +389,7 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
       });
 
       const opts = {
-        fields: [
-          "REGIONAL",
-          "BASE",
-          "CIDADE",
-          "ENDERECO_VISTORIA",
-          "createdAt",
-        ],
+        fields: ["REGIONAL", "BASE", "CIDADE", "ENDERECO", "createdAt"],
         delimiter: ";",
         withBOM: true,
       };
