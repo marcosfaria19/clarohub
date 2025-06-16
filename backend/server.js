@@ -35,6 +35,15 @@ async function startServer() {
     app.use(cors());
     app.use(express.json());
 
+    //logs para identificar edge functions
+
+    app.use((req, res, next) => {
+      console.log(
+        `${new Date().toISOString()} – ${req.method} ${req.originalUrl}`
+      );
+      next();
+    });
+
     // Rotas Hub
     const qualinetRoutes = require("./src/routes/qualinetRoutes")(
       clarohub.collection("ocqualinet")
