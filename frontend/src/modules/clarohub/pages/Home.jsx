@@ -167,8 +167,8 @@ const Home = () => {
                   <AppCard
                     nome={app.nome}
                     info={app.info}
-                    imagemUrl={`${process.env.REACT_APP_BACKEND_URL}${app.imagemUrl}`}
-                    logoCard={`${process.env.REACT_APP_BACKEND_URL}${app.logoCard}`}
+                    imagemUrl={app.imagemUrl}
+                    logoCard={app.logoCard}
                     rota={app.rota}
                     isNew={
                       new Date(app.createdAt).getTime() >

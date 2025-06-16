@@ -17,7 +17,9 @@ import {
   SelectValue,
 } from "modules/shared/components/ui/select";
 import { Label } from "modules/shared/components/ui/label";
-import axiosInstance from "services/axios";
+
+import cardFiles from "../assets/cards.json";
+import logoFiles from "../assets/logos.json";
 
 const AddApp = ({
   show,
@@ -32,26 +34,9 @@ const AddApp = ({
   const [logoListUrls, setLogoListUrls] = useState([]);
 
   useEffect(() => {
-    const fetchUrls = async () => {
-      try {
-        const cardsResponse = await axiosInstance.get(`/apps/cards`);
-        const logosResponse = await axiosInstance.get(`/apps/logos`);
-
-        setImageUrls(
-          cardsResponse.data.map((filename) => `/assets/cards/${filename}`),
-        );
-        setLogoCardUrls(
-          logosResponse.data.map((filename) => `/assets/logos/${filename}`),
-        );
-        setLogoListUrls(
-          logosResponse.data.map((filename) => `/assets/logos/${filename}`),
-        );
-      } catch (error) {
-        console.error("Erro ao buscar URLs de imagens e logos", error);
-      }
-    };
-
-    fetchUrls();
+    setImageUrls(cardFiles.map((f) => `/assets/cards/${f}`));
+    setLogoCardUrls(logoFiles.map((f) => `/assets/logos/${f}`));
+    setLogoListUrls(logoFiles.map((f) => `/assets/logos/${f}`));
   }, []);
 
   const handleSubmit = (e) => {
@@ -62,6 +47,16 @@ const AddApp = ({
   const handleSelectChange = (name) => (value) => {
     handleChange({ target: { name, value } });
   };
+
+  const renderSelectOptions = (urls) =>
+    urls.map((url) => (
+      <SelectItem key={url} value={url}>
+        <div className="flex items-center gap-2">
+          <img src={url} alt="" className="h-5 w-5 object-contain" />
+          <span>{url.split("/").pop()}</span>
+        </div>
+      </SelectItem>
+    ));
 
   return (
     <Dialog open={show} onOpenChange={handleClose}>
@@ -86,6 +81,7 @@ const AddApp = ({
               className="h-9 bg-menu text-foreground/90"
             />
           </div>
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="info">Descrição</Label>
             <Input
@@ -96,6 +92,7 @@ const AddApp = ({
               className="h-9 bg-menu text-foreground/90"
             />
           </div>
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="imagemUrl">Imagem Card</Label>
             <Select
@@ -106,15 +103,10 @@ const AddApp = ({
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
-              <SelectContent>
-                {imageUrls.map((url) => (
-                  <SelectItem key={url} value={url}>
-                    {url}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+              <SelectContent>{renderSelectOptions(imageUrls)}</SelectContent>
             </Select>
           </div>
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="logoCard">Logo Card</Label>
             <Select
@@ -125,15 +117,10 @@ const AddApp = ({
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
-              <SelectContent>
-                {logoCardUrls.map((url) => (
-                  <SelectItem key={url} value={url}>
-                    {url}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+              <SelectContent>{renderSelectOptions(logoCardUrls)}</SelectContent>
             </Select>
           </div>
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="logoList">Logo Lista</Label>
             <Select
@@ -144,15 +131,10 @@ const AddApp = ({
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
-              <SelectContent>
-                {logoListUrls.map((url) => (
-                  <SelectItem key={url} value={url}>
-                    {url}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+              <SelectContent>{renderSelectOptions(logoListUrls)}</SelectContent>
             </Select>
           </div>
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="rota">Rota</Label>
             <Input
@@ -163,6 +145,7 @@ const AddApp = ({
               className="h-9 bg-menu text-foreground/90"
             />
           </div>
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="familia">Família</Label>
             <Input
@@ -173,6 +156,7 @@ const AddApp = ({
               className="h-9 bg-menu text-foreground/90"
             />
           </div>
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="acesso">Acesso</Label>
             <Select
@@ -190,6 +174,7 @@ const AddApp = ({
               </SelectContent>
             </Select>
           </div>
+
           <DialogFooter>
             <Button type="submit" variant="primary">
               {isEditMode ? "Salvar" : "Adicionar"}

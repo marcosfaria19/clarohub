@@ -110,11 +110,7 @@ function AppAdmin() {
         cell: ({ getValue }) => {
           const imageUrl = getValue();
           return imageUrl ? (
-            <img
-              src={`${process.env.REACT_APP_BACKEND_URL}${imageUrl}`}
-              alt="logo"
-              style={{ height: "50px" }}
-            />
+            <img src={`${imageUrl}`} alt="logo" style={{ height: "50px" }} />
           ) : (
             <span>Sem logo</span>
           );

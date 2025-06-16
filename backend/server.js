@@ -124,21 +124,6 @@ async function startServer() {
     app.use("/insights/", insightsRoutes);
     app.use("/vacations/", vacationRoutes);
 
-    // Middleware para servir imagens estáticas
-    app.use(
-      "/assets/cards",
-      express.static(path.join(__dirname, "src/assets/cards"), {
-        setHeaders: (res, path) => {},
-      })
-    );
-
-    app.use(
-      "/assets/logos",
-      express.static(path.join(__dirname, "src/assets/logos"), {
-        setHeaders: (res, path) => {},
-      })
-    );
-
     app.listen(port, () => {
       console.log(`Servidor rodando em http://localhost:${port}`);
     });
