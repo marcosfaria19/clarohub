@@ -105,7 +105,8 @@ export default function Claroflow() {
         {state.projects.length > 0 ? (
           state.selectedTab === "home" ? (
             <FlowHome project={selectedProject} />
-          ) : state.selectedTab.startsWith("team-") ? (
+          ) : state.selectedTab.startsWith("team-") ||
+            state.selectedTab === "team" ? (
             selectedProject ? (
               <AssignmentBoard project={selectedProject} />
             ) : null

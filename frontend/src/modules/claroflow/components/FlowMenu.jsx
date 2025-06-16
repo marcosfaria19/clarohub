@@ -30,13 +30,17 @@ export default function FlowMenu({
         <span className="sr-only">Página Inicial</span>
       </Button>
 
-      {/* Aba Equipe para cada projeto (supervisor) */}
-      {isSupervisor &&
+      {/* Aba Equipe para cada projeto (supervisor ou admin) */}
+      {(isSupervisor || isAdmin) &&
         projects.map((project) => (
           <Button
             key={`team-${project._id}`}
             variant="ghost"
-            className={`h-10 w-auto rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors focus:opacity-80 focus-visible:ring-0 ${activeTab === `team-${project._id}` ? "bg-primary text-accent-foreground" : ""}`}
+            className={`h-10 w-auto rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors focus:opacity-80 focus-visible:ring-0 ${
+              activeTab === `team-${project._id}`
+                ? "bg-primary text-accent-foreground"
+                : ""
+            }`}
             onClick={() => onTabChange(`team-${project._id}`)}
           >
             <Users className="mr-2 h-4 w-4" />
@@ -44,17 +48,19 @@ export default function FlowMenu({
           </Button>
         ))}
 
-      {/* Aba Equipe */}
-      {!isSupervisor && (isManager || isAdmin) && (
+      {/* Aba Equipe para manager (somente seu projeto) */}
+      {isManager && !isSupervisor && !isAdmin && projects.length > 0 && (
         <Button
           variant="ghost"
-          className={`h-10 w-[100px] rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors focus:opacity-80 focus-visible:ring-0 ${
-            activeTab === "team" ? "bg-primary text-accent-foreground" : ""
+          className={`h-10 w-auto rounded-none rounded-t-[20px] bg-secondary py-2 text-sm font-medium text-secondary-foreground/80 transition-colors focus:opacity-80 focus-visible:ring-0 ${
+            activeTab === `team-${projects[0]._id}`
+              ? "bg-primary text-accent-foreground"
+              : ""
           }`}
-          onClick={() => onTabChange("team")}
+          onClick={() => onTabChange(`team-${projects[0]._id}`)}
         >
           <Users className="mr-2 h-4 w-4" />
-          Equipe
+          Equipe {projects[0].name}
         </Button>
       )}
 
