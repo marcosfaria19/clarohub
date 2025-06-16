@@ -12,12 +12,7 @@ import {
   TooltipTrigger,
 } from "modules/shared/components/ui/tooltip";
 
-const AssignmentColumn = ({
-  assignment,
-  members,
-  onUnassign,
-  onUpdateRegional,
-}) => {
+const AssignmentColumn = ({ assignment, members, onUnassign }) => {
   const { setNodeRef, isOver } = useDroppable({ id: assignment.id });
 
   const { availableTasks } = useTasks({
@@ -106,7 +101,6 @@ const AssignmentColumn = ({
                 member={member}
                 assignmentId={assignment.id}
                 onUnassign={onUnassign}
-                onUpdateRegional={onUpdateRegional}
               />
             );
           })}

@@ -1,6 +1,6 @@
 // useAssignmentBoard.js
 // Hook responsável por gerenciar o estado e lógica do board de assignments.
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { formatUserName } from "modules/shared/utils/formatUsername";
 import { useMediaQuery } from "modules/shared/hooks/use-media-query";
 import axiosInstance from "services/axios";
@@ -98,6 +98,22 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
     [assignments, projectUsers],
   );
 
+  const clearAssignments = useCallback(() => {
+    setInitialAssignments([]);
+    setAssignments([]);
+    setActiveId(null);
+    setSearchQuery("");
+  }, []);
+
+  // ✅ NOVO useEffect: Limpa estado quando o projeto muda
+  useEffect(() => {
+    // Limpa o estado quando o project._id muda
+    if (project?._id) {
+      setActiveId(null);
+      setSearchQuery("");
+    }
+  }, [project?._id]);
+
   // Atualiza as assignments com os usuários atribuídos
   const assignUsers = async (projectId, assignments) => {
     try {
@@ -137,7 +153,6 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
                         ...a,
                         assignedUsers: updated.assignedUsers.map((u) => ({
                           $oid: u.userId,
-                          regionals: u.regionals,
                         })),
                       }
                     : a;
@@ -161,6 +176,7 @@ export const useAssignmentBoard = ({ project, getUsersByProjectId }) => {
     setAssignments,
     initialAssignments,
     setInitialAssignments,
+    clearAssignments,
     members,
     filteredMembers,
     activeMember,

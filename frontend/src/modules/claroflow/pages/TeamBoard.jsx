@@ -43,6 +43,7 @@ const TeamBoard = ({ project }) => {
     resetToInitialState,
     updateTeamMembers,
     assignUsers,
+    clearAssignments,
   } = useAssignmentBoard({ project, getUsersByProjectId });
 
   // Modificador customizado para ajuste do offset do drag
@@ -64,10 +65,8 @@ const TeamBoard = ({ project }) => {
       .map((assignment) => ({
         id: assignment._id,
         name: assignment.name,
-        // Garante que cada usuário atribuído contenha userId e regionals
         assigned: assignment.assignedUsers.map((user) => ({
           userId: user.userId,
-          regionals: user.regionals,
         })),
       }));
 
@@ -76,12 +75,21 @@ const TeamBoard = ({ project }) => {
     let isMounted = true;
 
     const loadAssignments = async () => {
-      if (project?._id && initialAssignments.length === 0) {
-        const assignments = await fetchAssignments(project._id);
-        if (assignments && isMounted) {
-          const formattedAssignments = formatAssignments(assignments);
-          setInitialAssignments(formattedAssignments);
-          setAssignments(formattedAssignments);
+      if (project?._id) {
+        clearAssignments();
+
+        try {
+          const assignments = await fetchAssignments(project._id);
+          if (assignments && isMounted) {
+            const formattedAssignments = formatAssignments(assignments);
+            setInitialAssignments(formattedAssignments);
+            setAssignments(formattedAssignments);
+          }
+        } catch (error) {
+          console.error("Erro ao carregar assignments:", error);
+
+          setInitialAssignments([]);
+          setAssignments([]);
         }
       }
     };
@@ -92,11 +100,11 @@ const TeamBoard = ({ project }) => {
       isMounted = false;
     };
   }, [
-    project,
-    initialAssignments.length,
+    project?._id,
+    fetchAssignments,
     setInitialAssignments,
     setAssignments,
-    fetchAssignments,
+    clearAssignments,
   ]);
 
   // Configuração dos sensores para drag and drop
@@ -142,7 +150,6 @@ const TeamBoard = ({ project }) => {
                 ...assignment.assigned,
                 {
                   userId: active.id,
-                  regionals: [],
                 },
               ],
             };
@@ -173,25 +180,6 @@ const TeamBoard = ({ project }) => {
     [setAssignments],
   );
 
-  // Atualiza os dados de regionals para uma determinada demanda e membro
-  const handleUpdateRegional = useCallback(
-    (assignmentId, memberId, regionals) => {
-      setAssignments((prev) =>
-        prev.map((assignment) => {
-          if (assignment.id !== assignmentId) return assignment;
-
-          const updatedAssigned = assignment.assigned.map((assignment) =>
-            assignment.userId === memberId
-              ? { ...assignment, regionals }
-              : assignment,
-          );
-
-          return { ...assignment, assigned: updatedAssigned };
-        }),
-      );
-    },
-    [setAssignments],
-  );
   // Aplica as mudanças chamando a função de atualização e disparando notificações para novos membros
   const handleApplyChanges = async () => {
     try {
@@ -279,7 +267,6 @@ const TeamBoard = ({ project }) => {
             members={members}
             onUnassign={handleUnassign}
             isMobile={isMobile}
-            onUpdateRegional={handleUpdateRegional}
             className="h-full"
           />
 

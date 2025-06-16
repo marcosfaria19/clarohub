@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import Container from "modules/shared/components/ui/container";
 import FlowMenu from "../components/FlowMenu";
 import { FlowHome } from "../components/FlowHome";
@@ -23,9 +23,10 @@ import ProjectsFlowDashboard from "../components/projects/ProjectFlowDashboard";
 export default function Claroflow() {
   const { user } = useContext(AuthContext);
   const { fetchUserAssignments } = useUsers();
-  const { fetchProjectById } = useProjects();
+  const { fetchProjects, fetchProjectById } = useProjects();
+
   const [state, setState] = useState({
-    project: null,
+    projects: [],
     assignments: [],
     selectedTab: "home",
     showUpload: false,
@@ -36,15 +37,24 @@ export default function Claroflow() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [project, assignments] = await Promise.all([
-          fetchProjectById(user.project._id),
-          fetchUserAssignments(user.userId),
-        ]);
+        let projectsData = [];
+        let assignmentsData = [];
+
+        if (user.roles_adicionais?.includes("supervisor")) {
+          // Supervisor: carrega todos os projetos
+          projectsData = await fetchProjects();
+        } else {
+          // Usuário normal: carrega apenas seu projeto
+          const userProject = await fetchProjectById(user.project._id);
+          projectsData = userProject ? [userProject] : [];
+        }
+
+        assignmentsData = await fetchUserAssignments(user.userId);
 
         setState((prev) => ({
           ...prev,
-          project,
-          assignments,
+          projects: projectsData,
+          assignments: assignmentsData,
           loading: false,
           error: null,
         }));
@@ -58,7 +68,22 @@ export default function Claroflow() {
     };
 
     loadData();
-  }, [user.userId, user.project._id, fetchProjectById, fetchUserAssignments]);
+  }, [
+    user.userId,
+    user.project._id,
+    user.roles_adicionais,
+    fetchProjectById,
+    fetchUserAssignments,
+    fetchProjects,
+  ]);
+
+  const selectedProject = useMemo(() => {
+    if (state.selectedTab.startsWith("team-")) {
+      const projectId = state.selectedTab.split("-")[1];
+      return state.projects.find((p) => p._id === projectId);
+    }
+    return state.projects[0];
+  }, [state.selectedTab, state.projects]);
 
   if (state.loading) return <div>Carregando...</div>;
   if (state.error) return <div>Erro: {state.error}</div>;
@@ -67,25 +92,29 @@ export default function Claroflow() {
     <Container innerClassName="max-w-[95vw] mb-4">
       <FlowMenu
         role={user.permissoes}
+        projects={state.projects}
         assignments={state.assignments}
         activeTab={state.selectedTab}
+        additionalRoles={user.roles_adicionais || []}
         onTabChange={(tab) =>
           setState((prev) => ({ ...prev, selectedTab: tab }))
         }
       />
 
       <div className="min-h-[75vh] w-full rounded-lg rounded-tl-none drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
-        {state.project ? (
+        {state.projects.length > 0 ? (
           state.selectedTab === "home" ? (
-            <FlowHome project={state.project} />
-          ) : state.selectedTab === "team" ? (
-            <AssignmentBoard project={state.project} />
+            <FlowHome project={selectedProject} />
+          ) : state.selectedTab.startsWith("team-") ? (
+            selectedProject ? (
+              <AssignmentBoard project={selectedProject} />
+            ) : null
           ) : state.selectedTab === "projectflow" ? (
             <ProjectsFlowDashboard />
           ) : (
             <BoardLayout
               assignmentId={state.selectedTab}
-              project={state.project}
+              project={user.project}
               assignment={state.assignments.find(
                 (a) => a._id === state.selectedTab,
               )}

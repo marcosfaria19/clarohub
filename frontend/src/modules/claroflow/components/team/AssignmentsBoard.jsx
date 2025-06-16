@@ -8,7 +8,6 @@ const AssignmentsBoard = ({
   onUnassign,
   isMobile,
   className,
-  onUpdateRegional,
 }) => {
   return (
     <div className={`flex-1 bg-background ${className}`}>
@@ -26,7 +25,6 @@ const AssignmentsBoard = ({
             assignment={assignment}
             members={members}
             onUnassign={onUnassign}
-            onUpdateRegional={onUpdateRegional}
           />
         ))}
       </div>
