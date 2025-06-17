@@ -41,15 +41,85 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
       };
 
       await ideasCollection.insertOne(newIdea);
-      pusher.trigger("claro-spark", "new-idea", {
-        card: newIdea,
-      });
-      res
+      pusher.trigger("claro-spark", "new-idea", { card: newIdea });
+
+      return res
         .status(201)
         .json({ message: "Card criado com sucesso", idea: newIdea });
     } catch (error) {
       console.error("Erro ao criar ideia:", error);
-      res.status(500).json({ error: "Erro ao criar card" });
+      return res.status(500).json({ error: "Erro ao criar card" });
+    }
+  });
+
+  // Rota para editar uma ideia
+  router.put("/ideas/:id", authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { title, description, subject, anonymous } = req.body;
+    const userId = req.user.id;
+
+    try {
+      const idea = await ideasCollection.findOne({ _id: new ObjectId(id) });
+      if (!idea) {
+        return res.status(404).json({ error: "Ideia não encontrada." });
+      }
+
+      if (idea.creator._id.toString() !== userId) {
+        return res
+          .status(403)
+          .json({ error: "Você só pode editar suas próprias ideias." });
+      }
+
+      // Captura dados anteriores para histórico e movimentação de coluna
+      const previousData = {
+        subject: idea.subject,
+        title: idea.title,
+        description: idea.description,
+        anonymous: idea.anonymous || 0,
+      };
+
+      // Atualiza a ideia no banco
+      const result = await ideasCollection.updateOne(
+        { _id: new ObjectId(id) },
+        {
+          $set: {
+            title,
+            description,
+            subject,
+            anonymous: anonymous || 0,
+            updatedAt: new Date(),
+          },
+        }
+      );
+
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ error: "Ideia não encontrada." });
+      }
+
+      const updatedIdea = await ideasCollection.findOne({
+        _id: new ObjectId(id),
+      });
+
+      // Dispara evento de edição com payload consistente
+      pusher.trigger("claro-spark", "idea-edited", {
+        ideaId: updatedIdea._id.toString(),
+        updatedFields: {
+          title: updatedIdea.title,
+          description: updatedIdea.description,
+          subject: updatedIdea.subject,
+          anonymous: updatedIdea.anonymous,
+          status: updatedIdea.status,
+        },
+        previousSubject: previousData.subject,
+      });
+
+      return res.json({
+        message: "Ideia atualizada com sucesso.",
+        idea: updatedIdea,
+      });
+    } catch (error) {
+      console.error("Erro ao atualizar ideia:", error);
+      return res.status(500).json({ error: "Erro no servidor." });
     }
   });
 
@@ -226,21 +296,29 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
         { label: "Responsável", value: "creatorName" },
         { label: "Gestor Alteração", value: "manager" },
         { label: "Novo Status", value: "newStatus" },
-        { label: "Alterado em", value: "changedAt" },
+        { label: "Data Alteração", value: "changedAt" },
       ];
 
-      const json2csvParser = new Parser({ fields, delimiter: ";" });
+      const json2csvParser = new Parser({ fields });
       const csv = json2csvParser.parse(formattedData);
 
-      res.header("Content-Type", "text/csv; charset=utf-8");
-      res.header(
-        "Content-Disposition",
-        "attachment; filename=clarospark_ideas.csv"
-      );
-      res.send("\uFEFF" + csv);
-    } catch (err) {
-      console.error("Erro ao gerar CSV:", err);
-      res.status(500).json({ message: "Erro ao gerar CSV" });
+      res.header("Content-Type", "text/csv");
+      res.attachment("ideias.csv");
+      return res.send(csv);
+    } catch (error) {
+      console.error("Erro ao gerar CSV:", error);
+      res.status(500).json({ error: "Erro ao gerar CSV" });
+    }
+  });
+
+  // Rota para resetar contadores diários
+  router.post("/reset-daily-counters", authenticateToken, async (req, res) => {
+    try {
+      await resetDailyCountersIfNeeded(usersCollection);
+      res.json({ message: "Contadores diários resetados com sucesso." });
+    } catch (error) {
+      console.error("Erro ao resetar contadores:", error);
+      res.status(500).json({ error: "Erro ao resetar contadores." });
     }
   });
 

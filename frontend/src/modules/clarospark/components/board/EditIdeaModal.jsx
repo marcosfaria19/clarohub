@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   DialogContent,
   DialogHeader,
@@ -26,57 +26,130 @@ import { InfoIcon, AlertCircle, Loader2 } from "lucide-react";
 import { useNewCard } from "modules/clarospark/hooks/useNewCard";
 
 /**
- * AddIdeaModal - Modal otimizado para adicionar novas ideias
- * Implementa validação em tempo real, feedback visual e UX aprimorada
+ * EditIdeaModal - Modal otimizado para edição de ideias
+ * Implementa validação em tempo real, detecção de mudanças e UX aprimorada
  * Integrado com WebSocket para atualizações em tempo real
  */
-export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
+export default function EditIdeaModal({
+  idea,
+  subjects = [],
+  onClose,
+  userName = "",
+  userId,
+  onUpdate,
+  isUpdating = false,
+}) {
   // Estados locais otimizados
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [hasChanges, setHasChanges] = useState(false);
 
   // Hook para gerenciamento de cards
-  const { newCard, setNewCard, handleAddCard, validateCardData } = useNewCard(
+  const { editCard, setEditCard, handleUpdateCard } = useNewCard(
     subjects,
     userId,
+    idea,
   );
+
+  /**
+   * Dados originais da ideia para comparação
+   * Memoizado para evitar re-criação desnecessária
+   */
+  const originalData = useMemo(() => {
+    if (!idea) return null;
+
+    return {
+      title: idea.title || "",
+      description: idea.description || "",
+      subject: idea.subject || "",
+      anonymous: idea.anonymous || 0,
+    };
+  }, [idea]);
+
+  /**
+   * Inicialização do estado anônimo
+   * Otimizado para evitar atualizações desnecessárias
+   */
+  useEffect(() => {
+    if (idea && typeof idea.anonymous === "number") {
+      setIsAnonymous(idea.anonymous === 1);
+      console.log("EditIdeaModal: Estado anônimo inicializado", {
+        ideaId: idea._id,
+        anonymous: idea.anonymous === 1,
+      });
+    }
+  }, [idea]);
+
+  /**
+   * Detecção de mudanças nos campos
+   * Memoizado para performance otimizada
+   */
+  const detectChanges = useCallback(() => {
+    if (!originalData || !editCard) return false;
+
+    const currentAnonymous = isAnonymous ? 1 : 0;
+
+    return (
+      editCard.title !== originalData.title ||
+      editCard.description !== originalData.description ||
+      editCard.subject !== originalData.subject ||
+      currentAnonymous !== originalData.anonymous
+    );
+  }, [editCard, isAnonymous, originalData]);
+
+  /**
+   * Atualiza estado de mudanças quando campos mudam
+   */
+  useEffect(() => {
+    const changesDetected = detectChanges();
+    setHasChanges(changesDetected);
+
+    // Limpar erro geral quando há mudanças
+    if (changesDetected && error) {
+      setError(null);
+    }
+  }, [detectChanges, error]);
 
   /**
    * Validação em tempo real dos campos
    * Memoizada para performance
    */
   const validateFields = useCallback(() => {
-    const validation = validateCardData(newCard);
+    const errors = {};
 
-    if (!validation.isValid) {
-      const errors = {};
-      validation.errors.forEach((error) => {
-        if (error.includes("Título")) errors.title = error;
-        if (error.includes("Descrição")) errors.description = error;
-        if (error.includes("Setor")) errors.subject = error;
-      });
-      setFieldErrors(errors);
-      return false;
+    // Validação do título
+    if (!editCard?.title?.trim()) {
+      errors.title = "Título é obrigatório";
+    } else if (editCard.title.trim().length > 50) {
+      errors.title = "Título deve ter no máximo 50 caracteres";
     }
 
-    setFieldErrors({});
-    return true;
-  }, [newCard, validateCardData]);
+    // Validação da descrição
+    if (!editCard?.description?.trim()) {
+      errors.description = "Descrição é obrigatória";
+    } else if (editCard.description.trim().length > 1500) {
+      errors.description = "Descrição deve ter no máximo 1500 caracteres";
+    }
+
+    // Validação do setor
+    if (!editCard?.subject) {
+      errors.subject = "Setor é obrigatório";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  }, [editCard]);
 
   /**
-   * Verifica se o formulário está válido
-   * Memoizado para performance
+   * Validação em tempo real quando campos mudam
    */
-  const isFormValid = useMemo(() => {
-    return (
-      newCard.title?.trim() &&
-      newCard.description?.trim() &&
-      newCard.subject &&
-      Object.keys(fieldErrors).length === 0
-    );
-  }, [newCard, fieldErrors]);
+  useEffect(() => {
+    if (editCard) {
+      validateFields();
+    }
+  }, [editCard, validateFields]);
 
   /**
    * Atualização otimizada de campos
@@ -84,7 +157,7 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
    */
   const handleFieldChange = useCallback(
     (field, value) => {
-      setNewCard((prev) => ({
+      setEditCard((prev) => ({
         ...prev,
         [field]: value,
       }));
@@ -97,13 +170,8 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
           return newErrors;
         });
       }
-
-      // Limpar erro geral
-      if (error) {
-        setError(null);
-      }
     },
-    [setNewCard, fieldErrors, error],
+    [setEditCard, fieldErrors],
   );
 
   /**
@@ -114,63 +182,124 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
     async (e) => {
       e.preventDefault();
 
-      if (isLoading) {
-        console.log("AddIdeaModal: Já está processando, ignorando submit");
+      // Verificações de segurança
+      if (!idea?._id) {
+        console.error("EditIdeaModal: ID da ideia não encontrado");
+        setError("Erro interno: ID da ideia não encontrado");
+        return;
+      }
+
+      if (isLoading || isUpdating) {
+        console.log("EditIdeaModal: Já está processando, ignorando submit");
         return;
       }
 
       // Validação final
       if (!validateFields()) {
-        console.log("AddIdeaModal: Validação falhou", fieldErrors);
+        console.log("EditIdeaModal: Validação falhou", fieldErrors);
         setError("Por favor, corrija os erros nos campos destacados");
+        return;
+      }
+
+      // Verificar se há mudanças
+      if (!hasChanges) {
+        console.log("EditIdeaModal: Nenhuma mudança detectada");
+        onClose();
         return;
       }
 
       setIsLoading(true);
       setError(null);
 
-      console.log("AddIdeaModal: Iniciando criação de ideia", {
-        title: newCard.title,
-        subject: newCard.subject,
-        anonymous: isAnonymous,
+      console.log("EditIdeaModal: Iniciando salvamento", {
+        ideaId: idea._id,
+        changes: {
+          title: editCard.title,
+          description: editCard.description,
+          subject: editCard.subject,
+          anonymous: isAnonymous ? 1 : 0,
+        },
       });
 
       try {
-        const cardToSubmit = {
-          ...newCard,
+        const cardToUpdate = {
+          ...editCard,
           anonymous: isAnonymous ? 1 : 0,
         };
 
-        const result = await handleAddCard(cardToSubmit);
+        // Atualizar via API
+        const result = await handleUpdateCard(cardToUpdate, idea._id);
 
         if (result.success) {
-          console.log("AddIdeaModal: Ideia criada com sucesso", result.data);
-          onClose(); // Fechar modal após sucesso
+          console.log("EditIdeaModal: Atualização bem-sucedida", result.data);
+
+          // Notificar componente pai para atualização otimista
+          if (onUpdate) {
+            await onUpdate(result.data);
+          }
+
+          // Modal será fechado pelo componente pai após sucesso
         } else {
-          throw new Error(result.errors?.[0] || "Falha ao criar ideia");
+          throw new Error(result.errors?.[0] || "Falha ao atualizar ideia");
         }
       } catch (error) {
-        console.error("AddIdeaModal: Erro ao criar ideia:", error);
-        setError(error.message || "Erro ao adicionar ideia. Tente novamente.");
+        console.error("EditIdeaModal: Erro ao atualizar ideia:", error);
+        setError(
+          error.message || "Erro ao salvar alterações. Tente novamente.",
+        );
       } finally {
         setIsLoading(false);
       }
     },
     [
+      idea,
       isLoading,
+      isUpdating,
       validateFields,
       fieldErrors,
-      newCard,
-      isAnonymous,
-      handleAddCard,
+      hasChanges,
       onClose,
+      editCard,
+      isAnonymous,
+      handleUpdateCard,
+      onUpdate,
     ],
   );
+
+  // Verificações de segurança para renderização
+  if (!idea) {
+    return (
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Erro</DialogTitle>
+        </DialogHeader>
+        <div className="flex items-center gap-2 text-destructive">
+          <AlertCircle className="h-4 w-4" />
+          <p>Ideia não encontrada</p>
+        </div>
+      </DialogContent>
+    );
+  }
+
+  if (!editCard) {
+    return (
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Carregando...</DialogTitle>
+        </DialogHeader>
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin" />
+        </div>
+      </DialogContent>
+    );
+  }
+
+  const isProcessing = isLoading || isUpdating;
 
   return (
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>Adicionar Nova Ideia</DialogTitle>
+        <DialogTitle>Editar Ideia</DialogTitle>
       </DialogHeader>
 
       <form onSubmit={handleSubmit} className="grid gap-4">
@@ -179,9 +308,9 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
           <Input
             placeholder="Título"
             maxLength={50}
-            value={newCard.title}
+            value={editCard.title}
             onChange={(e) => handleFieldChange("title", e.target.value)}
-            disabled={isLoading}
+            disabled
             className={fieldErrors.title ? "border-destructive" : ""}
             required
           />
@@ -194,10 +323,10 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
         <div className="space-y-1">
           <Textarea
             placeholder="Descrição"
-            value={newCard.description}
+            value={editCard.description}
             maxLength={1500}
             onChange={(e) => handleFieldChange("description", e.target.value)}
-            disabled={isLoading}
+            disabled
             className={fieldErrors.description ? "border-destructive" : ""}
             rows={4}
             required
@@ -212,9 +341,9 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
         {/* Campo Setor */}
         <div className="space-y-1">
           <Select
-            value={newCard.subject}
+            value={editCard.subject}
             onValueChange={(value) => handleFieldChange("subject", value)}
-            disabled={isLoading}
+            disabled={isProcessing}
             required
           >
             <SelectTrigger
@@ -248,7 +377,7 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
             id="anonymous"
             checked={isAnonymous}
             onCheckedChange={setIsAnonymous}
-            disabled={isLoading}
+            disabled
           />
           <div className="flex items-center space-x-1">
             <Label htmlFor="anonymous" className="cursor-pointer">
@@ -282,23 +411,25 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
         <div className="mt-4 flex justify-end gap-2">
           <Button
             type="submit"
-            disabled={isLoading || !isFormValid}
+            disabled={
+              isProcessing || !hasChanges || Object.keys(fieldErrors).length > 0
+            }
             className="min-w-[100px]"
           >
-            {isLoading ? (
+            {isProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Adicionando...
+                Salvando...
               </>
             ) : (
-              "Adicionar"
+              "Salvar"
             )}
           </Button>
           <Button
             type="button"
             variant="secondary"
             onClick={onClose}
-            disabled={isLoading}
+            disabled={isProcessing}
           >
             Cancelar
           </Button>
