@@ -38,7 +38,6 @@ import { getLikeIcon } from "modules/clarospark/utils/getLikeIcon";
 import spark from "modules/clarospark/assets/f0.png";
 import { useTheme } from "modules/shared/contexts/ThemeContext";
 import { Edit, Loader2 } from "lucide-react";
-
 import { useIdeaIsNew } from "modules/clarospark/hooks/useIdeaIsNew";
 import NewIndicator from "./NewIndicator";
 import useManagerTable from "modules/clarospark/hooks/useManagerTable";
@@ -60,19 +59,15 @@ function IdeaCard(props) {
     isUpdating = false,
   } = props;
 
-  const idea = { ...props };
+  const { changeStatus } = useManagerTable();
+
+  const idea = useMemo(() => ({ ...props }), [props]);
   const { user } = useContext(AuthContext);
   const { likesCount, handleLike, updateLikeCount } = useLikes();
   const { theme } = useTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const {
-    isConfirmOpen,
-    newStatus,
-    updateStatus,
-    setIsConfirmOpen,
-    setSelectedItem,
-    setNewStatus,
-  } = useManagerTable();
+  const { isConfirmOpen, newStatus, updateStatus, setIsConfirmOpen } =
+    useManagerTable();
   const { isNew, markAsViewed } = useIdeaIsNew(ideaId, createdAt);
 
   // Memoização das verificações de permissão para performance
@@ -146,24 +141,23 @@ function IdeaCard(props) {
     (e) => {
       e.stopPropagation();
       if (onEdit && idea && !isUpdating) {
-        console.log("IdeaCard: Iniciando edição", { ideaId, title });
         onEdit(idea);
       }
     },
-    [onEdit, idea, isUpdating, ideaId, title],
+    [onEdit, idea, isUpdating],
   );
 
-  // Callback otimizado para mudança de status
+  // Callback para mudança de status
   const handleStatusChange = useCallback(
-    (selectedIdea, novoStatus) => {
-      if (isUpdating) return; // Prevenir mudança de status durante atualização
+    (selectedIdea, { newStatus, reason }) => {
+      if (isUpdating) return;
 
-      console.log("IdeaCard: Alterando status", { ideaId, novoStatus });
-      setSelectedItem(selectedIdea);
-      setNewStatus(novoStatus);
-      setIsConfirmOpen(true);
+      changeStatus(selectedIdea, newStatus, reason).then((success) => {
+        if (success) {
+        }
+      });
     },
-    [setIsConfirmOpen, setNewStatus, setSelectedItem, isUpdating, ideaId],
+    [changeStatus, isUpdating],
   );
 
   // Callback otimizado para abertura do modal
@@ -284,44 +278,63 @@ function IdeaCard(props) {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="bg-card-spark sm:max-w-[550px]">
           <DialogHeader className="mb-2 p-0">
-            <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
-            <div className="mt-2 flex items-center space-x-2">
+            {/* Header superior com título e botão editar */}
+            <div className="flex items-start justify-between">
+              <DialogTitle className="line-clamp-2 max-w-[90%] text-xl font-bold">
+                {title}
+              </DialogTitle>
+
+              {isCreator && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="p-2"
+                      onClick={handleEditClick}
+                      disabled={isUpdating}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isUpdating ? "Atualizando..." : "Editar ideia"}
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+
+            {/* Status ou botão de mudar status */}
+            <div className="flex items-center space-x-2">
               {canEdit ? (
                 <StatusChanger
                   currentStatus={status}
                   disabled={status === "Aprovada" || isUpdating}
-                  onChange={(newStatus) => handleStatusChange(idea, newStatus)}
+                  onChange={({ newStatus, reason }) =>
+                    handleStatusChange(idea, { newStatus, reason })
+                  }
+                  showReason={true}
                 />
               ) : (
-                <Badge className={cn("w-fit text-sm", color)}>
+                <Badge>
                   {icon} {status}
                 </Badge>
               )}
             </div>
+
+            {/* Bloco de informações de tratativa, se houver */}
             {lastChangedBy && (
-              <span className="text-sm text-muted-foreground">
-                Tratada por: {formatUserName(lastChangedBy)}
-              </span>
-            )}
-            {/* Botão de editar - apenas para o criador */}
-            {isCreator && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-2 top-2 p-6"
-                    onClick={handleEditClick}
-                    disabled={isUpdating}
-                  >
-                    <Edit className="mr-2 h-4 w-4" />
-                    Editar
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {isUpdating ? "Atualizando..." : "Editar ideia"}
-                </TooltipContent>
-              </Tooltip>
+              <div className="rounded-md py-2 text-sm text-muted-foreground">
+                <p className="mb-1">
+                  <strong>Tratada por:</strong> {formatUserName(lastChangedBy)}{" "}
+                  em {new Date(lastChange.changedAt).toLocaleString()}
+                </p>
+                {lastChange.reason && (
+                  <p>
+                    <strong>Comentário:</strong> {lastChange.reason}
+                  </p>
+                )}
+              </div>
             )}
           </DialogHeader>
 

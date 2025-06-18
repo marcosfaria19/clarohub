@@ -206,7 +206,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
   // Rota para alterar o status da ideia
   router.patch("/ideas/:id", authenticateToken, async (req, res) => {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, reason } = req.body;
 
     // Verifica se o novo status é válido
     const validStatuses = [
@@ -227,6 +227,7 @@ module.exports = (ideasCollection, usersCollection, pusher) => {
         changedBy: managerName,
         newStatus: status,
         changedAt: new Date(),
+        reason: reason || "",
       };
 
       // Atualiza o status da ideia e adiciona o histórico

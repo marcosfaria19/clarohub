@@ -1,14 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "modules/shared/components/ui/dialog";
-import { Button } from "modules/shared/components/ui/button";
 import useManagerTable from "modules/clarospark/hooks/useManagerTable";
 import { formatUserName } from "modules/shared/utils/formatUsername";
 import StatusChanger from "./StatusChanger";
@@ -16,13 +7,9 @@ import StatusChanger from "./StatusChanger";
 function ManagerTable() {
   const {
     dados,
-    isConfirmOpen,
-    newStatus,
+
     fetchDados,
-    updateStatus,
-    setIsConfirmOpen,
-    setSelectedItem,
-    setNewStatus,
+    changeStatus,
   } = useManagerTable();
 
   const initialFetchDone = useRef(false);
@@ -35,18 +22,10 @@ function ManagerTable() {
   }, [fetchDados]);
 
   const handleStatusChange = useCallback(
-    (item, status) => {
-      setSelectedItem(item);
-      setNewStatus(status);
-      setIsConfirmOpen(true);
+    (item, { newStatus, reason }) => {
+      changeStatus(item, newStatus, reason);
     },
-    [setSelectedItem, setNewStatus, setIsConfirmOpen],
-  );
-
-  const renderTextTruncated = (text, title) => (
-    <div className="max-w-[200px] truncate" title={title || text}>
-      {text}
-    </div>
+    [changeStatus],
   );
 
   const columns = useMemo(() => {
@@ -54,8 +33,17 @@ function ManagerTable() {
       <StatusChanger
         currentStatus={row.original.status}
         disabled={row.original.status === "Aprovada"}
-        onChange={(newStatus) => handleStatusChange(row.original, newStatus)}
+        onChange={({ newStatus, reason }) =>
+          handleStatusChange(row.original, { newStatus, reason })
+        }
+        showReason={true}
       />
+    );
+
+    const renderTextTruncated = (text, title) => (
+      <div className="max-w-[200px] truncate" title={title || text}>
+        {text}
+      </div>
     );
 
     return [
@@ -117,24 +105,6 @@ function ManagerTable() {
   return (
     <div className="relative top-[-50px] px-12">
       <TabelaPadrao columnFilter={false} columns={columns} data={dados} />
-      <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="mb-5">
-              Confirmar alteração de status
-            </DialogTitle>
-            <DialogDescription>
-              Tem certeza que deseja alterar o status para {newStatus}?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button onClick={updateStatus}>Confirmar</Button>
-            <Button variant="secondary" onClick={() => setIsConfirmOpen(false)}>
-              Cancelar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

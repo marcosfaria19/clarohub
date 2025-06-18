@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Pusher from "pusher-js";
 import axiosInstance from "services/axios";
-import { useLikes } from "./useLikes";
 
 /**
  * Hook principal para gerenciar setores e cards do Spark
@@ -18,105 +17,6 @@ export function useSubjectsAndCards() {
   // Refs para evitar re-renders desnecessários
   const pusherRef = useRef(null);
   const channelRef = useRef(null);
-  const { updateLikeCount } = useLikes();
-
-  /**
-   * Atualiza likes de um card específico de forma otimizada
-   * Memoizado para evitar re-criação desnecessária
-   */
-  const updateCardLikes = useCallback(
-    (ideaId, newLikesCount, userId, isLiked) => {
-      setCards((prevCards) => {
-        const updatedCards = { ...prevCards };
-        let cardFound = false;
-
-        // Busca eficiente: para quando encontrar o card
-        for (const subject in updatedCards) {
-          const cardIndex = updatedCards[subject].findIndex(
-            (card) => card._id === ideaId,
-          );
-
-          if (cardIndex !== -1) {
-            const currentCard = updatedCards[subject][cardIndex];
-
-            // Atualização otimizada: só modifica se necessário
-            updatedCards[subject] = [...updatedCards[subject]];
-            updatedCards[subject][cardIndex] = {
-              ...currentCard,
-              likesCount: newLikesCount,
-              likedBy: isLiked
-                ? currentCard.likedBy.filter((id) => id !== userId)
-                : [...currentCard.likedBy, userId],
-            };
-
-            cardFound = true;
-            break;
-          }
-        }
-
-        return cardFound ? updatedCards : prevCards;
-      });
-    },
-    [],
-  );
-
-  /**
-   * Atualiza um card editado, incluindo mudança de setor
-   * Memoizado para performance
-   */
-  const updateEditedCard = useCallback((updatedIdea, previousData) => {
-    setCards((prevCards) => {
-      const newCards = { ...prevCards };
-      const { subject: newSubject } = updatedIdea;
-      const { subject: oldSubject } = previousData;
-
-      // 1. Remove da coluna antiga (se necessário)
-      if (oldSubject && newCards[oldSubject]) {
-        newCards[oldSubject] = newCards[oldSubject].filter(
-          (card) => card._id !== updatedIdea._id,
-        );
-      }
-
-      // 2. Adiciona/Atualiza na nova coluna
-      if (!newCards[newSubject]) {
-        newCards[newSubject] = [];
-      }
-
-      const existingIndex = newCards[newSubject].findIndex(
-        (card) => card._id === updatedIdea._id,
-      );
-
-      if (existingIndex !== -1) {
-        // Atualiza card existente na mesma coluna
-        newCards[newSubject][existingIndex] = {
-          ...newCards[newSubject][existingIndex],
-          ...updatedIdea,
-        };
-      } else {
-        // Adiciona em nova coluna
-        newCards[newSubject].push(updatedIdea);
-      }
-
-      return newCards;
-    });
-  }, []);
-
-  /**
-   * Remove um card deletado
-   * Memoizado para performance
-   */
-  const removeDeletedCard = useCallback((ideaId, subject) => {
-    setCards((prevCards) => {
-      if (!prevCards[subject]) return prevCards;
-
-      const updatedCards = { ...prevCards };
-      updatedCards[subject] = updatedCards[subject].filter(
-        (card) => card._id !== ideaId,
-      );
-
-      return updatedCards;
-    });
-  }, []);
 
   /**
    * Cards ordenados por likes e data de criação
@@ -282,7 +182,7 @@ export function useSubjectsAndCards() {
         pusherRef.current.disconnect();
       }
     };
-  }, [updateCardLikes, updateEditedCard, removeDeletedCard, updateLikeCount]);
+  }, []);
 
   /**
    * Carregamento inicial dos dados

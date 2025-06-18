@@ -7,6 +7,7 @@ const useManagerTable = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [newStatus, setNewStatus] = useState("");
+  const [reason, setReason] = useState("");
   const { createUserNotification } = useNotifications();
 
   const fetchDados = async () => {
@@ -18,30 +19,31 @@ const useManagerTable = () => {
     }
   };
 
-  const updateStatus = async () => {
-    if (!selectedItem || !newStatus) return;
+  const changeStatus = async (idea, newStatus, reason) => {
+    if (!idea || !newStatus) return;
+
     try {
-      await axiosInstance.patch(`/spark/ideas/${selectedItem._id}`, {
+      await axiosInstance.patch(`/spark/ideas/${idea._id}`, {
         status: newStatus,
+        reason: reason,
       });
 
-      // Cria a notificação para o usuário
       await createUserNotification(
-        selectedItem.creator._id,
+        idea.creator._id,
         "spark",
         `Uma ideia sua foi atualizada para "${newStatus}"`,
       );
 
       setDados((prevDados) =>
         prevDados.map((item) =>
-          item._id === selectedItem._id ? { ...item, status: newStatus } : item,
+          item._id === idea._id ? { ...item, status: newStatus } : item,
         ),
       );
-      setIsConfirmOpen(false);
-      setSelectedItem(null);
-      setNewStatus("");
+
+      return true;
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
+      return false;
     }
   };
 
@@ -50,8 +52,10 @@ const useManagerTable = () => {
     isConfirmOpen,
     selectedItem,
     newStatus,
+    reason,
+    setReason,
     fetchDados,
-    updateStatus,
+    changeStatus,
     setIsConfirmOpen,
     setSelectedItem,
     setNewStatus,
