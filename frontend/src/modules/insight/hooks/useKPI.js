@@ -3,21 +3,26 @@ import axiosInstance from "services/axios";
 
 // Funções de transformação de dados
 
-// Converte milissegundos para horas com 1 casa decimal
+// Converte milissegundos para minutos
 const msToMinutes = (ms) => {
   return parseFloat((ms / (1000 * 60)).toFixed(1));
 };
 
+// Converte minutos para o formato XminYs
+export const formatXminYs = (mins) => {
+  const totalSeconds = Math.floor(mins * 60);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}m ${seconds.toString().padStart(2, "0")}s`;
+};
+
 // Transforma dados de tempo médio para o formato de KPI Card
-const transformAverageTimeToKPICard = (data, previousData) => {
+const transformAverageTimeToKPICard = (data) => {
   if (!data || data.length === 0) {
     return {
       title: "Tempo Médio de Tratativa",
       value: 0,
       unit: "minutos",
-      trend: "neutral",
-      trendValue: 0,
-      previousValue: 0,
       icon: "clock",
     };
   }
@@ -27,41 +32,26 @@ const transformAverageTimeToKPICard = (data, previousData) => {
     data.reduce((sum, item) => sum + item.avgDuration, 0) / data.length;
   const avgMinutes = msToMinutes(totalAvgDuration);
 
-  // Calcula a média anterior se disponível
-  let previousAvgMinutes = 0;
-  if (previousData && previousData.length > 0) {
-    const prevTotalAvgDuration =
-      previousData.reduce((sum, item) => sum + item.avgDuration, 0) /
-      previousData.length;
-    previousAvgMinutes = msToMinutes(prevTotalAvgDuration);
-  }
-
   return {
     title: "Tempo Médio de Tratativa",
     value: avgMinutes,
-    unit: "minutos",
-    previousValue: previousAvgMinutes,
     icon: "clock",
   };
 };
 
 // Transforma dados de volume para o formato de KPI Card
-const transformVolumeToKPICard = (data, previousData, periodLabel) => {
+const transformVolumeToKPICard = (data, periodLabel) => {
   if (!data) {
     return {
       title: "Volume por Período",
       value: 0,
       unit: "demandas",
-      trend: "neutral",
-      trendValue: 0,
-      previousValue: 0,
       period: periodLabel || "período",
       icon: "chart-bar",
     };
   }
 
   const currentCount = data.count || 0;
-  const previousCount = previousData?.count || 0;
 
   const periodMap = {
     day: "dia",
@@ -73,8 +63,6 @@ const transformVolumeToKPICard = (data, previousData, periodLabel) => {
     title: "Volume por Período",
     value: currentCount,
     unit: "demandas",
-
-    previousValue: previousCount,
     period: periodMap[data.period] || periodLabel || "período",
     icon: "chart-bar",
   };
@@ -101,7 +89,7 @@ const transformTeamPerformanceToHeatmap = (data) => {
   }
 
   // Cria o heatmap apenas com tempo médio e volume
-  // (satisfação e qualidade não estão disponíveis na API)
+
   const result = [];
 
   data.forEach((item) => {
@@ -124,7 +112,7 @@ const transformTeamPerformanceToHeatmap = (data) => {
     result.push({
       colaborador: item.userName,
       metrica: "Atividade",
-      valor: 85, // Valor padrão
+      valor: "Em Construção",
     });
   });
 

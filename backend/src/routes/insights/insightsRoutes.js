@@ -92,13 +92,18 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
       if (!project)
         return res.status(404).json({ error: "Projeto não encontrado." });
 
-      const assignment = project.assignments.find(
-        (a) => a._id.toString() === assignmentId
-      );
-      if (!assignment)
-        return res.status(404).json({ error: "Assignment não encontrado." });
+      const users = await usersCollection
+        .find({ "project._id": new ObjectId(projectId) })
+        .project({ _id: 1, name: 1 })
+        .toArray();
 
-      const assignedUserIds = assignment.assignedUsers.map((u) => u.userId);
+      if (!users.length) {
+        return res
+          .status(404)
+          .json({ error: "Nenhum usuário encontrado para este projeto." });
+      }
+
+      const assignedUserIds = users.map((u) => u._id);
 
       const match = {
         "project._id": new ObjectId(projectId),

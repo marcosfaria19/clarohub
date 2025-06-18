@@ -7,6 +7,7 @@ import {
 import { motion } from "framer-motion";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import { formatUserName } from "modules/shared/utils/formatUsername";
+import { formatXminYs } from "modules/insight/hooks/useKPI";
 
 const TeamHeatmap = React.memo(
   ({ data = [], className = "", loading = false }) => {
@@ -57,7 +58,7 @@ const TeamHeatmap = React.memo(
     );
 
     const formatValue = (metrica, valor) => {
-      if (metrica === "Tempo Médio") return `${valor.toFixed(1)} min`;
+      if (metrica === "Tempo Médio") return `${formatXminYs(valor)}`;
       if (metrica === "Atividade") return `${valor}%`;
       return valor.toString();
     };
@@ -121,7 +122,7 @@ const TeamHeatmap = React.memo(
       <Card className={className}>
         <div className="p-6">
           <CardTitle className="mb-4 text-lg font-medium text-foreground">
-            Comparação de Colaboradores
+            Métricas da Equipe
           </CardTitle>
         </div>
         <CardContent className="pt-0">
