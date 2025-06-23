@@ -75,10 +75,6 @@ export default function EditIdeaModal({
   useEffect(() => {
     if (idea && typeof idea.anonymous === "number") {
       setIsAnonymous(idea.anonymous === 1);
-      console.log("EditIdeaModal: Estado anônimo inicializado", {
-        ideaId: idea._id,
-        anonymous: idea.anonymous === 1,
-      });
     }
   }, [idea]);
 
@@ -190,36 +186,23 @@ export default function EditIdeaModal({
       }
 
       if (isLoading || isUpdating) {
-        console.log("EditIdeaModal: Já está processando, ignorando submit");
         return;
       }
 
       // Validação final
       if (!validateFields()) {
-        console.log("EditIdeaModal: Validação falhou", fieldErrors);
         setError("Por favor, corrija os erros nos campos destacados");
         return;
       }
 
       // Verificar se há mudanças
       if (!hasChanges) {
-        console.log("EditIdeaModal: Nenhuma mudança detectada");
         onClose();
         return;
       }
 
       setIsLoading(true);
       setError(null);
-
-      console.log("EditIdeaModal: Iniciando salvamento", {
-        ideaId: idea._id,
-        changes: {
-          title: editCard.title,
-          description: editCard.description,
-          subject: editCard.subject,
-          anonymous: isAnonymous ? 1 : 0,
-        },
-      });
 
       try {
         const cardToUpdate = {
@@ -231,8 +214,6 @@ export default function EditIdeaModal({
         const result = await handleUpdateCard(cardToUpdate, idea._id);
 
         if (result.success) {
-          console.log("EditIdeaModal: Atualização bem-sucedida", result.data);
-
           // Notificar componente pai para atualização otimista
           if (onUpdate) {
             await onUpdate(result.data);
@@ -256,7 +237,6 @@ export default function EditIdeaModal({
       isLoading,
       isUpdating,
       validateFields,
-      fieldErrors,
       hasChanges,
       onClose,
       editCard,

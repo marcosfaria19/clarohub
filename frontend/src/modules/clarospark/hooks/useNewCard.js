@@ -57,10 +57,6 @@ export function useNewCard(subjects = [], userId, initialIdea = null) {
       };
 
       setEditCard(initialEditCard);
-      console.log("useNewCard: EditCard inicializado", {
-        ideaId: initialIdea._id,
-        title: initialEditCard.title,
-      });
     }
   }, [initialIdea, subjects]);
 
@@ -107,11 +103,6 @@ export function useNewCard(subjects = [], userId, initialIdea = null) {
    */
   const handleAddCard = useCallback(
     async (cardData) => {
-      console.log("useNewCard: Iniciando adição de card", {
-        title: cardData.title,
-        subject: cardData.subject,
-      });
-
       // Validação dos dados
       const validation = validateCardData(cardData);
       if (!validation.isValid) {
@@ -129,8 +120,6 @@ export function useNewCard(subjects = [], userId, initialIdea = null) {
         });
 
         if (response.status === 201) {
-          console.log("useNewCard: Card adicionado com sucesso", response.data);
-
           // Reset do formulário
           resetNewCard();
 
@@ -177,12 +166,6 @@ export function useNewCard(subjects = [], userId, initialIdea = null) {
    */
   const handleUpdateCard = useCallback(
     async (cardData, ideaId) => {
-      console.log("useNewCard: Iniciando atualização de card", {
-        ideaId,
-        title: cardData.title,
-        subject: cardData.subject,
-      });
-
       if (!ideaId) {
         console.error("useNewCard: ID da ideia não fornecido");
         return {
@@ -211,8 +194,6 @@ export function useNewCard(subjects = [], userId, initialIdea = null) {
         );
 
         if (response.status === 200) {
-          console.log("useNewCard: Card atualizado com sucesso", response.data);
-
           return {
             success: true,
             data: response.data,

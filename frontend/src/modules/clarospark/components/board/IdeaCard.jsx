@@ -124,10 +124,6 @@ function IdeaCard(props) {
     (e) => {
       e.stopPropagation();
       if (ideaId && user?.userId && !isUpdating) {
-        console.log("IdeaCard: Processando like", {
-          ideaId,
-          userId: user.userId,
-        });
         handleLike(ideaId, user.userId).catch((error) => {
           console.error("IdeaCard: Erro ao processar like", error);
         });

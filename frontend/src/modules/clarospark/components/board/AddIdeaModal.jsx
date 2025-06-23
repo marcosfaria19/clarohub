@@ -115,25 +115,17 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
       e.preventDefault();
 
       if (isLoading) {
-        console.log("AddIdeaModal: Já está processando, ignorando submit");
         return;
       }
 
       // Validação final
       if (!validateFields()) {
-        console.log("AddIdeaModal: Validação falhou", fieldErrors);
         setError("Por favor, corrija os erros nos campos destacados");
         return;
       }
 
       setIsLoading(true);
       setError(null);
-
-      console.log("AddIdeaModal: Iniciando criação de ideia", {
-        title: newCard.title,
-        subject: newCard.subject,
-        anonymous: isAnonymous,
-      });
 
       try {
         const cardToSubmit = {
@@ -144,7 +136,6 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
         const result = await handleAddCard(cardToSubmit);
 
         if (result.success) {
-          console.log("AddIdeaModal: Ideia criada com sucesso", result.data);
           onClose(); // Fechar modal após sucesso
         } else {
           throw new Error(result.errors?.[0] || "Falha ao criar ideia");
@@ -156,15 +147,7 @@ export default function AddIdeaModal({ subjects, onClose, userName, userId }) {
         setIsLoading(false);
       }
     },
-    [
-      isLoading,
-      validateFields,
-      fieldErrors,
-      newCard,
-      isAnonymous,
-      handleAddCard,
-      onClose,
-    ],
+    [isLoading, validateFields, newCard, isAnonymous, handleAddCard, onClose],
   );
 
   return (
