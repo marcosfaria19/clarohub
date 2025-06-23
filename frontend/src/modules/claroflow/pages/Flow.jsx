@@ -115,7 +115,7 @@ export default function Claroflow() {
           ) : (
             <BoardLayout
               assignmentId={state.selectedTab}
-              project={user.project}
+              project={selectedProject}
               assignment={state.assignments.find(
                 (a) => a._id === state.selectedTab,
               )}

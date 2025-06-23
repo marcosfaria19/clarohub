@@ -237,7 +237,6 @@ module.exports = (projectsCollection, usersCollection, tasksCollection) => {
         }
 
         if (blockedRemovals.length > 0) {
-          
           return res.status(400).json({
             error:
               "Não é possível aplicar as alterações devido a usuários com tarefas em andamento.",
