@@ -4,10 +4,10 @@ import { ScrollArea } from "modules/shared/components/ui/scroll-area";
 import DraggableMember from "./DraggableMember";
 
 const TeamPanel = ({
-  members,
+  members = [],
   searchQuery,
   onSearchChange,
-  assignments,
+  assignments = [],
   className,
 }) => {
   return (

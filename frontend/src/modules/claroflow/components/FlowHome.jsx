@@ -11,26 +11,57 @@ import {
 } from "modules/shared/components/ui/tooltip";
 import { formatUserName } from "modules/shared/utils/formatUsername";
 import { motion } from "framer-motion";
-import { User } from "lucide-react";
+import { User, RefreshCw } from "lucide-react";
 import { Badge } from "modules/shared/components/ui/badge";
+import { Button } from "modules/shared/components/ui/button";
+import { toast } from "sonner";
 
 export function FlowHome({ project }) {
-  const { getUsersByProjectId, loading, error } = useUsers();
+  const {
+    getUsersByProjectId,
+    loading,
+    error,
+    isValidating,
+    invalidateUsersCache,
+  } = useUsers();
   const { theme } = useTheme();
 
   const projectUsers = useMemo(() => {
     return project ? getUsersByProjectId(project._id) : [];
   }, [project, getUsersByProjectId]);
 
-  // Aleatoriedade estável
+  // Aleatoriedade estável baseada no ID do projeto
   const shuffledUsers = useMemo(() => {
+    if (!projectUsers.length) return [];
+
     const usersCopy = [...projectUsers];
+    // Usa o ID do projeto como seed para aleatoriedade consistente
+    const seed = project?._id ? project._id.slice(-8) : "default";
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      const char = seed.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+
+    // Fisher-Yates shuffle com seed
     for (let i = usersCopy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      hash = (hash * 9301 + 49297) % 233280;
+      const j = Math.floor((hash / 233280) * (i + 1));
       [usersCopy[i], usersCopy[j]] = [usersCopy[j], usersCopy[i]];
     }
+
     return usersCopy;
-  }, [projectUsers]);
+  }, [projectUsers, project?._id]);
+
+  const handleRefresh = async () => {
+    try {
+      await invalidateUsersCache();
+      toast.success("Dados da equipe atualizados!");
+    } catch (error) {
+      toast.error("Erro ao atualizar dados da equipe");
+    }
+  };
 
   return (
     <div className="relative flex min-h-[75vh] w-full select-none flex-col overflow-hidden bg-card bg-cover bg-center">
@@ -68,8 +99,8 @@ export function FlowHome({ project }) {
 
           <p className="mx-auto max-w-2xl text-base font-medium leading-relaxed text-muted-foreground sm:text-lg md:text-xl lg:text-2xl">
             Acompanhamento de demandas •{" "}
-            <span className="text-primary-flow font-bold">
-              Equipe {project.name}
+            <span className="font-bold text-primary-flow">
+              Equipe {project?.name || "Carregando..."}
             </span>
           </p>
         </div>
@@ -79,38 +110,61 @@ export function FlowHome({ project }) {
           projectUsers={projectUsers}
           loading={loading}
           error={error}
+          isValidating={isValidating}
+          onRefresh={handleRefresh}
         />
 
-        <FlowAvatars users={shuffledUsers} loading={loading} error={error} />
+        <FlowAvatars
+          users={shuffledUsers}
+          loading={loading}
+          error={error}
+          isValidating={isValidating}
+        />
       </div>
     </div>
   );
 }
-function FlowStats({ projectUsers, loading, error }) {
+
+function FlowStats({ projectUsers, loading, error, isValidating, onRefresh }) {
   return (
-    <div className="relative z-20 mb-4">
-      {loading ? (
+    <div className="relative z-20 mb-4 flex flex-col items-center gap-2">
+      {loading && !projectUsers.length ? (
         <div className="h-8 w-36 animate-pulse rounded-full bg-muted px-4 py-2 sm:h-9 sm:w-40" />
       ) : error ? (
-        <div className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          Erro ao carregar usuários
+        <div className="flex flex-col items-center gap-2">
+          <div className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            Erro ao carregar usuários
+          </div>
+          <Button onClick={onRefresh} variant="outline" size="sm">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Tentar Novamente
+          </Button>
         </div>
       ) : projectUsers.length ? (
-        <Badge className="flex items-center justify-center space-x-2 border border-border bg-background px-4 py-2">
-          <User className="text-primary-flow h-4 w-4" />
-          <span className="text-sm font-medium text-foreground">
-            {projectUsers.length} Membros ativos
-          </span>
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge className="flex items-center justify-center space-x-2 border border-border bg-background px-4 py-2">
+            <User className="h-4 w-4 text-primary-flow" />
+            <span className="text-sm font-medium text-foreground">
+              {projectUsers.length} Membros ativos
+            </span>
+          </Badge>
+
+          {isValidating && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <RefreshCw className="h-3 w-3 animate-spin" />
+              Atualizando...
+            </div>
+          )}
+        </div>
       ) : null}
     </div>
   );
 }
 
-function FlowAvatars({ users, loading, error }) {
+function FlowAvatars({ users, loading, error, isValidating }) {
   return (
     <div className="relative z-20 mt-4 flex -space-x-2">
-      {loading ? (
+      {loading && !users.length ? (
         <div className="relative z-20 mt-4 flex -space-x-2">
           {[...Array(5)].map((_, i) => (
             <div
@@ -124,7 +178,7 @@ function FlowAvatars({ users, loading, error }) {
         <div className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           Erro ao carregar usuários
         </div>
-      ) : (
+      ) : users.length > 0 ? (
         <>
           {users.slice(0, 5).map((user, index) => (
             <TooltipProvider key={user._id}>
@@ -139,7 +193,9 @@ function FlowAvatars({ users, loading, error }) {
                       ease: "easeOut",
                     }}
                   >
-                    <Avatar className="h-10 w-10 border-2 border-background shadow-lg transition-all duration-500 hover:scale-105 hover:border-primary/50 hover:shadow-xl sm:h-12 sm:w-12">
+                    <Avatar
+                      className={`h-10 w-10 border-2 border-background shadow-lg transition-all duration-500 hover:scale-105 hover:border-primary/50 hover:shadow-xl sm:h-12 sm:w-12 ${isValidating ? "opacity-75" : ""}`}
+                    >
                       <AvatarImage
                         src={user.avatar || "/placeholder-avatar.png"}
                         alt={user.NOME}
@@ -158,11 +214,17 @@ function FlowAvatars({ users, loading, error }) {
             </TooltipProvider>
           ))}
           {users.length > 5 && (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-background bg-gradient-to-br from-primary/20 to-secondary/20 font-medium text-foreground shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:shadow-xl sm:h-12 sm:w-12">
+            <div
+              className={`flex h-10 w-10 items-center justify-center rounded-full border-2 border-background bg-gradient-to-br from-primary/20 to-secondary/20 font-medium text-foreground shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:shadow-xl sm:h-12 sm:w-12 ${isValidating ? "opacity-75" : ""}`}
+            >
               <span className="text-xs sm:text-sm">+{users.length - 5}</span>
             </div>
           )}
         </>
+      ) : (
+        <div className="text-sm text-muted-foreground">
+          Nenhum membro encontrado neste projeto
+        </div>
       )}
     </div>
   );
