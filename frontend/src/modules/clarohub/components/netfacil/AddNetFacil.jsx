@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import axiosInstance from "services/axios";
+import { useMemo } from "react";
+import useSWR from "swr";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "modules/shared/components/ui/select";
+import { SWR_KEYS } from "services/swrConfig";
 
 export default function AddNetFacil({
   show,
@@ -26,22 +27,14 @@ export default function AddNetFacil({
   handleChange,
   isEditMode,
 }) {
-  const [sgdOptions, setSgdOptions] = useState([]);
+  // SWR para buscar opções do SGD
+  const { data: sgdData } = useSWR(SWR_KEYS.NETFACIL_SGD);
 
-  useEffect(() => {
-    const fetchSgdOptions = async () => {
-      try {
-        const response = await axiosInstance.get("/netfacilsgd");
-        const uniqueSgds = [
-          ...new Set(response.data.map((item) => item.ID_SGD)),
-        ];
-        setSgdOptions(uniqueSgds);
-      } catch (error) {
-        console.error("Erro ao buscar dados do SGD:", error);
-      }
-    };
-    fetchSgdOptions();
-  }, []);
+  // Processar opções únicas do SGD
+  const sgdOptions = useMemo(() => {
+    if (!sgdData) return [];
+    return [...new Set(sgdData.map((item) => item.ID_SGD))];
+  }, [sgdData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
