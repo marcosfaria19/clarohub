@@ -1,5 +1,5 @@
 import { SWRConfig } from "swr";
-import axiosInstance from "./axios";
+import axiosInstance from "services/axios";
 
 // Fetcher function que usa o axiosInstance configurado
 const fetcher = async (url) => {
@@ -15,16 +15,16 @@ const fetcher = async (url) => {
 // Configuração global do SWR
 export const swrConfig = {
   fetcher,
-  // Cache por 5 minutos (300 segundos)
-  dedupingInterval: 30000,
-  // Revalidar quando a janela ganha foco
-  revalidateOnFocus: true,
+  // Cache por 5 minutos (300 segundos) - mantido para dados que raramente mudam
+  dedupingInterval: 300000,
+  // Revalidar quando a janela ganha foco - desabilitado para dados estáticos
+  revalidateOnFocus: false,
   // Revalidar quando reconecta à internet
   revalidateOnReconnect: true,
   // Não revalidar automaticamente ao montar (evita requisições desnecessárias)
   revalidateOnMount: true,
-  // Intervalo de revalidação em background (10 minutos)
-  refreshInterval: 60000,
+  // Intervalo de revalidação em background (30 minutos) - aumentado para dados estáticos
+  refreshInterval: 1800000,
   // Configurações de retry
   errorRetryCount: 3,
   errorRetryInterval: 5000,
@@ -58,6 +58,16 @@ export const SWR_KEYS = {
   MANAGERS: "/users/managers",
   USER_STATS: (userId) => `/users/${userId}/stats`,
   USER_AVATAR: (userId) => `/users/${userId}/avatar`,
+  // NetFacil keys
+  NETFACIL_DATA: "/netsmsfacil",
+  NETFACIL_SGD: "/netfacilsgd",
+  // Notifications keys
+  NOTIFICATIONS: (userId) => `/notifications/${userId}`,
+  NOTIFICATIONS_MARK_ALL_READ: (userId) =>
+    `/notifications/${userId}/mark-all-read`,
+  NOTIFICATIONS_HIDE_ALL: (userId) => `/notifications/${userId}/hide-all`,
+  NOTIFICATION_HIDE: (notificationId) =>
+    `/notifications/${notificationId}/hide`,
 };
 
 // Função helper para invalidar cache específico
