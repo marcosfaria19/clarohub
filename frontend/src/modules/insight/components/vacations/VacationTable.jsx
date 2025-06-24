@@ -1,16 +1,17 @@
-import React, { useMemo, useState } from "react";
-
+import React, { useState, useMemo } from "react";
+import { formatDateRange } from "modules/insight/utils/vacationUtils";
+import { capitalizeFirstLetters } from "modules/shared/utils/formatUsername";
 import { useUsers } from "modules/claroflow/hooks/useUsers";
+import { Badge } from "modules/shared/components/ui/badge";
+import VacationTypeBadge from "./VacationTypeBadge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "modules/shared/components/ui/table";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "modules/shared/components/ui/card";
 import { Button } from "modules/shared/components/ui/button";
-import { Input } from "modules/shared/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -18,330 +19,180 @@ import {
   SelectTrigger,
   SelectValue,
 } from "modules/shared/components/ui/select";
-import { Badge } from "modules/shared/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "modules/shared/components/ui/card";
-import { Search, Download, RefreshCw } from "lucide-react";
-import { toast } from "sonner";
-import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
+import { AlertCircle } from "lucide-react";
+import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 
-export default function VacationTable() {
-  const {
-    users,
-    loading,
-    error,
+const VacationTable = ({
+  vacations = [],
+  onDeleteVacation,
+  onEditVacation,
+}) => {
+  const [companyFilter, setCompanyFilter] = useState("all");
+  const [showNoVacations, setShowNoVacations] = useState(false);
+  const { users, loading: usersLoading } = useUsers();
 
-    isValidating,
-    invalidateUsersCache,
-  } = useUsers();
+  const allData = useMemo(() => {
+    const vacationUserIds = new Set(vacations.map((v) => v.employeeId));
 
-  const [filters, setFilters] = useState({
-    search: "",
-    status: "all",
-    department: "all",
-  });
+    const usersWithoutVacation = users
+      .filter((user) => !vacationUserIds.has(user._id))
+      .filter(
+        (user) =>
+          user.GESTOR !== "ELVIS CLEBER ALVES DA SILVA" &&
+          user.GESTOR !== "RODRIGO JOSE RODRIGUES GIL",
+      )
+      .filter((user) => {
+        if (companyFilter === "procisa") return user.LOGIN?.startsWith("Z");
+        if (companyFilter === "claro") return !user.LOGIN?.startsWith("Z");
+        return true;
+      })
+      .map((user) => ({
+        _id: user._id,
+        nome: user.NOME,
+        gestor: user.GESTOR,
+        login: user.LOGIN,
+        noVacation: true,
+      }));
 
-  // Função para atualizar dados manualmente
-  const handleRefresh = async () => {
-    try {
-      await invalidateUsersCache();
-      toast.success("Dados atualizados com sucesso!");
-    } catch (error) {
-      toast.error("Erro ao atualizar dados");
-    }
-  };
+    const vacationsFiltered = vacations
+      .filter((vacation) => {
+        if (companyFilter === "procisa") return vacation.login?.startsWith("Z");
+        if (companyFilter === "claro") return !vacation.login?.startsWith("Z");
+        return true;
+      })
+      .map((vacation) => ({
+        ...vacation,
+        noVacation: false,
+      }));
 
-  // Filtros aplicados aos usuários
-  const filteredUsers = useMemo(() => {
-    if (!users || !Array.isArray(users)) return [];
+    return [...usersWithoutVacation, ...vacationsFiltered];
+  }, [users, vacations, companyFilter]);
 
-    return users.filter((user) => {
-      const matchesSearch =
-        user.NOME?.toLowerCase().includes(filters.search.toLowerCase()) ||
-        user.LOGIN?.toLowerCase().includes(filters.search.toLowerCase());
+  const displayData = useMemo(() => {
+    return allData.filter((item) => item.noVacation === showNoVacations);
+  }, [allData, showNoVacations]);
 
-      const matchesStatus =
-        filters.status === "all" ||
-        (filters.status === "active" && user.active) ||
-        (filters.status === "inactive" && !user.active);
-
-      const matchesDepartment =
-        filters.department === "all" || user.department === filters.department;
-
-      return matchesSearch && matchesStatus && matchesDepartment;
-    });
-  }, [users, filters]);
-
-  // Departamentos únicos para o filtro
-  const departments = useMemo(() => {
-    if (!users || !Array.isArray(users)) return [];
-
-    const uniqueDepartments = [
-      ...new Set(users.map((user) => user.department).filter(Boolean)),
+  const columns = useMemo(() => {
+    const baseColumns = [
+      {
+        accessorKey: "nome",
+        header: "Colaborador",
+        sorted: true,
+        cell: ({ row }) => capitalizeFirstLetters(row.original.nome),
+      },
+      {
+        accessorKey: "login",
+        header: "Empresa",
+        cell: ({ row }) => (
+          <Badge
+            variant={row.original.login?.startsWith("Z") ? "basic" : "manager"}
+          >
+            {row.original.login?.startsWith("Z") ? "Procisa" : "Claro"}
+          </Badge>
+        ),
+      },
     ];
 
-    return uniqueDepartments;
-  }, [users]);
-
-  // Estatísticas dos usuários
-  const stats = useMemo(() => {
-    if (!users || !Array.isArray(users)) {
-      return { total: 0, active: 0, onVacation: 0 };
+    if (!showNoVacations) {
+      baseColumns.push(
+        {
+          accessorKey: "periodo",
+          header: "Período",
+          cell: ({ row }) => {
+            return formatDateRange(
+              row.original.startDate,
+              row.original.endDate,
+            );
+          },
+        },
+        {
+          accessorKey: "type",
+          header: "Tipo",
+          cell: ({ row }) => <VacationTypeBadge type={row.original.type} />,
+        },
+        {
+          accessorKey: "reason",
+          header: "OBS",
+          cell: ({ row }) => (
+            <div
+              title={row.original.reason}
+              className="max-w-[300px] overflow-hidden truncate whitespace-nowrap"
+            >
+              {row.original.reason}
+            </div>
+          ),
+        },
+      );
     }
 
-    return {
-      total: users.length,
-      active: users.filter((user) => user.active).length,
-      onVacation: users.filter((user) => user.onVacation).length,
-    };
-  }, [users]);
+    return baseColumns;
+  }, [showNoVacations]);
 
-  // Função para exportar dados
-  const handleExport = () => {
-    try {
-      const csvContent = [
-        ["Nome", "Login", "Departamento", "Status", "Férias"].join(","),
-        ...filteredUsers.map((user) =>
-          [
-            user.NOME || "",
-            user.LOGIN || "",
-            user.department || "",
-            user.active ? "Ativo" : "Inativo",
-            user.onVacation ? "Sim" : "Não",
-          ].join(","),
-        ),
-      ].join("\n");
-
-      const blob = new Blob([csvContent], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `usuarios_${new Date().toISOString().split("T")[0]}.csv`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-
-      toast.success("Dados exportados com sucesso!");
-    } catch (error) {
-      toast.error("Erro ao exportar dados");
-    }
-  };
-
-  if (loading && !users.length) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card className="m-4">
-        <CardContent className="pt-6">
-          <div className="text-center">
-            <p className="mb-4 text-destructive">{error}</p>
-            <Button onClick={handleRefresh} variant="outline">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Tentar Novamente
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  // Opções de filtro de empresa com verificação preventiva
+  const companyFilterOptions = [
+    { value: "all", label: "Todas" },
+    { value: "procisa", label: "Procisa" },
+    { value: "claro", label: "Claro" },
+  ].filter((option) => option.value && option.value.trim() !== "");
 
   return (
-    <div className="space-y-6 p-4">
-      {/* Header com estatísticas */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total de Usuários
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Usuários Ativos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {stats.active}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Em Férias</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
-              {stats.onVacation}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Controles de filtro e ações */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-            <CardTitle>Gerenciamento de Usuários</CardTitle>
-            <div className="flex gap-2">
-              <Button
-                onClick={handleRefresh}
-                variant="outline"
-                size="sm"
-                disabled={isValidating}
-              >
-                <RefreshCw
-                  className={`mr-2 h-4 w-4 ${isValidating ? "animate-spin" : ""}`}
-                />
-                Atualizar
-              </Button>
-              <Button onClick={handleExport} variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Exportar
-              </Button>
-            </div>
+    <Card>
+      <CardHeader>
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+            <CardTitle className="mb-1">Férias Registradas</CardTitle>
+            <CardDescription>
+              Visualize e gerencie as férias dos colaboradores
+            </CardDescription>
           </div>
-        </CardHeader>
-
-        <CardContent>
-          {/* Filtros */}
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
-              <Input
-                placeholder="Buscar por nome ou login..."
-                value={filters.search}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, search: e.target.value }))
-                }
-                className="pl-10"
-              />
-            </div>
-
-            <Select
-              value={filters.status}
-              onValueChange={(value) =>
-                setFilters((prev) => ({ ...prev, status: value }))
-              }
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={showNoVacations ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowNoVacations(!showNoVacations)}
             >
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Status" />
+              {showNoVacations ? "Mostrar Férias" : "Sem Férias"}
+            </Button>
+            <Select value={companyFilter} onValueChange={setCompanyFilter}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Empresa" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os Status</SelectItem>
-                <SelectItem value="active">Ativos</SelectItem>
-                <SelectItem value="inactive">Inativos</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={filters.department}
-              onValueChange={(value) =>
-                setFilters((prev) => ({ ...prev, department: value }))
-              }
-            >
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Departamento" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os Departamentos</SelectItem>
-                {departments.map((dept) => (
-                  <SelectItem key={dept} value={dept}>
-                    {dept}
+                {companyFilterOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-
-          {/* Tabela */}
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Login</TableHead>
-                  <TableHead>Departamento</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Férias</TableHead>
-                  <TableHead>Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="py-8 text-center">
-                      {filters.search ||
-                      filters.status !== "all" ||
-                      filters.department !== "all"
-                        ? "Nenhum usuário encontrado com os filtros aplicados."
-                        : "Nenhum usuário encontrado."}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredUsers.map((user) => (
-                    <TableRow key={user._id}>
-                      <TableCell className="font-medium">
-                        {user.NOME || "N/A"}
-                      </TableCell>
-                      <TableCell>{user.LOGIN || "N/A"}</TableCell>
-                      <TableCell>{user.department || "N/A"}</TableCell>
-                      <TableCell>
-                        <Badge variant={user.active ? "default" : "secondary"}>
-                          {user.active ? "Ativo" : "Inativo"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={user.onVacation ? "destructive" : "outline"}
-                        >
-                          {user.onVacation ? "Sim" : "Não"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            Editar
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            Detalhes
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {displayData.length === 0 ? (
+          <div className="flex h-32 flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">
+            <AlertCircle className="mb-2 h-10 w-10 text-muted-foreground/50" />
+            <h3 className="font-medium">Nenhum registro encontrado</h3>
+            <p className="text-sm text-muted-foreground">
+              Tente ajustar os filtros de busca
+            </p>
           </div>
-
-          {/* Indicador de carregamento durante revalidação */}
-          {isValidating && (
-            <div className="flex items-center justify-center py-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <RefreshCw className="h-4 w-4 animate-spin" />
-                Atualizando dados...
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+        ) : (
+          <TabelaPadrao
+            columns={columns}
+            data={displayData}
+            actions={!showNoVacations}
+            onEdit={onEditVacation}
+            onDelete={onDeleteVacation}
+            filterInput={true}
+            pagination={true}
+            isLoading={usersLoading}
+            columnFilter={false}
+          />
+        )}
+      </CardContent>
+    </Card>
   );
-}
+};
+
+export default VacationTable;

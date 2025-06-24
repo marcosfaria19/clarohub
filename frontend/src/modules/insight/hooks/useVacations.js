@@ -1,108 +1,111 @@
-import { useState, useCallback, useEffect } from "react";
+import useSWR from "swr";
+import { useCallback } from "react";
 import axiosInstance from "services/axios";
 
-export function useVacations() {
-  const [vacations, setVacations] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+// Fetcher function for SWR
+const fetcher = async (url) => {
+  const response = await axiosInstance.get(url);
+  return response.data;
+};
 
-  const fetchVacations = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get("/vacations");
-      setVacations(response.data);
-      setError(null);
-      return response.data;
-    } catch (err) {
-      console.error("Erro ao buscar férias:", err);
-      setError("Erro ao buscar férias");
-      return [];
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+export function useVacations() {
+  // Use SWR for data fetching with automatic revalidation
+  const {
+    data: vacations = [],
+    error,
+    isLoading: loading,
+    isValidating,
+    mutate,
+  } = useSWR("/vacations", fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
+    dedupingInterval: 5000,
+    errorRetryCount: 3,
+    errorRetryInterval: 1000,
+  });
+
+  // Invalidate cache function
+  const invalidateVacationsCache = useCallback(async () => {
+    await mutate();
+  }, [mutate]);
 
   const fetchUserVacations = useCallback(async (userId) => {
     if (!userId) return [];
-    setLoading(true);
     try {
       const response = await axiosInstance.get(`/vacations/user/${userId}`);
-      setError(null);
-      return response.data;
+      return response.data || [];
     } catch (err) {
       console.error(`Erro ao buscar férias do usuário ${userId}:`, err);
-      setError(`Erro ao buscar férias do usuário`);
-      return [];
-    } finally {
-      setLoading(false);
+      throw new Error(`Erro ao buscar férias do usuário`);
     }
   }, []);
 
   const scheduleVacation = useCallback(
     async (vacationData) => {
-      setLoading(true);
       try {
         const response = await axiosInstance.post("/vacations", vacationData);
-        setError(null);
-        // Atualiza a lista completa após inserir
-        await fetchVacations();
+        // Revalidate cache after successful creation
+        await mutate();
         return response.data;
       } catch (err) {
         console.error("Erro ao agendar férias:", err);
-        setError("Erro ao agendar férias");
-        throw err;
-      } finally {
-        setLoading(false);
+        throw new Error("Erro ao agendar férias");
       }
     },
-    [fetchVacations],
+    [mutate],
   );
 
   const updateVacation = useCallback(
     async (vacationId, vacationData) => {
-      setLoading(true);
       try {
         const response = await axiosInstance.put(
           `/vacations/${vacationId}`,
           vacationData,
         );
-        setVacations((prev) =>
-          prev.map((vacation) =>
-            vacation._id === vacationId ? response.data : vacation,
-          ),
+        // Optimistic update
+        await mutate(
+          (currentData) =>
+            currentData?.map((vacation) =>
+              vacation._id === vacationId ? response.data : vacation,
+            ) || [],
+          false,
         );
-        setError(null);
-        // Atualiza a lista completa após inserir
-        await fetchVacations();
+        // Revalidate to ensure consistency
+        await mutate();
         return response.data;
       } catch (err) {
         console.error(`Erro ao atualizar férias ${vacationId}:`, err);
-        setError("Erro ao atualizar férias");
-        throw err;
-      } finally {
-        setLoading(false);
+        // Revalidate on error to restore correct state
+        await mutate();
+        throw new Error("Erro ao atualizar férias");
       }
     },
-    [fetchVacations],
+    [mutate],
   );
 
-  const deleteVacation = useCallback(async (vacationId) => {
-    setLoading(true);
-    try {
-      await axiosInstance.delete(`/vacations/${vacationId}`);
-      setVacations((prev) =>
-        prev.filter((vacation) => vacation._id !== vacationId),
-      );
-      setError(null);
-      return true;
-    } catch (err) {
-      console.error(`Erro ao excluir férias ${vacationId}:`, err);
-      setError("Erro ao excluir férias");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const deleteVacation = useCallback(
+    async (vacationId) => {
+      try {
+        await axiosInstance.delete(`/vacations/${vacationId}`);
+        // Optimistic update
+        await mutate(
+          (currentData) =>
+            currentData?.filter((vacation) => vacation._id !== vacationId) ||
+            [],
+          false,
+        );
+        // Revalidate to ensure consistency
+        await mutate();
+        return true;
+      } catch (err) {
+        console.error(`Erro ao excluir férias ${vacationId}:`, err);
+        // Revalidate on error to restore correct state
+        await mutate();
+        throw new Error("Erro ao excluir férias");
+      }
+    },
+    [mutate],
+  );
 
   const checkVacationOverlap = useCallback(
     async (userId, startDate, endDate, excludeVacationId = null) => {
@@ -116,21 +119,18 @@ export function useVacations() {
         return response.data;
       } catch (err) {
         console.error("Erro ao verificar sobreposição de férias:", err);
-        throw err;
+        throw new Error("Erro ao verificar sobreposição de férias");
       }
     },
     [],
   );
 
-  useEffect(() => {
-    fetchVacations();
-  }, [fetchVacations]);
-
   return {
-    vacations,
+    vacations: Array.isArray(vacations) ? vacations : [],
     loading,
-    error,
-    fetchVacations,
+    error: error?.message || null,
+    isValidating,
+    invalidateVacationsCache,
     fetchUserVacations,
     scheduleVacation,
     updateVacation,
