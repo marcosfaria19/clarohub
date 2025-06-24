@@ -1,7 +1,10 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import axiosInstance from "services/axios";
+import { useMemo, useCallback } from "react";
+import { SWR_KEYS, swrConfig } from "services/swrConfig";
+import useSWR from "swr";
 
-// Funções de transformação de dados
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
 
 // Converte milissegundos para minutos
 const msToMinutes = (ms) => {
@@ -15,6 +18,10 @@ export const formatXminYs = (mins) => {
   const seconds = totalSeconds % 60;
   return `${minutes}m ${seconds.toString().padStart(2, "0")}s`;
 };
+
+// ============================================================================
+// DATA TRANSFORMATION FUNCTIONS
+// ============================================================================
 
 // Transforma dados de tempo médio para o formato de KPI Card
 const transformAverageTimeToKPICard = (data) => {
@@ -88,8 +95,6 @@ const transformTeamPerformanceToHeatmap = (data) => {
     return [];
   }
 
-  // Cria o heatmap apenas com tempo médio e volume
-
   const result = [];
 
   data.forEach((item) => {
@@ -108,7 +113,6 @@ const transformTeamPerformanceToHeatmap = (data) => {
     });
 
     // Adiciona métricas de atividade
-
     result.push({
       colaborador: item.userName,
       metrica: "Atividade",
@@ -170,171 +174,43 @@ const transformIndividualRadarToChart = (data, teamData) => {
   ];
 };
 
-// Funções de API com tratamento de erros
-
-// Busca tempo médio de tratativa
-export const fetchAverageTime = async ({
-  period = "day",
-  userId,
-  projectId,
-  assignmentId,
-}) => {
-  try {
-    const params = { period, userId, projectId, assignmentId };
-    const response = await axiosInstance.get(`/insights/kpi/average-time`, {
-      params,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao buscar tempo médio:", error);
-    throw error;
-  }
-};
-
-// Busca performance da equipe
-export const fetchTeamPerformance = async ({
-  projectId,
-  assignmentId,
-  period = "day",
-}) => {
-  try {
-    const params = { projectId, assignmentId, period };
-    const response = await axiosInstance.get(`/insights/kpi/team-performance`, {
-      params,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao buscar performance da equipe:", error);
-    throw error;
-  }
-};
-
-// Busca volume da equipe
-export const fetchTeamVolume = async ({
-  projectId,
-  assignmentId,
-  period = "day",
-}) => {
-  try {
-    const params = { projectId, assignmentId, period };
-    const response = await axiosInstance.get(`/insights/kpi/team-volume`, {
-      params,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao buscar volume da equipe:", error);
-    throw error;
-  }
-};
-
-// Busca radar individual
-export const fetchIndividualRadar = async ({
-  userId,
-  projectId,
-  assignmentId,
-  period = "day",
-}) => {
-  try {
-    const params = { userId, projectId, assignmentId, period };
-    const response = await axiosInstance.get(`/insights/kpi/individual-radar`, {
-      params,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao buscar radar individual:", error);
-    throw error;
-  }
-};
-
-// Hooks para uso nos componentes
+// ============================================================================
+// INDIVIDUAL SWR HOOKS
+// ============================================================================
 
 // Hook para tempo médio de tratativa
 export const useAverageTime = (params = {}) => {
-  const [data, setData] = useState(null);
-  const [previousData, setPreviousData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
   const { period = "day", userId, projectId, assignmentId } = params;
 
-  // Função para buscar dados atuais
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const key = SWR_KEYS.KPI_AVERAGE_TIME(params);
 
-    try {
-      const result = await fetchAverageTime({
-        period,
-        userId,
-        projectId,
-        assignmentId,
-      });
-      setData(result);
-      return result;
-    } catch (err) {
-      setError(err);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, [period, userId, projectId, assignmentId]);
-
-  // Função para buscar dados do período anterior para comparação
-  const fetchPreviousData = useCallback(async () => {
-    let previousPeriod;
-
-    if (period === "day") {
-      // Dia anterior
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      previousPeriod = "day";
-    } else if (period === "week") {
-      // Semana anterior
-      previousPeriod = "week";
-    } else if (period === "month") {
-      // Mês anterior
-      previousPeriod = "month";
-    }
-
-    if (!previousPeriod) return null;
-
-    try {
-      const result = await fetchAverageTime({
-        period: previousPeriod,
-        userId,
-        projectId,
-        assignmentId,
-      });
-
-      setPreviousData(result);
-      return result;
-    } catch (err) {
-      console.error("Erro ao buscar dados anteriores:", err);
-      return null;
-    }
-  }, [period, userId, projectId, assignmentId]);
-
-  // Efeito para buscar dados quando os parâmetros mudam
-  useEffect(() => {
-    fetchData();
-    fetchPreviousData();
-  }, [fetchData, fetchPreviousData]);
+  const {
+    data,
+    error,
+    isLoading: loading,
+    isValidating,
+    mutate,
+  } = useSWR(
+    projectId && assignmentId ? key : null,
+    swrConfig.fetcher,
+    swrConfig,
+  );
 
   // Transforma os dados para o formato de KPI Card
   const kpiCardData = useMemo(() => {
-    return transformAverageTimeToKPICard(data, previousData);
-  }, [data, previousData]);
+    return transformAverageTimeToKPICard(data);
+  }, [data]);
 
   // Função para recarregar os dados
   const refetch = useCallback(() => {
-    return Promise.all([fetchData(), fetchPreviousData()]);
-  }, [fetchData, fetchPreviousData]);
+    return mutate();
+  }, [mutate]);
 
   return {
     data,
-    previousData,
     loading,
     error,
+    isValidating,
     kpiCardData,
     refetch,
   };
@@ -342,71 +218,21 @@ export const useAverageTime = (params = {}) => {
 
 // Hook para volume da equipe
 export const useTeamVolume = (params = {}) => {
-  const [data, setData] = useState(null);
-  const [previousData, setPreviousData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
   const { projectId, assignmentId, period = "day" } = params;
 
-  // Função para buscar dados atuais
-  const fetchData = useCallback(async () => {
-    if (!projectId || !assignmentId) return null;
+  const key = SWR_KEYS.KPI_TEAM_VOLUME(params);
 
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await fetchTeamVolume({ projectId, assignmentId, period });
-      setData(result);
-      return result;
-    } catch (err) {
-      setError(err);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, [projectId, assignmentId, period]);
-
-  // Função para buscar dados do período anterior para comparação
-  const fetchPreviousData = useCallback(async () => {
-    if (!projectId || !assignmentId) return null;
-
-    let previousPeriod;
-
-    if (period === "day") {
-      // Dia anterior
-      previousPeriod = "day";
-    } else if (period === "week") {
-      // Semana anterior
-      previousPeriod = "week";
-    } else if (period === "month") {
-      // Mês anterior
-      previousPeriod = "month";
-    }
-
-    if (!previousPeriod) return null;
-
-    try {
-      const result = await fetchTeamVolume({
-        projectId,
-        assignmentId,
-        period: previousPeriod,
-      });
-
-      setPreviousData(result);
-      return result;
-    } catch (err) {
-      console.error("Erro ao buscar dados anteriores:", err);
-      return null;
-    }
-  }, [projectId, assignmentId, period]);
-
-  // Efeito para buscar dados quando os parâmetros mudam
-  useEffect(() => {
-    fetchData();
-    fetchPreviousData();
-  }, [fetchData, fetchPreviousData]);
+  const {
+    data,
+    error,
+    isLoading: loading,
+    isValidating,
+    mutate,
+  } = useSWR(
+    projectId && assignmentId ? key : null,
+    swrConfig.fetcher,
+    swrConfig,
+  );
 
   // Transforma os dados para o formato de KPI Card
   const kpiCardData = useMemo(() => {
@@ -416,19 +242,19 @@ export const useTeamVolume = (params = {}) => {
       month: "mês",
     };
 
-    return transformVolumeToKPICard(data, previousData, periodMap[period]);
-  }, [data, previousData, period]);
+    return transformVolumeToKPICard(data, periodMap[period]);
+  }, [data, period]);
 
   // Função para recarregar os dados
   const refetch = useCallback(() => {
-    return Promise.all([fetchData(), fetchPreviousData()]);
-  }, [fetchData, fetchPreviousData]);
+    return mutate();
+  }, [mutate]);
 
   return {
     data,
-    previousData,
     loading,
     error,
+    isValidating,
     kpiCardData,
     refetch,
   };
@@ -436,39 +262,21 @@ export const useTeamVolume = (params = {}) => {
 
 // Hook para performance da equipe
 export const useTeamPerformance = (params = {}) => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
   const { projectId, assignmentId, period = "day" } = params;
 
-  // Função para buscar dados
-  const fetchData = useCallback(async () => {
-    if (!projectId || !assignmentId) return null;
+  const key = SWR_KEYS.KPI_TEAM_PERFORMANCE(params);
 
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await fetchTeamPerformance({
-        projectId,
-        assignmentId,
-        period,
-      });
-      setData(result);
-      return result;
-    } catch (err) {
-      setError(err);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, [projectId, assignmentId, period]);
-
-  // Efeito para buscar dados quando os parâmetros mudam
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  const {
+    data,
+    error,
+    isLoading: loading,
+    isValidating,
+    mutate,
+  } = useSWR(
+    projectId && assignmentId ? key : null,
+    swrConfig.fetcher,
+    swrConfig,
+  );
 
   // Transforma os dados para o formato do gráfico combinado
   const chartData = useMemo(() => {
@@ -482,13 +290,14 @@ export const useTeamPerformance = (params = {}) => {
 
   // Função para recarregar os dados
   const refetch = useCallback(() => {
-    return fetchData();
-  }, [fetchData]);
+    return mutate();
+  }, [mutate]);
 
   return {
     data,
     loading,
     error,
+    isValidating,
     chartData,
     heatmapData,
     refetch,
@@ -497,80 +306,68 @@ export const useTeamPerformance = (params = {}) => {
 
 // Hook para radar individual
 export const useIndividualRadar = (params = {}) => {
-  const [data, setData] = useState(null);
-  const [teamData, setTeamData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
   const { userId, projectId, assignmentId, period = "day" } = params;
 
-  // Função para buscar dados do radar individual
-  const fetchRadarData = useCallback(async () => {
-    if (!userId || !projectId || !assignmentId) return null;
+  const radarKey = SWR_KEYS.KPI_INDIVIDUAL_RADAR(params);
+  const teamKey = SWR_KEYS.KPI_TEAM_PERFORMANCE({
+    projectId,
+    assignmentId,
+    period,
+  });
 
-    setLoading(true);
-    setError(null);
+  const {
+    data: radarData,
+    error: radarError,
+    isLoading: radarLoading,
+    isValidating: radarValidating,
+    mutate: radarMutate,
+  } = useSWR(
+    userId && projectId && assignmentId ? radarKey : null,
+    swrConfig.fetcher,
+    swrConfig,
+  );
 
-    try {
-      const result = await fetchIndividualRadar({
-        userId,
-        projectId,
-        assignmentId,
-        period,
-      });
-      setData(result);
-      return result;
-    } catch (err) {
-      setError(err);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, [userId, projectId, assignmentId, period]);
+  const {
+    data: teamData,
+    error: teamError,
+    isLoading: teamLoading,
+    isValidating: teamValidating,
+    mutate: teamMutate,
+  } = useSWR(
+    projectId && assignmentId ? teamKey : null,
+    swrConfig.fetcher,
+    swrConfig,
+  );
 
-  // Função para buscar dados da equipe para comparação
-  const fetchTeamData = useCallback(async () => {
-    if (!projectId || !assignmentId) return null;
-
-    try {
-      const result = await fetchTeamPerformance({
-        projectId,
-        assignmentId,
-        period,
-      });
-      setTeamData(result);
-      return result;
-    } catch (err) {
-      console.error("Erro ao buscar dados da equipe:", err);
-      return null;
-    }
-  }, [projectId, assignmentId, period]);
-
-  // Efeito para buscar dados quando os parâmetros mudam
-  useEffect(() => {
-    fetchRadarData();
-    fetchTeamData();
-  }, [fetchRadarData, fetchTeamData]);
+  // Estados combinados
+  const loading = radarLoading || teamLoading;
+  const error = radarError || teamError;
+  const isValidating = radarValidating || teamValidating;
 
   // Transforma os dados para o formato do gráfico de radar
   const radarChartData = useMemo(() => {
-    return transformIndividualRadarToChart(data, teamData);
-  }, [data, teamData]);
+    return transformIndividualRadarToChart(radarData, teamData);
+  }, [radarData, teamData]);
 
   // Função para recarregar os dados
   const refetch = useCallback(() => {
-    return Promise.all([fetchRadarData(), fetchTeamData()]);
-  }, [fetchRadarData, fetchTeamData]);
+    return Promise.all([radarMutate(), teamMutate()]);
+  }, [radarMutate, teamMutate]);
 
   return {
-    data,
+    data: radarData,
     teamData,
     loading,
     error,
+    isValidating,
     radarChartData,
     refetch,
   };
 };
+
+// ============================================================================
+// MAIN COMPOSITE HOOK
+// ============================================================================
 
 // Hook principal que combina todos os hooks
 export const useKPI = (params = {}) => {
@@ -582,12 +379,19 @@ export const useKPI = (params = {}) => {
     assignmentId,
     period,
   });
-  const teamVolume = useTeamVolume({ projectId, assignmentId, period });
+
+  const teamVolume = useTeamVolume({
+    projectId,
+    assignmentId,
+    period,
+  });
+
   const teamPerformance = useTeamPerformance({
     projectId,
     assignmentId,
     period,
   });
+
   const individualRadar = useIndividualRadar({
     userId,
     projectId,
@@ -608,6 +412,21 @@ export const useKPI = (params = {}) => {
     teamVolume.loading,
     teamPerformance.loading,
     individualRadar.loading,
+  ]);
+
+  // Estado de validating combinado
+  const isValidating = useMemo(() => {
+    return (
+      averageTime.isValidating ||
+      teamVolume.isValidating ||
+      teamPerformance.isValidating ||
+      individualRadar.isValidating
+    );
+  }, [
+    averageTime.isValidating,
+    teamVolume.isValidating,
+    teamPerformance.isValidating,
+    individualRadar.isValidating,
   ]);
 
   // Estado de erro combinado
@@ -654,6 +473,7 @@ export const useKPI = (params = {}) => {
     // Estados
     loading,
     error,
+    isValidating,
 
     // Funções
     refetch: refetchAll,
