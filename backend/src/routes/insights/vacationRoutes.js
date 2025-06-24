@@ -5,7 +5,7 @@ const router = express.Router();
 
 module.exports = (usersCollection) => {
   // Buscar todas as férias
-  router.get("/", async (req, res) => {
+  router.get("/", authenticateToken, async (req, res) => {
     try {
       const users = await usersCollection
         .find({})
@@ -92,6 +92,7 @@ module.exports = (usersCollection) => {
   router.put("/:vacationId", authenticateToken, async (req, res) => {
     const { vacationId } = req.params;
     const { startDate, endDate, reason, type } = req.body;
+
     try {
       const updateFields = {};
       if (startDate)
@@ -101,24 +102,28 @@ module.exports = (usersCollection) => {
       if (type) updateFields["vacations.$.type"] = type;
       updateFields["vacations.$.updatedAt"] = new Date();
 
-      const result = await usersCollection.updateOne(
-        {
-          _id: new ObjectId(req.user.id),
-          "vacations._id": new ObjectId(vacationId),
-        },
-        { $set: updateFields }
-      );
-      if (result.matchedCount === 0)
-        return res.status(404).json({ error: "Férias não encontradas" });
+      const filter = {
+        "vacations._id": new ObjectId(vacationId),
+      };
 
+      const result = await usersCollection.updateOne(filter, {
+        $set: updateFields,
+      });
+
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ error: "Férias não encontradas" });
+      }
+
+      // Agora pegamos o usuário que contém essa vacation
       const user = await usersCollection.findOne(
-        { _id: new ObjectId(req.user.id) },
+        { "vacations._id": new ObjectId(vacationId) },
         {
           projection: {
             vacations: { $elemMatch: { _id: new ObjectId(vacationId) } },
           },
         }
       );
+
       res.status(200).json(user.vacations[0]);
     } catch (error) {
       console.error("Erro ao atualizar férias:", error);
