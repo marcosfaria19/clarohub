@@ -41,15 +41,18 @@ CustomTooltip.displayName = "CustomTooltip";
 
 const TeamPerformanceChart = React.memo(
   ({ data = [], loading = false, className = "" }) => {
-    const [hoveredBar, setHoveredBar] = useState(null);
+    const [setHoveredBar] = useState(null);
 
-    const handleBarMouseEnter = useCallback((data) => {
-      setHoveredBar(data?.period);
-    }, []);
+    const handleBarMouseEnter = useCallback(
+      (data) => {
+        setHoveredBar(data?.period);
+      },
+      [setHoveredBar],
+    );
 
     const handleBarMouseLeave = useCallback(() => {
       setHoveredBar(null);
-    }, []);
+    }, [setHoveredBar]);
 
     return (
       <Card className={className}>

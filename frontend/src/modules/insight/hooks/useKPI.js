@@ -180,7 +180,7 @@ const transformIndividualRadarToChart = (data, teamData) => {
 
 // Hook para tempo médio de tratativa
 export const useAverageTime = (params = {}) => {
-  const { period = "day", userId, projectId, assignmentId } = params;
+  const { projectId, assignmentId } = params;
 
   const key = SWR_KEYS.KPI_AVERAGE_TIME(params);
 
@@ -262,7 +262,7 @@ export const useTeamVolume = (params = {}) => {
 
 // Hook para performance da equipe
 export const useTeamPerformance = (params = {}) => {
-  const { projectId, assignmentId, period = "day" } = params;
+  const { projectId, assignmentId } = params;
 
   const key = SWR_KEYS.KPI_TEAM_PERFORMANCE(params);
 

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Bell, BellOff, Trash2, X, CheckCircle2 } from "lucide-react";
+import { Bell, X } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import {
   Popover,
