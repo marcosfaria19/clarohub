@@ -367,29 +367,14 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
 
       // Transformação customizada no campo de data
       const transformedTasks = tasks.map((item) => {
-        const date = item.createdAt;
-
-        const excelDate = `${date.getFullYear()}-${(date.getMonth() + 1)
-          .toString()
-          .padStart(2, "0")}-${date
-          .getDate()
-          .toString()
-          .padStart(2, "0")} ${date
-          .getHours()
-          .toString()
-          .padStart(2, "0")}:${date
-          .getMinutes()
-          .toString()
-          .padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
-
         return {
           ...item,
-          createdAt: excelDate,
+          createdAt: item.createdAt,
         };
       });
 
       const opts = {
-        fields: ["REGIONAL", "BASE", "CIDADE", "ENDERECO", "createdAt"],
+        fields: ["REGIONAL", "BASE", "CIDADE", "IDDEMANDA", "createdAt"],
         delimiter: ";",
         withBOM: true,
       };
