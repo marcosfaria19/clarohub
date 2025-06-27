@@ -3,6 +3,9 @@ const { MongoClient } = require("mongodb");
 const Pusher = require("pusher");
 require("dotenv").config();
 const cors = require("cors");
+const {
+  createSubscriptionCleanupMiddleware,
+} = require("./src/middleware/cleanupSubscriptions");
 const path = require("path");
 
 const app = express();
@@ -34,6 +37,9 @@ async function startServer() {
 
     app.use(cors());
     app.use(express.json());
+    app.use(
+      createSubscriptionCleanupMiddleware(clarohub.collection("subscriptions"))
+    );
 
     // Rotas Hub
     const qualinetRoutes = require("./src/routes/qualinetRoutes")(
@@ -45,7 +51,6 @@ async function startServer() {
     const netfacilsgdRoutes = require("./src/routes/netfacilsgdRoutes")(
       clarohub.collection("netfacilsgd")
     );
-
     const appRoutes = require("./src/routes/appRoutes")(
       clarohub.collection("apps")
     );
@@ -71,9 +76,10 @@ async function startServer() {
 
     const notificationRoutes = require("./src/routes/notificationRoutes")(
       clarohub.collection("notifications"),
-      clarohub.collection("rankings"),
+      clarohub.collection("subscriptions")
+      /*   clarohub.collection("rankings"),
       clarohub.collection("ideas"),
-      clarohub.collection("users")
+      clarohub.collection("users") */
     );
 
     // Rotas Flow
@@ -114,6 +120,12 @@ async function startServer() {
     app.use("/flow/tasks/", tasksRoutes);
     app.use("/insights/", insightsRoutes);
     app.use("/vacations/", vacationRoutes);
+
+    /* // Middleware para servir imagens estáticas
+    app.use(
+      "/assets",
+      express.static(path.join(__dirname, "src/assets/icons"))
+    ); */
 
     app.listen(port, () => {
       console.log(`Servidor rodando em http://localhost:${port}`);
