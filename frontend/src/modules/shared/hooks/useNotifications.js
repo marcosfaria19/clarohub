@@ -1,25 +1,29 @@
 import { AuthContext } from "modules/shared/contexts/AuthContext";
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import axiosInstance from "services/axios";
 
 const useNotifications = () => {
+  const { user } = useContext(AuthContext);
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user } = useContext(AuthContext);
 
-  const fetchNotifications = useCallback(async () => {
-    if (!user || !user.userId) {
-      console.error("User ID is not available");
-      return;
-    }
+  // Cache simples para evitar requisições desnecessárias
+  const cacheRef = useRef({
+    data: null,
+    timestamp: null,
+    userId: null,
+  });
 
-    setIsLoading(true);
-    setError(null);
+  // Cache válido por 5 minutos (300000ms)
+  const CACHE_DURATION = 5 * 60 * 1000;
 
-    try {
-      const response = await axiosInstance.get(`/notifications/${user.userId}`);
-      const sortedNotifications = response.data
+  // Função para processar e ordenar notificações
+  const processNotifications = useCallback(
+    (data) => {
+      if (!user?.userId || !Array.isArray(data)) return [];
+
+      return data
         .map((notification) => ({
           ...notification,
           read: notification.readBy.includes(user.userId),
@@ -30,22 +34,222 @@ const useNotifications = () => {
           }
           return a.read ? 1 : -1;
         });
-      setNotifications(sortedNotifications);
-    } catch (err) {
-      console.error("Error fetching notifications:", err);
-      setError(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user]);
+    },
+    [user?.userId],
+  );
 
+  // Função principal para buscar notificações
+  const fetchNotifications = useCallback(
+    async (forceRefresh = false) => {
+      if (!user?.userId) {
+        console.error("User ID is not available");
+        return;
+      }
+
+      // Verificar cache se não for refresh forçado
+      if (
+        !forceRefresh &&
+        cacheRef.current.data &&
+        cacheRef.current.userId === user.userId
+      ) {
+        const now = Date.now();
+        const cacheAge = now - cacheRef.current.timestamp;
+
+        if (cacheAge < CACHE_DURATION) {
+          // Cache ainda válido, usar dados em cache
+          setNotifications(cacheRef.current.data);
+          return;
+        }
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await axiosInstance.get(
+          `/notifications/${user.userId}`,
+        );
+        const processedNotifications = processNotifications(response.data);
+
+        // Atualizar cache
+        cacheRef.current = {
+          data: processedNotifications,
+          timestamp: Date.now(),
+          userId: user.userId,
+        };
+
+        setNotifications(processedNotifications);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+        setError(error);
+
+        // Em caso de erro, usar cache se disponível
+        if (cacheRef.current.data && cacheRef.current.userId === user.userId) {
+          setNotifications(cacheRef.current.data);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [user?.userId, processNotifications, CACHE_DURATION],
+  );
+
+  // Carregar notificações na inicialização
   useEffect(() => {
-    if (user && user.userId) {
+    if (user?.userId) {
       fetchNotifications();
+    } else {
+      // Limpar estado quando não há usuário
+      setNotifications([]);
+      cacheRef.current = { data: null, timestamp: null, userId: null };
     }
-  }, [user, fetchNotifications]);
+  }, [user?.userId, fetchNotifications]);
 
-  // Web Push Notifications functions
+  // Função para atualização manual (compatibilidade)
+  const refetchNotifications = useCallback(() => {
+    return fetchNotifications(true);
+  }, [fetchNotifications]);
+
+  // Função para limpar notificação específica
+  const clearReadNotifications = useCallback(
+    async (notificationId) => {
+      if (!user?.userId) {
+        console.error("User ID is not available");
+        return;
+      }
+
+      try {
+        await axiosInstance.patch(`/notifications/${notificationId}/hide`, {
+          userId: user.userId,
+        });
+
+        // Update local state imediatamente
+        const updatedNotifications = notifications.filter(
+          (n) => n._id !== notificationId,
+        );
+        setNotifications(updatedNotifications);
+
+        // Atualizar cache
+        cacheRef.current = {
+          data: updatedNotifications,
+          timestamp: Date.now(),
+          userId: user.userId,
+        };
+      } catch (error) {
+        console.error("Erro ao ocultar notificação:", error);
+        // Em caso de erro, recarregar do servidor
+        await fetchNotifications(true);
+      }
+    },
+    [user?.userId, notifications, fetchNotifications],
+  );
+
+  // Função para marcar todas como lidas
+  const markAllAsRead = useCallback(async () => {
+    if (!user?.userId) {
+      console.error("User ID is not available");
+      return;
+    }
+
+    try {
+      await axiosInstance.patch(`/notifications/${user.userId}/mark-all-read`);
+
+      // Update local state imediatamente
+      const updatedNotifications = notifications.map((notification) => ({
+        ...notification,
+        read: true,
+        readBy: notification.readBy.includes(user.userId)
+          ? notification.readBy
+          : [...notification.readBy, user.userId],
+      }));
+
+      setNotifications(updatedNotifications);
+
+      // Atualizar cache
+      cacheRef.current = {
+        data: updatedNotifications,
+        timestamp: Date.now(),
+        userId: user.userId,
+      };
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      // Em caso de erro, recarregar do servidor
+      await fetchNotifications(true);
+    }
+  }, [user?.userId, notifications, fetchNotifications]);
+
+  // Função para ocultar todas as notificações
+  const hideAllNotifications = useCallback(async () => {
+    if (!user?.userId) {
+      console.error("User ID is not available");
+      return;
+    }
+
+    try {
+      await axiosInstance.patch(`/notifications/${user.userId}/hide-all`);
+
+      // Update local state imediatamente
+      setNotifications([]);
+
+      // Limpar cache
+      cacheRef.current = {
+        data: [],
+        timestamp: Date.now(),
+        userId: user.userId,
+      };
+    } catch (error) {
+      console.error("Error hiding all notifications:", error);
+      // Em caso de erro, recarregar do servidor
+      await fetchNotifications(true);
+    }
+  }, [user?.userId, fetchNotifications]);
+
+  // Função para criar notificação global
+  const createGlobalNotification = useCallback(
+    async (type, message) => {
+      if (!user?.userId) {
+        console.error("User ID is not available");
+        return;
+      }
+
+      try {
+        await axiosInstance.post("/notifications", {
+          type,
+          message,
+          isGlobal: true,
+        });
+
+        // Recarregar notificações após criar nova
+        await fetchNotifications(true);
+      } catch (error) {
+        console.error("Error creating global notification:", error);
+      }
+    },
+    [user?.userId, fetchNotifications],
+  );
+
+  // Função para criar notificação de usuário
+  const createUserNotification = useCallback(
+    async (userId, type, message) => {
+      try {
+        await axiosInstance.post("/notifications", {
+          userId,
+          type,
+          message,
+          isGlobal: false,
+        });
+
+        // Recarregar notificações após criar nova
+        await fetchNotifications(true);
+      } catch (error) {
+        console.error("Error creating user notification:", error);
+      }
+    },
+    [fetchNotifications],
+  );
+
+  // === PUSH NOTIFICATIONS FUNCTIONS ===
+
   const requestNotificationPermission = useCallback(async () => {
     if (!("Notification" in window)) {
       console.warn("This browser does not support notifications");
@@ -170,91 +374,9 @@ const useNotifications = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (user?.userId && Notification.permission === "default") {
-      // Don't auto-subscribe, wait for user action
-    }
-  }, [user?.userId]);
-
-  const clearReadNotifications = async (notificationId) => {
-    if (!user?.userId) {
-      console.error("User ID is not available");
-      return;
-    }
-
-    try {
-      await axiosInstance.patch(`/notifications/${notificationId}/hide`, {
-        userId: user.userId,
-      });
-      await fetchNotifications();
-    } catch (error) {
-      console.error("Erro ao ocultar notificação:", error);
-    }
-  };
-
-  const markAllAsRead = async () => {
-    if (!user?.userId) {
-      console.error("User ID is not available");
-      return;
-    }
-
-    try {
-      await axiosInstance.patch(`/notifications/${user.userId}/mark-all-read`);
-      await fetchNotifications();
-    } catch (error) {
-      console.error("Error marking all notifications as read:", error);
-    }
-  };
-
-  const hideAllNotifications = async () => {
-    if (!user?.userId) {
-      console.error("User ID is not available");
-      return;
-    }
-
-    try {
-      await axiosInstance.patch(`/notifications/${user.userId}/hide-all`);
-      await fetchNotifications();
-    } catch (error) {
-      console.error("Error hiding all notifications:", error);
-    }
-  };
-
-  const createGlobalNotification = async (type, message) => {
-    if (!user?.userId) {
-      console.error("User ID is not available");
-      return;
-    }
-
-    try {
-      await axiosInstance.post("/notifications", {
-        type,
-        message,
-        isGlobal: true,
-      });
-      await fetchNotifications();
-    } catch (error) {
-      console.error("Error creating global notification:", error);
-    }
-  };
-
-  const createUserNotification = async (userId, type, message) => {
-    try {
-      await axiosInstance.post("/notifications", {
-        userId,
-        type,
-        message,
-        isGlobal: false,
-      });
-      await fetchNotifications();
-    } catch (error) {
-      console.error("Error creating user notification:", error);
-    }
-  };
-
   return {
     notifications,
-    refetchNotifications: fetchNotifications,
+    refetchNotifications,
     clearReadNotifications,
     markAllAsRead,
     hideAllNotifications,
@@ -262,7 +384,7 @@ const useNotifications = () => {
     createUserNotification,
     isLoading,
     error,
-    // Web Push functions
+    // Push Notifications functions
     subscribeToPushNotifications,
     unsubscribeFromPushNotifications,
     checkPushSubscriptionStatus,
