@@ -1,14 +1,79 @@
-// src/routes/notificationRoutes.js
+// server/routes/notificationRoutes.js
 
 const express = require("express");
 const router = express.Router();
 const authenticateToken = require("../middleware/authMiddleware");
 const { ObjectId } = require("mongodb");
+const {
+  sendPushNotification,
+  getVapidPublicKey,
+  createTypedNotificationPayload,
+} = require("../utils/pushNotifications");
 
-module.exports = (notificationsCollection) => {
-  // POST /notifications - Criar nova notificação
+module.exports = (notificationsCollection, subscriptionsCollection) => {
+  // GET /notifications/vapid-public-key - Get VAPID public key for client subscription
+  router.get("/vapid-public-key", (req, res) => {
+    try {
+      const publicKey = getVapidPublicKey();
+      res.status(200).json({ publicKey });
+    } catch (error) {
+      console.error("Error getting VAPID public key:", error);
+      res.status(500).json({ error: "Error getting VAPID public key" });
+    }
+  });
+
+  // POST /notifications/subscribe - Subscribe user to push notifications
+  router.post("/subscribe", authenticateToken, async (req, res) => {
+    const { userId, subscription } = req.body;
+
+    if (!userId || !subscription) {
+      return res
+        .status(400)
+        .json({ error: "userId and subscription are required." });
+    }
+
+    try {
+      // Store or update subscription in database
+      await subscriptionsCollection.updateOne(
+        { userId: new ObjectId(userId) },
+        {
+          $set: {
+            userId: new ObjectId(userId),
+            subscription,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        },
+        { upsert: true }
+      );
+
+      res.status(201).json({ message: "Subscription saved successfully" });
+    } catch (error) {
+      console.error("Error saving subscription:", error);
+      res.status(500).json({ error: "Error saving subscription" });
+    }
+  });
+
+  // DELETE /notifications/unsubscribe - Unsubscribe user from push notifications
+  router.delete("/unsubscribe", authenticateToken, async (req, res) => {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required." });
+    }
+
+    try {
+      await subscriptionsCollection.deleteOne({ userId: new ObjectId(userId) });
+      res.status(200).json({ message: "Unsubscribed successfully" });
+    } catch (error) {
+      console.error("Error unsubscribing:", error);
+      res.status(500).json({ error: "Error unsubscribing" });
+    }
+  });
+
+  // POST /notifications - Criar nova notificação (enhanced with push notifications)
   router.post("/", authenticateToken, async (req, res) => {
-    const { userId, type, message, isGlobal } = req.body;
+    const { userId, type, message, isGlobal, pushPayload } = req.body;
 
     if (!type || !message) {
       return res.status(400).json({ error: "type and message are required." });
@@ -27,6 +92,14 @@ module.exports = (notificationsCollection) => {
 
     try {
       const result = await notificationsCollection.insertOne(notification);
+
+      // Send push notifications
+      await sendPushNotificationsForNewNotification(
+        notification,
+        subscriptionsCollection,
+        pushPayload
+      );
+
       res.status(201).json({ _id: result.insertedId, ...notification });
     } catch (error) {
       console.error("Erro ao criar notificação:", error);
@@ -159,3 +232,68 @@ module.exports = (notificationsCollection) => {
 
   return router;
 };
+
+// Helper function to send push notifications for new notifications
+async function sendPushNotificationsForNewNotification(
+  notification,
+  subscriptionsCollection,
+  customPayload
+) {
+  try {
+    let targetUserIds = [];
+
+    if (notification.isGlobal) {
+      // For global notifications, get all subscribed users
+      const allSubscriptions = await subscriptionsCollection.find({}).toArray();
+      targetUserIds = allSubscriptions.map((sub) => sub.userId.toString());
+    } else {
+      // For user-specific notifications
+      targetUserIds = [notification.userId.toString()];
+    }
+
+    // Get subscriptions for target users
+    const subscriptions = await subscriptionsCollection
+      .find({
+        userId: { $in: targetUserIds.map((id) => new ObjectId(id)) },
+      })
+      .toArray();
+
+    // Prepare push notification payload
+    const pushPayload =
+      customPayload ||
+      createTypedNotificationPayload(notification.type, notification.message, {
+        notificationId: notification._id,
+        url: getNotificationUrl(notification.type),
+      });
+
+    // Send push notifications to all subscriptions
+    const pushPromises = subscriptions.map((sub) =>
+      sendPushNotification(sub.subscription, pushPayload)
+    );
+
+    await Promise.allSettled(pushPromises);
+  } catch (error) {
+    console.error("Error sending push notifications:", error);
+  }
+}
+
+// Helper functions for notification content
+function getNotificationTitle(type) {
+  const titles = {
+    flow: "Nova Demanda - Flow",
+    spark: "Nova Ideia - Spark",
+    "spark-status": "Status Atualizado - Spark",
+    global: "Aviso Geral",
+  };
+  return titles[type] || "Nova Notificação";
+}
+
+function getNotificationUrl(type) {
+  const urls = {
+    flow: "/flow",
+    spark: "/spark",
+    "spark-status": "/spark",
+    global: "/",
+  };
+  return urls[type] || "/";
+}

@@ -1,5 +1,5 @@
 import { AuthContext } from "modules/shared/contexts/AuthContext";
-import { useContext } from "react";
+import { useContext, useEffect, useCallback } from "react";
 import useSWR from "swr";
 import axiosInstance from "services/axios";
 import { SWR_KEYS, swrConfig } from "services/swrConfig";
@@ -48,8 +48,144 @@ const useNotifications = () => {
     revalidateOnFocus: false,
     revalidateOnReconnect: true,
     dedupingInterval: 30000, // 30 seconds deduping
-    refreshInterval: 120000, // Revalidate every 2 minutes for fresh notifications
+    refreshInterval: 300000, // Revalidate every 2 minutes for fresh notifications
   });
+
+  // Web Push Notifications functions
+  const requestNotificationPermission = useCallback(async () => {
+    if (!("Notification" in window)) {
+      console.warn("This browser does not support notifications");
+      return false;
+    }
+
+    if (Notification.permission === "granted") {
+      return true;
+    }
+
+    if (Notification.permission === "denied") {
+      console.warn("Notification permission denied");
+      return false;
+    }
+
+    const permission = await Notification.requestPermission();
+    return permission === "granted";
+  }, []);
+
+  const registerServiceWorker = useCallback(async () => {
+    if (!("serviceWorker" in navigator)) {
+      console.warn("Service Worker not supported");
+      return null;
+    }
+
+    try {
+      const registration = await navigator.serviceWorker.register("/sw.js");
+
+      return registration;
+    } catch (error) {
+      console.error("Service Worker registration failed:", error);
+      return null;
+    }
+  }, []);
+
+  const subscribeToPushNotifications = useCallback(async () => {
+    try {
+      const hasPermission = await requestNotificationPermission();
+      if (!hasPermission) {
+        throw new Error("Notification permission not granted");
+      }
+
+      const registration = await registerServiceWorker();
+      if (!registration) {
+        throw new Error("Service Worker registration failed");
+      }
+
+      // Wait for service worker to be ready
+      await navigator.serviceWorker.ready;
+
+      // Check if already subscribed
+      let subscription = await registration.pushManager.getSubscription();
+
+      if (!subscription) {
+        // Get VAPID public key from server
+        const vapidResponse = await axiosInstance.get(
+          "/notifications/vapid-public-key",
+        );
+        const vapidPublicKey = vapidResponse.data.publicKey;
+
+        // Create new subscription
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+        });
+      }
+
+      // Send subscription to server
+      await axiosInstance.post("/notifications/subscribe", {
+        userId: user.userId,
+        subscription: subscription.toJSON(),
+      });
+
+      return subscription;
+    } catch (error) {
+      console.error("Failed to subscribe to push notifications:", error);
+      throw error;
+    }
+  }, [user?.userId, requestNotificationPermission, registerServiceWorker]);
+
+  const unsubscribeFromPushNotifications = useCallback(async () => {
+    try {
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) {
+        return;
+      }
+
+      const subscription = await registration.pushManager.getSubscription();
+      if (subscription) {
+        await subscription.unsubscribe();
+
+        // Remove subscription from server
+        await axiosInstance.delete("/notifications/unsubscribe", {
+          data: { userId: user.userId },
+        });
+
+        
+      }
+    } catch (error) {
+      console.error("Failed to unsubscribe from push notifications:", error);
+      throw error;
+    }
+  }, [user?.userId]);
+
+  const checkPushSubscriptionStatus = useCallback(async () => {
+    try {
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+        return { supported: false, subscribed: false };
+      }
+
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) {
+        return { supported: true, subscribed: false };
+      }
+
+      const subscription = await registration.pushManager.getSubscription();
+      return {
+        supported: true,
+        subscribed: !!subscription,
+        permission: Notification.permission,
+      };
+    } catch (error) {
+      console.error("Error checking push subscription status:", error);
+      return { supported: false, subscribed: false };
+    }
+  }, []);
+
+  // Initialize push notifications on user login
+  useEffect(() => {
+    if (user?.userId && Notification.permission === "default") {
+      // Don't auto-subscribe, wait for user action
+      // This will be handled in the login component
+    }
+  }, [user?.userId]);
 
   // Manual refetch function (maintains compatibility)
   const refetchNotifications = async () => {
@@ -188,7 +324,26 @@ const useNotifications = () => {
     isLoading,
     isValidating,
     error,
+    // New Web Push functions
+    subscribeToPushNotifications,
+    unsubscribeFromPushNotifications,
+    checkPushSubscriptionStatus,
+    requestNotificationPermission,
   };
 };
+
+// Helper function to convert VAPID key
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
 
 export default useNotifications;
