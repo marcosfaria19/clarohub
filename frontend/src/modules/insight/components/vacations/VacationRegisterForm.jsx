@@ -1,8 +1,22 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { useUsers, useManagers } from "modules/claroflow/hooks/useUsers";
-import { Button } from "modules/shared/components/ui/button";
-import { Input } from "modules/shared/components/ui/input";
-import { Label } from "modules/shared/components/ui/label";
+import React, { useState, useCallback, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "modules/shared/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "modules/shared/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -11,562 +25,479 @@ import {
   SelectValue,
 } from "modules/shared/components/ui/select";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "modules/shared/components/ui/card";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "modules/shared/components/ui/popover";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "modules/shared/components/ui/radio-group";
+import { Button } from "modules/shared/components/ui/button";
 import { Textarea } from "modules/shared/components/ui/textarea";
-import { Switch } from "modules/shared/components/ui/switch";
-import { Badge } from "modules/shared/components/ui/badge";
-import { toast } from "sonner";
-import { Save, RefreshCw, User, Calendar } from "lucide-react";
-import axiosInstance from "services/axios";
-import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
+import { Calendar } from "modules/shared/components/ui/calendar";
+import { CalendarIcon, PlusIcon, AlertCircle } from "lucide-react";
+import { cn } from "modules/shared/lib/utils";
+import { useForm } from "react-hook-form";
+import { useUsers } from "modules/claroflow/hooks/useUsers";
+import { capitalizeFirstLetters } from "modules/shared/utils/formatUsername";
 
-export default function VacationRegisterForm({
-  userId = null,
-  onSuccess = null,
-}) {
-  const {
-    users,
-    loading: usersLoading,
-    error: usersError,
-    addUserToCache,
-    updateUserInCache,
-    invalidateUsersCache,
-  } = useUsers();
+const VacationRegisterForm = React.memo(
+  ({
+    trigger,
+    className = "",
+    onSuccess,
+    scheduleVacation,
+    updateVacation,
+    loading: externalLoading,
+    vacations,
+    initialData,
+    isEditMode = false,
+    onCancel,
+  }) => {
+    const { users, loading: usersLoading } = useUsers();
+    const validUsers = users.filter(
+      (u) =>
+        u.GESTOR !== "ELVIS CLEBER ALVES DA SILVA" &&
+        u.GESTOR !== "RODRIGO JOSE RODRIGUES GIL",
+    );
 
-  const {
-    managers,
-    loading: managersLoading,
-    error: managersError,
-  } = useManagers();
+    const [open, setOpen] = useState(isEditMode || false);
+    const [localLoading, setLocalLoading] = useState(false);
+    const [hasOverlap, setHasOverlap] = useState(false);
+    const [vacationDays, setVacationDays] = useState(0);
 
-  const [formData, setFormData] = useState({
-    NOME: "",
-    LOGIN: "",
-    department: "",
-    GESTOR: "",
-    PERMISSOES: "user",
-    ROLES_ADICIONAIS: [],
-    active: true,
-    onVacation: false,
-    vacationStart: "",
-    vacationEnd: "",
-    vacationNotes: "",
-    project: null,
-  });
+    const loading = Boolean(externalLoading) || localLoading || usersLoading;
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+    const form = useForm({
+      defaultValues: {
+        employeeId: initialData?.employeeId || undefined,
+        dateRange: initialData
+          ? {
+              from: new Date(initialData.startDate),
+              to: new Date(initialData.endDate),
+            }
+          : undefined,
+        reason: initialData?.reason || "",
+        type: initialData?.type || "vacation",
+      },
+    });
 
-  // Busca dados do usuário se estiver editando
-  const currentUser = useMemo(() => {
-    if (!userId || !users) return null;
-    return users.find((user) => user._id === userId);
-  }, [userId, users]);
+    const watchEmployeeId = form.watch("employeeId");
+    const watchDateRange = form.watch("dateRange");
+    const watchStartDate = watchDateRange?.from;
+    const watchEndDate = watchDateRange?.to;
 
-  // Carrega dados do usuário no formulário quando estiver editando
-  useEffect(() => {
-    if (currentUser) {
-      setFormData({
-        NOME: currentUser.NOME || "",
-        LOGIN: currentUser.LOGIN || "",
-        department: currentUser.department || "",
-        GESTOR: currentUser.GESTOR || "",
-        PERMISSOES: currentUser.PERMISSOES || "user",
-        ROLES_ADICIONAIS: currentUser.ROLES_ADICIONAIS || [],
-        active: currentUser.active !== false,
-        onVacation: currentUser.onVacation || false,
-        vacationStart: currentUser.vacationStart || "",
-        vacationEnd: currentUser.vacationEnd || "",
-        vacationNotes: currentUser.vacationNotes || "",
-        project: currentUser.project || null,
-      });
-      setIsEditing(true);
-    }
-  }, [currentUser]);
+    const formatDate = useCallback((date) => {
+      return date?.toLocaleDateString("pt-BR") || "";
+    }, []);
 
-  // Departamentos únicos dos usuários existentes
-  const departments = useMemo(() => {
-    if (!users || !Array.isArray(users)) return [];
+    const checkVacationOverlap = useCallback(
+      (employeeId, startDate, endDate) => {
+        if (!employeeId || !startDate || !endDate || !vacations) return false;
 
-    const uniqueDepartments = [
-      ...new Set(users.map((user) => user.department).filter(Boolean)),
-    ];
+        return vacations.some(
+          (vacation) =>
+            vacation.employeeId === employeeId &&
+            vacation._id !== initialData?._id &&
+            startDate <= new Date(vacation.endDate) &&
+            endDate >= new Date(vacation.startDate),
+        );
+      },
+      [vacations, initialData],
+    );
 
-    return uniqueDepartments.sort();
-  }, [users]);
+    const calculateVacationDays = useCallback((startDate, endDate) => {
+      if (!startDate || !endDate) return 0;
+      const oneDay = 24 * 60 * 60 * 1000;
+      return Math.round(Math.abs((endDate - startDate) / oneDay)) + 1;
+    }, []);
 
-  // Projetos únicos dos usuários existentes
-  const projects = useMemo(() => {
-    if (!users || !Array.isArray(users)) return [];
-
-    const uniqueProjects = users
-      .map((user) => user.project)
-      .filter(Boolean)
-      .reduce((acc, project) => {
-        if (!acc.find((p) => p._id === project._id)) {
-          acc.push(project);
-        }
-        return acc;
-      }, []);
-
-    return uniqueProjects.sort((a, b) => a.name.localeCompare(b.name));
-  }, [users]);
-
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleRoleToggle = (role) => {
-    setFormData((prev) => ({
-      ...prev,
-      ROLES_ADICIONAIS: prev.ROLES_ADICIONAIS.includes(role)
-        ? prev.ROLES_ADICIONAIS.filter((r) => r !== role)
-        : [...prev.ROLES_ADICIONAIS, role],
-    }));
-  };
-
-  const validateForm = () => {
-    if (!formData.NOME.trim()) {
-      toast.error("Nome é obrigatório");
-      return false;
-    }
-
-    if (!formData.LOGIN.trim()) {
-      toast.error("Login é obrigatório");
-      return false;
-    }
-
-    if (formData.onVacation) {
-      if (!formData.vacationStart) {
-        toast.error("Data de início das férias é obrigatória");
-        return false;
-      }
-      if (!formData.vacationEnd) {
-        toast.error("Data de fim das férias é obrigatória");
-        return false;
-      }
-      if (new Date(formData.vacationStart) >= new Date(formData.vacationEnd)) {
-        toast.error("Data de fim deve ser posterior à data de início");
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
-
-    try {
-      const submitData = { ...formData };
-
-      // Remove campos de férias se não estiver de férias
-      if (!submitData.onVacation) {
-        delete submitData.vacationStart;
-        delete submitData.vacationEnd;
-        delete submitData.vacationNotes;
-      }
-
-      let response;
-
-      if (isEditing) {
-        // Atualizar usuário existente
-        response = await axiosInstance.put(`/users/${userId}`, submitData);
-
-        // Atualizar cache local (optimistic update)
-        updateUserInCache(userId, submitData);
-
-        toast.success("Usuário atualizado com sucesso!");
+    useEffect(() => {
+      if (watchEmployeeId && watchStartDate && watchEndDate) {
+        const hasConflict = checkVacationOverlap(
+          watchEmployeeId,
+          watchStartDate,
+          watchEndDate,
+        );
+        setHasOverlap(hasConflict);
+        setVacationDays(calculateVacationDays(watchStartDate, watchEndDate));
       } else {
-        // Criar novo usuário
-        response = await axiosInstance.post("/users", submitData);
+        setHasOverlap(false);
+        setVacationDays(0);
+      }
+    }, [
+      watchEmployeeId,
+      watchStartDate,
+      watchEndDate,
+      checkVacationOverlap,
+      calculateVacationDays,
+    ]);
 
-        // Adicionar ao cache local (optimistic update)
-        const newUser = { _id: response.data._id, ...submitData };
-        addUserToCache(newUser);
-
-        toast.success("Usuário cadastrado com sucesso!");
-
-        // Limpar formulário após criação
-        setFormData({
-          NOME: "",
-          LOGIN: "",
-          department: "",
-          GESTOR: "",
-          PERMISSOES: "user",
-          ROLES_ADICIONAIS: [],
-          active: true,
-          onVacation: false,
-          vacationStart: "",
-          vacationEnd: "",
-          vacationNotes: "",
-          project: null,
+    useEffect(() => {
+      if (isEditMode && initialData) {
+        form.reset({
+          employeeId: initialData.userId,
+          dateRange: {
+            from: new Date(initialData.startDate),
+            to: new Date(initialData.endDate),
+          },
+          reason: initialData.reason || "",
+          type: initialData.type || "vacation",
         });
       }
+    }, [isEditMode, initialData, form]);
 
-      // Revalidar cache para garantir consistência
-      await invalidateUsersCache();
-
-      // Callback de sucesso se fornecido
-      if (onSuccess) {
-        onSuccess(response.data);
+    useEffect(() => {
+      if (isEditMode) {
+        setOpen(true);
       }
-    } catch (error) {
-      console.error("Erro ao salvar usuário:", error);
+    }, [isEditMode]);
 
-      const errorMessage =
-        error.response?.data?.message ||
-        (isEditing ? "Erro ao atualizar usuário" : "Erro ao cadastrar usuário");
-
-      toast.error(errorMessage);
-
-      // Reverter cache em caso de erro
-      if (isEditing) {
-        updateUserInCache(userId, currentUser);
+    const validateForm = useCallback((values) => {
+      if (!values.employeeId) {
+        return {
+          field: "employeeId",
+          message: "Por favor selecione um colaborador",
+        };
       }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
-  const handleRefresh = async () => {
-    try {
-      await invalidateUsersCache();
-      toast.success("Dados atualizados!");
-    } catch (error) {
-      toast.error("Erro ao atualizar dados");
-    }
-  };
+      const startDate = values.dateRange?.from;
+      const endDate = values.dateRange?.to;
 
-  if (usersLoading && !users.length) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <LoadingSpinner />
-      </div>
+      if (!startDate) {
+        return {
+          field: "dateRange",
+          message: "Por favor selecione um intervalo de datas",
+        };
+      }
+
+      if (!endDate) {
+        return {
+          field: "dateRange",
+          message: "Por favor selecione a data final do intervalo",
+        };
+      }
+
+      if (endDate < startDate) {
+        return {
+          field: "dateRange",
+          message: "A data final deve ser igual ou posterior à data inicial",
+        };
+      }
+
+      return null;
+    }, []);
+
+    const onSubmit = useCallback(
+      async (values) => {
+        setLocalLoading(true);
+
+        const validationError = validateForm(values);
+        if (validationError) {
+          form.setError(validationError.field, {
+            type: "manual",
+            message: validationError.message,
+          });
+          setLocalLoading(false);
+          return;
+        }
+
+        if (hasOverlap) {
+          form.setError("dateRange", {
+            type: "manual",
+            message: "Este período se sobrepõe a férias já agendadas",
+          });
+          setLocalLoading(false);
+          return;
+        }
+
+        try {
+          const employee = validUsers.find((e) => e._id === values.employeeId);
+          if (!employee) {
+            throw new Error("Colaborador não encontrado");
+          }
+
+          const payload = {
+            startDate: values.dateRange.from,
+            endDate: values.dateRange.to,
+            reason: values.reason,
+            type: values.type,
+          };
+
+          if (isEditMode && initialData) {
+            await updateVacation(initialData._id, payload);
+          } else {
+            await scheduleVacation({
+              ...payload,
+              employeeId: values.employeeId,
+              employee: employee.NOME,
+              gestor: employee.GESTOR,
+              login: employee.LOGIN,
+              permissoes: employee.PERMISSOES,
+              project: employee.project,
+            });
+          }
+
+          form.reset();
+          setOpen(false);
+          onSuccess?.();
+        } catch (error) {
+          form.setError("root", {
+            type: "manual",
+            message:
+              error.message || "Ocorreu um erro ao processar sua solicitação",
+          });
+        } finally {
+          setLocalLoading(false);
+        }
+      },
+      [
+        form,
+        validUsers,
+        hasOverlap,
+        scheduleVacation,
+        updateVacation,
+        onSuccess,
+        isEditMode,
+        initialData,
+        validateForm,
+      ],
     );
-  }
 
-  if (usersError) {
-    return (
-      <Card className="m-4">
-        <CardContent className="pt-6">
-          <div className="text-center">
-            <p className="mb-4 text-destructive">{usersError}</p>
-            <Button onClick={handleRefresh} variant="outline">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Tentar Novamente
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+    const handleOpenChange = useCallback(
+      (isOpen) => {
+        setOpen(isOpen);
+        if (!isOpen) {
+          form.reset();
+          setHasOverlap(false);
+          setVacationDays(0);
+          if (isEditMode) {
+            onCancel?.();
+          }
+        }
+      },
+      [form, onCancel, isEditMode],
     );
-  }
 
-  return (
-    <div className="mx-auto max-w-4xl space-y-6 p-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              {isEditing ? "Editar Usuário" : "Cadastrar Novo Usuário"}
-            </CardTitle>
-            <Button onClick={handleRefresh} variant="outline" size="sm">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Atualizar Dados
-            </Button>
-          </div>
-        </CardHeader>
-
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Informações Básicas */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="nome">Nome Completo *</Label>
-                <Input
-                  id="nome"
-                  value={formData.NOME}
-                  onChange={(e) => handleInputChange("NOME", e.target.value)}
-                  placeholder="Digite o nome completo"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="login">Login *</Label>
-                <Input
-                  id="login"
-                  value={formData.LOGIN}
-                  onChange={(e) => handleInputChange("LOGIN", e.target.value)}
-                  placeholder="Digite o login"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Departamento e Gestor */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="department">Departamento</Label>
-                <Select
-                  value={formData.department}
-                  onValueChange={(value) =>
-                    handleInputChange("department", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o departamento" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {departments.map((dept) => (
-                      <SelectItem key={dept} value={dept}>
-                        {dept}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="gestor">Gestor</Label>
-                <Select
-                  value={formData.GESTOR}
-                  onValueChange={(value) => handleInputChange("GESTOR", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o gestor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {managersLoading ? (
-                      <SelectItem value="" disabled>
-                        Carregando...
-                      </SelectItem>
-                    ) : managersError ? (
-                      <SelectItem value="" disabled>
-                        Erro ao carregar gestores
-                      </SelectItem>
-                    ) : (
-                      managers.map((manager) => (
-                        <SelectItem key={manager} value={manager}>
-                          {manager}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Projeto e Permissões */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="project">Projeto</Label>
-                <Select
-                  value={formData.project?._id || ""}
-                  onValueChange={(value) => {
-                    const selectedProject = projects.find(
-                      (p) => p._id === value,
-                    );
-                    handleInputChange("project", selectedProject || null);
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o projeto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Nenhum projeto</SelectItem>
-                    {projects.map((project) => (
-                      <SelectItem key={project._id} value={project._id}>
-                        {project.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="permissoes">Permissões</Label>
-                <Select
-                  value={formData.PERMISSOES}
-                  onValueChange={(value) =>
-                    handleInputChange("PERMISSOES", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">Usuário</SelectItem>
-                    <SelectItem value="admin">Administrador</SelectItem>
-                    <SelectItem value="supervisor">Supervisor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Roles Adicionais */}
-            <div className="space-y-2">
-              <Label>Roles Adicionais</Label>
-              <div className="flex flex-wrap gap-2">
-                {["supervisor", "flow_upload", "manager", "analyst"].map(
-                  (role) => (
-                    <Badge
-                      key={role}
-                      variant={
-                        formData.ROLES_ADICIONAIS.includes(role)
-                          ? "default"
-                          : "outline"
-                      }
-                      className="cursor-pointer"
-                      onClick={() => handleRoleToggle(role)}
-                    >
-                      {role}
-                    </Badge>
-                  ),
-                )}
-              </div>
-            </div>
-
-            {/* Status */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="active"
-                  checked={formData.active}
-                  onCheckedChange={(checked) =>
-                    handleInputChange("active", checked)
-                  }
-                />
-                <Label htmlFor="active">Usuário Ativo</Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="onVacation"
-                  checked={formData.onVacation}
-                  onCheckedChange={(checked) =>
-                    handleInputChange("onVacation", checked)
-                  }
-                />
-                <Label htmlFor="onVacation">Em Férias</Label>
-              </div>
-            </div>
-
-            {/* Informações de Férias */}
-            {formData.onVacation && (
-              <Card className="bg-muted/50">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Calendar className="h-4 w-4" />
-                    Informações de Férias
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="vacationStart">Data de Início *</Label>
-                      <Input
-                        id="vacationStart"
-                        type="date"
-                        value={formData.vacationStart}
-                        onChange={(e) =>
-                          handleInputChange("vacationStart", e.target.value)
-                        }
-                        required={formData.onVacation}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="vacationEnd">Data de Fim *</Label>
-                      <Input
-                        id="vacationEnd"
-                        type="date"
-                        value={formData.vacationEnd}
-                        onChange={(e) =>
-                          handleInputChange("vacationEnd", e.target.value)
-                        }
-                        required={formData.onVacation}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="vacationNotes">Observações</Label>
-                    <Textarea
-                      id="vacationNotes"
-                      value={formData.vacationNotes}
-                      onChange={(e) =>
-                        handleInputChange("vacationNotes", e.target.value)
-                      }
-                      placeholder="Observações sobre as férias..."
-                      rows={3}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Botões de Ação */}
-            <div className="flex gap-4 pt-4">
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex-1 md:flex-none"
-              >
-                {isSubmitting ? (
-                  <>
-                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                    {isEditing ? "Atualizando..." : "Cadastrando..."}
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    {isEditing ? "Atualizar Usuário" : "Cadastrar Usuário"}
-                  </>
-                )}
+    return (
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        {!isEditMode && (
+          <DialogTrigger asChild>
+            {trigger || (
+              <Button className={className} size="sm">
+                <PlusIcon className="mr-2 h-4 w-4" />
+                Agendar Férias
               </Button>
+            )}
+          </DialogTrigger>
+        )}
 
-              {isEditing && (
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>
+              {isEditMode ? "Editar Férias" : "Agendar Novas Férias"}
+            </DialogTitle>
+            <DialogDescription>
+              Preencha os detalhes para agendar férias ou folga para um membro
+              da equipe.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="employeeId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Colaborador</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={isEditMode}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um colaborador" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {[...validUsers]
+                          .sort((a, b) => a.NOME.localeCompare(b.NOME))
+                          .map((employee) => (
+                            <SelectItem key={employee._id} value={employee._id}>
+                              {capitalizeFirstLetters(employee.NOME)}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        className="flex gap-4"
+                      >
+                        <FormItem className="flex items-center space-x-2">
+                          <FormControl>
+                            <RadioGroupItem value="vacation" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Férias</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2">
+                          <FormControl>
+                            <RadioGroupItem value="dayoff" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Folga</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="dateRange"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Período</FormLabel>
+                    <Popover modal>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value?.from && "text-muted-foreground",
+                            )}
+                          >
+                            {field.value?.from ? (
+                              field.value.to ? (
+                                `${formatDate(field.value.from)} - ${formatDate(field.value.to)}`
+                              ) : (
+                                formatDate(field.value.from)
+                              )
+                            ) : (
+                              <span>Selecione o intervalo</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="range"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={() => false}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {vacationDays > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-sm text-muted-foreground"
+                >
+                  Período selecionado:{" "}
+                  <span className="font-medium">{vacationDays} dias</span>
+                </motion.div>
+              )}
+
+              <AnimatePresence>
+                {hasOverlap && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="rounded-md bg-destructive/15 p-3"
+                  >
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+                      <div>
+                        <p className="font-medium text-destructive">
+                          Conflito de agendamento
+                        </p>
+                        <p className="text-sm text-destructive/80">
+                          Este período se sobrepõe a férias já agendadas para
+                          este colaborador. Por favor, selecione um período
+                          diferente.
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <FormField
+                control={form.control}
+                name="reason"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Observações</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Adicione observações (opcional)"
+                        className="resize-none"
+                        maxLength={200}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {form.formState.errors.root && (
+                <div className="rounded-md bg-destructive/15 p-3">
+                  <p className="text-sm text-destructive">
+                    {form.formState.errors.root.message}
+                  </p>
+                </div>
+              )}
+
+              <DialogFooter>
                 <Button
                   type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setFormData({
-                      NOME: "",
-                      LOGIN: "",
-                      department: "",
-                      GESTOR: "",
-                      PERMISSOES: "user",
-                      ROLES_ADICIONAIS: [],
-                      active: true,
-                      onVacation: false,
-                      vacationStart: "",
-                      vacationEnd: "",
-                      vacationNotes: "",
-                      project: null,
-                    });
-                    setIsEditing(false);
-                  }}
+                  variant="secondary"
+                  onClick={() => handleOpenChange(false)}
+                  disabled={loading}
                 >
-                  Novo Usuário
+                  Cancelar
                 </Button>
-              )}
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+                <Button type="submit" disabled={loading || hasOverlap}>
+                  {loading
+                    ? "Enviando..."
+                    : isEditMode
+                      ? "Atualizar"
+                      : "Agendar"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    );
+  },
+);
+
+export default VacationRegisterForm;

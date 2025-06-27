@@ -1,17 +1,11 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import Container from "modules/shared/components/ui/container";
 import FlowMenu from "../components/FlowMenu";
 import { FlowHome } from "../components/FlowHome";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useUsers } from "../hooks/useUsers";
 import BoardLayout from "../components/tasks/BoardLayout";
-import { Plus, UploadCloudIcon, RefreshCw } from "lucide-react";
+import { Plus, UploadCloudIcon } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import {
   Dialog,
@@ -25,11 +19,10 @@ import AssignmentBoard from "./TeamBoard";
 import TasksUpload from "../components/upload/TasksUpload";
 import useProjects from "../hooks/useProjects";
 import ProjectsFlowDashboard from "../components/projects/ProjectFlowDashboard";
-import { toast } from "sonner";
 
 export default function Claroflow() {
   const { user } = useContext(AuthContext);
-  const { fetchUserAssignments, invalidateUsersCache } = useUsers();
+  const { fetchUserAssignments } = useUsers();
   const { fetchProjects, fetchProjectById } = useProjects();
 
   const [state, setState] = useState({
@@ -40,55 +33,6 @@ export default function Claroflow() {
     loading: true,
     error: null,
   });
-
-  // Função para atualizar dados manualmente
-  const handleRefresh = useCallback(async () => {
-    try {
-      setState((prev) => ({ ...prev, loading: true, error: null }));
-
-      // Invalidar cache de usuários
-      await invalidateUsersCache();
-
-      // Recarregar dados do projeto e assignments
-      let projectsData = [];
-      let assignmentsData = [];
-
-      if (user.roles_adicionais?.includes("supervisor")) {
-        projectsData = await fetchProjects();
-      } else {
-        const userProject = await fetchProjectById(user.project._id);
-        projectsData = userProject ? [userProject] : [];
-      }
-
-      assignmentsData = await fetchUserAssignments(user.userId);
-
-      setState((prev) => ({
-        ...prev,
-        projects: projectsData,
-        assignments: assignmentsData,
-        loading: false,
-        error: null,
-      }));
-
-      toast.success("Dados atualizados com sucesso!");
-    } catch (error) {
-      console.error("Erro ao atualizar dados:", error);
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: "Erro ao carregar dados do projeto",
-      }));
-      toast.error("Erro ao atualizar dados");
-    }
-  }, [
-    user.userId,
-    user.project._id,
-    user.roles_adicionais,
-    fetchProjectById,
-    fetchUserAssignments,
-    fetchProjects,
-    invalidateUsersCache,
-  ]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -141,37 +85,11 @@ export default function Claroflow() {
     return state.projects[0];
   }, [state.selectedTab, state.projects]);
 
-  if (state.loading) {
-    return (
-      <Container innerClassName="max-w-[95vw] mb-4">
-        <div className="flex min-h-[75vh] items-center justify-center">
-          <LoadingSpinner />
-        </div>
-      </Container>
-    );
-  }
-
-  if (state.error) {
-    return (
-      <Container innerClassName="max-w-[95vw] mb-4">
-        <div className="flex min-h-[75vh] flex-col items-center justify-center gap-4">
-          <p className="text-center text-destructive">{state.error}</p>
-          <Button onClick={handleRefresh} variant="outline">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Tentar Novamente
-          </Button>
-        </div>
-      </Container>
-    );
-  }
+  if (state.loading) return <div>Carregando...</div>;
+  if (state.error) return <div>Erro: {state.error}</div>;
 
   return (
     <Container innerClassName="max-w-[95vw] mb-4">
-      {/* <Button onClick={handleRefresh} variant="outline" size="sm">
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Atualizar
-        </Button> */}
-
       <FlowMenu
         role={user.permissoes}
         projects={state.projects}
@@ -204,9 +122,7 @@ export default function Claroflow() {
             />
           )
         ) : (
-          <div className="flex min-h-[75vh] items-center justify-center">
-            <LoadingSpinner />
-          </div>
+          <LoadingSpinner />
         )}
       </div>
 
