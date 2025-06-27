@@ -43,7 +43,7 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
     cfg.filaValues.includes(row.FILA?.trim())
   );
 
-  filtered = filtered.filter((row) => row.ENDERECO?.trim());
+  /* filtered = filtered.filter((row) => row.ENDERECO?.trim()); */
 
   return filtered.map((row) => {
     const codOper = (row.COD_OPERADORA || row.COD_OPERADORA_NODE)
@@ -59,10 +59,15 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
       ? new Date(rawDate.getFullYear(), rawDate.getMonth(), rawDate.getDate())
       : null;
 
+    const endereco =
+      row.ENDERECO && row.ENDERECO.trim()
+        ? row.ENDERECO.trim()
+        : "SEM ENDERECO";
+
     return {
       IDDEMANDA: row.IDDEMANDA,
       COD_OPERADORA: codOper,
-      ENDERECO_VISTORIA: row.ENDERECO,
+      ENDERECO_VISTORIA: endereco,
       ...city,
       project: { _id: project._id, name: project.name },
       status: { _id: assignment._id, name: assignment.name },
