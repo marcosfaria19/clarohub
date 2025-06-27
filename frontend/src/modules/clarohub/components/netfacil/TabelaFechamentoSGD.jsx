@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import useSWR from "swr";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "services/axios";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import {
   Dialog,
@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from "modules/shared/components/ui/dialog";
 import { Button } from "modules/shared/components/ui/button";
-import { SWR_KEYS } from "services/swrConfig";
 
 const TabelaFechamentoSGD = ({ item, isOpen, onRequestClose }) => {
   const columns = [
@@ -27,16 +26,33 @@ const TabelaFechamentoSGD = ({ item, isOpen, onRequestClose }) => {
     },
   ];
 
-  // SWR para buscar dados do SGD
-  const { data: allSgdData, isLoading } = useSWR(SWR_KEYS.NETFACIL_SGD);
+  const [sgdData, setSgdData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Filtrar dados baseado no item selecionado
-  const sgdData = useMemo(() => {
-    if (!allSgdData || !item?.SGD) return [];
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const sgdResponse = await axiosInstance.get(`/netfacilsgd`);
+        const allSgdData = sgdResponse.data;
 
-    const sgdIds = item.SGD.map(Number);
-    return allSgdData.filter((dataItem) => sgdIds.includes(dataItem.ID_SGD));
-  }, [allSgdData, item]);
+        const sgdIds = item?.SGD.map(Number) || [];
+        const filteredSgdData = allSgdData.filter((dataItem) =>
+          sgdIds.includes(dataItem.ID_SGD),
+        );
+
+        setSgdData(filteredSgdData);
+      } catch (err) {
+        console.error("Erro ao buscar dados:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (item && item.SGD) {
+      fetchData();
+    }
+  }, [item]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onRequestClose}>

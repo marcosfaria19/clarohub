@@ -1,18 +1,14 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import AddNetFacil from "modules/clarohub/components/netfacil/AddNetFacil";
 import axiosInstance from "services/axios";
-import useSWR, { mutate } from "swr";
 import { TabelaPadrao } from "modules/shared/components/TabelaPadrao";
 import Container from "modules/shared/components/ui/container";
 import DeleteConfirmationModal from "modules/shared/components/DeleteConfirmationModal";
 import { Button } from "modules/shared/components/ui/button";
 import { CirclePlusIcon } from "lucide-react";
-import { SWR_KEYS } from "services/swrConfig";
 
 function NetFacilAdmin() {
-  // SWR para buscar dados
-  const { data: dados = [] } = useSWR(SWR_KEYS.NETFACIL_DATA);
-
+  const [dados, setDados] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentItem, setCurrentItem] = useState({
@@ -27,9 +23,17 @@ function NetFacilAdmin() {
   });
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // Função para invalidar cache após mudanças
-  const invalidateCache = () => {
-    mutate(SWR_KEYS.NETFACIL_DATA);
+  useEffect(() => {
+    fetchDados();
+  }, []);
+
+  const fetchDados = async () => {
+    try {
+      const response = await axiosInstance.get(`/netsmsfacil`);
+      setDados(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar dados do backend:", error);
+    }
   };
 
   const handleEditClick = (item) => {
@@ -75,7 +79,7 @@ function NetFacilAdmin() {
         await axiosInstance.post(`/netsmsfacil`, currentItem);
       }
       setShowEditModal(false);
-      invalidateCache(); // Invalida cache em vez de fetchDados
+      fetchDados();
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
     }
@@ -85,7 +89,7 @@ function NetFacilAdmin() {
     try {
       await axiosInstance.delete(`/netsmsfacil/${currentItem._id}`);
       setShowDeleteModal(false);
-      invalidateCache(); // Invalida cache em vez de fetchDados
+      fetchDados();
     } catch (error) {
       console.error("Erro ao deletar dados:", error);
     }

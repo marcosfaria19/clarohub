@@ -1,49 +1,14 @@
-import { useMemo, useState, useContext, useEffect } from "react";
-import useSWR from "swr";
+import { useEffect, useMemo, useState, useContext } from "react";
+import axiosInstance from "services/axios";
 import { toast } from "sonner";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
-import { SWR_KEYS } from "services/swrConfig";
 
 export default function useNetFacil() {
   const { user } = useContext(AuthContext);
   const gestor = user.gestor;
   const userName = user.userName;
 
-  // SWR para buscar dados do NetFacil
-  const { data: rawData, isLoading: swrLoading } = useSWR(
-    SWR_KEYS.NETFACIL_DATA,
-    {
-      onError: () => toast.error("Falha ao carregar dados."),
-      // Cache mais agressivo para dados que raramente mudam
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    },
-  );
-
-  // Processar dados baseado no usuário (mantendo lógica original)
-  const data = useMemo(() => {
-    if (!rawData) return [];
-
-    const fetchedData = rawData;
-    const projectName = user?.project?.name;
-    const isManager = user?.permissoes !== "basic";
-
-    if (projectName && !isManager) {
-      const hasMatchingTratativa = fetchedData.some(
-        (item) => item.TRATATIVA === projectName,
-      );
-
-      if (hasMatchingTratativa) {
-        return fetchedData.filter((item) => item.TRATATIVA === projectName);
-      } else {
-        return fetchedData;
-      }
-    } else {
-      return fetchedData;
-    }
-  }, [rawData, user]);
-
+  const [data, setData] = useState([]);
   const [formData, setFormData] = useState({
     tratativa: "",
     tipo: "",
@@ -64,24 +29,36 @@ export default function useNetFacil() {
   const [showSGDTable, setShowSGDTable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Atualizar formData quando dados carregam e usuário tem projeto específico
   useEffect(() => {
-    const projectName = user?.project?.name;
-    const isManager = user?.permissoes !== "basic";
+    axiosInstance
+      .get("/netsmsfacil")
+      .then((res) => {
+        const fetchedData = res.data;
+        const projectName = user?.project?.name;
+        const isManager = user?.permissoes !== "basic";
 
-    if (projectName && !isManager && data.length > 0) {
-      const hasMatchingTratativa = data.some(
-        (item) => item.TRATATIVA === projectName,
-      );
+        if (projectName && !isManager) {
+          const hasMatchingTratativa = fetchedData.some(
+            (item) => item.TRATATIVA === projectName,
+          );
 
-      if (hasMatchingTratativa) {
-        setFormData((prev) => ({
-          ...prev,
-          tratativa: projectName,
-        }));
-      }
-    }
-  }, [data, user]);
+          if (hasMatchingTratativa) {
+            setData(
+              fetchedData.filter((item) => item.TRATATIVA === projectName),
+            );
+            setFormData((prev) => ({
+              ...prev,
+              tratativa: projectName,
+            }));
+          } else {
+            setData(fetchedData);
+          }
+        } else {
+          setData(fetchedData);
+        }
+      })
+      .catch(() => toast.error("Falha ao carregar dados."));
+  }, [user]);
 
   const getOptions = useMemo(() => {
     return (field) =>
@@ -143,7 +120,7 @@ export default function useNetFacil() {
     setTabelaConsulta,
     showSGDTable,
     setShowSGDTable,
-    isLoading: swrLoading || isLoading,
+    isLoading,
     setIsLoading,
     getOptions,
     findItem,
