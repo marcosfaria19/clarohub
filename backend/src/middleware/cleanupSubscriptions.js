@@ -46,7 +46,6 @@ async function cleanupOldSubscriptions(subscriptionsCollection, daysOld = 30) {
       updatedAt: { $lt: cutoffDate },
     });
 
-    console.log(`Cleaned up ${result.deletedCount} old subscriptions`);
     return result.deletedCount;
   } catch (error) {
     console.error("Error cleaning up old subscriptions:", error);
@@ -72,7 +71,6 @@ async function removeInvalidSubscriptions(
       _id: { $in: invalidSubscriptionIds.map((id) => new ObjectId(id)) },
     });
 
-    console.log(`Removed ${result.deletedCount} invalid subscriptions`);
     return result.deletedCount;
   } catch (error) {
     console.error("Error removing invalid subscriptions:", error);
@@ -100,10 +98,6 @@ async function cleanupInvalidSubscriptions(subscriptionsCollection) {
     const oldSubscriptionsResult = await cleanupOldSubscriptions(
       subscriptionsCollection,
       90
-    );
-
-    console.log(
-      `Cleanup completed: ${invalidFieldsResult.deletedCount} invalid fields, ${oldSubscriptionsResult} old subscriptions`
     );
 
     return {
