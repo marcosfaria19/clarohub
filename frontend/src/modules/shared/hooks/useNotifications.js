@@ -147,8 +147,6 @@ const useNotifications = () => {
         await axiosInstance.delete("/notifications/unsubscribe", {
           data: { userId: user.userId },
         });
-
-        
       }
     } catch (error) {
       console.error("Failed to unsubscribe from push notifications:", error);
@@ -179,11 +177,9 @@ const useNotifications = () => {
     }
   }, []);
 
-  // Initialize push notifications on user login
   useEffect(() => {
     if (user?.userId && Notification.permission === "default") {
       // Don't auto-subscribe, wait for user action
-      // This will be handled in the login component
     }
   }, [user?.userId]);
 

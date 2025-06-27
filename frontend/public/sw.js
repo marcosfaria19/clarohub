@@ -53,8 +53,6 @@ self.addEventListener("fetch", (event) => {
 
 // Push event - handle incoming push notifications
 self.addEventListener("push", (event) => {
-  console.log("Push event received:", event);
-
   let notificationData = {
     title: "Claro Hub",
     body: "Você tem uma nova notificação",
@@ -112,8 +110,6 @@ self.addEventListener("push", (event) => {
 
 // Notification click event - handle user interaction with notifications
 self.addEventListener("notificationclick", (event) => {
-  console.log("Notification clicked:", event);
-
   const notification = event.notification;
   const action = event.action;
   const data = notification.data || {};
@@ -167,8 +163,6 @@ self.addEventListener("notificationclick", (event) => {
 
 // Background sync event - handle background synchronization
 self.addEventListener("sync", (event) => {
-  console.log("Background sync event:", event.tag);
-
   if (event.tag === "background-sync") {
     event.waitUntil(doBackgroundSync());
   }
@@ -178,8 +172,6 @@ self.addEventListener("sync", (event) => {
 async function doBackgroundSync() {
   try {
     // Perform background tasks like syncing offline data
-    console.log("Performing background sync...");
-
     // Example: Send queued notifications or sync data
     // This would typically involve checking for pending operations
     // and executing them when network is available
@@ -190,8 +182,6 @@ async function doBackgroundSync() {
 
 // Message event - handle messages from the main thread
 self.addEventListener("message", (event) => {
-  console.log("Service Worker received message:", event.data);
-
   const { type } = event.data;
 
   switch (type) {
@@ -209,7 +199,6 @@ self.addEventListener("message", (event) => {
       );
       break;
     default:
-      console.log("Unknown message type:", type);
   }
 });
 
