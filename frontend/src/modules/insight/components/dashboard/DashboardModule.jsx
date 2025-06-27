@@ -6,14 +6,11 @@ import TeamPerformanceChart from "./TeamPerformanceChart";
 import TeamHeatmap from "./TeamHeatmap";
 import PerformanceRadarChart from "./PerformanceRadarChart";
 import DemandStatusTable from "./DemandStatusTable";
-import LoadingFallback from "./LoadingFallback";
-import ErrorFallback from "./ErrorFallback";
-
 import useProjects from "modules/claroflow/hooks/useProjects";
 import { useUsers } from "modules/claroflow/hooks/useUsers";
 import useKPI from "modules/insight/hooks/useKPI";
 
-import { ChevronDown, RefreshCw, Loader2 } from "lucide-react";
+import { ChevronDown, RefreshCw, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -23,7 +20,7 @@ import {
 } from "modules/shared/components/ui/dropdown-menu";
 import { formatUserName } from "modules/shared/utils/formatUsername";
 
-const DashboardModule = React.memo(() => {
+const DashboardModule = () => {
   // Estados de filtro gerenciados localmente
   const [period, setPeriod] = useState("day");
   const [teamMember, setTeamMember] = useState(null);
@@ -42,6 +39,9 @@ const DashboardModule = React.memo(() => {
   const [showError, setShowError] = useState(false);
   const errorTimeoutRef = useRef(null);
 
+  // Estado para controlar se é um recarregamento ou carregamento inicial
+  const [isRefetching, setIsRefetching] = useState(false);
+
   // Obtendo projetos usando o hook useProjects
   const {
     projects,
@@ -52,7 +52,8 @@ const DashboardModule = React.memo(() => {
   // Obtendo usuários usando o hook useUsers
   const { users } = useUsers(selectedAssignment);
 
-  // Obtendo dados de KPI usando o hook useKPI com SWR
+  // Obtendo dados de KPI usando o hook useKPI
+  // Passando os parâmetros de filtro diretamente para o hook
   const {
     queueTimeData,
     volumeData,
@@ -61,7 +62,6 @@ const DashboardModule = React.memo(() => {
     radarData,
     loading: kpiLoading,
     error: kpiError,
-    isValidating: kpiValidating,
     refetch: refreshKPIData,
   } = useKPI({
     projectId: selectedProject,
@@ -87,19 +87,13 @@ const DashboardModule = React.memo(() => {
         setSelectedAssignment(undefined);
         return;
       }
+      const assignmentsData = await fetchAssignments(selectedProject);
+      const filteredAssignments = assignmentsData.filter(
+        (assignment) => assignment.name !== "Finalizado",
+      );
 
-      try {
-        const assignmentsData = await fetchAssignments(selectedProject);
-        const filteredAssignments = assignmentsData.filter(
-          (assignment) => assignment.name !== "Finalizado",
-        );
-        setAssignments(filteredAssignments);
-      } catch (error) {
-        console.error("Erro ao carregar assignments:", error);
-        setAssignments([]);
-      }
+      setAssignments(filteredAssignments);
     };
-
     loadAssignments();
   }, [selectedProject, fetchAssignments]);
 
@@ -133,8 +127,12 @@ const DashboardModule = React.memo(() => {
   const handlePeriodChange = useCallback(
     (newPeriod) => {
       setPeriod(newPeriod);
+      setIsRefetching(true);
+      refreshKPIData().finally(() => {
+        setIsRefetching(false);
+      });
     },
-    [setPeriod],
+    [setPeriod, refreshKPIData],
   );
 
   // Função para selecionar um colaborador
@@ -142,27 +140,45 @@ const DashboardModule = React.memo(() => {
     (member) => {
       setTeamMember(member);
       setShowTeamSelector(false);
+      setIsRefetching(true);
+      refreshKPIData().finally(() => {
+        setIsRefetching(false);
+      });
     },
-    [setTeamMember],
+    [setTeamMember, refreshKPIData],
   );
 
   // Função para atualizar os dados manualmente
   const handleRefresh = useCallback(() => {
-    refreshKPIData();
+    setIsRefetching(true);
+    refreshKPIData().finally(() => {
+      setIsRefetching(false);
+    });
   }, [refreshKPIData]);
 
   // Estado de loading combinado
-  const isLoading = projectsLoading || (kpiLoading && !kpiValidating);
+  const isLoading = projectsLoading || (kpiLoading && !isRefetching);
 
   // Renderizar mensagem de erro (se houver)
   if (showError && kpiError && selectedProject && selectedAssignment) {
     return (
-      <ErrorFallback
-        error={kpiError}
-        onRetry={handleRefresh}
-        title="Erro ao carregar dados do dashboard"
-        description="Ocorreu um erro ao carregar os dados do dashboard."
-      />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="rounded-lg bg-card p-6 shadow-md"
+      >
+        <div className="mb-4 flex items-center text-destructive">
+          <AlertCircle className="mr-2 h-6 w-6" />
+          <h3 className="text-lg font-medium">Erro ao carregar dados</h3>
+        </div>
+        <p className="mb-4 text-muted-foreground">
+          Ocorreu um erro ao carregar os dados do dashboard.
+        </p>
+        <Button variant="default" onClick={handleRefresh}>
+          Tentar novamente
+        </Button>
+      </motion.div>
     );
   }
 
@@ -316,9 +332,9 @@ const DashboardModule = React.memo(() => {
             variant="secondary"
             className="flex w-36 items-center"
             onClick={handleRefresh}
-            disabled={kpiValidating}
+            disabled={isRefetching}
           >
-            {kpiValidating ? (
+            {isRefetching ? (
               <>
                 <Loader2 className="-ml-1 mr-2 h-4 w-4 animate-spin" />
                 Atualizando...
@@ -333,16 +349,26 @@ const DashboardModule = React.memo(() => {
         </div>
       </div>
 
-      {/* Overlay de carregamento - apenas para carregamento inicial */}
+      {/* Overlay de carregamento - apenas para carregamento inicial, não para refetching */}
       <AnimatePresence>
         {isLoading && (
-          <LoadingFallback message="Carregando dados do dashboard..." />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/50"
+          >
+            <div className="flex items-center rounded-lg bg-card p-6 shadow-lg">
+              <Loader2 className="mr-3 h-6 w-6 animate-spin text-primary" />
+              <span className="text-foreground">Carregando dados...</span>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Indicador de revalidação - mais sutil */}
+      {/* Indicador de recarregamento - apenas para refetching, mais sutil */}
       <AnimatePresence>
-        {kpiValidating && !isLoading && (
+        {isRefetching && !isLoading && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -382,7 +408,7 @@ const DashboardModule = React.memo(() => {
             transition={{ duration: 0.2 }}
           >
             {/* Cards de KPI */}
-            {kpiData && kpiData.length > 0 && (
+            {kpiData && (
               <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                 {kpiData.map((kpi, index) => (
                   <KPICard key={index} {...kpi} />
@@ -392,21 +418,24 @@ const DashboardModule = React.memo(() => {
 
             {/* Gráficos */}
             <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <TeamPerformanceChart
-                data={teamPerformanceData}
-                loading={kpiLoading}
-              />
-              <TeamHeatmap data={teamHeatmapData} loading={kpiLoading} />
+              {teamPerformanceData && (
+                <TeamPerformanceChart data={teamPerformanceData} />
+              )}
+              {teamHeatmapData && (
+                <TeamHeatmap data={teamHeatmapData} loading={kpiLoading} />
+              )}
             </div>
 
             {/* Gráfico de Radar e Tabela */}
             <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <PerformanceRadarChart
-                data={radarData}
-                colaborador={teamMember || "Colaborador"}
-                loading={kpiLoading}
-              />
-              {/* Dados fictícios para a tabela de status */}
+              {radarData && (
+                <PerformanceRadarChart
+                  data={radarData}
+                  colaborador={teamMember || "Colaborador"}
+                  loading={kpiLoading}
+                />
+              )}
+              {/* Criando dados fictícios para a tabela de status */}
               <DemandStatusTable
                 data={[
                   {
@@ -426,8 +455,6 @@ const DashboardModule = React.memo(() => {
       )}
     </motion.div>
   );
-});
+};
 
-DashboardModule.displayName = "DashboardModule";
-
-export default DashboardModule;
+export default React.memo(DashboardModule);

@@ -28,11 +28,6 @@ const KPICard = React.memo(
       }
     };
 
-    // Validação de props
-    if (!title || value === undefined || value === null) {
-      return null;
-    }
-
     return (
       <motion.div
         whileHover={{ y: -5 }}
@@ -40,7 +35,7 @@ const KPICard = React.memo(
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className={`p-5 hover:shadow-lg ${className}`}>
+        <Card className={`p-5 hover:shadow-lg ${className} `}>
           <div className="mb-4 flex items-start justify-between">
             <h3 className="text-sm font-medium text-muted-foreground">
               {title}
@@ -54,9 +49,7 @@ const KPICard = React.memo(
                 className="text-3xl font-bold text-foreground"
                 animate={controls}
               >
-                {typeof value === "number"
-                  ? value.toLocaleString("pt-BR", { maximumFractionDigits: 1 })
-                  : value}
+                {value.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}
               </motion.div>
               <span className="ml-1 text-sm text-muted-foreground">
                 {unit}
