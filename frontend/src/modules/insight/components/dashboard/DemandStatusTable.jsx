@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const DemandStatusTable = React.memo(({ data = [], className = "" }) => {
+const DemandStatusTable = React.memo(({ data, className = "" }) => {
   // Estado para ordenação
   const [sortConfig, setSortConfig] = useState(null);
 
@@ -27,9 +27,12 @@ const DemandStatusTable = React.memo(({ data = [], className = "" }) => {
   );
 
   // Função para filtrar por status
-  const handleStatusFilter = useCallback((status) => {
-    setStatusFilter(status);
-  }, []);
+  const handleStatusFilter = useCallback(
+    (status) => {
+      setStatusFilter(status);
+    },
+    [setStatusFilter],
+  );
 
   // Dados ordenados e filtrados
   const sortedData = useMemo(() => {
@@ -58,30 +61,11 @@ const DemandStatusTable = React.memo(({ data = [], className = "" }) => {
   }, [data, sortConfig, statusFilter]);
 
   // Função para renderizar o ícone de ordenação
-  const renderSortIcon = useCallback(
-    (key) => {
-      if (!sortConfig || sortConfig.key !== key) {
-        return (
-          <svg
-            className="h-4 w-4 opacity-30"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-            />
-          </svg>
-        );
-      }
-
-      return sortConfig.direction === "ascending" ? (
+  const renderSortIcon = (key) => {
+    if (!sortConfig || sortConfig.key !== key) {
+      return (
         <svg
-          className="h-4 w-4"
+          className="h-4 w-4 opacity-30"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -91,31 +75,47 @@ const DemandStatusTable = React.memo(({ data = [], className = "" }) => {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M5 15l7-7 7 7"
-          />
-        </svg>
-      ) : (
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
+            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
           />
         </svg>
       );
-    },
-    [sortConfig],
-  );
+    }
+
+    return sortConfig.direction === "ascending" ? (
+      <svg
+        className="h-4 w-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M5 15l7-7 7 7"
+        />
+      </svg>
+    ) : (
+      <svg
+        className="h-4 w-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+    );
+  };
 
   // Função para renderizar a cor do status
-  const getStatusColor = useCallback((status) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case "Em Fila":
         return "bg-info text-info-foreground";
@@ -126,10 +126,10 @@ const DemandStatusTable = React.memo(({ data = [], className = "" }) => {
       default:
         return "bg-secondary text-secondary-foreground";
     }
-  }, []);
+  };
 
   // Função para renderizar a cor da prioridade
-  const getPriorityColor = useCallback((prioridade) => {
+  const getPriorityColor = (prioridade) => {
     switch (prioridade) {
       case "Crítica":
         return "bg-destructive text-destructive-foreground";
@@ -142,42 +142,15 @@ const DemandStatusTable = React.memo(({ data = [], className = "" }) => {
       default:
         return "bg-secondary text-secondary-foreground";
     }
-  }, []);
+  };
 
   // Função para calcular a cor da barra de progresso
-  const getProgressColor = useCallback((progresso) => {
+  const getProgressColor = (progresso) => {
     if (progresso < 25) return "bg-destructive";
     if (progresso < 50) return "bg-warning";
     if (progresso < 75) return "bg-info";
     return "bg-success";
-  }, []);
-
-  // Função para formatar data
-  const formatDate = useCallback((dateString) => {
-    try {
-      return new Date(dateString).toLocaleDateString("pt-BR");
-    } catch {
-      return "Data inválida";
-    }
-  }, []);
-
-  if (!data || data.length === 0) {
-    return (
-      <motion.div
-        className={`rounded-lg bg-card p-5 shadow-md ${className}`}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.3 }}
-      >
-        <h3 className="mb-4 text-lg font-medium text-foreground">
-          Status das Demandas
-        </h3>
-        <div className="flex h-40 items-center justify-center">
-          <p className="text-muted-foreground">Nenhuma demanda encontrada</p>
-        </div>
-      </motion.div>
-    );
-  }
+  };
 
   return (
     <motion.div
@@ -337,7 +310,7 @@ const DemandStatusTable = React.memo(({ data = [], className = "" }) => {
                     </span>
                   </td>
                   <td className="p-3 text-sm text-foreground">
-                    {formatDate(item.prazo)}
+                    {new Date(item.prazo).toLocaleDateString("pt-BR")}
                   </td>
                   <td className="p-3">
                     <div className="h-2 w-full rounded-full bg-secondary">

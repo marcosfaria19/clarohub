@@ -27,25 +27,19 @@ const TeamHeatmap = React.memo(
       const ranges = {};
       metricas.forEach((metrica) => {
         const valores = heatmapData
-          .filter(
-            (item) =>
-              item.metrica === metrica && typeof item.valor === "number",
-          )
+          .filter((item) => item.metrica === metrica)
           .map((item) => item.valor);
-
-        if (valores.length > 0) {
-          ranges[metrica] = {
-            min: Math.min(...valores),
-            max: Math.max(...valores),
-          };
-        }
+        ranges[metrica] = {
+          min: Math.min(...valores),
+          max: Math.max(...valores),
+        };
       });
       return ranges;
     }, [heatmapData, metricas]);
 
     const getColorForValue = useCallback(
       (metrica, valor) => {
-        if (!metricRanges[metrica] || typeof valor !== "number")
+        if (!metricRanges[metrica])
           return "bg-secondary/50 text-secondary-foreground";
 
         const { min, max } = metricRanges[metrica];
@@ -63,12 +57,11 @@ const TeamHeatmap = React.memo(
       [metricRanges],
     );
 
-    const formatValue = useCallback((metrica, valor) => {
-      if (typeof valor === "string") return valor;
+    const formatValue = (metrica, valor) => {
       if (metrica === "Tempo Médio") return `${formatXminYs(valor)}`;
       if (metrica === "Atividade") return `${valor}%`;
       return valor.toString();
-    }, []);
+    };
 
     const tableData = useMemo(() => {
       return colaboradores.map((colaborador) => {
@@ -87,7 +80,7 @@ const TeamHeatmap = React.memo(
         });
         return row;
       });
-    }, [colaboradores, metricas, heatmapData, getColorForValue, formatValue]);
+    }, [colaboradores, metricas, heatmapData, getColorForValue]);
 
     const columns = useMemo(() => {
       const baseColumns = [
@@ -124,40 +117,6 @@ const TeamHeatmap = React.memo(
 
       return [...baseColumns, ...metricaColumns];
     }, [metricas]);
-
-    if (loading) {
-      return (
-        <Card className={className}>
-          <div className="p-6">
-            <CardTitle className="mb-4 text-lg font-medium text-foreground">
-              Métricas da Equipe
-            </CardTitle>
-          </div>
-          <CardContent className="pt-0">
-            <div className="flex h-40 items-center justify-center">
-              <p className="text-muted-foreground">Carregando dados...</p>
-            </div>
-          </CardContent>
-        </Card>
-      );
-    }
-
-    if (tableData.length === 0) {
-      return (
-        <Card className={className}>
-          <div className="p-6">
-            <CardTitle className="mb-4 text-lg font-medium text-foreground">
-              Métricas da Equipe
-            </CardTitle>
-          </div>
-          <CardContent className="pt-0">
-            <div className="flex h-40 items-center justify-center">
-              <p className="text-muted-foreground">Nenhum dado disponível</p>
-            </div>
-          </CardContent>
-        </Card>
-      );
-    }
 
     return (
       <Card className={className}>

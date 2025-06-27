@@ -16,39 +16,45 @@ import {
   CardContent,
   CardTitle,
 } from "modules/shared/components/ui/card";
+import { useKPI } from "modules/insight/hooks/useKPI";
 
 // Componente de tooltip customizado
-const CustomTooltip = React.memo(({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="rounded-md border border-border bg-popover p-3 shadow-md">
         <p className="font-medium text-foreground">{label}</p>
         <p className="text-sm text-primary">
           <span className="mr-2 inline-block h-3 w-3 rounded-sm bg-primary"></span>
-          Demandas: {payload[0]?.value || 0}
+          Demandas: {payload[0].value}
         </p>
         <p className="text-sm text-accent">
           <span className="mr-2 inline-block h-3 w-3 rounded-sm bg-accent"></span>
-          Tempo Médio: {payload[1]?.value || 0} min
+          Tempo Médio: {payload[1].value} horas
         </p>
       </div>
     );
   }
   return null;
-});
-
-CustomTooltip.displayName = "CustomTooltip";
+};
 
 const TeamPerformanceChart = React.memo(
-  ({ data = [], loading = false, className = "" }) => {
-    const [setHoveredBar] = useState(null);
+  ({ className = "", projectId, assignmentId, period = "day" }) => {
+    const [hoveredBar, setHoveredBar] = useState(null);
 
-    const handleBarMouseEnter = useCallback(
-      (data) => {
-        setHoveredBar(data?.period);
-      },
-      [setHoveredBar],
-    );
+    // Usar o hook useKPI para obter dados reais
+    const { teamPerformanceData, loading } = useKPI({
+      projectId,
+      assignmentId,
+      period,
+    });
+
+    // Usar os dados do hook ou um fallback vazio
+    const data = teamPerformanceData || [];
+
+    const handleBarMouseEnter = useCallback((data) => {
+      setHoveredBar(data.period);
+    }, []);
 
     const handleBarMouseLeave = useCallback(() => {
       setHoveredBar(null);
@@ -65,10 +71,6 @@ const TeamPerformanceChart = React.memo(
           {loading ? (
             <div className="flex h-80 items-center justify-center">
               <p className="text-muted-foreground">Carregando dados...</p>
-            </div>
-          ) : data.length === 0 ? (
-            <div className="flex h-80 items-center justify-center">
-              <p className="text-muted-foreground">Nenhum dado disponível</p>
             </div>
           ) : (
             <motion.div
@@ -109,7 +111,7 @@ const TeamPerformanceChart = React.memo(
                     tick={{ fill: "hsl(var(--muted-foreground))" }}
                     axisLine={{ stroke: "hsl(var(--border))" }}
                     label={{
-                      value: "Tempo Médio (min)",
+                      value: "Tempo Médio (h)",
                       angle: -90,
                       position: "insideRight",
                       style: { fill: "hsl(var(--muted-foreground))" },
@@ -131,7 +133,10 @@ const TeamPerformanceChart = React.memo(
                     onMouseEnter={handleBarMouseEnter}
                     onMouseLeave={handleBarMouseLeave}
                     animationDuration={1500}
-                    fillOpacity={0.8}
+                    // Efeito de hover nas barras
+                    fillOpacity={(entry) =>
+                      hoveredBar === entry.period ? 0.9 : 0.7
+                    }
                   />
                   <Line
                     yAxisId="right"
