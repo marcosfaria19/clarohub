@@ -40,7 +40,7 @@ const VacationTimeline = React.memo(({ vacations = [], loading = false }) => {
       filtered = filtered.filter(
         (vacation) =>
           vacation.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          vacation.project?.name
+          vacation.project.name
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase()),
       );
