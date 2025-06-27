@@ -1,20 +1,24 @@
 import { AuthContext } from "modules/shared/contexts/AuthContext";
-import { useContext, useEffect, useCallback } from "react";
-import useSWR from "swr";
+import { useContext, useEffect, useState, useCallback } from "react";
 import axiosInstance from "services/axios";
-import { SWR_KEYS, swrConfig } from "services/swrConfig";
 
 const useNotifications = () => {
+  const [notifications, setNotifications] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { user } = useContext(AuthContext);
 
-  // Fetcher function for SWR
-  const fetcher = async (url) => {
+  const fetchNotifications = useCallback(async () => {
     if (!user || !user.userId) {
-      throw new Error("User ID is not available");
+      console.error("User ID is not available");
+      return;
     }
 
+    setIsLoading(true);
+    setError(null);
+
     try {
-      const response = await axiosInstance.get(url);
+      const response = await axiosInstance.get(`/notifications/${user.userId}`);
       const sortedNotifications = response.data
         .map((notification) => ({
           ...notification,
@@ -26,30 +30,20 @@ const useNotifications = () => {
           }
           return a.read ? 1 : -1;
         });
-      return sortedNotifications;
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-      throw error;
+      setNotifications(sortedNotifications);
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+      setError(err);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [user]);
 
-  // SWR hook with cache key based on user ID using centralized config
-  const cacheKey = user?.userId ? SWR_KEYS.NOTIFICATIONS(user.userId) : null;
-
-  const {
-    data: notifications = [],
-    error,
-    mutate: mutateNotifications,
-    isLoading,
-    isValidating,
-  } = useSWR(cacheKey, fetcher, {
-    ...swrConfig,
-    // Override specific settings for notifications
-    revalidateOnFocus: false,
-    revalidateOnReconnect: true,
-    dedupingInterval: 30000, // 30 seconds deduping
-    refreshInterval: 300000, // Revalidate every 2 minutes for fresh notifications
-  });
+  useEffect(() => {
+    if (user && user.userId) {
+      fetchNotifications();
+    }
+  }, [user, fetchNotifications]);
 
   // Web Push Notifications functions
   const requestNotificationPermission = useCallback(async () => {
@@ -79,7 +73,6 @@ const useNotifications = () => {
 
     try {
       const registration = await navigator.serviceWorker.register("/sw.js");
-
       return registration;
     } catch (error) {
       console.error("Service Worker registration failed:", error);
@@ -183,13 +176,6 @@ const useNotifications = () => {
     }
   }, [user?.userId]);
 
-  // Manual refetch function (maintains compatibility)
-  const refetchNotifications = async () => {
-    if (cacheKey) {
-      await mutateNotifications();
-    }
-  };
-
   const clearReadNotifications = async (notificationId) => {
     if (!user?.userId) {
       console.error("User ID is not available");
@@ -200,24 +186,12 @@ const useNotifications = () => {
       await axiosInstance.patch(`/notifications/${notificationId}/hide`, {
         userId: user.userId,
       });
-
-      // Optimistic update: remove notification from cache
-      await mutateNotifications(
-        (currentNotifications) =>
-          currentNotifications?.filter((n) => n._id !== notificationId) || [],
-        false,
-      );
-
-      // Revalidate to ensure consistency
-      await mutateNotifications();
+      await fetchNotifications();
     } catch (error) {
       console.error("Erro ao ocultar notificação:", error);
-      // Revert optimistic update on error
-      await mutateNotifications();
     }
   };
 
-  // Função para marcar todas como lidas (mantém funcionalidade original do sininho)
   const markAllAsRead = async () => {
     if (!user?.userId) {
       console.error("User ID is not available");
@@ -225,33 +199,13 @@ const useNotifications = () => {
     }
 
     try {
-      await axiosInstance.patch(
-        SWR_KEYS.NOTIFICATIONS_MARK_ALL_READ(user.userId),
-      );
-
-      // Optimistic update: mark all as read in cache
-      await mutateNotifications(
-        (currentNotifications) =>
-          currentNotifications?.map((notification) => ({
-            ...notification,
-            read: true,
-            readBy: notification.readBy.includes(user.userId)
-              ? notification.readBy
-              : [...notification.readBy, user.userId],
-          })) || [],
-        false,
-      );
-
-      // Revalidate to ensure consistency
-      await mutateNotifications();
+      await axiosInstance.patch(`/notifications/${user.userId}/mark-all-read`);
+      await fetchNotifications();
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
-      // Revert optimistic update on error
-      await mutateNotifications();
     }
   };
 
-  // Nova função para "Excluir Tudo" (deixar todas hidden)
   const hideAllNotifications = async () => {
     if (!user?.userId) {
       console.error("User ID is not available");
@@ -259,17 +213,10 @@ const useNotifications = () => {
     }
 
     try {
-      await axiosInstance.patch(SWR_KEYS.NOTIFICATIONS_HIDE_ALL(user.userId));
-
-      // Optimistic update: remove all notifications from cache
-      await mutateNotifications([], false);
-
-      // Revalidate to ensure consistency
-      await mutateNotifications();
+      await axiosInstance.patch(`/notifications/${user.userId}/hide-all`);
+      await fetchNotifications();
     } catch (error) {
       console.error("Error hiding all notifications:", error);
-      // Revert optimistic update on error
-      await mutateNotifications();
     }
   };
 
@@ -285,9 +232,7 @@ const useNotifications = () => {
         message,
         isGlobal: true,
       });
-
-      // Revalidate to fetch new notification
-      await mutateNotifications();
+      await fetchNotifications();
     } catch (error) {
       console.error("Error creating global notification:", error);
     }
@@ -301,9 +246,7 @@ const useNotifications = () => {
         message,
         isGlobal: false,
       });
-
-      // Revalidate to fetch new notification
-      await mutateNotifications();
+      await fetchNotifications();
     } catch (error) {
       console.error("Error creating user notification:", error);
     }
@@ -311,16 +254,15 @@ const useNotifications = () => {
 
   return {
     notifications,
-    refetchNotifications,
+    refetchNotifications: fetchNotifications,
     clearReadNotifications,
-    markAllAsRead, // Mantém para funcionalidade do sininho
-    hideAllNotifications, // Nova função para "Excluir Tudo"
+    markAllAsRead,
+    hideAllNotifications,
     createGlobalNotification,
     createUserNotification,
     isLoading,
-    isValidating,
     error,
-    // New Web Push functions
+    // Web Push functions
     subscribeToPushNotifications,
     unsubscribeFromPushNotifications,
     checkPushSubscriptionStatus,
