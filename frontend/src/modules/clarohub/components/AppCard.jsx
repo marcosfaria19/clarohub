@@ -72,7 +72,7 @@ const AppCard = ({
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <InfoIcon className="pointer-events-auto absolute left-4 top-5 h-5 w-5 cursor-help text-muted-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-80" />
+                <InfoIcon className="pointer-events-auto absolute left-4 top-5 h-5 w-5 cursor-help text-primary-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-80" />
               </TooltipTrigger>
               <Portal>
                 <TooltipContent className="max-w-[300px] break-words">
@@ -88,7 +88,7 @@ const AppCard = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="pointer-events-auto absolute right-2 top-2 text-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-80"
+                  className="pointer-events-auto absolute right-2 top-2 text-primary-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-80"
                   onClick={handleFavoriteClick}
                 >
                   {isFavorite ? (
@@ -112,7 +112,7 @@ const AppCard = ({
         </CardContent>
 
         <CardFooter className="absolute bottom-0 left-0 right-0 rounded-lg bg-gradient-to-t from-black to-transparent p-4">
-          <h2 className="w-full truncate text-lg font-bold text-white">
+          <h2 className="w-full truncate text-lg font-bold text-primary-foreground">
             {nome}
           </h2>
         </CardFooter>
