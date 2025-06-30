@@ -1,10 +1,19 @@
-import { useEffect, useMemo, useState, useContext } from "react";
+import { useEffect, useMemo, useState, useContext, useCallback } from "react";
 import axiosInstance from "services/axios";
 import { toast } from "sonner";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
+import { useCache } from "modules/shared/contexts/CacheContext";
 
-export default function useNetFacil() {
+/**
+ * Hook otimizado para NetFacil com cache inteligente
+ *
+ * Mantém exatamente a mesma interface do hook original useNetFacil
+ * Adiciona cache compartilhado com TTL de 1 hora
+ */
+export default function useNetFacilOptimized() {
   const { user } = useContext(AuthContext);
+  const cache = useCache();
+
   const gestor = user.gestor;
   const userName = user.userName;
 
@@ -29,11 +38,46 @@ export default function useNetFacil() {
   const [showSGDTable, setShowSGDTable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Função para buscar dados do NetFacil
+  const fetchNetFacilData = useCallback(
+    async (forceRefresh = false) => {
+      try {
+        setIsLoading(true);
+
+        // Verifica cache primeiro (se não for refresh forçado)
+        if (!forceRefresh) {
+          const cachedData = cache.get("netfacil");
+          if (cachedData) {
+            setIsLoading(false);
+            return cachedData;
+          }
+        }
+
+        // Busca da API
+        const response = await axiosInstance.get("/netsmsfacil");
+        const fetchedData = response.data;
+
+        // Armazena no cache
+        cache.set("netfacil", fetchedData);
+
+        setIsLoading(false);
+        return fetchedData;
+      } catch (err) {
+        setIsLoading(false);
+        toast.error("Falha ao carregar dados.");
+        console.error("Erro ao buscar dados NetFacil:", err);
+        return [];
+      }
+    },
+    [cache],
+  );
+
+  // Effect para carregar dados na montagem ou mudança do usuário
   useEffect(() => {
-    axiosInstance
-      .get("/netsmsfacil")
-      .then((res) => {
-        const fetchedData = res.data;
+    const loadData = async () => {
+      const fetchedData = await fetchNetFacilData();
+
+      if (fetchedData && fetchedData.length > 0) {
         const projectName = user?.project?.name;
         const isManager = user?.permissoes !== "basic";
 
@@ -56,27 +100,35 @@ export default function useNetFacil() {
         } else {
           setData(fetchedData);
         }
-      })
-      .catch(() => toast.error("Falha ao carregar dados."));
-  }, [user]);
+      }
+    };
 
+    loadData();
+  }, [user, fetchNetFacilData]);
+
+  // Memoização das opções (mantém a mesma lógica original)
   const getOptions = useMemo(() => {
     return (field) =>
       [...new Set(data.map((item) => item[field]))].filter(Boolean);
   }, [data]);
 
-  const findItem = (fields) => {
-    return data.find(
-      (item) =>
-        item.TRATATIVA === fields.tratativa &&
-        item.TIPO === fields.tipo &&
-        item["ABERTURA/FECHAMENTO"] === fields.aberturaFechamento &&
-        item.NETSMS === fields.netSMS &&
-        item["TEXTO PADRAO"] === fields.textoPadrao,
-    );
-  };
+  // Função para encontrar item (mantém a mesma lógica original)
+  const findItem = useCallback(
+    (fields) => {
+      return data.find(
+        (item) =>
+          item.TRATATIVA === fields.tratativa &&
+          item.TIPO === fields.tipo &&
+          item["ABERTURA/FECHAMENTO"] === fields.aberturaFechamento &&
+          item.NETSMS === fields.netSMS &&
+          item["TEXTO PADRAO"] === fields.textoPadrao,
+      );
+    },
+    [data],
+  );
 
-  const handleReset = () => {
+  // Função para reset (mantém a mesma lógica original)
+  const handleReset = useCallback(() => {
     setFormData({
       tratativa: "",
       tipo: "",
@@ -94,9 +146,12 @@ export default function useNetFacil() {
     setCodigoErro(false);
     setCurrentStep(0);
     navigator.clipboard.writeText("");
-  };
+  }, []);
 
-  const fecharTabelaConsulta = () => setTabelaConsulta(false);
+  // Função para fechar tabela de consulta (mantém a mesma lógica original)
+  const fecharTabelaConsulta = useCallback(() => {
+    setTabelaConsulta(false);
+  }, []);
 
   return {
     data,
