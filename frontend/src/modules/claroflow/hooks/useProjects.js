@@ -1,33 +1,60 @@
-// useProjects.js
-// Hook responsável por gerenciar os projetos e as operações relacionadas às assignments.
 import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "services/axios";
-
-const useProjects = () => {
+import { useCache } from "modules/shared/contexts/CacheContext";
+/**
+ * Hook otimizado para gerenciamento de projetos com cache inteligente
+ *
+ * Mantém exatamente a mesma interface do hook original useProjects
+ * Adiciona cache compartilhado com TTL de 6 horas
+ */
+const useProjectsOptimized = () => {
   // Estados para armazenar projetos, loading e erros
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Função para buscar todos os projetos
-  const fetchProjects = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get("/flow/projects");
+  const cache = useCache();
 
-      setProjects(response.data);
-      return response.data; // Retorna os dados para uso direto
-    } catch (err) {
-      setError(err);
-      console.error("Erro ao buscar projetos:", err);
-      return []; // Retorna array vazio em caso de erro
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // Função para buscar todos os projetos
+  const fetchProjects = useCallback(
+    async (forceRefresh = false) => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Verifica cache primeiro (se não for refresh forçado)
+        if (!forceRefresh) {
+          const cachedData = cache.get("projects");
+          if (cachedData) {
+            setProjects(cachedData);
+            setLoading(false);
+            return cachedData;
+          }
+        }
+
+        // Busca da API
+        const response = await axiosInstance.get("/flow/projects");
+        const projectsData = response.data;
+
+        // Armazena no cache
+        cache.set("projects", projectsData);
+
+        setProjects(projectsData);
+        setError(null);
+
+        return projectsData;
+      } catch (err) {
+        setError(err);
+        console.error("Erro ao buscar projetos:", err);
+        return [];
+      } finally {
+        setLoading(false);
+      }
+    },
+    [cache],
+  );
 
   // Função para buscar as assignments de um projeto específico
-  // Modificada para evitar dependência circular
   const fetchAssignments = useCallback(
     async (projectId) => {
       try {
@@ -38,11 +65,20 @@ const useProjects = () => {
 
         setLoading(true);
 
+        // Verifica cache de assignments específicas do projeto
+        const cacheParams = { projectId };
+        const cachedAssignments = cache.get("projectAssignments", cacheParams);
+
+        if (cachedAssignments) {
+          setLoading(false);
+          return cachedAssignments;
+        }
+
         // Verifica se o projeto já está no estado
         let projectData = projects.find((p) => p._id === projectId);
 
         // Se não encontrar o projeto no estado ou se o estado estiver vazio,
-        // busca diretamente da API em vez de chamar fetchProjects
+        // busca diretamente da API
         if (!projectData) {
           try {
             const response = await axiosInstance.get(
@@ -60,7 +96,12 @@ const useProjects = () => {
           return [];
         }
 
-        return projectData.assignments || [];
+        const assignments = projectData.assignments || [];
+
+        // Cache das assignments específicas do projeto
+        cache.set("projectAssignments", assignments, cacheParams);
+
+        return assignments;
       } catch (err) {
         console.error("Erro ao buscar assignments:", err);
         setError(err);
@@ -69,24 +110,41 @@ const useProjects = () => {
         setLoading(false);
       }
     },
-    [projects], // Removida a dependência de fetchProjects
+    [projects, cache],
   );
 
   // Função para buscar projetos por projectId
-  const fetchProjectById = useCallback(async (projectId) => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get(`/flow/projects/${projectId}`);
+  const fetchProjectById = useCallback(
+    async (projectId) => {
+      try {
+        setLoading(true);
 
-      return response.data;
-    } catch (err) {
-      console.error("Erro ao buscar projeto:", err);
-      setError(err);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        // Verifica cache específico do projeto
+        const cacheParams = { projectId };
+        const cachedProject = cache.get("singleProject", cacheParams);
+
+        if (cachedProject) {
+          setLoading(false);
+          return cachedProject;
+        }
+
+        const response = await axiosInstance.get(`/flow/projects/${projectId}`);
+        const projectData = response.data;
+
+        // Cache do projeto específico
+        cache.set("singleProject", projectData, cacheParams);
+
+        return projectData;
+      } catch (err) {
+        console.error("Erro ao buscar projeto:", err);
+        setError(err);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [cache],
+  );
 
   // Função para criar uma nova assignment no projeto
   const createAssignment = async (projectId, name) => {
@@ -95,7 +153,13 @@ const useProjects = () => {
       await axiosInstance.post(`/flow/projects/${projectId}/assignments`, {
         name,
       });
-      await fetchProjects();
+
+      // Invalida caches relacionados após modificação
+      cache.invalidateType("projects");
+      cache.invalidateKey("projectAssignments", { projectId });
+      cache.invalidateKey("singleProject", { projectId });
+
+      await fetchProjects(true); // Force refresh
     } catch (err) {
       setError(err);
       console.error("Erro ao criar assignment:", err);
@@ -113,7 +177,13 @@ const useProjects = () => {
         `/flow/projects/${projectId}/assignments/${assignmentId}`,
         updatedData,
       );
-      await fetchProjects();
+
+      // Invalida caches relacionados após modificação
+      cache.invalidateType("projects");
+      cache.invalidateKey("projectAssignments", { projectId });
+      cache.invalidateKey("singleProject", { projectId });
+
+      await fetchProjects(true); // Force refresh
     } catch (err) {
       setError(err);
       console.error("Erro ao editar assignment:", err);
@@ -130,7 +200,13 @@ const useProjects = () => {
       await axiosInstance.delete(
         `/flow/projects/${projectId}/assignments/${assignmentId}`,
       );
-      await fetchProjects();
+
+      // Invalida caches relacionados após modificação
+      cache.invalidateType("projects");
+      cache.invalidateKey("projectAssignments", { projectId });
+      cache.invalidateKey("singleProject", { projectId });
+
+      await fetchProjects(true); // Force refresh
     } catch (err) {
       setError(err);
       console.error("Erro ao deletar assignment:", err);
@@ -148,6 +224,10 @@ const useProjects = () => {
         `/flow/projects/${projectId}/assignments/${assignmentId}`,
         { transitions },
       );
+
+      // Invalida caches relacionados após modificação
+      cache.invalidateKey("projectAssignments", { projectId });
+      cache.invalidateKey("singleProject", { projectId });
     } catch (err) {
       setError(err);
       console.error("Erro ao atualizar transições:", err);
@@ -162,6 +242,9 @@ const useProjects = () => {
       await axiosInstance.patch(`/flow/projects/${projectId}/layout`, {
         nodes: nodes.map(({ id, position }) => ({ id, position })),
       });
+
+      // Invalida cache do projeto específico após salvar layout
+      cache.invalidateKey("singleProject", { projectId });
     } catch (err) {
       setError(err);
       console.error("Erro ao salvar layout:", err);
@@ -188,4 +271,4 @@ const useProjects = () => {
   };
 };
 
-export default useProjects;
+export default useProjectsOptimized;
