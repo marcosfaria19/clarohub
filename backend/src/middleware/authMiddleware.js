@@ -1,11 +1,15 @@
-// authMiddleware.js
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const authenticateToken = (req, res, next) => {
-  const token = req.headers["authorization"];
-  if (!token) {
+  const authHeader = req.headers["authorization"];
+  if (!authHeader) {
     return res.status(401).json({ mensagem: "Acesso negado" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ mensagem: "Token mal formatado" });
   }
 
   jwt.verify(token, SECRET_KEY, (err, user) => {
