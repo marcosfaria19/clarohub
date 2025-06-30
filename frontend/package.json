@@ -67,7 +67,7 @@
   },
   "scripts": {
     "start": "dotenv -e .env.development react-scripts start",
-    "build": "dotenv -e .env.production react-scripts build && rimraf build/static/js/*.map build/static/css/*.map",
+    "build": "dotenv -e .env.production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
