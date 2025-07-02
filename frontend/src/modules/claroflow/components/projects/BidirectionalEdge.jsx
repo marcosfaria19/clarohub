@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { BaseEdge, getSmoothStepPath, useReactFlow, useStore } from "reactflow";
 import { Button } from "modules/shared/components/ui/button";
 
-export default function CustomEdge({
+export default function BidirectionalEdge({
   id,
   sourceX,
   sourceY,
@@ -10,6 +10,7 @@ export default function CustomEdge({
   targetY,
   sourcePosition,
   targetPosition,
+  data,
 }) {
   const { deleteElements } = useReactFlow();
   const edges = useStore((store) => store.edges);
@@ -21,30 +22,48 @@ export default function CustomEdge({
     targetX,
     targetY,
     targetPosition,
+    nodeHeight: 40,
   });
 
   const onEdgeClick = useCallback(() => {
-    const edgeToDelete = edges.find((edge) => edge.id === id);
-    if (edgeToDelete) {
-      deleteElements({ edges: [edgeToDelete] });
-    }
-  }, [id, edges, deleteElements]);
+    const edgesToDelete = edges.filter(
+      (e) => e.id === id || e.id === data.reverseEdgeId,
+    );
+    deleteElements({ edges: edgesToDelete });
+  }, [id, data.reverseEdgeId, edges, deleteElements]);
 
   // Utiliza a variável CSS para a cor do traço/fill
-  const strokeColor = "hsl(var(--foreground))";
+  const strokeColor = "hsl(var(--primary))";
 
-  // ID único para evitar colisões entre múltiplas edges
+  // IDs exclusivos para evitar colisões quando vários edges são renderizados
+  const markerStartId = `arrowhead-start-${id}`;
   const markerEndId = `arrowhead-end-${id}`;
 
   const edgeStyle = {
     stroke: strokeColor,
-    strokeWidth: 1.5,
+    strokeWidth: 2.0,
+    markerStart: `url(#${markerStartId})`,
     markerEnd: `url(#${markerEndId})`,
   };
 
   return (
     <>
       <defs>
+        {/* Setas de início (reversas) */}
+        <marker
+          id={markerStartId}
+          markerWidth="12"
+          markerHeight="9"
+          refX="3"
+          refY="4.5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          {/* Polígono invertido */}
+          <polygon points="12 0, 0 4.5, 12 9" style={{ fill: strokeColor }} />
+        </marker>
+
+        {/* Setas de fim */}
         <marker
           id={markerEndId}
           markerWidth="12"
@@ -54,7 +73,6 @@ export default function CustomEdge({
           orient="auto"
           markerUnits="strokeWidth"
         >
-          {/* Usa style para preencher com a mesma cor dinâmica */}
           <polygon points="0 0, 12 4.5, 0 9" style={{ fill: strokeColor }} />
         </marker>
       </defs>
@@ -75,7 +93,7 @@ export default function CustomEdge({
             variant="ghost"
             className="h-6 w-6 rounded-full bg-destructive text-white shadow-lg hover:bg-destructive/90"
             onClick={onEdgeClick}
-            title="Remover conexão"
+            title="Remover ambas as conexões"
           >
             ×
           </Button>

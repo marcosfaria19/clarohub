@@ -2,11 +2,11 @@
 import dagre from "dagre";
 
 // Constants
-export const nodeWidth = 256;
-export const nodeHeight = 128;
+export const nodeWidth = 128;
+export const nodeHeight = 256;
 
 // Layout function
-export const getLayoutedElements = (nodes, edges, direction = "TB") => {
+export const getLayoutedElements = (nodes, edges, direction = "LR") => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
   dagreGraph.setGraph({ rankdir: direction });

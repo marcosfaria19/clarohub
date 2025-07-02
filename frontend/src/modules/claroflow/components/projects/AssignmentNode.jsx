@@ -6,7 +6,7 @@ import { Edit2, Trash2 } from "lucide-react";
 const AssignmentNode = ({ data, selected }) => {
   return (
     <>
-      <Handle type="target" position="top" />
+      <Handle type="target" position="left" />
 
       <Card
         className={`w-64 border-input bg-secondary/80 shadow-sm transition-all hover:opacity-90 ${
@@ -40,7 +40,7 @@ const AssignmentNode = ({ data, selected }) => {
         </CardHeader>
       </Card>
 
-      <Handle type="source" position="bottom" />
+      <Handle type="source" position="right" />
     </>
   );
 };
