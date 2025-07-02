@@ -8,7 +8,7 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
     },
     ["Validação Vistoria"]: {
       required: ["IDDEMANDA", "COD_OPERADORA", "ENDERECO", "FILA"],
-      filaValues: ["Retorno Vistoria", "Validação Vistoria"],
+      filaValues: ["Validação Vistoria"],
     },
   };
 
@@ -71,6 +71,7 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
       IDDEMANDA: row.IDDEMANDA,
       COD_OPERADORA: codOper,
       ENDERECO_VISTORIA: endereco,
+      DATA_INICIO: row.DATA_INICIO,
       ...city,
       project: { _id: project._id, name: project.name },
       status: { _id: assignment._id, name: assignment.name },

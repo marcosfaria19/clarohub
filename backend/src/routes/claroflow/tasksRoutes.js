@@ -11,7 +11,6 @@ const { Parser } = require("json2csv");
 const { getParser } = require("../../parsers/parserRouter");
 
 module.exports = (tasksCollection, usersCollection, projectsCollection) => {
-  // Índices otimizados para todas as situações
   const createIndexes = async () => {
     try {
       await tasksCollection.createIndex({
@@ -29,7 +28,10 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
         "history.finishedAt": 1,
       });
 
-      await tasksCollection.createIndex({ IDDEMANDA: 1 }, { unique: true });
+      await tasksCollection.createIndex(
+        { IDDEMANDA: 1, DATA_INICIO: 1 },
+        { unique: true }
+      );
     } catch (err) {
       console.error("Erro ao criar índices:", err);
     }
@@ -150,14 +152,26 @@ module.exports = (tasksCollection, usersCollection, projectsCollection) => {
         // Processar e enriquecer dados via parser
         const processedData = parser(rawData, cidadeMap, project, assignment);
 
-        // Inserção otimizada sem duplicatas
-        const ids = processedData.map((d) => d.IDDEMANDA);
-        const existing = await tasksCollection
-          .find({ IDDEMANDA: { $in: ids } })
+        // Verificação de duplicatas composta (ID + DATA_INICIO original)
+        // Primeiro obtenha todos os IDDEMANDA únicos
+        const allDemandIds = [
+          ...new Set(processedData.map((d) => d.IDDEMANDA)),
+        ];
+
+        // Busque todos os documentos existentes com esses IDs
+        const existingDocs = await tasksCollection
+          .find({ IDDEMANDA: { $in: allDemandIds } })
           .toArray();
-        const existingIds = new Set(existing.map((d) => d.IDDEMANDA));
+
+        // Crie um mapa de combinações existentes
+        const existingMap = new Map();
+        existingDocs.forEach((doc) => {
+          existingMap.set(`${doc.IDDEMANDA}_${doc.DATA_INICIO}`, true);
+        });
+
+        // Filtre os novos dados
         const newData = processedData.filter(
-          (d) => !existingIds.has(d.IDDEMANDA)
+          (d) => !existingMap.has(`${d.IDDEMANDA}_${d.DATA_INICIO}`)
         );
 
         if (newData.length) {
