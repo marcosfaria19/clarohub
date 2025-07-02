@@ -32,19 +32,23 @@ import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useTasks } from "modules/claroflow/hooks/useTasks";
 import FinishedTaskFilter from "./FinishedTaskFilter";
 
-export default function GenericBoard({ assignment, project }) {
+export default function GenericBoard({
+  assignment,
+  project,
+  flowType = "default", // 'default' ou 'shared'
+}) {
   const { user } = useContext(AuthContext);
   const userId = user.userId;
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // Hook for users by assignment
+  // Hook para users por demanda
   const {
     users: teamMembers,
     loading: usersLoading,
     error: usersError,
   } = useUsers(assignment._id);
 
-  // Hook for tasks
+  // Hook para tasks
   const {
     availableTasks,
     inProgressTasks,
@@ -56,7 +60,11 @@ export default function GenericBoard({ assignment, project }) {
     refetchAvailableTasks,
     refetchInProgressTasks,
     refetchCompletedTasks,
-  } = useTasks({ assignmentId: assignment._id, userId });
+  } = useTasks({
+    assignmentId: assignment._id,
+    userId,
+    flowType,
+  });
 
   const handleTakeTask = async () => {
     try {
@@ -101,177 +109,187 @@ export default function GenericBoard({ assignment, project }) {
           isMobile ? "flex-col" : "flex-row",
         )}
       >
-        {/* Coluna Esquerda - Fila e Time */}
-        <div
-          className={cn(
-            "flex flex-col gap-5",
-            isMobile ? "h-[40vh] w-full" : "h-full w-[320px] min-w-[320px]",
-          )}
-        >
-          {/* Card de Fila de Tarefas */}
-          <Card className="overflow-hidden border-border bg-card/95 shadow-md transition-all hover:shadow-lg">
-            <CardHeader className="p-4 pb-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-primary/10 p-2 brightness-[1.6]">
-                    <Inbox className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg font-semibold text-card-foreground">
-                      Fila de Demandas
-                      <span className="px-2 py-1 text-base font-semibold text-accent brightness-[1.6]">
-                        (
-                        {loadingAvailable ? (
-                          <Loader2 className="mr-1 inline h-3 w-3 animate-spin" />
-                        ) : (
-                          availableTasks?.length || 0
-                        )}
-                        )
-                      </span>
-                    </CardTitle>
-                    <CardDescription className="text-xs">
-                      Disponíveis para tratamento
-                    </CardDescription>
+        {/* Coluna Esquerda - Fila e Time (apenas para fluxo padrão) */}
+        {flowType === "default" && (
+          <div
+            className={cn(
+              "flex flex-col gap-5",
+              isMobile ? "h-[40vh] w-full" : "h-full w-[320px] min-w-[320px]",
+            )}
+          >
+            {/* Card de Fila de Tarefas */}
+            <Card className="overflow-hidden border-border bg-card/95 shadow-md transition-all hover:shadow-lg">
+              <CardHeader className="p-4 pb-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-primary/10 p-2 brightness-[1.6]">
+                      <Inbox className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-card-foreground">
+                        Fila de Demandas
+                        <span className="px-2 py-1 text-base font-semibold text-accent brightness-[1.6]">
+                          (
+                          {loadingAvailable ? (
+                            <Loader2 className="mr-1 inline h-3 w-3 animate-spin" />
+                          ) : (
+                            availableTasks?.length || 0
+                          )}
+                          )
+                        </span>
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Disponíveis para tratamento
+                      </CardDescription>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4 pt-2">
-              <Button
-                variant="default"
-                size={isMobile ? "sm" : "default"}
-                onClick={handleTakeTask}
-                disabled={
-                  loadingAvailable ||
-                  availableTasks.length === 0 ||
-                  inProgressTasks?.length > 0
-                }
-                className="w-full gap-1 bg-primary text-primary-foreground shadow transition-all hover:bg-primary/90 hover:shadow-md"
-              >
-                {loadingAvailable ? (
-                  <span className="flex items-center gap-1">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Processando...</span>
-                  </span>
-                ) : inProgressTasks?.length > 0 ? (
-                  <span className="flex items-center gap-1">
-                    <span>Finalize a demanda atual</span>
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1">
-                    <span>Tratar Próxima Demanda</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </span>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Card de Time */}
-          <Card className="flex-1 overflow-hidden border-border bg-card/95 shadow-md transition-all hover:shadow-lg">
-            <CardHeader className="p-4 pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-primary/10 p-2 brightness-[1.6]">
-                    <Users className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg font-semibold text-card-foreground">
-                      Meu Time
-                      <span className="px-2 py-1 text-base font-semibold text-accent brightness-[1.6]">
-                        ({teamMembers?.length || 0})
-                      </span>
-                    </CardTitle>
-                    <CardDescription className="text-xs">
-                      Membros ativos no projeto
-                    </CardDescription>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="h-full p-0">
-              <ScrollArea className="h-full">
-                <div className="space-y-1 p-3">
-                  {usersLoading ? (
-                    <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Carregando usuários...
-                    </div>
-                  ) : usersError ? (
-                    <div className="rounded-md bg-destructive/10 p-3 text-center text-sm text-destructive">
-                      Erro ao carregar usuários
-                    </div>
-                  ) : teamMembers.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center gap-2 py-6 text-center text-sm text-muted-foreground">
-                      <Users className="h-8 w-8 opacity-40" />
-                      Nenhum membro na equipe
-                    </div>
+              </CardHeader>
+              <CardContent className="p-4 pt-2">
+                <Button
+                  variant="default"
+                  size={isMobile ? "sm" : "default"}
+                  onClick={handleTakeTask}
+                  disabled={
+                    loadingAvailable ||
+                    availableTasks.length === 0 ||
+                    inProgressTasks?.length > 0
+                  }
+                  className="w-full gap-1 bg-primary text-primary-foreground shadow transition-all hover:bg-primary/90 hover:shadow-md"
+                >
+                  {loadingAvailable ? (
+                    <span className="flex items-center gap-1">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Processando...</span>
+                    </span>
+                  ) : inProgressTasks?.length > 0 ? (
+                    <span className="flex items-center gap-1">
+                      <span>Finalize a demanda atual</span>
+                    </span>
                   ) : (
-                    teamMembers.map((user) => (
-                      <div
-                        key={user._id}
-                        className={cn(
-                          "group flex items-center gap-3 rounded-lg p-2.5 transition-all",
-                          inProgressTasks.some((t) => t.assignedTo === user._id)
-                            ? "bg-primary/5 shadow-sm"
-                            : "hover:bg-primary/5 hover:shadow-sm",
-                        )}
-                      >
-                        <Avatar
+                    <span className="flex items-center gap-1">
+                      <span>Tratar Próxima Demanda</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Card de Time */}
+            <Card className="flex-1 overflow-hidden border-border bg-card/95 shadow-md transition-all hover:shadow-lg">
+              <CardHeader className="p-4 pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-primary/10 p-2 brightness-[1.6]">
+                      <Users className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-card-foreground">
+                        Meu Time
+                        <span className="px-2 py-1 text-base font-semibold text-accent brightness-[1.6]">
+                          ({teamMembers?.length || 0})
+                        </span>
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Membros ativos no projeto
+                      </CardDescription>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="h-full p-0">
+                <ScrollArea className="h-full">
+                  <div className="space-y-1 p-3">
+                    {usersLoading ? (
+                      <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Carregando usuários...
+                      </div>
+                    ) : usersError ? (
+                      <div className="rounded-md bg-destructive/10 p-3 text-center text-sm text-destructive">
+                        Erro ao carregar usuários
+                      </div>
+                    ) : teamMembers.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center gap-2 py-6 text-center text-sm text-muted-foreground">
+                        <Users className="h-8 w-8 opacity-40" />
+                        Nenhum membro na equipe
+                      </div>
+                    ) : (
+                      teamMembers.map((user) => (
+                        <div
+                          key={user._id}
                           className={cn(
-                            "h-9 w-9 border-2 shadow transition-all",
+                            "group flex items-center gap-3 rounded-lg p-2.5 transition-all",
                             inProgressTasks.some(
                               (t) => t.assignedTo === user._id,
                             )
-                              ? "border-primary/30 shadow-md"
-                              : "border-background group-hover:border-primary/30 group-hover:shadow-md",
+                              ? "bg-primary/5 shadow-sm"
+                              : "hover:bg-primary/5 hover:shadow-sm",
                           )}
                         >
-                          <AvatarImage
-                            src={user.avatar || "/placeholder.svg"}
-                            alt={user.NOME}
-                          />
-                          <AvatarFallback className="bg-primary/10 text-primary brightness-[1.6]">
-                            {user.NOME.split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-1 flex-col overflow-hidden">
-                          <span className="truncate text-sm font-medium text-card-foreground">
-                            {formatUserName(user.NOME)}
-                          </span>
+                          <Avatar
+                            className={cn(
+                              "h-9 w-9 border-2 shadow transition-all",
+                              inProgressTasks.some(
+                                (t) => t.assignedTo === user._id,
+                              )
+                                ? "border-primary/30 shadow-md"
+                                : "border-background group-hover:border-primary/30 group-hover:shadow-md",
+                            )}
+                          >
+                            <AvatarImage
+                              src={user.avatar || "/placeholder.svg"}
+                              alt={user.NOME}
+                            />
+                            <AvatarFallback className="bg-primary/10 text-primary brightness-[1.6]">
+                              {user.NOME.split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-1 flex-col overflow-hidden">
+                            <span className="truncate text-sm font-medium text-card-foreground">
+                              {formatUserName(user.NOME)}
+                            </span>
+                            {inProgressTasks.some(
+                              (t) => t.assignedTo === user._id,
+                            ) && (
+                              <span className="text-xs text-primary">
+                                Trabalhando em uma demanda
+                              </span>
+                            )}
+                          </div>
                           {inProgressTasks.some(
                             (t) => t.assignedTo === user._id,
                           ) && (
-                            <span className="text-xs text-primary">
-                              Trabalhando em uma demanda
-                            </span>
+                            <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
                           )}
                         </div>
-                        {inProgressTasks.some(
-                          (t) => t.assignedTo === user._id,
-                        ) && (
-                          <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </div>
+                      ))
+                    )}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Colunas da Direita - Em Progresso e Concluídas */}
         <div
           className={cn(
-            "flex flex-1 gap-5 overflow-hidden",
+            "flex gap-5 overflow-hidden",
+            flowType === "default" ? "flex-1" : "w-full flex-1", // Ajuste para ocupar todo espaço no fluxo compartilhado
             isMobile ? "h-[60vh] flex-col" : "h-full flex-row",
           )}
         >
           {/* Coluna Em Progresso */}
-          <div className="flex flex-1 flex-col gap-5 overflow-hidden">
+          <div
+            className={cn(
+              "flex flex-col gap-5 overflow-hidden",
+              flowType === "shared" ? "flex-1" : "flex-1",
+            )}
+          >
             <Card className="overflow-hidden border-border bg-card/95 shadow-md">
               <CardHeader className="p-4">
                 <div className="flex items-center gap-3">
@@ -285,7 +303,9 @@ export default function GenericBoard({ assignment, project }) {
                       </CardTitle>
                     </div>
                     <CardDescription className="text-xs">
-                      Demandas que você está tratando atualmente
+                      {flowType === "shared"
+                        ? "Demandas sendo tratadas pelo time"
+                        : "Demandas que você está tratando atualmente"}
                     </CardDescription>
                   </div>
                 </div>
@@ -311,6 +331,8 @@ export default function GenericBoard({ assignment, project }) {
                           refetchInProgressTasks();
                           refetchCompletedTasks();
                         }}
+                        // Permitir edição para todos no fluxo compartilhado
+                        editable={flowType === "shared"}
                       />
                     ))
                   ) : loadingInProgress ? (
@@ -333,7 +355,9 @@ export default function GenericBoard({ assignment, project }) {
                           Nenhuma demanda em tratamento
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          Clique em "Tratar Próxima Demanda" para iniciar
+                          {flowType === "shared"
+                            ? "As demandas em tratamento aparecerão aqui"
+                            : 'Clique em "Tratar Próxima Demanda" para iniciar'}
                         </div>
                       </div>
                     </div>
@@ -344,7 +368,12 @@ export default function GenericBoard({ assignment, project }) {
           </div>
 
           {/* Coluna Concluídas */}
-          <div className="flex flex-1 flex-col gap-5 overflow-hidden">
+          <div
+            className={cn(
+              "flex flex-col gap-5 overflow-hidden",
+              flowType === "shared" ? "flex-1" : "flex-1",
+            )}
+          >
             <Card className="overflow-hidden border-border bg-card/95 shadow-md">
               <CardHeader className={cn("p-4", isMobile && "pb-2")}>
                 <div
@@ -367,7 +396,9 @@ export default function GenericBoard({ assignment, project }) {
                         </span>
                       </div>
                       <CardDescription className="text-xs">
-                        Demandas concluídas por você
+                        {flowType === "shared"
+                          ? "Demandas concluídas pelo time"
+                          : "Demandas concluídas por você"}
                       </CardDescription>
                     </div>
                   </div>
@@ -414,7 +445,9 @@ export default function GenericBoard({ assignment, project }) {
                           Nenhuma demanda finalizada
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          Demandas concluídas aparecerão aqui
+                          {flowType === "shared"
+                            ? "Demandas concluídas pelo time aparecerão aqui"
+                            : "Demandas concluídas por você aparecerão aqui"}
                         </div>
                       </div>
                     </div>
