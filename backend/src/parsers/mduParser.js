@@ -39,7 +39,8 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
     (row) =>
       row.TIPO_DEMANDA !== "Empresarial" &&
       row.TIPO_DEMANDA !== "Inteligência de Mercado" &&
-      row.TIPO_DEMANDA !== "Projeto F"
+      row.TIPO_DEMANDA !== "Projeto F" &&
+      row.TIPO_DEMANDA !== "Novos Empreendimentos"
   );
 
   filtered = filtered.filter((row) =>
