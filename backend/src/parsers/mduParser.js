@@ -63,10 +63,7 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
       ? new Date(rawDate.getFullYear(), rawDate.getMonth(), rawDate.getDate())
       : null;
 
-    const endereco =
-      row.ENDERECO && row.ENDERECO.trim()
-        ? row.ENDERECO.trim()
-        : "SEM ENDERECO";
+    const endereco = row.ENDERECO?.trim() || "SEM ENDERECO";
 
     return {
       IDDEMANDA: row.IDDEMANDA,
