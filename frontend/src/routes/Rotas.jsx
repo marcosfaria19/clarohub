@@ -159,7 +159,7 @@ export default function Rotas() {
         {
           path: "/insights/dashboard",
           element: (
-            <ProtectedRoute allowedRoles={["admin", "manager"]}>
+            <ProtectedRoute allowedRoles={["admin"]}>
               <InsightsHome />
             </ProtectedRoute>
           ),
