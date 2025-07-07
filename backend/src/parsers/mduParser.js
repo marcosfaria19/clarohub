@@ -30,7 +30,7 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
 
   let filtered = rawData;
 
-  const codigosIgnorados = [206, 209];
+  const codigosIgnorados = [209];
   filtered = filtered.filter(
     (row) => !codigosIgnorados.includes(row.COD_BAIXA)
   );
