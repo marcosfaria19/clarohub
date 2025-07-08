@@ -1399,6 +1399,14 @@
     "COD_NETSMS": 69884
   },
   {
+    "CIDADE": "IJUI",
+    "UF": "RS",
+    "REGIONAL": "RRS",
+    "COD_OPERADORA": 914,
+    "BASE": "SUL",
+    "COD_NETSMS": 99999
+  },
+  {
     "CIDADE": "ILHEUS",
     "UF": "BA",
     "REGIONAL": "RBS",
