@@ -1,4 +1,4 @@
-import { Calendar } from "lucide-react";
+import { Calendar, Workflow } from "lucide-react";
 import {
   Avatar,
   AvatarImage,
@@ -39,13 +39,13 @@ const Sidebar = () => {
       label: "Projetos",
       icon: LineChart,
       path: "/insights/",
+    },*/
+    {
+      id: "demandas",
+      label: "Demandas",
+      icon: Workflow,
+      path: "/insights/tasks",
     },
-        {
-      id: "settings",
-      label: "Configurações",
-      icon: Settings,
-      path: "/insights/settings",
-    }, */
     {
       id: "vacations",
       label: "Férias",
