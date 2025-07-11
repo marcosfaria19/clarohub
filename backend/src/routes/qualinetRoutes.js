@@ -79,25 +79,8 @@ module.exports = (qualinetCollection) => {
             )
         );
 
-        // Condição para manter todos os casos indiferente de UF
-        /*  const filteredDataAllUFs = filteredData.map((item) => ({
-          CI_NOME: item.CI_NOME,
-          NUM_CONTRATO: item.NUM_CONTRATO,
-          DT_CADASTRO: item.DT_CADASTRO,
-          END_COMPLETO: item.END_COMPLETO,
-          COD_NODE: item.COD_NODE,
-          UF: item.UF,
-        }));
-        
-        if (filteredDataAllUFs.length === 0) {
-          return res.status(400).send("Nenhum dado novo a ser inserido.");
-          
-          const result = await qualinetCollection.insertMany(filteredDataAllUFs);
-        } */
-
-        // Condição para remover casos de RS
         const filteredDataWithoutRS = filteredData
-          .filter((item) => item.UF !== "RS")
+          /* .filter((item) => item.UF !== "RS") */
           .map((item) => ({
             CI_NOME: item.CI_NOME,
             NUM_CONTRATO: item.NUM_CONTRATO,
