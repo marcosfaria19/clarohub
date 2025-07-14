@@ -4,6 +4,7 @@ import { useRoutes, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import DefaultLayout from "../layouts/DefaultLayout";
 import SidebarLayout from "../layouts/SidebarLayout";
+import TasksPage from "modules/insight/pages/TasksPage";
 
 // Layouts
 
@@ -157,9 +158,17 @@ export default function Rotas() {
           ),
         },
         {
-          path: "/insights/dashboard",
+          path: "/insights/tasks",
           element: (
             <ProtectedRoute allowedRoles={["admin", "manager"]}>
+              <TasksPage />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/insights/dashboard",
+          element: (
+            <ProtectedRoute allowedRoles={["admin"]}>
               <InsightsHome />
             </ProtectedRoute>
           ),

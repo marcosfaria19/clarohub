@@ -85,6 +85,13 @@ export default function Claroflow() {
     return state.projects[0];
   }, [state.selectedTab, state.projects]);
 
+  const selectedAssignment = state.assignments.find(
+    (a) => a._id === state.selectedTab,
+  );
+
+  const flowType =
+    selectedAssignment?.name === "Pendencia Mapas" ? "shared" : "default";
+
   if (state.loading) return <div>Carregando...</div>;
   if (state.error) return <div>Erro: {state.error}</div>;
 
@@ -116,9 +123,8 @@ export default function Claroflow() {
             <BoardLayout
               assignmentId={state.selectedTab}
               project={selectedProject}
-              assignment={state.assignments.find(
-                (a) => a._id === state.selectedTab,
-              )}
+              flowType={flowType}
+              assignment={selectedAssignment}
             />
           )
         ) : (

@@ -8,7 +8,7 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
     },
     ["Validação Vistoria"]: {
       required: ["IDDEMANDA", "COD_OPERADORA", "ENDERECO", "FILA"],
-      filaValues: ["Retorno Vistoria", "Validação Vistoria"],
+      filaValues: ["Validação Vistoria"],
     },
   };
 
@@ -30,7 +30,7 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
 
   let filtered = rawData;
 
-  const codigosIgnorados = [206, 209];
+  const codigosIgnorados = [209];
   filtered = filtered.filter(
     (row) => !codigosIgnorados.includes(row.COD_BAIXA)
   );
@@ -39,7 +39,8 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
     (row) =>
       row.TIPO_DEMANDA !== "Empresarial" &&
       row.TIPO_DEMANDA !== "Inteligência de Mercado" &&
-      row.TIPO_DEMANDA !== "Projeto F"
+      row.TIPO_DEMANDA !== "Projeto F" &&
+      row.TIPO_DEMANDA !== "Novos Empreendimentos"
   );
 
   filtered = filtered.filter((row) =>
@@ -62,15 +63,13 @@ module.exports = function mduParser(rawData, cidadeMap, project, assignment) {
       ? new Date(rawDate.getFullYear(), rawDate.getMonth(), rawDate.getDate())
       : null;
 
-    const endereco =
-      row.ENDERECO && row.ENDERECO.trim()
-        ? row.ENDERECO.trim()
-        : "SEM ENDERECO";
+    const endereco = row.ENDERECO?.trim() || "SEM ENDERECO";
 
     return {
       IDDEMANDA: row.IDDEMANDA,
       COD_OPERADORA: codOper,
       ENDERECO_VISTORIA: endereco,
+      DATA_INICIO: row.DATA_INICIO,
       ...city,
       project: { _id: project._id, name: project.name },
       status: { _id: assignment._id, name: assignment.name },

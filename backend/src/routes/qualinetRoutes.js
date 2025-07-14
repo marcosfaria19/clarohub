@@ -2,12 +2,17 @@ const express = require("express");
 const multer = require("multer");
 const xlsx = require("xlsx");
 const { ObjectId } = require("mongodb");
-const cidadeParaUF = require("../utils/cidadeParaUF");
+const baseGedCidades = require("../utils/baseGedCidades.json");
 const { formatarData } = require("../utils/formatarData");
 const authenticateToken = require("../middleware/authMiddleware");
 const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
+
+const ufPorOperadora = baseGedCidades.reduce((acc, cur) => {
+  acc[String(cur.COD_OPERADORA)] = cur.UF;
+  return acc;
+}, {});
 
 module.exports = (qualinetCollection) => {
   router.post(
@@ -28,6 +33,7 @@ module.exports = (qualinetCollection) => {
           "DT_CADASTRO",
           "END_COMPLETO",
           "COD_NODE",
+          "COD_OPERADORA",
         ];
 
         const extracaoValida = colunasEsperadas.every((text) => {
@@ -56,9 +62,10 @@ module.exports = (qualinetCollection) => {
 
         let data = xlsx.utils.sheet_to_json(sheet);
 
+        // Mapeia UF via COD_OPERADORA
         data = data.map((item) => ({
           ...item,
-          UF: cidadeParaUF[item.CI_NOME] || "UF não encontrada",
+          UF: ufPorOperadora[item.COD_OPERADORA] || "UF não encontrada",
         }));
 
         const existingData = await qualinetCollection.find({}).toArray();
@@ -72,25 +79,8 @@ module.exports = (qualinetCollection) => {
             )
         );
 
-        // Condição para manter todos os casos indiferente de UF
-        /*  const filteredDataAllUFs = filteredData.map((item) => ({
-          CI_NOME: item.CI_NOME,
-          NUM_CONTRATO: item.NUM_CONTRATO,
-          DT_CADASTRO: item.DT_CADASTRO,
-          END_COMPLETO: item.END_COMPLETO,
-          COD_NODE: item.COD_NODE,
-          UF: item.UF,
-        }));
-        
-        if (filteredDataAllUFs.length === 0) {
-          return res.status(400).send("Nenhum dado novo a ser inserido.");
-          
-          const result = await qualinetCollection.insertMany(filteredDataAllUFs);
-        } */
-
-        // Condição para remover casos de RS
         const filteredDataWithoutRS = filteredData
-          .filter((item) => cidadeParaUF[item.CI_NOME] !== "RS")
+          /* .filter((item) => item.UF !== "RS") */
           .map((item) => ({
             CI_NOME: item.CI_NOME,
             NUM_CONTRATO: item.NUM_CONTRATO,

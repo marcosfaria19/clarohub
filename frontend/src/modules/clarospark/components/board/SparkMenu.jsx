@@ -1,9 +1,8 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { Trophy, SlidersHorizontal, ArrowDownToLine } from "lucide-react";
 import { Button } from "modules/shared/components/ui/button";
 import RankingModal from "../rankings/RankingModal";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
-import { useDailyLikes } from "modules/clarospark/hooks/useDailyLikes";
 import {
   Tooltip,
   TooltipContent,
@@ -22,6 +21,7 @@ import { useDownloadIdeas } from "modules/clarospark/hooks/useDownloadIdeas";
 import spark from "modules/clarospark/assets/f0.png";
 import sparkw from "modules/clarospark/assets/f0w.png";
 import { useTheme } from "modules/shared/contexts/ThemeContext";
+import { useSpark } from "modules/clarospark/hooks/sparkContext";
 
 export default function SparkMenu({
   onToggleView,
@@ -31,8 +31,14 @@ export default function SparkMenu({
   const [showRankingModal, setShowRankingModal] = useState(false);
   const [isManagerialView, setIsManagerialView] = useState(false);
   const { user } = useContext(AuthContext);
-  const { remainingLikes, fetchRemainingLikes } = useDailyLikes(user.userId);
-  const { downloadIdeas, isDownloading, error } = useDownloadIdeas();
+
+  const { remainingLikes, isLoading, error } = useSpark();
+
+  const {
+    downloadIdeas,
+    isDownloading,
+    error: downloadError,
+  } = useDownloadIdeas();
 
   const canToggleView =
     user.permissoes === "manager" || user.permissoes === "admin";
@@ -48,14 +54,10 @@ export default function SparkMenu({
 
   const handleDownload = async () => {
     await downloadIdeas();
-    if (error) {
-      console.error(error);
+    if (downloadError) {
+      console.error(downloadError);
     }
   };
-
-  useEffect(() => {
-    fetchRemainingLikes();
-  });
 
   const { theme } = useTheme();
 
@@ -73,11 +75,16 @@ export default function SparkMenu({
                   draggable={false}
                 />
                 <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
-                  {remainingLikes}
+                  {isLoading ? "..." : remainingLikes}
                 </span>
+                {error && (
+                  <span className="absolute -bottom-1 -right-1 h-2 w-2 rounded-full bg-red-500" />
+                )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Sparks Restantes</TooltipContent>
+            <TooltipContent>
+              {error ? "Erro ao carregar sparks" : "Sparks Restantes"}
+            </TooltipContent>
           </Tooltip>
 
           <Tooltip>

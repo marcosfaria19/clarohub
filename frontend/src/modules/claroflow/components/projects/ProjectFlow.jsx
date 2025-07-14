@@ -10,9 +10,13 @@ import ChangeNotification from "../team/ChangesNotification";
 import { getLayoutedElements } from "modules/claroflow/utils/graphLayout";
 import AssignmentNode from "./AssignmentNode";
 import CustomEdge from "./CustomEdge";
+import BidirectionalEdge from "./BidirectionalEdge";
 
 const nodeTypes = { assignment: AssignmentNode };
-const edgeTypes = { custom: CustomEdge };
+const edgeTypes = {
+  custom: CustomEdge,
+  bidirectional: BidirectionalEdge,
+};
 
 const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
   const { updateTransitions, saveLayout } = useProjects();
@@ -42,7 +46,8 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
         },
       }));
 
-      const newEdges = project.assignments.flatMap(
+      // 1. Cria as edges normalmente
+      const rawEdges = project.assignments.flatMap(
         (assignment) =>
           assignment.transitions?.map((targetId) => ({
             id: `${assignment._id}-${targetId}`,
@@ -53,10 +58,58 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
           })) || [],
       );
 
+      // 2. Identifica conexões bidirecionais
+      const bidirectionalPairs = new Set();
+      const edgesMap = new Map();
+
+      rawEdges.forEach((edge) => {
+        const reverseKey = `${edge.target}-${edge.source}`;
+
+        if (edgesMap.has(reverseKey)) {
+          // Encontrou um par bidirecional
+          bidirectionalPairs.add(
+            edge.source < edge.target
+              ? `${edge.source}-${edge.target}`
+              : `${edge.target}-${edge.source}`,
+          );
+        }
+
+        edgesMap.set(edge.id, edge);
+      });
+
+      // 3. Processa as edges substituindo os pares bidirecionais
+      const processedEdges = [];
+      const handledPairs = new Set();
+
+      rawEdges.forEach((edge) => {
+        const pairKey =
+          edge.source < edge.target
+            ? `${edge.source}-${edge.target}`
+            : `${edge.target}-${edge.source}`;
+
+        if (bidirectionalPairs.has(pairKey) && !handledPairs.has(pairKey)) {
+          // Adiciona uma única edge bidirecional
+          handledPairs.add(pairKey);
+          processedEdges.push({
+            id: `bidirectional-${pairKey}`,
+            source: edge.source,
+            target: edge.target,
+            type: "bidirectional", // Novo tipo
+            animated: true,
+            data: {
+              reverseEdgeId: `${edge.target}-${edge.source}`,
+            },
+          });
+        } else if (!bidirectionalPairs.has(pairKey)) {
+          // Mantém edge normal
+          processedEdges.push(edge);
+        }
+      });
+
       setNodes(newNodes);
-      setEdges(newEdges);
+      setEdges(processedEdges); // Usa as edges processadas
       setInitialNodes(newNodes);
-      setInitialEdges(newEdges);
+      setInitialEdges(processedEdges);
     }
   }, [project, onEditAssignment, setNodes, setEdges, handleDeleteAssignment]);
 
@@ -110,7 +163,7 @@ const ProjectFlow = ({ project, onEditAssignment, onDeleteAssignment }) => {
   );
 
   const handleLayout = useCallback(() => {
-    const { nodes: layoutedNodes } = getLayoutedElements(nodes, edges, "TB");
+    const { nodes: layoutedNodes } = getLayoutedElements(nodes, edges, "LR");
     setNodes(layoutedNodes);
     setHasChanges(true);
   }, [nodes, edges, setNodes]);

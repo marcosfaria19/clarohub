@@ -2,7 +2,11 @@
 import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "services/axios";
 
-export const useTasks = ({ assignmentId, userId } = {}) => {
+export const useTasks = ({
+  assignmentId,
+  userId,
+  flowType = "default",
+} = {}) => {
   const [availableTasks, setAvailableTasks] = useState([]);
   const [inProgressTasks, setInProgressTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
@@ -32,13 +36,23 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
   }, [assignmentId]);
 
   const fetchInProgressTasks = useCallback(async () => {
-    if (!assignmentId || !userId) return;
+    if (!assignmentId) return;
 
     setLoadingInProgress(true);
     try {
-      const response = await axiosInstance.get(
-        `/flow/tasks/assignment/${assignmentId}/user/${userId}`,
-      );
+      let url;
+
+      // Fluxo compartilhado: busca todas as tasks sem filtrar por usuário
+      if (flowType === "shared") {
+        url = `/flow/tasks/assignment/${assignmentId}/in-progress`;
+      }
+      // Fluxo padrão: busca apenas tasks do usuário
+      else {
+        if (!userId) return;
+        url = `/flow/tasks/assignment/${assignmentId}/user/${userId}`;
+      }
+
+      const response = await axiosInstance.get(url);
       setInProgressTasks(response.data);
       setError(null);
     } catch (err) {
@@ -47,7 +61,7 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
     } finally {
       setLoadingInProgress(false);
     }
-  }, [assignmentId, userId]);
+  }, [assignmentId, userId, flowType]);
 
   const fetchCompletedTasks = useCallback(async () => {
     if (!assignmentId || !userId) return;
@@ -108,9 +122,11 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
   }, [assignmentId, fetchAvailableTasks]);
 
   useEffect(() => {
-    if (assignmentId && userId) {
+    if (assignmentId) {
       fetchInProgressTasks();
-      fetchCompletedTasks();
+      if (userId) {
+        fetchCompletedTasks();
+      }
     }
   }, [assignmentId, userId, fetchInProgressTasks, fetchCompletedTasks]);
 
@@ -127,5 +143,6 @@ export const useTasks = ({ assignmentId, userId } = {}) => {
     refetchAvailableTasks: fetchAvailableTasks,
     refetchInProgressTasks: fetchInProgressTasks,
     refetchCompletedTasks: fetchCompletedTasks,
+    flowType,
   };
 };
