@@ -1,13 +1,15 @@
-import { useState, useCallback, useContext } from "react";
-import axiosInstance from "services/axios";
-import { AuthContext } from "modules/shared/contexts/AuthContext";
-import { useDailyLikes } from "./useDailyLikes";
+import { useCallback } from "react";
 import { toast } from "sonner";
+import { useSpark } from "./sparkContext";
 
 export function useLikes() {
-  const [likesCount, setLikesCount] = useState({});
-  const { user } = useContext(AuthContext);
-  const { remainingLikes, fetchRemainingLikes } = useDailyLikes(user.userId);
+  const {
+    remainingLikes,
+    likesCount,
+    handleLike: contextHandleLike,
+    updateLikeCount,
+    error,
+  } = useSpark();
 
   const handleLike = useCallback(
     async (ideaId) => {
@@ -15,22 +17,10 @@ export function useLikes() {
         toast.warning("Você já utilizou todos os seus sparks diários.");
         return;
       }
-
       try {
-        const response = await axiosInstance.post("/spark/like-idea", {
-          ideaId,
-          userId: user.userId,
-        });
-
-        if (response.status === 200) {
-          setLikesCount((prev) => ({
-            ...prev,
-            [ideaId]: response.data.likesCount,
-          }));
-          fetchRemainingLikes(); // Atualiza o contador de sparks restantes
-          toast.success("Ideia apoiada!");
-          return response.data.likesCount;
-        }
+        const newCount = await contextHandleLike(ideaId);
+        toast.success("Ideia apoiada!");
+        return newCount;
       } catch (error) {
         if (error.response?.status === 403) {
           const errorMessage =
@@ -48,17 +38,17 @@ export function useLikes() {
         } else {
           toast.error("Erro inesperado. Tente novamente.");
         }
+        throw error;
       }
     },
-    [user.userId, remainingLikes, fetchRemainingLikes],
+    [contextHandleLike, remainingLikes],
   );
 
-  const updateLikeCount = useCallback((ideaId, newCount) => {
-    setLikesCount((prev) => ({
-      ...prev,
-      [ideaId]: newCount,
-    }));
-  }, []);
-
-  return { likesCount, handleLike, updateLikeCount, remainingLikes };
+  return {
+    likesCount,
+    handleLike,
+    updateLikeCount,
+    remainingLikes,
+    error,
+  };
 }

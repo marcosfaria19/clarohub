@@ -113,26 +113,29 @@ function IdeaCard(props) {
     return statusConfig[status] || statusConfig["Em Análise"];
   }, [status]);
 
+  // Inicialização
   useEffect(() => {
-    if (ideaId) {
+    if (ideaId && initialLikesCount !== undefined) {
       updateLikeCount(ideaId, initialLikesCount);
     }
   }, [ideaId, initialLikesCount, updateLikeCount]);
 
-  // Callback otimizado para like
+  // Callback para like
   const handleLikeClick = useCallback(
-    (e) => {
+    async (e) => {
       e.stopPropagation();
       if (ideaId && user?.userId && !isUpdating) {
-        handleLike(ideaId, user.userId).catch((error) => {
+        try {
+          await handleLike(ideaId);
+        } catch (error) {
           console.error("IdeaCard: Erro ao processar like", error);
-        });
+        }
       }
     },
     [ideaId, user?.userId, isUpdating, handleLike],
   );
 
-  // Callback otimizado para edição
+  // Callback para edição
   const handleEditClick = useCallback(
     (e) => {
       e.stopPropagation();
@@ -189,7 +192,7 @@ function IdeaCard(props) {
         className={cn(
           "relative h-44 w-full max-w-md cursor-pointer rounded-lg bg-card-spark p-4 transition-opacity",
           currentLikes > 99 ? "animate-shadow-pulse" : "border-0",
-          isUpdating ? "cursor-wait opacity-75" : "", // Feedback visual durante atualização
+          isUpdating ? "cursor-wait opacity-75" : "",
         )}
         onClick={handleCardClick}
       >
