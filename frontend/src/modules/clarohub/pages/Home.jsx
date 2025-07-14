@@ -1,118 +1,348 @@
-import React, { useContext, useState, useMemo } from "react";
-import { Plus } from "lucide-react";
-import { Dialog, DialogTrigger } from "modules/shared/components/ui/dialog";
-import { useSubjectsAndCards } from "modules/clarospark/hooks/useSubjectsAndCards";
-import { useNewCard } from "modules/clarospark/hooks/useNewCard";
-import SparkMenu from "modules/clarospark/components/board/SparkMenu";
-import SparkBoard from "modules/clarospark/components/board/SparkBoard";
-import ManagerTable from "modules/clarospark/components/board/ManagerTable";
-import AddIdeaModal from "modules/clarospark/components/board/AddIdeaModal";
-import ErrorDisplay from "modules/clarospark/components/ErrorDisplay";
-import LoadingSpinner from "modules/clarospark/components/LoadingSpinner";
+import React, { useState, useEffect } from "react";
+import AppCard from "modules/clarohub/components/AppCard";
+import { jwtDecode } from "jwt-decode";
+import SublinkModal from "modules/clarohub/components/SublinkModal";
+import axiosInstance from "services/axios";
 import Container from "modules/shared/components/ui/container";
-import { Button } from "modules/shared/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "modules/shared/components/ui/carousel";
+import { useMediaQuery } from "modules/shared/hooks/use-media-query";
+import { Skeleton } from "modules/shared/components/ui/skeleton";
+import { Input } from "modules/shared/components/ui/input";
+import { AnimatePresence, motion } from "framer-motion";
+import { Search } from "lucide-react";
 
-import { AuthContext } from "modules/shared/contexts/AuthContext";
-import { SparkProvider } from "modules/clarospark/hooks/sparkContext";
-import Tour from "modules/clarospark/components/Tour";
+const Home = () => {
+  const [groupedApps, setGroupedApps] = useState({});
+  const [favorites, setFavorites] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedApp, setSelectedApp] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [allApps, setAllApps] = useState([]);
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isTablet = useMediaQuery("(max-width: 1024px)");
 
-export default function Clarospark() {
-  const { subjects, sortedCards, isLoading, error } = useSubjectsAndCards();
-  const { newCard, setNewCard, handleAddCard } = useNewCard(subjects);
+  useEffect(() => {
+    setIsLoading(true);
+    axiosInstance
+      .get(`/apps`)
+      .then((response) => {
+        const appsData = response.data;
+        const filteredApps = filterAppsByPermissions(appsData);
+        const grouped = groupAppsByFamily(filteredApps);
+        setGroupedApps(grouped);
+        setAllApps(filteredApps);
 
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [isManagerView, setIsManagerView] = useState(false);
-  const [currentFilter, setCurrentFilter] = useState("emAnalise");
-  const [runTour, setRunTour] = useState(true);
+        const savedFavorites =
+          JSON.parse(localStorage.getItem("favorites")) || [];
+        setFavorites(savedFavorites);
+      })
+      .catch((error) => console.error("Erro ao buscar aplicativos:", error))
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
-  const { user } = useContext(AuthContext);
+  const handleFavoriteClick = (app) => {
+    const updatedFavorites = [...favorites];
+    const appIndex = updatedFavorites.findIndex((fav) => fav._id === app._id);
 
-  const userData = useMemo(
-    () => ({
-      userId: user?.userId,
-      userName: user?.userName,
-    }),
-    [user?.userId, user?.userName],
-  );
+    if (appIndex > -1) {
+      updatedFavorites.splice(appIndex, 1);
+    } else {
+      updatedFavorites.push(app);
+    }
 
-  const handleToggleView = useMemo(
-    () => () => setIsManagerView((prev) => !prev),
-    [],
-  );
+    setFavorites(updatedFavorites);
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+  };
 
-  const handleFilterChange = useMemo(
-    () => (filter) => setCurrentFilter(filter),
-    [],
-  );
+  const filterAppsByPermissions = (apps) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("No token found");
+      return [];
+    }
+    let decodedToken;
+    try {
+      decodedToken = jwtDecode(token);
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return [];
+    }
+    const userAccessLevel = decodedToken.PERMISSOES || "";
 
-  const handleTourFinish = useMemo(() => () => setRunTour(false), []);
-  const handleCloseAddModal = useMemo(() => () => setShowAddModal(false), []);
-  const handleOpenAddModal = useMemo(() => () => setShowAddModal(true), []);
+    const accessHierarchy = {
+      guest: ["guest"],
+      basic: ["guest", "basic"],
+      manager: ["guest", "basic", "manager"],
+      admin: ["guest", "basic", "manager", "admin"],
+    };
 
-  if (isLoading) {
-    return (
-      <Container>
-        <LoadingSpinner />
-      </Container>
+    const accessibleFamilies = accessHierarchy[userAccessLevel] || [];
+
+    return apps.filter((app) => accessibleFamilies.includes(app.acesso));
+  };
+
+  const groupAppsByFamily = (apps) => {
+    return apps.reduce((groups, app) => {
+      const family = app.familia;
+      if (!groups[family]) {
+        groups[family] = [];
+      }
+      groups[family].push(app);
+      return groups;
+    }, {});
+  };
+
+  const normalize = (text) =>
+    text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+  const filterAppsBySearch = (apps) => {
+    if (!searchTerm) return apps;
+
+    const term = normalize(searchTerm);
+    return apps.filter((app) =>
+      normalize(`${app.nome} ${app.info}`).includes(term),
     );
-  }
+  };
 
-  if (error) {
+  const handleCardClick = (app) => {
+    if (["Atlas", "Visium", "Nuvem", "Consultar SLA"].includes(app.nome)) {
+      setSelectedApp(app);
+      setShowModal(true);
+    } else {
+      window.open(app.rota, "_blank");
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setSelectedApp(null);
+  };
+
+  const desiredOrder = [
+    "Projetos",
+    "Plataformas",
+    "PowerApps",
+    "SharePoint",
+    "Central do Colaborador",
+    "Gestão",
+    "Suporte",
+  ];
+
+  const renderCarousel = (apps) => {
+    const cardsPerView = isMobile ? 1 : isTablet ? 3 : 5;
+    const showArrows = apps.length > cardsPerView;
+
     return (
-      <Container>
-        <ErrorDisplay message={error} />
-      </Container>
-    );
-  }
-
-  return (
-    <SparkProvider userId={userData.userId}>
-      <Container innerClassName="lg:px-7 max-w-[1920px] bg-container">
-        <Tour runTour={runTour} onFinish={handleTourFinish} />
-
-        <SparkMenu
-          onToggleView={handleToggleView}
-          onFilterChange={handleFilterChange}
-          currentFilter={currentFilter}
-        />
-
-        {isManagerView ? (
-          <ManagerTable subjects={subjects} cards={sortedCards} />
-        ) : (
-          <>
-            <SparkBoard
-              subjects={subjects}
-              cards={sortedCards}
-              currentFilter={currentFilter}
-              userId={userData.userId}
-              userName={userData.userName}
-            />
-
-            <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-              <DialogTrigger asChild>
-                <Button
-                  className="tour-sparkadd fixed bottom-0 left-[calc(100%-100px)] rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 lg:bottom-24 lg:right-12"
-                  size="icon"
-                  onClick={handleOpenAddModal}
-                  aria-label="Adicionar nova ideia"
+      <Carousel
+        opts={{
+          align: "start",
+          loop: false,
+          skipSnaps: true,
+        }}
+        className="w-full"
+      >
+        <CarouselContent className="-ml-2 md:-ml-4">
+          <AnimatePresence mode="popLayout">
+            {apps.map((app) => (
+              <CarouselItem
+                key={app._id}
+                className="basis-full pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4 lg:basis-1/4 xl:basis-1/5"
+              >
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ type: "spring", stiffness: 100, damping: 18 }}
                 >
-                  <Plus className="h-5 w-5" />
-                </Button>
-              </DialogTrigger>
-
-              <AddIdeaModal
-                newCard={newCard}
-                setNewCard={setNewCard}
-                handleAddCard={handleAddCard}
-                subjects={subjects}
-                onClose={handleCloseAddModal}
-                userName={userData.userName}
-                userId={userData.userId}
-              />
-            </Dialog>
+                  <AppCard
+                    nome={app.nome}
+                    info={app.info}
+                    imagemUrl={app.imagemUrl}
+                    logoCard={app.logoCard}
+                    rota={app.rota}
+                    isNew={
+                      new Date(app.createdAt).getTime() >
+                      Date.now() - 7 * 24 * 60 * 60 * 1000
+                    }
+                    isFavorite={favorites.some((fav) => fav._id === app._id)}
+                    onFavoriteClick={() => handleFavoriteClick(app)}
+                    onCardClick={() => handleCardClick(app)}
+                  />
+                </motion.div>
+              </CarouselItem>
+            ))}
+          </AnimatePresence>
+        </CarouselContent>
+        {showArrows && (
+          <>
+            <CarouselPrevious className="hidden sm:flex" />
+            <CarouselNext className="hidden sm:flex" />
           </>
         )}
-      </Container>
-    </SparkProvider>
+      </Carousel>
+    );
+  };
+
+  const renderSectionTitle = (title, count) => (
+    <div className="relative mb-4 flex items-center px-4 sm:px-0">
+      <h2 className="family-title mr-4 select-none text-xl font-semibold text-foreground sm:text-2xl">
+        {title} <span className="text-lg text-foreground/40">({count})</span>
+      </h2>
+      <div className="h-px flex-grow bg-gradient-to-r from-foreground/20 to-foreground/0"></div>
+    </div>
   );
-}
+
+  const renderSkeletonCarousel = () => {
+    const cardsPerView = isMobile ? 1 : isTablet ? 1 : 1;
+    return (
+      <Carousel className="w-full">
+        <CarouselContent className="-ml-2 md:-ml-4">
+          {Array.from({ length: cardsPerView }).map((_, index) => (
+            <CarouselItem
+              key={index}
+              className="basis-full pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4 lg:basis-1/4 xl:basis-1/5"
+            >
+              <Skeleton className="h-[200px] w-full rounded-lg" />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+    );
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <>
+          {desiredOrder.map((family) => (
+            <div key={family} className="mb-8 md:mb-10">
+              {renderSectionTitle(family, 0)}
+              {renderSkeletonCarousel()}
+            </div>
+          ))}
+        </>
+      );
+    }
+
+    const filteredAllApps = filterAppsBySearch(allApps);
+    const filteredFavorites = filterAppsBySearch(favorites);
+    const hasResults =
+      filteredAllApps.length > 0 || filteredFavorites.length > 0;
+    const nothingFound = searchTerm && !hasResults;
+
+    if (searchTerm && filteredAllApps.length > 0) {
+      return (
+        <>
+          <div className="mb-8 md:mb-10">
+            {renderSectionTitle("Resultados da Busca", filteredAllApps.length)}
+            {renderCarousel(filteredAllApps)}
+          </div>
+
+          <AnimatePresence>
+            {nothingFound && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="mt-10 flex flex-col items-center justify-center gap-2 text-muted-foreground"
+              >
+                <Search className="h-10 w-10" />
+                <p>Nenhum aplicativo encontrado para "{searchTerm}"</p>
+                <p className="text-sm">Tente outros termos de busca</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      );
+    }
+
+    return (
+      <>
+        {filteredFavorites.length > 0 && (
+          <div className="mb-8 md:mb-10">
+            {renderSectionTitle("Favoritos", filteredFavorites.length)}
+            {renderCarousel(filteredFavorites)}
+          </div>
+        )}
+
+        {desiredOrder.map((family) => {
+          const familyApps = groupedApps[family];
+          const filteredFamilyApps = filterAppsBySearch(familyApps || []);
+          return (
+            filteredFamilyApps.length > 0 && (
+              <div key={family} className="mb-8 md:mb-10">
+                {renderSectionTitle(family, filteredFamilyApps.length)}
+                {renderCarousel(filteredFamilyApps)}
+              </div>
+            )
+          );
+        })}
+
+        <AnimatePresence>
+          {nothingFound && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="mt-10 flex flex-col items-center justify-center gap-2 text-muted-foreground"
+            >
+              <Search className="h-10 w-10" />
+              <p>Nenhum aplicativo encontrado para "{searchTerm}"</p>
+              <p className="text-sm">Tente outros termos de busca</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </>
+    );
+  };
+
+  return (
+    <Container className="px-0 sm:px-4">
+      <h1 className="mb-6 select-none px-4 text-2xl font-semibold text-foreground sm:px-0 sm:text-3xl md:mb-4">
+        Meus Aplicativos
+      </h1>
+
+      <div className="mb-6 px-4 sm:px-0">
+        <div className="relative max-w-[300px]">
+          <Input
+            type="text"
+            placeholder="Buscar aplicativos..."
+            value={searchTerm}
+            maxLength={20}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10"
+          />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </div>
+
+      {renderContent()}
+
+      <SublinkModal
+        show={showModal}
+        handleClose={handleModalClose}
+        selectedApp={selectedApp}
+      />
+    </Container>
+  );
+};
+
+export default Home;
