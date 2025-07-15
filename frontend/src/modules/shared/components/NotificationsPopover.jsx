@@ -8,7 +8,6 @@ import {
 } from "modules/shared/components/ui/popover";
 import { Separator } from "modules/shared/components/ui/separator";
 import { Badge } from "modules/shared/components/ui/badge";
-import { Skeleton } from "modules/shared/components/ui/skeleton";
 import { Switch } from "modules/shared/components/ui/switch";
 import { Label } from "modules/shared/components/ui/label";
 import useNotifications from "../hooks/useNotifications";
@@ -23,7 +22,6 @@ export default function NotificationsPopover() {
     markAllAsRead,
     hideAllNotifications,
     refetchNotifications,
-    isLoading,
     subscribeToPushNotifications,
     unsubscribeFromPushNotifications,
     checkPushSubscriptionStatus,
