@@ -125,23 +125,6 @@ module.exports = (notificationsCollection, subscriptionsCollection) => {
     }
   });
 
-  /* // DELETE /notifications/:userId/read - Exclui notificações lidas do usuário caso ele queira
-  router.delete("/:userId/read",authenticateToken, async (req, res) => {
-    const { userId } = req.params;
-  
-    try {
-      const result = await notificationsCollection.deleteMany({
-        userId: new ObjectId(userId),
-        readBy: { $elemMatch: { $eq: new ObjectId(userId) } }
-      });
-  
-      res.status(200).json({ message: `${result.deletedCount} read notifications removed` });
-    } catch (error) {
-      console.error("Error removing read notifications:", error);
-      res.status(500).json({ error: "Error removing read notifications" });
-    }
-  }); */
-
   // PATCH /notifications/:notificationId/hide - Ocultar notificação para o usuário específico
   router.patch("/:notificationId/hide", authenticateToken, async (req, res) => {
     const { notificationId } = req.params;
@@ -191,9 +174,10 @@ module.exports = (notificationsCollection, subscriptionsCollection) => {
             .json({ message: "Nenhuma notificação encontrada para atualizar" });
         }
 
-        res
-          .status(200)
-          .json({ message: "Todas as notificações foram marcadas como lidas" });
+        res.status(200).json({
+          message: "Todas as notificações foram marcadas como lidas",
+          modifiedCount: updateResult.modifiedCount,
+        });
       } catch (error) {
         console.error(
           "Erro ao marcar todas as notificações como lidas:",
@@ -205,6 +189,46 @@ module.exports = (notificationsCollection, subscriptionsCollection) => {
       }
     }
   );
+
+  // PATCH /notifications/:userId/hide-all - Ocultar todas as notificações para o usuário específico
+  router.patch("/:userId/hide-all", authenticateToken, async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+      // Atualiza todas as notificações do usuário e as notificações globais, adicionando o userId ao array hiddenBy
+      const updateResult = await notificationsCollection.updateMany(
+        {
+          $or: [
+            { userId: new ObjectId(userId) }, // Notificações específicas do usuário
+            { isGlobal: true }, // Notificações globais
+          ],
+          hiddenBy: { $ne: new ObjectId(userId) }, // Apenas notificações ainda não ocultas pelo usuário
+        },
+        { $addToSet: { hiddenBy: new ObjectId(userId) } } // Adiciona o userId ao array hiddenBy
+      );
+
+      if (updateResult.matchedCount === 0) {
+        return res
+          .status(404)
+          .json({ message: "Nenhuma notificação encontrada para ocultar" });
+      }
+
+      res.status(200).json({
+        message: "Todas as notificações foram ocultadas",
+        modifiedCount: updateResult.modifiedCount,
+      });
+    } catch (error) {
+      console.error("Erro ao ocultar todas as notificações:", error);
+      res.status(500).json({ error: "Erro ao ocultar notificações" });
+    }
+  });
+
+  // PATCH /notifications/:userId/read-all - Alias para mark-all-read (compatibilidade)
+  router.patch("/:userId/read-all", authenticateToken, async (req, res) => {
+    // Redireciona para o endpoint mark-all-read
+    req.url = req.url.replace("/read-all", "/mark-all-read");
+    return router.handle(req, res);
+  });
 
   return router;
 };
