@@ -1,12 +1,8 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-
-const baseURL =
-  process.env.NODE_ENV === "development"
-    ? process.env.REACT_APP_BACKEND_URL
-    : "/api";
-
-const axiosInstance = axios.create({ baseURL });
+const axiosInstance = axios.create({
+  baseURL: process.env.REACT_APP_BACKEND_URL,
+});
 
 axiosInstance.interceptors.request.use(
   (config) => {
