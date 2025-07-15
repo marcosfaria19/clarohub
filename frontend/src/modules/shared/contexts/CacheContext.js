@@ -15,7 +15,7 @@ import React, { createContext, useContext, useCallback, useRef } from "react";
 const TTL_CONFIG = {
   users: 2 * 60 * 60 * 1000, // 2 horas
   projects: 6 * 60 * 60 * 1000, // 6 horas
-  netfacil: 1 * 60 * 60 * 1000, // 1 hora
+  netfacil: 6 * 60 * 60 * 1000, // 6 horas
 };
 
 // Context
