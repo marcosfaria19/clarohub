@@ -83,7 +83,7 @@ const Sidebar = () => {
                   currentPath === item.path ||
                     currentPath.startsWith(`${item.path}/`)
                     ? "bg-primary text-primary-foreground"
-                    : "text-menu-foreground hover:bg-secondary",
+                    : "text-menu-foreground hover:bg-muted",
                 )}
               >
                 <item.icon className="mr-2 h-4 w-4" />
@@ -103,11 +103,11 @@ const Sidebar = () => {
                 {user.userName[0]}
               </AvatarFallback>
             </Avatar>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-foreground">
+            <div className="flex flex-col text-menu-foreground">
+              <span className="text-sm font-medium">
                 {formatUserName(user.userName)}
               </span>
-              <span className="text-xs text-foreground">Gestão</span>
+              <span className="text-xs">Gestão</span>
             </div>
           </div>
         </div>
