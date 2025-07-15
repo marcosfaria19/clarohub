@@ -1,6 +1,5 @@
-// src/routes/Rotas.jsx
-import React, { lazy } from "react";
-import { useRoutes, Navigate } from "react-router-dom";
+import React, { lazy, useEffect } from "react";
+import { useRoutes, Navigate, useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import DefaultLayout from "../layouts/DefaultLayout";
 import SidebarLayout from "../layouts/SidebarLayout";
@@ -45,7 +44,32 @@ const InsightsSettings = lazy(
   () => import("../modules/insight/pages/SettingsPage"),
 );
 
+// Mapeamento de rotas para títulos
+const routeTitles = {
+  "/login": "Claro Hub - Login",
+  "/": "Claro Hub",
+  "/home": "Claro Hub",
+  "/ocfacil": "Claro Hub - OC Fácil",
+  "/netfacil": "Claro Hub - Net Fácil",
+  "/spark": "Claro Spark",
+  "/flow": "Claro Flow",
+  "/insights": "Insight",
+  "/insights/tasks": "Insight - Demandas",
+  "/insights/dashboard": "Insight - Dashboard",
+  "/insights/team": "Insight - Equipe",
+  "/insights/analytics": "Insight - Analytics",
+  "/insights/vacations": "Insight - Férias",
+  "/insights/settings": "Insight - Configurações",
+};
+
 export default function Rotas() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const newTitle = routeTitles[location.pathname] || "Claro Hub";
+    document.title = newTitle;
+  }, [location.pathname]);
+
   const routes = useRoutes([
     {
       path: "/login",
