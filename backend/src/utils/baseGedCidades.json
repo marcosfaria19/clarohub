@@ -2295,6 +2295,14 @@
     "COD_NETSMS": 86070
   },
   {
+    "CIDADE": "OURO PRETO",
+    "UF": "MG",
+    "REGIONAL": "RMG",
+    "COD_OPERADORA": 537,
+    "BASE": "ISP",
+    "COD_NETSMS": 99999
+  },
+  {
     "CIDADE": "PALHOCA",
     "UF": "SC",
     "REGIONAL": "RPS",
