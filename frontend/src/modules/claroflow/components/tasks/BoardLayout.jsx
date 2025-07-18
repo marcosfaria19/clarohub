@@ -21,6 +21,7 @@ import {
   ArrowRight,
   Loader2,
   FileText,
+  Calendar as CalendarIcon,
 } from "lucide-react";
 import { formatUserName } from "modules/shared/utils/formatUsername";
 import { useUsers } from "modules/claroflow/hooks/useUsers";
@@ -31,6 +32,12 @@ import { TaskCard } from "./TaskCard";
 import { AuthContext } from "modules/shared/contexts/AuthContext";
 import { useTasks } from "modules/claroflow/hooks/useTasks";
 import FinishedTaskFilter from "./FinishedTaskFilter";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "modules/shared/components/ui/tooltip";
 
 export default function GenericBoard({
   assignment,
@@ -75,13 +82,45 @@ export default function GenericBoard({
     }
   };
 
-  // Filter for completed tasks
-  const [filteredCompletedTasks, setFilteredCompletedTasks] =
-    useState(completedTasks);
+  // Estado para o toggle de filtro por data (padrão: true = só hoje)
+  const [showOnlyToday, setShowOnlyToday] = useState(true);
+
+  // Lista filtrada por data antes do search
+  const [dateFilteredTasks, setDateFilteredTasks] = useState([]);
+  const [filteredCompletedTasks, setFilteredCompletedTasks] = useState([]);
 
   useEffect(() => {
-    setFilteredCompletedTasks(completedTasks);
-  }, [completedTasks]);
+    if (!completedTasks || loadingCompleted) {
+      setDateFilteredTasks([]);
+      return;
+    }
+
+    let tasksToFilter = completedTasks;
+
+    if (showOnlyToday) {
+      const today = new Date().toISOString().split("T")[0];
+      tasksToFilter = completedTasks.filter((task) => {
+        if (!task.finishedAtByUser) return false;
+        const finishedDate = new Date(task.finishedAtByUser)
+          .toISOString()
+          .split("T")[0];
+        return finishedDate === today;
+      });
+    }
+
+    setDateFilteredTasks(tasksToFilter);
+    setFilteredCompletedTasks(tasksToFilter);
+  }, [completedTasks, showOnlyToday, loadingCompleted]);
+
+  // Título dinâmico
+  const titleText = showOnlyToday ? "Finalizadas hoje" : "Todas finalizadas";
+  const descriptionText = showOnlyToday
+    ? flowType === "shared"
+      ? "Demandas concluídas hoje pelo time"
+      : "Demandas concluídas hoje por você"
+    : flowType === "shared"
+      ? "Todas as demandas concluídas pelo time"
+      : "Todas as demandas concluídas por você";
 
   return (
     <div className="rounded-xl bg-gradient-to-b from-background to-background/95 p-4">
@@ -389,25 +428,55 @@ export default function GenericBoard({
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <CardTitle className="text-lg font-semibold text-card-foreground">
-                          Finalizadas
+                          {titleText}
                         </CardTitle>
                         <span className="px-0 py-1 text-base font-semibold text-green-500">
                           ({filteredCompletedTasks?.length || 0})
                         </span>
                       </div>
                       <CardDescription className="text-xs">
-                        {flowType === "shared"
-                          ? "Demandas concluídas pelo time"
-                          : "Demandas concluídas por você"}
+                        {descriptionText}
                       </CardDescription>
                     </div>
                   </div>
-                  <div className={cn(isMobile && "ml-11 mt-1 w-full")}>
+                  <div
+                    className={cn(
+                      isMobile && "ml-11 mt-1 w-full",
+                      "flex items-center gap-2",
+                    )}
+                  >
                     <FinishedTaskFilter
-                      tasks={completedTasks}
+                      tasks={dateFilteredTasks}
                       isMobile={isMobile}
                       onFilter={setFilteredCompletedTasks}
+                      mode={showOnlyToday ? "today" : "all"}
                     />
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowOnlyToday(!showOnlyToday)}
+                            className={cn(
+                              "p-1",
+                              showOnlyToday
+                                ? "text-primary"
+                                : "text-muted-foreground",
+                            )}
+                          >
+                            <CalendarIcon className="h-5 w-5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          <p>
+                            {showOnlyToday
+                              ? "Mostrar todas as finalizadas"
+                              : "Mostrar só as de hoje"}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
               </CardHeader>
