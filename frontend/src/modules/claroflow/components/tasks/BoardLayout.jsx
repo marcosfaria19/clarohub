@@ -112,16 +112,9 @@ export default function GenericBoard({
     setFilteredCompletedTasks(tasksToFilter);
   }, [completedTasks, showOnlyToday, loadingCompleted]);
 
-  // Título dinâmico
-  const titleText = showOnlyToday ? "Finalizadas hoje" : "Todas finalizadas";
   const descriptionText = showOnlyToday
-    ? flowType === "shared"
-      ? "Demandas concluídas hoje pelo time"
-      : "Demandas concluídas hoje por você"
-    : flowType === "shared"
-      ? "Todas as demandas concluídas pelo time"
-      : "Todas as demandas concluídas por você";
-
+    ? "Concluídas hoje"
+    : "Concluídas no total";
   return (
     <div className="rounded-xl bg-gradient-to-b from-background to-background/95 p-4">
       {/* Header com título do projeto */}
@@ -428,7 +421,7 @@ export default function GenericBoard({
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <CardTitle className="text-lg font-semibold text-card-foreground">
-                          {titleText}
+                          Finalizadas
                         </CardTitle>
                         <span className="px-0 py-1 text-base font-semibold text-green-500">
                           ({filteredCompletedTasks?.length || 0})

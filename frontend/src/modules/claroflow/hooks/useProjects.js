@@ -7,7 +7,7 @@ import { useCache } from "modules/shared/contexts/CacheContext";
  * Mantém exatamente a mesma interface do hook original useProjects
  * Adiciona cache compartilhado com TTL de 6 horas
  */
-const useProjectsOptimized = () => {
+const useProjects = () => {
   // Estados para armazenar projetos, loading e erros
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -271,4 +271,4 @@ const useProjectsOptimized = () => {
   };
 };
 
-export default useProjectsOptimized;
+export default useProjects;

@@ -11,7 +11,7 @@ function App() {
   return (
     <Router>
       <ThemeProvider>
-        <CacheProvider enableLogs={true}>
+        <CacheProvider enableLogs={process.env.NODE_ENV !== "production"}>
           <Suspense fallback={<Container className="h-screen" />}>
             <Rotas />
           </Suspense>
